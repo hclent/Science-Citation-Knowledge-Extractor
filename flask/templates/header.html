@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<!-- Basic site information  -->
+<!-- Basic site information: encoding, stylesheet, and icon  -->
 <head>
 	<meta charset = "utf-8">
 	
@@ -59,14 +59,29 @@
 
      </ul>
 </div>
-
-
 </header>
+
+
 <body>
 
 	<div class="border-row" style="width:100%; margin-bottom: 65px;"></div>
 
 	<div class="container-fluid" style="min-height:80%">
+
+    <!-- logic (Test Flash) -->
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-warning alert-dismissible" role="alert">
+					<button type="buton" class="close" data-dismiss="alert" aria-label="Close">x</button>
+					{{message}}
+				</div>
+
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
+
+
 
 	<!-- logic (Flask Code) -->
 	{% block body %}{% endblock %}

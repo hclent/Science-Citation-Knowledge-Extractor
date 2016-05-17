@@ -1,0 +1,148 @@
+Metadata-Version: 2.0
+Name: virtualenvwrapper
+Version: 4.7.1
+Summary: Enhancements to virtualenv
+Home-page: http://virtualenvwrapper.readthedocs.org/
+Author: Doug Hellmann
+Author-email: doug@doughellmann.com
+License: MIT
+Keywords: virtualenv
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Intended Audience :: Developers
+Classifier: Environment :: Console
+Provides: virtualenvwrapper
+Provides: virtualenvwrapper.user_scripts
+Provides: virtualenvwrapper.project
+Requires-Dist: virtualenv
+Requires-Dist: virtualenv-clone
+Requires-Dist: stevedore
+
+..   -*- mode: rst -*-
+
+#################
+virtualenvwrapper
+#################
+
+virtualenvwrapper is a set of extensions to Ian Bicking's `virtualenv
+<http://pypi.python.org/pypi/virtualenv>`_ tool.  The extensions include
+wrappers for creating and deleting virtual environments and otherwise
+managing your development workflow, making it easier to work on more
+than one project at a time without introducing conflicts in their
+dependencies.
+
+**Warning:** The 4.x release includes some potentially incompatible
+changes for extensions from 3.x. The python modules for extensions are
+now *always* run with ``PWD=$WORKON_HOME`` (previously the value of
+PWD varied depending on the hook). The *shell* portion of any hook
+(anything sourced by the user's shell when the hook is run) is still
+run in the same place as before.
+
+========
+Features
+========
+
+1.  Organizes all of your virtual environments in one place.
+
+2.  Wrappers for creating, copying and deleting environments, including
+    user-configurable hooks.
+
+3.  Use a single command to switch between environments.
+
+4.  Tab completion for commands that take a virtual environment as
+    argument.
+
+5. User-configurable hooks for all operations.
+
+6. Plugin system for more creating sharable extensions.
+
+Rich Leland has created a short `screencast
+<http://mathematism.com/2009/07/30/presentation-pip-and-virtualenv/>`__
+showing off the features of virtualenvwrapper.
+
+============
+Installation
+============
+
+See the `project documentation
+<http://www.doughellmann.com/docs/virtualenvwrapper/>`__ for
+installation and setup instructions.
+
+Supported Shells
+================
+
+virtualenvwrapper is a set of shell *functions* defined in Bourne
+shell compatible syntax.  It is tested under ``bash``, ``ksh``, and ``zsh``.
+It may work with other shells, so if you find that it does work with a
+shell not listed here please let me know.  If you can modify it to
+work with another shell, without completely rewriting it, send a pull
+request through the bitbucket project page.  If you write a clone to
+work with an incompatible shell, let me know and I will link to it
+from this page.
+
+Python Versions
+===============
+
+virtualenvwrapper is tested under Python 2.6 - 3.4.
+
+=======
+Support
+=======
+
+Join the `virtualenvwrapper Google Group
+<http://groups.google.com/group/virtualenvwrapper/>`__ to discuss
+issues and features.  
+
+Report bugs via the `bug tracker on Bitbucket
+<https://bitbucket.org/dhellmann/virtualenvwrapper/issues>`__.
+
+Shell Aliases
+=============
+
+Since virtualenvwrapper is largely a shell script, it uses shell
+commands for a lot of its actions.  If your environment makes heavy
+use of shell aliases or other customizations, you may encounter
+issues.  Before reporting bugs in the bug tracker, please test
+*without* your aliases enabled.  If you can identify the alias causing
+the problem, that will help make virtualenvwrapper more robust.
+
+==========
+Change Log
+==========
+
+The `release history`_ is part of the project documentation.
+
+.. _release history: http://www.doughellmann.com/docs/virtualenvwrapper/history.html
+
+=======
+License
+=======
+
+Copyright Doug Hellmann, All Rights Reserved
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Doug Hellmann not be used
+in advertising or publicity pertaining to distribution of the software
+without specific, written prior permission.
+
+DOUG HELLMANN DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+EVENT SHALL DOUG HELLMANN BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+
+

@@ -1,0 +1,20 @@
+Metadata-Version: 2.0
+Name: virtualenv-clone
+Version: 0.2.6
+Summary: script to clone virtualenvs.
+Home-page: http://github.com/edwardgeorge/virtualenv-clone
+Author: Edward George
+Author-email: edwardgeorge@gmail.com
+License: MIT
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Intended Audience :: Developers
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.2
+
+UNKNOWN
+
+

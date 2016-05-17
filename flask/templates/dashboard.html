@@ -6,24 +6,14 @@
 
 <!-- Pubmed ID Submit button -->
 <div>
-<form class="form-inline">
+<form action="" class="form-inline" method="post">
   <div class="form-group">
     <label for="pubmedID">Pubmed ID</label>
-    <input type="text" class="form-control" id="pubmedID" placeholder="18269575">
+    <input type="text" class="form-control" id="pubmedID" placeholder="18269575" name="pmid" value="{{request.form.pmid}}">
   </div>
-  <button type="submit" class="btn btn-default">Submit</button>
+  <button type="submit" class="btn btn-default" type="submit">Submit</button>
 </form>
-</div>
-
-
-<!-- Needs some space -->
-<div>
-<p>
-
-
-
-</p>
-</div>
+</div> 
 
 
 
@@ -40,7 +30,7 @@
   <!-- Tab panes -->
 	<div class="tab-content">
 
-		  <!-- Loop through cited article information like this-->
+		<!--  Loop through cited article information like this --> 
 		<div role="tabpanel" class="tab-pane fade" id="WebDev">
 		  	<p>Results for PMID: 18269575</p>
 		  	
@@ -48,8 +38,8 @@
 		  		<li>{{result}}</li>
 		  	{% endfor %}
 		 
-		</div>
-		  
+		</div> 
+
 
 		<!-- Cosine similarity scores-->
 		<div role="tabpanel" class="tab-pane fade" id="dan">
