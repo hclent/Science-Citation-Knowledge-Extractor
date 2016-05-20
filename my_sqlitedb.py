@@ -63,6 +63,29 @@ def graph_data():
 
 
 
+def del_and_update():
+	c.execute("SELECT * FROM stuffToPlot")
+	[print(row) for row in c.fetchall()]
+
+	# c.execute("UPDATE stuffToPlot SET value = 99 WHERE value =2") #update
+	# conn.commit() #save changes
+
+	# print("########## CHANGES #########")
+	# c.execute("SELECT * FROM stuffToPlot")
+	# [print(row) for row in c.fetchall()]
+
+	# c.execute("DELETE FROM stuffToPlot WHERE value = 99")
+	# conn.commit()
+
+	# c.execute("SELECT * FROM stuffToPlot")
+	# [print(row) for row in c.fetchall()]
+
+	c.execute("SELECT * FROM stuffToPlot WHERE value = 8")
+	[print(row) for row in c.fetchall()]
+	data = [print(row) for row in c.fetchall()]
+	print(len(data))
+
+
 
 # create_table()
 # data_entry()
@@ -77,6 +100,8 @@ def graph_data():
 
 
 #graph_data()
+
+del_and_update()
 
 
 
