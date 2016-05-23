@@ -18,10 +18,6 @@ def pmc_spider(max_pages, pmid): #Main spider
 	authors_list = []
 
 	while start <= max_pages:
-		#print ("* Beginning crawl ....")
-		#print ("* Crawling page "+ str(start) + " ...")
-		#print ("* Retrieving information ...")
-
 		url = 'http://www.ncbi.nlm.nih.gov/pmc/articles/pmid/'+str(pmid)+'/citedby/?page='+str(start)
 
 		req = requests.get(url)

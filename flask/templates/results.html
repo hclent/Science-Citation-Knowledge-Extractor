@@ -33,10 +33,10 @@
 
 		<!--  Loop through cited article information like this --> 
 		<div role="tabpanel" class="tab-pane fade" id="WebDev">
-		  	<p>Results for PMID: 18269575 </p> 
+		  	<p>Results for PMID: the id you entered</p> 
 		  	
-		  	<!--replace with "pickle_results" to print Pickle obj or "main_info" for results of MainCrawler--> 
-		  	{% for result in pickle_results %}
+		  	<!--results of MainCrawler--> 
+		  	{% for result in main_info %}
 		  		<li>{{result}}</li>
 		  	{% endfor %}
 		 

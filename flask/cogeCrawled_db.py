@@ -6,6 +6,8 @@ import random
 #Basic SQLITE3 structure
 #Database in webdev-biotool for managing pmids and scraped webpages
 
+conn = sqlite3.connect(database='pmids_info.db') #connect to database
+c = conn.cursor() #cursor
 
 #Define connection and cursor
 def connection():
@@ -21,7 +23,7 @@ def create_table():
 		datestamp TEXT, 
 		pmids TEXT, 
 		title TEXT,
-		author TEXT
+		author TEXT,
 		url TEXT,
 		journal TEXT,
 		comments TEXT)''')
