@@ -6,7 +6,7 @@ BASICS
 * This will be the web interface for the bioNLP lit tool
 * Built with Python3, Flask, and templates from getboostrap
 * In order to run this site you must first activate a virtualenv (". venv/source/activate" or "conda create") in the main directory
-* Once virtual enviornment is running in your terminal, pip install flask, nltk, bs4, lxml, and requests
+* Once virtual enviornment is running in your terminal, pip install flask, Flask-WTF, nltk, bs4, lxml, requests
 * Then from the flask directory run "python3 1run_site.py"
 * Open browser and go to "http://localhost:5000/cogecrawl" to see the site
 
@@ -23,4 +23,5 @@ ORGANIZATION
 
 TEMPLATES
 --------------------------------------
-See dashboard.html for main content (dashboard.html is a continuation of header.html)
+See dashboard.html for main page content and some example results (dashboard.html is a continuation of header.html)
+See results.html for the results of the user queried pubmedID. Currently only printing the titles, authors, and urls of citations
