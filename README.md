@@ -8,7 +8,8 @@ BASICS
 * In order to run this site you must first activate a virtualenv (". venv/source/activate" or "conda create") in the main directory
 * Once virtual enviornment is running in your terminal, pip install flask, Flask-WTF, nltk, bs4, lxml, requests
 * Then from the flask directory run "python3 1run_site.py"
-* Open browser and go to "http://localhost:5000/cogecrawl" to see the site
+* Open browser and go to "http://localhost:5000/cogecrawl" to see the site and some example data
+* Enter a PubmedID into the textbook and hit "Submit", then click "Information" to see the corresponding data for that PubmedID
 
 ORGANIZATION
 --------------------------------------
