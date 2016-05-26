@@ -24,9 +24,9 @@ def create_table():
 		pmids TEXT, 
 		title TEXT,
 		author TEXT,
-		url TEXT,
 		journal TEXT,
 		comments TEXT)''')
+#missing urls column because i forgot a column like a fool!!!!! 
 
 
 # def data_entry():
@@ -61,11 +61,19 @@ def print_table():
 
 ##################################################################################      
 # pmids_info.db as of May 23-2016
-# entries 4, 5, and 6 entered from the website :) 
+# entries 4, and on from website :') 
 
-# (1, '05-23-2016', '1234', 'test title', 'test author', 'testurl.com', 'nature')
-# (2, '05-25-2016', '4321', 'test2', 'author2', 'test2.com', 'PLOS')
-# (3, '05-25-2016', '43212', 'test2', 'author2', 'test2.com', 'PLOS')
-# (4, None, 'zzzz', None, None, None, None)
-# (5, None, 'wwwww', None, None, None, None)
-# (6, None, 'alksjrlkjew', None, None, None, None)
+# post_id     datestamp   pmids       title       author       journal      comments  
+# ----------  ----------  ----------  ----------  -----------  -----------  ----------
+# 1           05-23-2016  1234        test title  test author  testurl.com  nature    
+# 2           05-25-2016  4321        test2       author2      test2.com    PLOS      
+# 3           05-25-2016  43212       test2       author2      test2.com    PLOS      
+# 4                       zzzz                                                        
+# 5                       wwwww                                                       
+# 6                       alksjrlkje                                                  
+# 7                       abcdefg                                                     
+# 8                       2249436                                                     
+# 9                       1643513                                                     
+# 10                      8353730                                                     
+# 11                      17045299                                                    
+# 12                      19194716  

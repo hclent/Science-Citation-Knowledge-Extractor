@@ -70,18 +70,18 @@ def normalizeNER(latinShort, latinLong, runningNErlist):  #Right now this is ONE
 			if w2 == x2:
 				#if the second word in each latin name are the same
 				#transfer counts so that we have one value per organism
-				print("MATCHES:")
-				print(str(short_names) + " === " + str(long_names)) ##s. italica === setaria italica
+				#print("MATCHES:")
+				#print(str(short_names) + " === " + str(long_names)) ##s. italica === setaria italica
 				dictLatin[long_names] += runningDict[short_names] #update dict #add short name count to long name count
 				#Nothing's been changed in runningDict....
 				#
 			#else:
 				# if there is only the short name for something, we need to keep it #add it to dict
 				#dictLatin[short_names] += runningDict[short_names] #PROBLEM: THIS IS WONKY
-	print("NORMALIZED DICT")
-	print(dictLatin)
-	print("LENGTH OF DICT: ")
-	print(len(dictLatin))
+	#print("NORMALIZED DICT")
+	#print(dictLatin)
+	#print("LENGTH OF DICT: ")
+	#print(len(dictLatin))
 
 
 #
@@ -141,14 +141,14 @@ def buildDict(list):
 #
 
 ######## LOADING AND PRE PROCESSING TEXT ##########
-prefix = "/PycharmProjects/untitled/Crawling/"
+#prefix = "/PycharmProjects/untitled/Crawling/"
 
 def loadDocuments(filenamePrefix, maxNum):
-	print(" * load messages: Started .... ")
+	#print(" * load messages: Started .... ")
 	for i in range(1, maxNum+1):
-		print("MESSAGE: " +str(i))
+		#print("MESSAGE: " +str(i))
 
-		filename = filenamePrefix + str(i) + ".txt"
+		filename = filenamePrefix +'_'+ str(i) + ".txt"
 		fcorpus = ngrams.readMe(filename) #Function from Ngrams.py
 		untagged_corpus, tagged_corpus = ngrams.formatCorpus(fcorpus) #No stop words
 
@@ -160,9 +160,8 @@ def loadDocuments(filenamePrefix, maxNum):
 		bigrams, pos_bigrams = ngrams.buildDict(2, bigramLines)
 		bigrams_dict = Counter(bigrams)
 
-		print(" * load messages: complete !!!")
-		print(" * Organism Named Entity Recognition: Started .... ")
-
+		#print(" * load messages: complete !!!")
+		#print(" * Organism Named Entity Recognition: Started .... ")
 
 		latin_short = matchOrganisms1(bigrams_dict)
 		print("LATIN SHORT:")
@@ -178,13 +177,14 @@ def loadDocuments(filenamePrefix, maxNum):
 		print("WORDNET: ")
 		print(wordnet_names)
 
-		print(" * Organism NER: complete!!!" + "\n")
+		#print(" * Organism NER: complete!!!" + "\n")
 
 	#nerDict = Counter(buildDict(named_entities))
 	#print(len(nerDict))
 	#return nerDict
+	return latin_short, latin_long, wordnet_names
 
-loadDocuments(prefix, 10)
+#loadDocuments(prefix, 10)
 
 #
 #

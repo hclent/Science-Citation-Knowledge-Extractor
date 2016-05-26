@@ -24,6 +24,11 @@
   <!-- Define Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
     <li role="presentation"><a href="#WebDev" aria-controls="WebDev" role="tab" data-toggle="tab">Information</a></li>
+    
+    <li role="presentation"><a href="#journals" aria-controls="journals" role="tab" data-toggle="tab">Journals</a></li>
+    
+    <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NER</a></li>
+    
     <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Cosine Analysis</a></li>
   </ul>
 
@@ -33,9 +38,9 @@
 
 		<!--  Loop through cited article information like this --> 
 		<div role="tabpanel" class="tab-pane fade" id="WebDev">
-		  	<p>Results for PMID: the id you entered</p> 
+		  	<p>Who has cited you?</p> 
 		  	
-		  	<!--results of MainCrawler--> 
+		  	<!--results of MainCrawler.py pmc_spider--> 
 		  	{% for result in main_info %}
 		  		<li>{{result}}</li>
 		  	{% endfor %}
@@ -43,9 +48,26 @@
 		</div> 
 
 
+		<!--  Put journals here blegh --> 
+		<div role="tabpanel" class="tab-pane fade" id="journals">
+		  	<p>Where are they published?</p> 
+		</div> 
+
+
+		<!--  Put NERs here blegh --> 
+		<div role="tabpanel" class="tab-pane fade" id="ner">
+		  	<p>What organisms are they working with?</p> 
+		  	{% for result in ner_results %}
+		  		<li>{{result}}</li>
+		  	{% endfor %}
+		</div> 
+
+
 		<!-- Cosine similarity scores-->
 		<div role="tabpanel" class="tab-pane fade" id="dan">
 		  	<ul>
+		  		<p>Text2Vec example</p>
+		  		<p>----------------</p>
 		  		<p>vec 1 = science article 1</p>
 		  		<p>vec 2 = science article 2</p>
 		  		<p>vec 3 = movie review</p>

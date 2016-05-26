@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import re
 import sys
 import pickle
+import socket
+import socks
 
 ## Run in Python3 for handling unicode!
 ## Input: PMC 'cited by' page
@@ -83,22 +85,23 @@ titles_pickle = pickle.load(pickle_in3)
 #########################################
 
 
+#Now takes pmid also for naming
 
-def get_text(list_paper_urls): #Get publication text
+def get_text(list_paper_urls, pmid): #Get publication text
 	print ("* Retrieving papers .... this will take a while .... ")
 
 	i = 1
 	academic_journals = []
 
 	for paper_url in list_paper_urls:
-		print("* accessing paper from......")
-		print(paper_url)
+		#print("* accessing paper from......")
+		#print(paper_url)
 		main_text = []
 
-		print("* getting requests .... ")
+		#print("* getting requests .... ")
 		req = requests.get(paper_url)
 
-		print("* request obtained .... ")
+		#print("* request obtained .... ")
 		plain_text = req.text
 		soup = BeautifulSoup(plain_text, 'lxml')
 
@@ -115,10 +118,10 @@ def get_text(list_paper_urls): #Get publication text
 			document = words.get_text()
 			main_text.append(document)
 		main_text = ' '.join(main_text)
-		#print(main_text)
+		print(main_text)
 
 		#print to .txt file
-		#sys.stdout = open(str(i)+'.txt', "w")   ## change "w" to "r+" if file exists
+		#sys.stdout = open(str(pmid)+'_'+str(i)+'.txt', "w")   ## change "w" to "r+" if file exists
 		#print (main_text)
 
 		i += 1
