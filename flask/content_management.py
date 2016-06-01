@@ -1,17 +1,5 @@
 from cosineClassify import loadMessages
 from cosineClassify import cosineSimilarityScore
-from MainCrawler import main_info
-from MainCrawler import main_pickle_info
-from MainCrawler import pmc_spider 
-
-
-##### Get results of MainCrawler.py for dashboard.html ##############
-def runCrawler1():
-	return main_info
-
-def runCrawler2():
-	return main_pickle_info
-
 
 
 ############# COSINE STUFF to print in dashboard.html ##############

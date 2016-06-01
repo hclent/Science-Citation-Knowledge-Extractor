@@ -10,6 +10,8 @@ import socks
 ## Input: PMC 'cited by' page
 ## Output: Retrieves all article titles, authors, url, journal of publication, and document text
 
+## May 31, 2016: This code has become outdated and is no longer used to do information retrieval
+## May 31, 2016: See Entrez_IR.py for new information retrieval system
 
 def pmc_spider(max_pages, pmid): #Main spider
 	start = 1
@@ -45,47 +47,8 @@ def pmc_spider(max_pages, pmid): #Main spider
 
 
 titles_list, url_list, authors_list = pmc_spider(1, '18269575') #look at first n pages
-main_info = list(zip(titles_list, authors_list))
-#url_count = (len(url_list))
-
-#Finding and Comparing Syntenic Regions among Arabidopsis
-#pmid = 18952863
-
-#How to usefully compare homologous plant genes and chromosomes as DNA sequences.
-#pmid = 18269575
 
 
-####### PICKLE OBJECTS ############
-
-# pickle URL list
-#with open('maincrawler_urls_list.pickle', 'wb') as f:
-#	pickle.dump(url_list, f) #
-
-
-# pickle authors list
-#with open('maincrawler_authors.pickle', 'wb') as f:
-#	pickle.dump(authors_list, f)
-
-
-# pickle titles 
-#with open('maincrawler_titles.pickle', 'wb') as f:
-#	pickle.dump(titles_list, f)
-
-
-pickle_in = open('maincrawler_urls_list.pickle', 'rb')
-url_pickle = pickle.load(pickle_in)
-
-
-pickle_in2 = open('maincrawler_authors.pickle', 'rb')
-authors_pickle = pickle.load(pickle_in2)
-
-
-pickle_in3 = open('maincrawler_titles.pickle', 'rb')
-titles_pickle = pickle.load(pickle_in3)
-#########################################
-
-
-#Now takes pmid also for naming
 
 def get_text(list_paper_urls, pmid): #Get publication text
 	print ("* Retrieving papers .... this will take a while .... ")
@@ -128,23 +91,10 @@ def get_text(list_paper_urls, pmid): #Get publication text
 	return academic_journals
 
 
-#journals_list = get_text(url_pickle)
-
-
-####### PICKLE OBJECTS ############
-#with open('maincrawler_journals.pickle', 'wb') as f:
-#	pickle.dump(journals_list, f)
-
-pickle_in4 = open('maincrawler_journals.pickle', 'rb')
-journals_pickle = pickle.load(pickle_in4)
-####################################
-
-main_pickle_info = list(zip(titles_pickle, authors_pickle, journals_pickle, url_pickle))
 
 #print(len(url_count))
 #print(len(main_info)) 
-#if these numbers don't match, the bot has been blocked on some pages. 
-#rerun with proxy
+#if these numbers don't match, the bot has been blocked on some pages, rerun with proxies
 
 
 ############ GRAVEYARD #############
