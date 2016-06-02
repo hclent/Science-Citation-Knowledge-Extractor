@@ -29,10 +29,12 @@ def readMe(file):
 	fcorpus = fcorpus.read()
 	return fcorpus
 
-fcorpus = readMe("/Users/hclent/PycharmProjects/untitled/Crawling/5.txt")
+#fcorpus = readMe("/Users/hclent/Desktop/webdev-biotool/flask/18088965_1.txt")
+#print(fcorpus)
 
 
 def formatCorpus(fcorpus): #as string
+	#fcorpus = readMe(filehandle)
 	fcorpus = fcorpus.replace("_", "underscore") #underscores will make problems for buildDict and are unimportant for my NER
 	#make untagged corpus
 	untagged_corpus = fcorpus.lower()
@@ -62,22 +64,23 @@ def formatCorpus(fcorpus): #as string
 
 	return untagged_corpus, tag_corpus
 
-untagged_corpus, tag_corpus = formatCorpus(fcorpus)
-
 
 # Word Boundaries
-bigramLines = []
-for oldLine in tag_corpus: #for the lines in the unigram set
-    newLines = "#_# " + oldLine # add #_# to the beginning for bigrams
-    bigramLines.append(newLines)
+# def formBigrams(tag_corpus):
+# 	bigramLines = []
+# 	for oldLine in tag_corpus: #for the lines in the unigram set
+# 	    newLines = "#_# " + oldLine # add #_# to the beginning for bigrams
+# 	    bigramLines.append(newLines)
+# 	return bigramLines
 
 
-
-# Word Boundaries
-trigramLines = []
-for oldLine in tag_corpus:
-    newLines = "#_# #_# " + oldLine # #_# #_# word boundries for trigrams
-    trigramLines.append(newLines)
+# # Word Boundaries
+# def formTrigrams(tag_corpus):
+# 	trigramLines = []
+# 	for oldLine in tag_corpus:
+# 	    newLines = "#_# #_# " + oldLine # #_# #_# word boundries for trigrams
+# 	    trigramLines.append(newLines)
+# 	return trigramLines
 
 
 #Function for building ngram dictionaries, key:ngram, value:freq

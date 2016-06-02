@@ -2,50 +2,45 @@ from flask import Flask, render_template, request, flash, url_for, redirect, ses
 from flask_wtf import Form
 from wtforms import StringField, TextField, SelectField
 import sqlite3, gc, time, datetime
-from content_management import runCosines
 from cogeCrawled_db import connection
 from Entrez_IR import getMainInfo, getCitationIDs, getCitedInfo, parsePMC, getContentPMC
-
+from organismNER import loadDocuments
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
 #flask, Flask-WTF, nltk, bs4, lxml, requests, Bio
 
 
-
 app = Flask(__name__)
 
-#Content from content_management.py
-cosines = runCosines() 
+
+# BUGS:
+# Won't run code with only one citation
+# Sometimes: "NCBI C++ Exception: Error: TXCLIENT(CException::eUnknown) ... Read failed: EOF (the other side has unexpectedly closed connection ...
+	# 6-1-2016: 5 of these errors
 
 
-
-#Must return TWO things or else this error: #too many values to unpack (expected 2)
-#Need to put everything in lists for output
-
-#pmid "2342342" gave the error "list index out of range"
-
+#Should switch these to content manager.... 
 def run_IR_in_db(user_input):
 	self_title, self_authors, self_journal = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_urls = getCitedInfo(pmc_ids)
-	main_info = list(self_title)
-	return main_info, target_title
+	main_info = list(zip(target_title, target_authors, target_urls))
+	return target_title, target_journals
 
 
-def run_IR_not_db(user_input):
+def run_IR_not_db(user_input): #Not in db? Scrapes documents 
 	self_title, self_authors, self_journal = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_urls = getCitedInfo(pmc_ids)
-	main_info = list(self_title)
+	main_info = list(zip(target_title, target_authors, target_urls))
+	#Get XML 
 	getContentPMC(user_input, pmc_ids)
-	return main_info, target_title
+	return main_info, target_journals
 
 
-
-# def run_organismNER(user_prefix):
-# 	latin_short, latin_long, wordnet_names = loadDocuments(user_prefix, 5)
-# 	ner_info = list(zip(latin_short, latin_long, wordnet_names))
-# 	return ner_info
+def run_organismNER(user_prefix, number):
+	ners = loadDocuments(user_prefix, number)
+	return ners
 
 
 #Main page
@@ -61,9 +56,7 @@ def cogecrawl():
 	except Exception as e:
 		#flash(e)
 		return render_template("dashboard.html", error=error) 
-	return render_template('dashboard.html', cosines = cosines) #I should do the example page here :')
-
-
+	return render_template('dashboard.html') #I should do the example page here :')
 
 
 
@@ -102,7 +95,13 @@ def trying():
 			if check1 is None: 
 				flash('congrats you entered a new pubmedid lol')
 				#Using user_input for IR
+				load_mess1 = "* Retrieving publications...."
 				main_info, target_journals = run_IR_not_db(user_input)
+				num = len(target_journals) #how many docs there are
+				load_mess2 ="* Running NER ... "
+				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
+				ners = run_organismNER(user_prefix, num) #need to loop through total number of docs exactly
+				load_mess3 = "* Almost done.... "
 
 				#add to sqlite3 database entry
 				unix = time.time()
@@ -113,14 +112,15 @@ def trying():
 				flash("Writing PubmedID to database: successful")
 
 
-			#if the entry IS in the db, no need to retireve text 
+			#if the entry IS in the db, no need to retireve text from Entrez, just grab  
 			if check1 is not None:
 				flash("alreay exists in database :) ")
 				#Do 
 				main_info, target_journals = run_IR_in_db(user_input)
-				#user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
-				#ner_results = run_organismNER(user_prefix)
-				#print(ner_results)
+				num = len(target_journals) #how many docs there are
+				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
+				ners = run_organismNER(user_prefix, num)
+
 
 
 			#End cursor and connection to database
@@ -134,8 +134,8 @@ def trying():
 			session['engaged'] = 'engaged' 
  
 
-		return render_template('results.html', form=form, main_info = main_info, cosines=cosines)
-	
+		return render_template('results.html', form=form, main_info = main_info, ners=ners, target_journals = target_journals,
+								 load_mess1=load_mess1, load_mess2=load_mess2, load_mess3=load_mess3)
 	except Exception as e:
 		return(str(e))
 

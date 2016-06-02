@@ -14,6 +14,7 @@ from nltk.stem import WordNetLemmatizer
 
 #Input: document(s)
 #Output: NER dict for each doc
+#Notes: Normalization is unfinished
 
 
 ############ Feature Based Organism Named Entity Recognition ##############
@@ -59,6 +60,7 @@ def matchOrganisms2(bigrams):
 #
 
 ### Matches short latin names to long latin names for normalization
+### STILL IN CONSTRUCTION ####
 def normalizeNER(latinShort, latinLong, runningNErlist):  #Right now this is ONE dictionary per document
 	runningDict = buildDict(runningNErlist)
 	dictLatin = buildDict(latinLong)
@@ -144,13 +146,16 @@ def buildDict(list):
 #prefix = "/PycharmProjects/untitled/Crawling/"
 
 def loadDocuments(filenamePrefix, maxNum):
-	#print(" * load messages: Started .... ")
-	for i in range(1, maxNum+1):
-		#print("MESSAGE: " +str(i))
+	# print(" * load messages: Started .... ")
+
+	ner_dev = []
+	for i in range(1, maxNum):
+		print("MESSAGE: " +str(i))
 
 		filename = filenamePrefix +'_'+ str(i) + ".txt"
 		fcorpus = ngrams.readMe(filename) #Function from Ngrams.py
 		untagged_corpus, tagged_corpus = ngrams.formatCorpus(fcorpus) #No stop words
+		# print("got the corpora")
 
 
 		bigramLines = [] #No stop words
@@ -160,34 +165,28 @@ def loadDocuments(filenamePrefix, maxNum):
 		bigrams, pos_bigrams = ngrams.buildDict(2, bigramLines)
 		bigrams_dict = Counter(bigrams)
 
-		#print(" * load messages: complete !!!")
-		#print(" * Organism Named Entity Recognition: Started .... ")
-
+		#Retrieve NEs and append to list
 		latin_short = matchOrganisms1(bigrams_dict)
-		print("LATIN SHORT:")
-		print(latin_short)
-
+		for s in latin_short:
+			ner_dev.append(s)
 		latin_long = matchOrganisms2(bigrams_dict)
-		print("LATIN LONG:")
-		print(latin_long)
-
-		normalizeNER(latin_short, latin_long, named_entities)
-
+		for l in latin_long:
+			ner_dev.append(l)
 		wordnet_names = wordNetNER(untagged_corpus)
-		print("WORDNET: ")
-		print(wordnet_names)
+		for w in wordnet_names:
+			ner_dev.append(w)
 
-		#print(" * Organism NER: complete!!!" + "\n")
+		# nerDict = Counter(buildDict(named_entities))
+		# print(len(nerDict))
+		# return nerDict
+		i += 1
 
-	#nerDict = Counter(buildDict(named_entities))
-	#print(len(nerDict))
-	#return nerDict
-	return latin_short, latin_long, wordnet_names
+	ner_info = (list(unique_everseen(ner_dev)))
+	return ner_info
 
-#loadDocuments(prefix, 10)
 
-#
-#
+
+
 
 ######## NOTES #####
 # senses = (wn.synsets('plant', pos="n"))
