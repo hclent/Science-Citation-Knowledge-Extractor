@@ -95,13 +95,13 @@ def trying():
 			if check1 is None: 
 				flash('congrats you entered a new pubmedid lol')
 				#Using user_input for IR
-				load_mess1 = "* Retrieving publications...."
+
 				main_info, target_journals = run_IR_not_db(user_input)
 				num = len(target_journals) #how many docs there are
-				load_mess2 ="* Running NER ... "
+
 				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
 				ners = run_organismNER(user_prefix, num) #need to loop through total number of docs exactly
-				load_mess3 = "* Almost done.... "
+
 
 				#add to sqlite3 database entry
 				unix = time.time()
@@ -115,7 +115,7 @@ def trying():
 			#if the entry IS in the db, no need to retireve text from Entrez, just grab  
 			if check1 is not None:
 				flash("alreay exists in database :) ")
-				#Do 
+				#Do  
 				main_info, target_journals = run_IR_in_db(user_input)
 				num = len(target_journals) #how many docs there are
 				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
@@ -134,8 +134,7 @@ def trying():
 			session['engaged'] = 'engaged' 
  
 
-		return render_template('results.html', form=form, main_info = main_info, ners=ners, target_journals = target_journals,
-								 load_mess1=load_mess1, load_mess2=load_mess2, load_mess3=load_mess3)
+		return render_template('results.html', form=form, main_info = main_info, ners=ners, target_journals = target_journals)
 	except Exception as e:
 		return(str(e))
 
