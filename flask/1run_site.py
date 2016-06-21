@@ -43,6 +43,11 @@ def run_organismNER(user_prefix, number):
 	return ners
 
 
+@app.route('/vis/')
+def visualization():
+	return render_template('index.html') 
+
+
 #Main page
 #User inputs a pubmed id and is then redirected to /results
 #Prints sample results from coge publication
