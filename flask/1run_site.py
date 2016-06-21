@@ -48,6 +48,10 @@ def visualization():
 	return render_template('index.html') 
 
 
+@app.route('/visdev/')
+def visDEV():
+	return render_template('index2.html') 
+
 #Main page
 #User inputs a pubmed id and is then redirected to /results
 #Prints sample results from coge publication

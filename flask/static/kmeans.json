@@ -1,0 +1,107 @@
+{
+"name": "flare",
+"children": [
+
+	{"name": "cluster0",
+	"children": [
+		{"name": "PMC3474763", "size": 7074},
+		{"name": "PMC3958358", "size": 7074},
+		{"name": "PMC3817805", "size": 7074},
+		{"name": "PMC3968010", "size": 7074},
+		{"name": "PMC4239561", "size": 7074},
+		{"name": "PMC3326336", "size": 7074},
+		{"name": "PMC4832253", "size": 7074},
+		{"name": "PMC4034038", "size": 7074},
+		{"name": "PMC3481203", "size": 7074},
+		{"name": "PMC4867222", "size": 7074},
+		]
+	},
+
+	{"name": "cluster1",
+	"children":[
+		{"name": "PMC4013592", "size": 7074},
+		{"name": "PMC3219971", "size": 7074},
+		{"name": "PMC3866978", "size": 7074},
+		{"name": "PMC3851865", "size": 7074},
+		{"name": "PMC2893956", "size": 7074},
+		{"name": "PMC3152334", "size": 7074},
+		{"name": "PMC4038794", "size": 7074},
+		{"name": "PMC4457800", "size": 7074},
+		{"name": "PMC4119204", "size": 7074},
+		{"name": "PMC4811886", "size": 7074},
+		{"name": "PMC3095355", "size": 7074},
+		{"name": "PMC3203428", "size": 7074},
+		{"name": "PMC4548842", "size": 7074},
+		{"name": "PMC4851370", "size": 7074},
+		{"name": "PMC4732000", "size": 7074},
+		{"name": "PMC4783356", "size": 7074},
+		{"name": "PMC4726258", "size": 7074},
+		{"name": "PMC4646352", "size": 7074},
+		{"name": "PMC4112214", "size": 7074},
+		{"name": "PMC3355756", "size": 7074},
+		{"name": "PMC3358895", "size": 7074},
+		{"name": "PMC4315028", "size": 7074},
+		{"name": "PMC3967086", "size": 7074},
+		{"name": "PMC3049755", "size": 7074},
+		{"name": "PMC3576282", "size": 7074},
+		{"name": "PMC3590777", "size": 7074},
+		{"name": "PMC3389459", "size": 7074},
+		{"name": "PMC3408644", "size": 7074},
+		{"name": "PMC3439424", "size": 7074},
+		{"name": "PMC4464145", "size": 7074},
+		{"name": "PMC3852042", "size": 7074},
+		{"name": "PMC3876103", "size": 7074},
+		{"name": "PMC2817432", "size": 7074},
+		{"name": "PMC4404975", "size": 7074},
+		{"name": "PMC3053395", "size": 7074},
+		{"name": "PMC3406906", "size": 7074},
+		{"name": "PMC4397884", "size": 7074},
+		{"name": "PMC4240082", "size": 7074},
+		{"name": "PMC4383980", "size": 7074},
+		{"name": "PMC4071528", "size": 7074},
+		{"name": "PMC3970191", "size": 7074},
+		{"name": "PMC3240960", "size": 7074},
+		{"name": "PMC2853686", "size": 7074},
+		{"name": "PMC4295026", "size": 7074},
+		{"name": "PMC3531202", "size": 7074},
+		{"name": "PMC3751884", "size": 7074},
+		{"name": "PMC3271752", "size": 7074},
+		{"name": "PMC3850447", "size": 7074},
+		{"name": "PMC4239027", "size": 7074},
+		{"name": "PMC4783527", "size": 7074},
+		{"name": "PMC2886086", "size": 7074},
+		{"name": "PMC4145113", "size": 7074},
+		{"name": "PMC4109783", "size": 7074},
+		{"name": "PMC4308911", "size": 7074},
+		{"name": "PMC4679983", "size": 7074},
+		{"name": "PMC4679983", "size": 7074},
+		{"name": "PMC4256881", "size": 7074},
+		{"name": "PMC2924827", "size": 7074},
+		{"name": "PMC3280228", "size": 7074},
+		{"name": "PMC3383449", "size": 7074},
+		{"name": "PMC4895484", "size": 7074},
+		{"name": "PMC4810023", "size": 7074},
+		{"name": "PMC3269863", "size": 7074},
+		{"name": "PMC4289383", "size": 7074},
+		{"name": "PMC3430549", "size": 7074},
+		{"name": "PMC3961402", "size": 7074},
+		{"name": "PMC3491363", "size": 7074},
+		{"name": "PMC3436819", "size": 7074},
+			]
+	},
+
+	{"name": "cluster2",
+	"children": [
+	{"name": "PMC4795695", "size": 7074}
+	{"name": "PMC4384038", "size": 7074}
+	{"name": "PMC4603330", "size": 7074}
+	{"name": "PMC3355796", "size": 7074}
+	{"name": "PMC3430884", "size": 7074}
+	 ]
+	}
+
+]
+}
+
+
+
