@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request, flash, url_for, redirect, session, g
 from flask_wtf import Form
 from wtforms import StringField, TextField, SelectField
-import sqlite3, gc, time, datetime
+import sqlite3, gc, time, datetime, pickle
 from cogeCrawled_db import connection
 from Entrez_IR import getMainInfo, getCitationIDs, getCitedInfo, parsePMC, getContentPMC
 from organismNER import loadDocuments
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
-#flask, Flask-WTF, nltk, bs4, lxml, requests, Bio
+#flask, Flask-WTF, nltk, bs4, lxml, requests, Biopython
 
 
 app = Flask(__name__)
@@ -21,15 +21,15 @@ app = Flask(__name__)
 
 #Should switch these to content manager.... 
 def run_IR_in_db(user_input):
-	self_title, self_authors, self_journal = getMainInfo(user_input)
+	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_urls = getCitedInfo(pmc_ids)
 	main_info = list(zip(target_title, target_authors, target_urls))
-	return target_title, target_journals
+	return main_info, target_journals
 
 
 def run_IR_not_db(user_input): #Not in db? Scrapes documents 
-	self_title, self_authors, self_journal = getMainInfo(user_input)
+	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_urls = getCitedInfo(pmc_ids)
 	main_info = list(zip(target_title, target_authors, target_urls))
@@ -38,19 +38,10 @@ def run_IR_not_db(user_input): #Not in db? Scrapes documents
 	return main_info, target_journals
 
 
-def run_organismNER(user_prefix, number):
-	ners = loadDocuments(user_prefix, number)
-	return ners
 
-
-@app.route('/vis/')
-def visualization():
-	return render_template('index.html') 
-
-
-@app.route('/visdev/')
+@app.route('/visdev/') #this is where I'm experimenting with data visualization
 def visDEV():
-	return render_template('index2.html') 
+	return render_template('vis.html') 
 
 #Main page
 #User inputs a pubmed id and is then redirected to /results
@@ -58,14 +49,18 @@ def visDEV():
 @app.route('/cogecrawl/', methods=["GET", "POST"])
 def cogecrawl():
 	error = None
+	with open('p18952863.pickle', 'rb')as f:
+		main_info = pickle.load(f)
+	journals = ['BMC Genomics', 'Molecular Genetics and Genomics', 'Nature genetics', 'PLoS ONE', 'Frontiers in Plant Science', 'Frontiers in Plant Science', 'Frontiers in Genetics', 'PLoS ONE', 'BioMed Research International', 'Journal of Experimental Botany', 'Frontiers in Plant Science', 'Scientific Reports', 'Frontiers in Plant Science', 'PLoS ONE', 'BMC Genomics', 'GigaScience', 'Frontiers in Plant Science', 'PLoS ONE', 'Frontiers in Plant Science', 'BMC Evolutionary Biology', 'Nucleic Acids Research', 'Nucleic Acids Research', 'Frontiers in Plant Science', 'BMC Plant Biology', 'Plant Molecular Biology Reporter / Ispmb', 'BMC Genomics', 'Plant Physiology', 'BMC Genomics', 'BMC Genomics', 'The Plant journal : for cell and molecular biology', 'The Plant Cell', 'BMC Genomics', 'BMC Genomics', 'GigaScience', 'PLoS Genetics', 'Philosophical Transactions of the Royal Society B: Biological Sciences', 'Molecular Biology and Evolution', 'Frontiers in Plant Science', 'International Journal of Molecular Sciences', 'Scientific Reports', 'PLoS ONE', 'Journal of Experimental Botany', 'PLoS ONE', 'PLoS ONE', 'International Journal of Molecular Sciences', 'BMC Genetics', 'BMC Bioinformatics', 'BMC Bioinformatics', 'BMC Evolutionary Biology', 'BMC Genomics', 'BMC Genomics', 'Genome Biology and Evolution', 'BMC Genomics', 'Nucleic Acids Research', 'Genome Biology', 'Journal of Experimental Botany', 'PLoS ONE', 'PLoS ONE', 'Bioinformatics', 'Frontiers in Plant Science', 'BMC Bioinformatics', 'Frontiers in Plant Science', 'The Plant Cell', 'BMC Bioinformatics', 'Mobile Genetic Elements', 'Proceedings of the National Academy of Sciences of the United States of America', 'Frontiers in Plant Science', 'Frontiers in plant science', 'Nucleic Acids Research', 'PLoS ONE', 'Plant Physiology', 'The Plant Cell', 'Genome Biology and Evolution', 'Genome Biology', 'The Plant Cell', 'Nucleic Acids Research', 'BMC Plant Biology', 'PLoS ONE', 'BMC Evolutionary Biology', 'BMC Plant Biology', 'Annals of Botany', 'PLoS Biology', 'Journal of Molecular Evolution', 'Bioinformatics', 'Genome Biology and Evolution', 'Genome Research']
 	try:
 		if request.method == "POST":
 			attempted_pmid = request.form['pmid']
 			#flash(attempted_pmid)
+
 	except Exception as e:
 		#flash(e)
 		return render_template("dashboard.html", error=error) 
-	return render_template('dashboard.html') #I should do the example page here :')
+	return render_template('dashboard.html', main_info=main_info, journals=journals) #I should do the example page here :')
 
 
 
@@ -109,7 +104,6 @@ def trying():
 				num = len(target_journals) #how many docs there are
 
 				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
-				ners = run_organismNER(user_prefix, num) #need to loop through total number of docs exactly
 
 
 				#add to sqlite3 database entry
@@ -128,7 +122,6 @@ def trying():
 				main_info, target_journals = run_IR_in_db(user_input)
 				num = len(target_journals) #how many docs there are
 				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
-				ners = run_organismNER(user_prefix, num)
 
 
 
@@ -143,7 +136,7 @@ def trying():
 			session['engaged'] = 'engaged' 
  
 
-		return render_template('results.html', form=form, main_info = main_info, ners=ners, target_journals = target_journals)
+		return render_template('results.html', form=form, main_info = main_info, target_journals = target_journals)
 	except Exception as e:
 		return(str(e))
 

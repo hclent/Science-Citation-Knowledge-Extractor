@@ -10,8 +10,8 @@
 <div>
 <form action="http://localhost:5000/results/" class="form-inline" method="post">
   <div class="form-group">
-    <label for="PubmedID">Pubmed ID</label>
-    <input type="text" class="form-control" id="PubmedID" placeholder="18269575" name="pmid" value="{{request.form.pmid}}">
+    <label for="PubmedID">Pubmed ID(s)</label>
+    <input type="text" class="form-control" id="PubmedID" placeholder="18952863" name="pmid" value="{{request.form.pmid}}">
   </div>
   <button type="submit" id= "myButton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Submit</button>
 </form>
@@ -57,7 +57,7 @@
     
     <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NER</a></li>
     
-    <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Cosine Analysis</a></li>
+    <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Data Vis</a></li>
   </ul>
 
 
@@ -66,9 +66,11 @@
 
 		<!--  Loop through cited article information like this --> 
 		<div role="tabpanel" class="tab-pane fade" id="WebDev">
-		  	<p>Results for PMID: 18269575 </p> 
-		  	
-		  	<!--Sample results will go here--> 
+		  	<p>Results for PMID: 18952863</p> 
+		  	{% for result in main_info %}
+		  	<!--Sample results will go here-->
+            	<li>{{result}}</li>
+		  	{% endfor %}
 		 
 		</div> 
 
@@ -76,6 +78,11 @@
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
 		  	<p>Where are they published?</p> 
+                {% for result in journals %}
+        <!--Sample results will go here-->
+              <li>{{result}}</li>
+        {% endfor %}
+     
 		</div> 
 
 
@@ -89,8 +96,7 @@
 		<!-- Cosine similarity scores-->
 		<div role="tabpanel" class="tab-pane fade" id="dan">
 		  	<ul>
-		  		<p>Blah</p>
-
+		  		<p>Datavis will go here lelele</p>
 		  	</ul>
 		</div>
 
