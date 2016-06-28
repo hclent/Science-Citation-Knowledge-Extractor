@@ -1,6 +1,8 @@
+from __future__ import print_function
 from Bio import Entrez
 import time, sys, pickle
 from time import sleep
+import datetime
 import xml.etree.ElementTree as ET
 
 
@@ -19,11 +21,13 @@ my_pmid = 18952863
 #Input: pmid
 #Output: basic info on pmid as lists
 def getMainInfo(pmid):
+	t0 = time.time()
 	handle = Entrez.esummary(db="pubmed", id=pmid)
 	record = Entrez.read(handle)
 	title = [record[0]["Title"]] #make a list
 	authors = [record[0]["AuthorList"]]
 	journal = [record[0]["FullJournalName"]]
+	print("self info: done in %0.3fs." % (time.time() - t0))
 	return list(zip(title, authors, journal))
 
 
@@ -32,9 +36,11 @@ def getMainInfo(pmid):
 #Input: Pmid
 #Output: list of pmcids of the articles citing you
 def getCitationIDs(pmid): #about the same speed as MainCrawl.py
+	t0 = time.time()
 	results = Entrez.read(Entrez.elink(dbfrom="pubmed", db="pmc", LinkName="pubmed_pmc_refs", from_uid=pmid))
 	pmc_ids = [link["Id"] for link in results[0]["LinkSetDb"][0]["Link"]]
 	return pmc_ids #list
+	print("get Citation PMCIDs: done in %0.3fs." % (time.time() - t0))
 	time.sleep(3)
 
 
@@ -42,6 +48,7 @@ def getCitationIDs(pmid): #about the same speed as MainCrawl.py
 #Input: Citing pmcids
 #Output: Basic info about these pmcids
 def getCitedInfo(pmcid_list): 
+	t0 = time.time()
 	pmc_titles = []
 	pmc_authors = []
 	pmc_journals = []
@@ -62,6 +69,10 @@ def getCitedInfo(pmcid_list):
 		time.sleep(3)
 		i += 1
 	#main_info = (list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_urls)))
+	print("get citations info: done in %0.3fs." % (time.time() - t0))
+	ts = time.time()
+	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+	print(st)
 	return pmc_titles, pmc_authors, pmc_journals, pmc_urls
 
 
@@ -101,13 +112,15 @@ def getContentPMC(pmid, pmcids_list):
 		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
 		xml_record = handle.read() #xml str
 		#print(xml_record)
-		print("* got xml record")
+		#print("* got xml record")
 		main_text = parsePMC(xml_record, pmid)
 		#print("* ready to print it")
 		sys.stdout = open(str(pmid)+'_'+str(i)+'.txt', "w")
 		print(main_text)
 		i += 1
 		time.sleep(3)
+	#print("got documents: done in %0.3fs." % (time.time() - t0))
+
 
 
 

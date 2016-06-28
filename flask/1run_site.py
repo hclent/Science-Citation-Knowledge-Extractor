@@ -33,8 +33,10 @@ def run_IR_not_db(user_input): #Not in db? Scrapes documents
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_urls = getCitedInfo(pmc_ids)
 	main_info = list(zip(target_title, target_authors, target_urls))
-	#Get XML 
+	#Get XML
+	t0 = time.time()
 	getContentPMC(user_input, pmc_ids)
+	print("wrote all to txt: done in %0.3fs." % (time.time() - t0))
 	return main_info, target_journals
 
 
@@ -99,10 +101,8 @@ def trying():
 			if check1 is None: 
 				flash('congrats you entered a new pubmedid lol')
 				#Using user_input for IR
-
 				main_info, target_journals = run_IR_not_db(user_input)
 				num = len(target_journals) #how many docs there are
-
 				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
 
 
