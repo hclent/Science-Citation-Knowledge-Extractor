@@ -28,14 +28,17 @@ var pack = d3.layout.pack()
     .size([diameter - 4, diameter - 4])
     .value(function(d) { return d.size; });
 
+
 var svg = d3.select("#dan").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
     .attr("transform", "translate(2,2)");
 
-d3.json("{{ url_for('static', filename='lsa1.json') }}", function(error, root) {
-  if (error) throw error;
+
+var myjson = {{ jsonDict|tojson }};
+
+root = JSON.parse( myjson );
 
   var node = svg.datum(root).selectAll(".node")
       .data(pack.nodes)
@@ -53,7 +56,7 @@ d3.json("{{ url_for('static', filename='lsa1.json') }}", function(error, root) {
       .attr("dy", ".3em")
       .style("text-anchor", "middle")
       .text(function(d) { return d.name.substring(0, d.r / 3); });
-});
+
 
 d3.select(self.frameElement).style("height", diameter + "px");
 

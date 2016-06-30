@@ -60,6 +60,9 @@
 		<!--  Put NERs here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="ner">
 		  	<p>What organisms are they working with?</p> 
+		  	{% for result in ners %}
+		  		<li>{{result}}</li>
+		  	{% endfor %}
 
 		</div> 
 
@@ -67,7 +70,7 @@
 		<!-- Cosine similarity scores-->
 		<div role="tabpanel" class="tab-pane fade" id="dan">
 		  	<ul>
-		  		<p>Blah</p>
+		  		{% include 'vis_results.html' %}
 		  	</ul>
 		</div>
 
