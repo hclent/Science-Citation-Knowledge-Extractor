@@ -3,6 +3,7 @@ from processors import *
 import re, nltk, json, pickle, time, datetime
 from json import JSONEncoder
 from nltk.corpus import stopwords
+import os.path
 
 # source activate py34 #my conda python enviornment for this
 
@@ -42,7 +43,9 @@ def preProcessing(text, pmid, doc_num, api):
   biodoc = api.bionlp.annotate(clean_text) #annotates to JSON
   print("* Successfully did the preprocessing !!!")
   print("* Dumping JSON ... ")
-  with open('json_'+(str(pmid))+'_'+str(doc_num)+'.json', 'w') as outfile:
+  save_path = '/Users/hclent/Desktop/webdev-biotool/flask/data/' #must save to static
+  completeName = os.path.join(save_path, ('doc_'+(str(pmid))+'_'+str(doc_num)+'.json'))
+  with open(completeName, 'w') as outfile:
     json.dump(biodoc, outfile, default=dumper, indent=2)
   print("* Dumped to JSON !!! ")
 
@@ -52,7 +55,7 @@ def preProcessing(text, pmid, doc_num, api):
 def loadDocuments(maxNum, pmid, api):
   print("* Loading dataset...")
   i = 1
-  filenamePrefix = "/Users/hclent/Desktop/webdev-biotool/flask/"+pmid+"_"
+  filenamePrefix = "/Users/hclent/Desktop/webdev-biotool/flask/data/"+pmid+"_"
   print(filenamePrefix)
   for i in range(1, int(maxNum)+1):
     print("* Loading document #" + str(i) + " ...")
@@ -87,7 +90,7 @@ def loadBioDoc(maxNum, pmid):
   data_samples = []
   nes_list = []
   i = 1
-  filenamePrefix = '/Users/hclent/Desktop/webdev-biotool/flask/json_'+(pmid)+'_'
+  filenamePrefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/doc_'+(pmid)+'_'
   for i in range(1, maxNum+1):
     filename = filenamePrefix + str(i) + ".json"
     with open(filename) as data_file:

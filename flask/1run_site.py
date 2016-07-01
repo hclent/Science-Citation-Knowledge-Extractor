@@ -62,7 +62,10 @@ def trying():
 			pmid = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
 			user_input = str(pmid)
 
-
+			#### PLACE HOLDERS #########################
+			#ners = ["blah1", "blah2"]
+			jsonDict = {}
+			############################################
 			#Connect to database
 			conn, c = connection()
 			#Check database for pmid
@@ -79,7 +82,7 @@ def trying():
 				#Using user_input for IR
 				main_info, target_journals = run_IR_not_db(user_input)
 				num = len(target_journals) #how many docs there are
-				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
+				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
 				#annotate
 				data_samples, ners = do_preprocessing(num, user_input, api)
 				#visualization output
@@ -100,7 +103,7 @@ def trying():
 				#Do  
 				main_info, target_journals = run_IR_in_db(user_input)
 				num = len(target_journals) #how many docs there are
-				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/'+user_input
+				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
 				#annotate
 				data_samples, ners = already_have_preproc(num, user_input)
 				#path to json for vis

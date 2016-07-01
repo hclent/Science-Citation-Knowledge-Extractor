@@ -2,7 +2,7 @@ from Entrez_IR import *
 from preprocess import *  #my Program
 from processors import * #pyProcessors
 from lsa1 import * #mine
-import os.path
+import os.path, time
 
 #If pmid (user input) in the database, just get main_info (authors, journals, ect)
 def run_IR_in_db(user_input):
@@ -29,15 +29,15 @@ def run_IR_not_db(user_input):
 #Update: for not in DB, need to make json, for in DB, no need to make JSON
 def do_preprocessing(num, user_input, api):
 	loadDocuments(num, user_input, api) #loads txt, pre-processes, and dumps to JSON
-	print("converted txt to Docs ...")
+	print(" * Converted txt to Docs ...")
 	data_samples, ner_list = loadBioDoc(num, user_input) #loads json
-	print("got info from Docs ...")
+	print(" * Got info from Docs ...")
 	return data_samples, ner_list
 
 
 def already_have_preproc(num, user_input):
 	data_samples, ner_list = loadBioDoc(num, user_input) #loads json
-	print("got info from Docs ...")
+	print("* Got info from Docs ...")
 	return data_samples, ner_list
 
 
@@ -45,9 +45,10 @@ def run_lsa1(user_input, data_samples, k):
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
 	print(jsonDict)
-	print("got json yay!")
-	save_path = '/Users/hclent/Desktop/webdev-biotool/flask/static/' #must save to static
-	completeName = os.path.join(save_path, ('vis_'+(str(user_input))+'.json'))
-	with open(completeName, 'w') as outfile:
-		json.dump(jsonDict, outfile, default=dumper, indent=2)
+	print(" * Generated json for LSA visualization !")
+	# Unsure whether or not I should save JSON :/ 
+	# save_path = '/Users/hclent/Desktop/webdev-biotool/flask/static/' #must save to static
+	# completeName = os.path.join(save_path, ('vis_'+(str(user_input))+'.json'))
+	# with open(completeName, 'w') as outfile:
+	# 	json.dump(jsonDict, outfile, default=dumper, indent=2)
 	return jsonDict

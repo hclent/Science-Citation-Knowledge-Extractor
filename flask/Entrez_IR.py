@@ -3,6 +3,7 @@ from Bio import Entrez
 import time, sys, pickle
 from time import sleep
 import datetime
+import os.path
 import xml.etree.ElementTree as ET
 
 
@@ -70,9 +71,6 @@ def getCitedInfo(pmcid_list):
 		i += 1
 	#main_info = (list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_urls)))
 	print("get citations info: done in %0.3fs." % (time.time() - t0))
-	ts = time.time()
-	st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-	print(st)
 	return pmc_titles, pmc_authors, pmc_journals, pmc_urls
 
 
@@ -107,6 +105,7 @@ def parsePMC(xml_string, pmid):
 #For each citing pmc_id, this function gest the xml, which is then parsed by parsePMC()
 #Output: Journal texts for each pmcid
 def getContentPMC(pmid, pmcids_list):
+	t0 = time.time()
 	i = 1
 	for citation in pmcids_list:
 		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
@@ -115,11 +114,13 @@ def getContentPMC(pmid, pmcids_list):
 		#print("* got xml record")
 		main_text = parsePMC(xml_record, pmid)
 		#print("* ready to print it")
-		sys.stdout = open(str(pmid)+'_'+str(i)+'.txt', "w")
+		save_path = '/Users/hclent/Desktop/webdev-biotool/flask/data/' #must save to data
+		completeName = os.path.join(save_path, (str(pmid)+'_'+str(i)+'.txt'))
+		sys.stdout = open(completeName, "w")
 		print(main_text)
 		i += 1
 		time.sleep(3)
-	#print("got documents: done in %0.3fs." % (time.time() - t0))
+	print("got documents: done in %0.3fs." % (time.time() - t0))
 
 
 
