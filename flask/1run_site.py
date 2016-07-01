@@ -51,9 +51,6 @@ class pmidForm(Form):
 #This function uses user entry to run the MainCrawler.py 
 #Prints the results under the "Information" tab
 #User entered pmid is entered into sqlite3 database
-#
-#### TO DO: IF DONT RECOGNIZE PMID IN DB, THEN SCRAPE. IF RECOGNIZE, UPLOAD
-#
 @app.route('/results/', methods=["GET", "POST"])
 def trying():
 	form = pmidForm()
@@ -75,10 +72,10 @@ def trying():
 				############################################
 				#Connect to database
 				conn, c = connection()
-				#Check database for pmid
-				c.execute("SELECT * FROM cogeCrawled WHERE pmids = (?)", (user_input, ))  #This code tells me 'db is locked'
+				#Check database for pmid #Does the entry exists in the db already?
+				c.execute("SELECT * FROM cogeCrawled WHERE pmids = (?)", (user_input, ))
 				check1 = c.fetchone()
-				#if the entry exists in the db already...
+				
 				
 				#Connect to Processors service
 				api = ProcessorsAPI(port=8886, keep_alive=True)
@@ -87,19 +84,21 @@ def trying():
 				#if the entry does NOT exist in the db already, will need to retireve text and annotate
 				if check1 is None: 
 					flash('congrats you entered a new pubmedid lol')
-					#Using user_input for IR
+					#Using user_input for Information Retireval of "main info"
 					main, journals = run_IR_not_db(user_input)
 					for mi in main:
 						main_info.append(mi)
 					for j in journals:
 						target_journals.append(j)	
 					user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
-					num = len(target_journals) #how many docs there are
+					num = len(journals) #how many docs there are? 
+					#Do_preprocessing() annotates the docs with pyProcessors  #Function in content_management.py
 					data, named_entities = do_preprocessing(num, user_input, api)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
 						ners.append(n)
+					#Do Latent Semantic Analysis and return jsonDict for data vis
 					jsonDict = run_lsa1(user_input, data_samples, 2)
 
 					#add to sqlite3 database entry
@@ -113,22 +112,22 @@ def trying():
 				#if the entry IS in the db, no need to retireve text from Entrez, just grab  
 				if check1 is not None:
 					flash("alreay exists in database :) ")
-					#Do  
+					#Using user_input for Information Retireval of "main info"
 					main, journals = run_IR_in_db(user_input)
 					for mi in main:
 						main_info.append(mi)
 					for j in journals:
 						target_journals.append(j)
-					num = len(target_journals) #how many docs there are
+					num = len(journals) #how many docs there are
 					user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
+					#Do_preprocessing() annotates the docs with pyProcessors 
 					data, named_entities = already_have_preproc(num, user_input)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
 						ners.append(n)
+					#Do visualization
 					jsonDict = run_lsa1(user_input, data_samples, 2)
-
-
 
 
 				#End cursor and connection to database
@@ -168,19 +167,3 @@ if __name__ == '__main__':
 # def visDEV():
 # 	return render_template('vis.html') 
 
-
-# #Just runs pmc_spider and returns Journals for pmids in the cache
-# def run_pmcSpider(user_input):
-# 	titles, urls, authors = pmc_spider(1, user_input)
-# 	flash("Got main info")
-# 	main_info = list(zip(titles, authors, urls))
-# 	return titles, urls, authors, main_info
-
-
-# #Runs pmc_spider and get_texts for pmids not in the cache
-# def run_FullMainCrawler(user_input):
-# 	titles, urls, authors, main_info = run_pmcSpider(user_input)
-# 	flash("Got main info... now texts...")
-# 	journals = get_text(urls, user_input) #list
-# 	flash("Got texts")
-# 	return main_info, journals
