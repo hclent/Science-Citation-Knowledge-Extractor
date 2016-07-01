@@ -2,7 +2,13 @@ from Entrez_IR import *
 from preprocess import *  #my Program
 from processors import * #pyProcessors
 from lsa1 import * #mine
-import os.path, time
+import os.path, time, re
+
+def multiple_pmid_input(user_input):
+	clean = re.sub('\,', ' ', user_input)
+	ids = clean.split() #list of pmids
+	return ids
+
 
 #If pmid (user input) in the database, just get main_info (authors, journals, ect)
 def run_IR_in_db(user_input):
@@ -22,7 +28,6 @@ def run_IR_not_db(user_input):
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
 	return main_info, target_journals
-
 
 
 #Take pmid_n.txts and get stuff! 

@@ -59,69 +59,88 @@ def trying():
 	form = pmidForm()
 	try:
 		if request.method == 'POST':
-			pmid = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
-			user_input = str(pmid)
+			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
+			pmid_list = multiple_pmid_input(entry)
+			print(pmid_list)
+			main_info = []
+			target_journals = []
+			data_samples = []
+			ners = []
 
-			#### PLACE HOLDERS #########################
-			#ners = ["blah1", "blah2"]
-			jsonDict = {}
-			############################################
-			#Connect to database
-			conn, c = connection()
-			#Check database for pmid
-			c.execute("SELECT * FROM cogeCrawled WHERE pmids = (?)", (pmid, ))  #This code tells me 'db is locked'
-			check1 = c.fetchone()
-			#if the entry exists in the db already...
-			
-			#Connect to Processors service
-			api = ProcessorsAPI(port=8886, keep_alive=True)
 
-			#if the entry does NOT exist in the db already, will need to retireve text and annotate
-			if check1 is None: 
-				flash('congrats you entered a new pubmedid lol')
-				#Using user_input for IR
-				main_info, target_journals = run_IR_not_db(user_input)
-				num = len(target_journals) #how many docs there are
-				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
-				#annotate
-				data_samples, ners = do_preprocessing(num, user_input, api)
-				#visualization output
-				#path to json for vis
-				jsonDict = run_lsa1(user_input, data_samples, 2)
+			for user_input in pmid_list:
+				print(str(user_input))
+				user_input = str(user_input)
 
-				#add to sqlite3 database entry
-				unix = time.time()
-				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+				############################################
+				#Connect to database
 				conn, c = connection()
-				c.execute("INSERT INTO cogeCrawled (datestamp, pmids) VALUES (?, ?)", (date, pmid)) #put user pmid into db
-				conn.commit()
-				flash("Writing PubmedID to database: successful")
+				#Check database for pmid
+				c.execute("SELECT * FROM cogeCrawled WHERE pmids = (?)", (user_input, ))  #This code tells me 'db is locked'
+				check1 = c.fetchone()
+				#if the entry exists in the db already...
 				
-			#if the entry IS in the db, no need to retireve text from Entrez, just grab  
-			if check1 is not None:
-				flash("alreay exists in database :) ")
-				#Do  
-				main_info, target_journals = run_IR_in_db(user_input)
-				num = len(target_journals) #how many docs there are
-				user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
-				#annotate
-				data_samples, ners = already_have_preproc(num, user_input)
-				#path to json for vis
-				jsonDict = run_lsa1(user_input, data_samples, 2)
+				#Connect to Processors service
+				api = ProcessorsAPI(port=8886, keep_alive=True)
+
+			
+				#if the entry does NOT exist in the db already, will need to retireve text and annotate
+				if check1 is None: 
+					flash('congrats you entered a new pubmedid lol')
+					#Using user_input for IR
+					main, journals = run_IR_not_db(user_input)
+					for mi in main:
+						main_info.append(mi)
+					for j in journals:
+						target_journals.append(j)	
+					user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
+					num = len(target_journals) #how many docs there are
+					data, named_entities = do_preprocessing(num, user_input, api)
+					for d in data:
+						data_samples.append(d)
+					for n in named_entities:
+						ners.append(n)
+					jsonDict = run_lsa1(user_input, data_samples, 2)
+
+					#add to sqlite3 database entry
+					unix = time.time()
+					date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+					conn, c = connection()
+					c.execute("INSERT INTO cogeCrawled (datestamp, pmids) VALUES (?, ?)", (date, user_input)) #put user pmid into db
+					conn.commit()
+					flash("Writing PubmedID to database: successful")
+					
+				#if the entry IS in the db, no need to retireve text from Entrez, just grab  
+				if check1 is not None:
+					flash("alreay exists in database :) ")
+					#Do  
+					main, journals = run_IR_in_db(user_input)
+					for mi in main:
+						main_info.append(mi)
+					for j in journals:
+						target_journals.append(j)
+					num = len(target_journals) #how many docs there are
+					user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
+					data, named_entities = already_have_preproc(num, user_input)
+					for d in data:
+						data_samples.append(d)
+					for n in named_entities:
+						ners.append(n)
+					jsonDict = run_lsa1(user_input, data_samples, 2)
 
 
 
 
-			#End cursor and connection to database
-			c.close()
-			conn.close()
+				#End cursor and connection to database
+				c.close()
+				conn.close()
 
 
-			#Housekeeping
-			gc.collect() #garbage collector for cleaning up unneeded stuff
-			session['entered_id'] = True
-			session['engaged'] = 'engaged' 
- 
+				#Housekeeping
+				gc.collect() #garbage collector for cleaning up unneeded stuff
+				session['entered_id'] = True
+				session['engaged'] = 'engaged' 
+	 
 
 		return render_template('results.html', form=form, main_info = main_info, target_journals = target_journals, ners=ners, jsonDict=jsonDict)
 	except Exception as e:
