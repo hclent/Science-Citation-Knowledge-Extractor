@@ -9,8 +9,8 @@ import os.path
 
 # set a PROCESSORS_SERVER environment variable.
 # It may take a minute or so to load the large model files.
-#p = '/Users/hclent/anaconda3/envs/pyProcessors/lib/python3.4/site-packages/py34/processors-server.jar'
-#api = ProcessorsAPI(port=8886, jar_path=p, keep_alive=True)
+p = '/Users/hclent/anaconda3/envs/pyProcessors/lib/python3.4/site-packages/py34/processors-server.jar'
+api = ProcessorsAPI(port=8886, jar_path=p, keep_alive=True)
 
 
 eng_stopwords = nltk.corpus.stopwords.words('english') #remove default english stopwords 
@@ -37,6 +37,11 @@ def preProcessing(text, pmid, doc_num, api):
   clean_text = re.sub('\\\\n', ' ', text) #replace \n with a space
   clean_text = re.sub('\([ATGC]*\)', '', clean_text) #delete any DNA seqs
   clean_text = re.sub('(\(|\)|\'|\]|\[|\\|\,)', '', clean_text) #delete certain punctuation
+  clean_text = re.sub('\\\\xa0\d*\.?\d?[\,\-]?\d*\,?\d*', '', clean_text) #delete formatting around figures
+  clean_text = re.sub('et\sal\.', ' ', clean_text) #replace "et al." with a space
+  clean_text = re.sub('\s\d{4}[\s\.\,\;\-]?(\d{4})?', '', clean_text) #delete years
+  clean_text = re.sub('[\.\,]\d{1,2}[\,\-]?(\d{1,2})?\,?', '', clean_text) #delete citations
+  clean_text = re.sub('Fig\.|Figure', '', clean_text) #delete 'fig.' and 'figure'
   clean_text = clean_text.lower()
   print("* Annotating with the Processors ...")
   print("* THIS WILL TAKE A WHILE ...")
@@ -65,7 +70,6 @@ def loadDocuments(maxNum, pmid, api):
     preProcessing(text, pmid, i, api)
     i +=1
     print("\n")
-
 
 
 ###################################
@@ -101,4 +105,5 @@ def loadBioDoc(maxNum, pmid):
       nes_list.append(nes)
     i +=1
   return data_samples, nes_list
+
 

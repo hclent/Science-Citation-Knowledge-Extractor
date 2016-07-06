@@ -24,7 +24,7 @@ def do_LSA(X, vectorizer, k):
   jDict = {"name": "flare", "children": []} #initialize dict for json
   for i, comp in enumerate(lsa.components_):
     termsInComp = zip(terms, comp)
-    sortedTerms = sorted(termsInComp, key=lambda x: x[1], reverse=True)[:10]
+    sortedTerms = sorted(termsInComp, key=lambda x: x[1], reverse=True)[:5]
     running_name = 'concept'+str(i)
     concept_Dict = {"name": running_name, "children": []}
     jDict["children"].append(concept_Dict)
@@ -36,3 +36,9 @@ def do_LSA(X, vectorizer, k):
   return jsonDict
 
 
+with open('all_coge.pickle', 'rb')as f:
+    data_samples = pickle.load(f)
+
+matrix, vectorizer = get_tfidf(data_samples)
+dictionary = do_LSA(matrix, vectorizer, 5)
+print(dictionary)

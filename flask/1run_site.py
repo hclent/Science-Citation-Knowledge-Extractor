@@ -13,7 +13,6 @@ from processors import *
 app = Flask(__name__)
 
 # BUGS:
-# Won't run code with only one citation
 # Sometimes: "NCBI C++ Exception: Error: TXCLIENT(CException::eUnknown) ... Read failed: EOF (the other side has unexpectedly closed connection ...
 	# 6-1-2016: 5 of these errors
 
@@ -126,8 +125,8 @@ def trying():
 						data_samples.append(d)
 					for n in named_entities:
 						ners.append(n)
-					#Do visualization
-					jsonDict = run_lsa1(user_input, data_samples, 2)
+					#Do visualization and Topic Modeling
+					jsonDict = run_lsa1(user_input, data_samples, 2) #default = 2 "topics" for right now
 
 
 				#End cursor and connection to database

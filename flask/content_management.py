@@ -4,6 +4,7 @@ from processors import * #pyProcessors
 from lsa1 import * #mine
 import os.path, time, re
 
+#User can enter in as many pubmed ids as they want
 def multiple_pmid_input(user_input):
 	clean = re.sub('\,', ' ', user_input)
 	ids = clean.split() #list of pmids
@@ -51,7 +52,7 @@ def run_lsa1(user_input, data_samples, k):
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
 	print(jsonDict)
 	print(" * Generated json for LSA visualization !")
-	# Unsure whether or not I should save JSON :/ 
+	# Unsure whether or not I should save JSON or just pass it straight to Flask ... 
 	# save_path = '/Users/hclent/Desktop/webdev-biotool/flask/static/' #must save to static
 	# completeName = os.path.join(save_path, ('vis_'+(str(user_input))+'.json'))
 	# with open(completeName, 'w') as outfile:
