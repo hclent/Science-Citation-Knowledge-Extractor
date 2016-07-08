@@ -36,9 +36,9 @@ def do_LSA(X, vectorizer, k):
   return jsonDict
 
 
-with open('all_coge.pickle', 'rb')as f:
-    data_samples = pickle.load(f)
+# with open('all_coge.pickle', 'rb')as f:
+#     data_samples = pickle.load(f)
 
-matrix, vectorizer = get_tfidf(data_samples)
-dictionary = do_LSA(matrix, vectorizer, 5)
-print(dictionary)
+# matrix, vectorizer = get_tfidf(data_samples)
+# dictionary = do_LSA(matrix, vectorizer, 5)
+# print(dictionary)
