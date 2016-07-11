@@ -11,7 +11,7 @@
 <form action="http://localhost:5000/results/" class="form-inline" method="post">
   <div class="form-group">
     <label for="PubmedID">Pubmed ID(s)</label>
-    <input type="text" class="form-control" id="PubmedID" placeholder="18952863" name="pmid" value="{{request.form.pmid}}">
+    <input type="text" class="form-control" id="PubmedID" placeholder="18952863, 18269575" name="pmid" value="{{request.form.pmid}}">
   </div>
   <button type="submit" id= "myButton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Submit</button>
 </form>
@@ -66,7 +66,7 @@
 
 		<!--  Loop through cited article information like this --> 
 		<div role="tabpanel" class="tab-pane fade" id="WebDev">
-		  	<p>Results for PMID: 18952863</p> 
+		  	<p>Results for PMID(s): 18952863, 18269575</p> 
 		  	{% for result in main_info %}
 		  	<!--Sample results will go here-->
             	<li>{{result}}</li>
