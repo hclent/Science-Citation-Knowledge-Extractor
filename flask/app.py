@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, flash, url_for, redirect, ses
 from flask_wtf import Form
 from wtforms import StringField, TextField, SelectField
 import sqlite3, gc, time, datetime, pickle, os.path
+import sys
+sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
 from cogeCrawled_db import connection
 from content_management import *
 from processors import * 
@@ -9,7 +11,8 @@ from processors import *
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
 #flask, Flask-WTF, nltk, bs4, lxml, requests, Biopython, pyProcessors
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
+app.debug = True
 
 
 @app.route('/visdev/') #this is where I'm experimenting with data visualization
@@ -23,11 +26,11 @@ def visDEV():
 @app.route('/cogecrawl/', methods=["GET", "POST"])
 def cogecrawl():
 	error = None
-	with open('/Users/hclent/Desktop/webdev-biotool/flask/static/coge_mainfo.pickle', 'rb')as f:
+	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_mainfo.pickle', 'rb')as f:
 		main_info = pickle.load(f)
-	with open('/Users/hclent/Desktop/webdev-biotool/flask/static/coge_nes.pickle', 'rb')as f:
+	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_nes.pickle', 'rb')as f:
 		ner = pickle.load(f)
-	with open('/Users/hclent/Desktop/webdev-biotool/flask/static/coge_journals.pickle', 'rb')as f:
+	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
 		journals = pickle.load(f)
 	try:
 		if request.method == "POST":
@@ -77,7 +80,7 @@ def trying():
 				
 				
 				#Connect to Processors service
-				path = "/Users/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar"
+				path = "/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar"
 				api = ProcessorsAPI(jar_path=path, port=8886, keep_alive=True)
 
 			
@@ -90,7 +93,7 @@ def trying():
 						main_info.append(mi)
 					for j in journals:
 						target_journals.append(j)	
-					user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
+					user_prefix = '/home/hclent/data/'+user_input
 					num = len(journals) #how many docs there are? 
 					#Do_preprocessing() annotates the docs with pyProcessors  #Function in content_management.py
 					data, named_entities = do_preprocessing(num, user_input, api)
@@ -119,7 +122,7 @@ def trying():
 					for j in journals:
 						target_journals.append(j)
 					num = len(journals) #how many docs there are
-					user_prefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/'+user_input
+					user_prefix = '/home/hclent/data/'+user_input
 					#Do_preprocessing() annotates the docs with pyProcessors 
 					data, named_entities = already_have_preproc(num, user_input)
 					for d in data:
@@ -153,12 +156,10 @@ def trying():
 def page_not_found(e):
 	return("you shouldnt be here!!")
 
-
-
-#Built in Flask debugger
+#built in Flask debugger
 if __name__ == '__main__':
-	app.secret_key = 'super secret key'
-	app.run(debug=True)
+        app.secret_key = 'super secret key'
+        app.run(host='0.0.0.0', port=4343)
 
 
 ########### GRAVEYARD ########
@@ -166,4 +167,4 @@ if __name__ == '__main__':
 # @app.route('/visdev/') #this is where I'm experimenting with data visualization
 # def visDEV():
 # 	return render_template('vis.html') 
-
+#built in Flask debugger
