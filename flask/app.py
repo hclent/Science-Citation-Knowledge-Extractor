@@ -4,7 +4,6 @@ from wtforms import StringField, TextField, SelectField
 import sqlite3, gc, time, datetime, pickle
 import sys
 from werkzeug.serving import run_simple
-from werkzeug.wsgi import DispatcherMiddleware
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
 from cogeCrawled_db import connection
 from content_management import *
@@ -16,7 +15,7 @@ from processors import *
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
 app.debug = True
-
+app.secret_key = 'super secret key'
 
 # 06/13/2016 - Blueprint,APPLICATION_ROOT, and SERVER_NAME did not resolve problems with app dispatching to uWSGI 
 
@@ -60,7 +59,7 @@ class pmidForm(Form):
 #User entered pmid is entered into sqlite3 database
 @app.route("/results/", methods=["GET", "POST"])
 def trying():
-	form = pmidForm()
+	form = pmidForm(secret_key='super secret key')
 	try:
 		if request.method == 'POST':
 			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
@@ -163,7 +162,7 @@ def page_not_found(e):
 
 #Configuration settings
 if __name__ == '__main__':
-        app.secret_key = 'super secret key'
+        #app.secret_key = 'super secret key'
         run_simple('0.0.0.0', 5000, app, use_reloader=True)
         #app.run(host='0.0.0.0') #dont want app.run() for uwsgi
 

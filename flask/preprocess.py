@@ -9,8 +9,8 @@ import os.path
 
 # set a PROCESSORS_SERVER environment variable.
 # It may take a minute or so to load the large model files.
-p = '/Users/hclent/anaconda3/envs/pyProcessors/lib/python3.4/site-packages/py34/processors-server.jar'
-api = ProcessorsAPI(port=8886, jar_path=p, keep_alive=True)
+p = '/home/hclent/anaconda3/envs/pyProcessors/lib/python3.4/site-packages/py34/processors-server.jar'
+api = ProcessorsAPI(port=4242, jar_path=p, keep_alive=True)
 
 
 eng_stopwords = nltk.corpus.stopwords.words('english') #remove default english stopwords 
@@ -48,7 +48,7 @@ def preProcessing(text, pmid, doc_num, api):
   biodoc = api.bionlp.annotate(clean_text) #annotates to JSON
   print("* Successfully did the preprocessing !!!")
   print("* Dumping JSON ... ")
-  save_path = '/Users/hclent/Desktop/webdev-biotool/flask/data/' #must save to static
+  save_path = '/home/hclent/data/'
   completeName = os.path.join(save_path, ('doc_'+(str(pmid))+'_'+str(doc_num)+'.json'))
   with open(completeName, 'w') as outfile:
     json.dump(biodoc, outfile, default=dumper, indent=2)
@@ -60,7 +60,7 @@ def preProcessing(text, pmid, doc_num, api):
 def loadDocuments(maxNum, pmid, api):
   print("* Loading dataset...")
   i = 1
-  filenamePrefix = "/Users/hclent/Desktop/webdev-biotool/flask/data/"+pmid+"_"
+  filenamePrefix = "/home/hclent/data/"+pmid+"_"
   print(filenamePrefix)
   for i in range(1, int(maxNum)+1):
     print("* Loading document #" + str(i) + " ...")
@@ -94,7 +94,7 @@ def loadBioDoc(maxNum, pmid):
   data_samples = []
   nes_list = []
   i = 1
-  filenamePrefix = '/Users/hclent/Desktop/webdev-biotool/flask/data/doc_'+(pmid)+'_'
+  filenamePrefix = '/home/hclent/data/doc_'+(pmid)+'_'
   for i in range(1, maxNum+1):
     filename = filenamePrefix + str(i) + ".json"
     with open(filename) as data_file:

@@ -114,7 +114,7 @@ def getContentPMC(pmid, pmcids_list):
 		#print("* got xml record")
 		main_text = parsePMC(xml_record, pmid)
 		#print("* ready to print it")
-		save_path = '/Users/hclent/Desktop/webdev-biotool/flask/data/' #must save to data
+		save_path = '/home/hclent/data/' #must save to data
 		completeName = os.path.join(save_path, (str(pmid)+'_'+str(i)+'.txt'))
 		sys.stdout = open(completeName, "w")
 		print(main_text)
