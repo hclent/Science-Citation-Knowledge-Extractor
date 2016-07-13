@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, flash, url_for, redirect, session, g
+from flask import Flask, render_template, request, flash, url_for, redirect, session, g, Blueprint
 from flask_wtf import Form
 from wtforms import StringField, TextField, SelectField
-import sqlite3, gc, time, datetime, pickle, os.path
+import sqlite3, gc, time, datetime, pickle
 import sys
+from werkzeug.serving import run_simple
+from werkzeug.wsgi import DispatcherMiddleware
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
 from cogeCrawled_db import connection
 from content_management import *
@@ -11,19 +13,22 @@ from processors import *
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
 #flask, Flask-WTF, nltk, bs4, lxml, requests, Biopython, pyProcessors
 
+
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
 app.debug = True
 
 
-@app.route('/visdev/') #this is where I'm experimenting with data visualization
-def visDEV():
-	return render_template('vis_lsa.html')
+# 06/13/2016 - Blueprint,APPLICATION_ROOT, and SERVER_NAME did not resolve problems with app dispatching to uWSGI 
+
+@app.route('/')
+def boohoo():
+        return('I am suffering')
 
 
 #Main page
 #Prints sample results from 1 coge publication
 #User inputs a pubmed id and is then redirected to /results
-@app.route('/cogecrawl/', methods=["GET", "POST"])
+@app.route("/cogecrawl/", methods=["GET", "POST"])
 def cogecrawl():
 	error = None
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_mainfo.pickle', 'rb')as f:
@@ -53,7 +58,7 @@ class pmidForm(Form):
 #Getting Flask-WTFs to work with sqlite3 here
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
-@app.route('/results/', methods=["GET", "POST"])
+@app.route("/results/", methods=["GET", "POST"])
 def trying():
 	form = pmidForm()
 	try:
@@ -81,7 +86,7 @@ def trying():
 				
 				#Connect to Processors service
 				path = "/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar"
-				api = ProcessorsAPI(jar_path=path, port=8886, keep_alive=True)
+				api = ProcessorsAPI(jar_path=path, port=4242, keep_alive=True)
 
 			
 				#if the entry does NOT exist in the db already, will need to retireve text and annotate
@@ -150,21 +155,22 @@ def trying():
 
 
 
-
 #Handles 404 errors
 @app.errorhandler(404)
 def page_not_found(e):
 	return("you shouldnt be here!!")
 
-#built in Flask debugger
+
+#Configuration settings
 if __name__ == '__main__':
         app.secret_key = 'super secret key'
-        app.run(host='0.0.0.0', port=4343)
-
+        run_simple('0.0.0.0', 5000, app, use_reloader=True)
+        #app.run(host='0.0.0.0') #dont want app.run() for uwsgi
 
 ########### GRAVEYARD ########
 
-# @app.route('/visdev/') #this is where I'm experimenting with data visualization
-# def visDEV():
-# 	return render_template('vis.html') 
-#built in Flask debugger
+@app.route('/visdev/') #this is where I'm experimenting with data visualization
+def visDEV():
+	return('I AM SUFFERING')
+	#return render_template('vis.html') 
+
