@@ -42,16 +42,6 @@ def retrieveDocs(pmid):
   return docs
 
 
-# #Input: Data that you want to in a JSON file
-# #Output: Data reformatted so it can be dumped to JSON
-# def dumper(obj):
-#   try:
-#     logging.debug('obj was serialized with to JSON')
-#     return obj.toJSON()
-#   except:
-#     return obj.__dict__
-
-
 
 #Define function to call in parallel
 #Annotation of docs will be the process in the pool
@@ -63,9 +53,9 @@ def multiprocess(docs):
   results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt', ...]
   logging.debug('initialized map_async to loadDocs function with docs')
   #results = pool.map(loadDocuments, docs)
-  #logging.debug('did map to loadDocs function with docs. NO async')
+  #logging.debug('did map to loadDocs function with docs. NO async')     #no difference in performance between async and no async
   #pool.close()
-  #logging.debug('closed pool')
+  #logging.debug('closed pool')        #can exclude close and join and still have same error (not POSTing)
   #pool.join()
   #logging.debug('joined pool')
   print("pool work: done in %0.3fs." % (time.time() - t0))
