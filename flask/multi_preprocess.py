@@ -2,7 +2,6 @@ from __future__ import print_function
 from processors import *
 import re, nltk, json, pickle, time
 import json
-#from json import JSONEncoder
 from nltk.corpus import stopwords
 import os.path
 from multiprocessing import Pool
@@ -11,10 +10,9 @@ import logging
 # source activate py34 #my conda python enviornment for this
 
 #Create log
-logging.basicConfig(filename='multi_preprocess.log',level=logging.DEBUG)
+logging.basicConfig(filename='.multi_preprocess.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.info('Started')
-logging.debug('Test to see if this updates every time lele')
 
 #Stopwords
 eng_stopwords = nltk.corpus.stopwords.words('english') #remove default english stopwords
@@ -44,14 +42,14 @@ def retrieveDocs(pmid):
   return docs
 
 
-#Input: Data that you want to be JSONified
-#Output: Data reformatted so it can be dumped to JSON
-def dumper(obj):
-  try:
-    logging.debug('obj was serialized with to JSON')
-    return obj.toJSON()
-  except:
-    return obj.__dict__
+# #Input: Data that you want to in a JSON file
+# #Output: Data reformatted so it can be dumped to JSON
+# def dumper(obj):
+#   try:
+#     logging.debug('obj was serialized with to JSON')
+#     return obj.toJSON()
+#   except:
+#     return obj.__dict__
 
 
 
@@ -62,30 +60,33 @@ def multiprocess(docs):
   pool = Pool(10)
   logging.debug('created 10 worker pools')
   t0 = time.time()
-  results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt']
-  logging.debug('did map_async to loadDocs function with docs')
+  results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt', ...]
+  logging.debug('initialized map_async to loadDocs function with docs')
   #results = pool.map(loadDocuments, docs)
   #logging.debug('did map to loadDocs function with docs. NO async')
-  pool.close()
-  logging.debug('closed pool')
-  pool.join()
-  logging.debug('joined pool')
+  #pool.close()
+  #logging.debug('closed pool')
+  #pool.join()
+  #logging.debug('joined pool')
   print("pool work: done in %0.3fs." % (time.time() - t0))
   print(results.get())
   print(type(results))
-  # i = 0
-  # for biodoc in results.get():
-  #   print(type(biodoc))
-  #   save_path = '/home/hclent/data/'
-  #   running_doc = docs[i]
-  #   print(running_doc)
-  #   pmid_i = running_doc.strip(".txt")
-  #   completeName = os.path.join(save_path, ('doc_'+str(pmid_i)+'.json'))
-  #   i += 1
-  #   with open(completeName, 'w') as outfile:
-  #     json.dump(biodoc, outfile, default=dumper, indent=2)
-  #     print("* Dumped "+str(pmid_i) +" to JSON !!! ")
-  #     print("\n")
+  #print(results) #don't use .get() for map (without async)
+  #no async returns 'list', with async returns 'multiprocessing.pool.MapResult'
+  i = 0
+  for biodoc in results.get():
+    print(type(biodoc))
+    save_path = '/home/hclent/data/'
+    running_doc = docs[i]
+    print(running_doc)
+    pmid_i = running_doc.strip(".txt")
+    completeName = os.path.join(save_path, ('doc_'+str(pmid_i)+'.json'))
+    i += 1
+    with open(completeName, 'w') as out:
+      out.write(completeName.to_JSON())
+      logging.debug('printed to json')
+      print("* Dumped "+str(pmid_i) +" to JSON !!! ")
+      print("\n")
   logging.info('done with everything!!')
 
 
