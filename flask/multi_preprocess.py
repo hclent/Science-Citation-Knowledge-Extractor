@@ -62,16 +62,16 @@ def multiprocess(docs):
   pool = Pool(10)
   logging.debug('created 10 worker pools')
   t0 = time.time()
-  #results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt']
-  #logging.debug('did map_async to loadDocs function with docs')
-  results = pool.map(loadDocuments, docs)
-  logging.debug('did map to loadDocs function with docs. NO async')
+  results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt']
+  logging.debug('did map_async to loadDocs function with docs')
+  #results = pool.map(loadDocuments, docs)
+  #logging.debug('did map to loadDocs function with docs. NO async')
   pool.close()
   logging.debug('closed pool')
   pool.join()
   logging.debug('joined pool')
   print("pool work: done in %0.3fs." % (time.time() - t0))
-  print(results)
+  print(results.get())
   print(type(results))
   # i = 0
   # for biodoc in results.get():
