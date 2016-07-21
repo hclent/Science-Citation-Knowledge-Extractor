@@ -17,15 +17,9 @@ app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/
 app.debug = True
 app.secret_key = 'super secret key'
 
-# 06/13/2016 - Blueprint,APPLICATION_ROOT, and SERVER_NAME did not resolve problems with app dispatching to uWSGI 
-
-@app.route('/')
-def boohoo():
-        return('I am suffering')
-
 
 #Main page
-#Prints sample results from 1 coge publication
+#Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
 @app.route("/cogecrawl/", methods=["GET", "POST"])
 def cogecrawl():
@@ -162,14 +156,12 @@ def page_not_found(e):
 
 #Configuration settings
 if __name__ == '__main__':
-        #app.secret_key = 'super secret key'
-        run_simple('0.0.0.0', 5000, app, use_reloader=True)
-        #app.run(host='0.0.0.0') #dont want app.run() for uwsgi
+	run_simple('0.0.0.0', 5000, app, use_reloader=True)
+	#app.run(host='0.0.0.0') #dont want app.run() for uwsgi
 
 ########### GRAVEYARD ########
 
 @app.route('/visdev/') #this is where I'm experimenting with data visualization
 def visDEV():
-	return('I AM SUFFERING')
-	#return render_template('vis.html') 
+	return render_template('vis_lsa.html')
 

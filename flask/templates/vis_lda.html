@@ -52,7 +52,7 @@ var svg = d3.select("#dan").append("svg") //"#dan" for dashboard.html, otherwise
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 
-d3.json("{{ url_for('static', filename='coge_lsa.json') }}", function(error, root) {
+d3.json("{{ url_for('static', filename='coge_lda1.json') }}", function(error, root) {
   if (error) throw error;
 
   var focus = root,

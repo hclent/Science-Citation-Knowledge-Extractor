@@ -1,0 +1,285 @@
+INFO:root:Started
+DEBUG:root:Test to see if this updates every time lele
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:processors.api:No jar found.  Downloading to /home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar ...
+INFO:processors.api:Starting processors-server (java -Xmx3G -cp /home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar NLPServer --port 4242 --host localhost) ...
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 173
+INFO:root:Connected to pyProcessors
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created 10 worker pools
+DEBUG:root:found the the file 17347674_12.txt
+DEBUG:root:found the the file 17347674_23.txt
+DEBUG:root:found the the file 17347674_41.txt
+DEBUG:root:found the the file 17347674_31.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 17347674_32.txt
+DEBUG:root:found the the file 17347674_24.txt
+DEBUG:root:found the the file 17347674_26.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 17347674_13.txt
+DEBUG:root:found the the file 17347674_36.txt
+DEBUG:root:found the the file 17347674_14.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 26
+DEBUG:root:the biodoc of 17347674_41.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_41.txt
+DEBUG:root:found the the file 17347674_11.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 26333
+DEBUG:root:the biodoc of 17347674_23.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_23.txt
+DEBUG:root:found the the file 17347674_35.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 29307
+DEBUG:root:the biodoc of 17347674_14.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_14.txt
+DEBUG:root:found the the file 17347674_17.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 33197
+DEBUG:root:the biodoc of 17347674_36.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_36.txt
+DEBUG:root:found the the file 17347674_3.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 36565
+DEBUG:root:the biodoc of 17347674_32.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_32.txt
+DEBUG:root:found the the file 17347674_20.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 38217
+DEBUG:root:the biodoc of 17347674_11.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_11.txt
+DEBUG:root:found the the file 17347674_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 41533
+DEBUG:root:the biodoc of 17347674_24.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_24.txt
+DEBUG:root:found the the file 17347674_33.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 21653
+DEBUG:root:the biodoc of 17347674_20.txt is type <class 'processors.ds.Document'>
+DEBUG:root:completed annotation of 17347674_20.txt
+DEBUG:root:found the the file 17347674_28.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_28.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_17.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_33.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_3.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_28.txt
+DEBUG:root:the biodoc of 17347674_26.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_17.txt
+DEBUG:root:the biodoc of 17347674_31.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_1.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_35.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_13.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_33.txt
+DEBUG:root:the biodoc of 17347674_12.txt is type <class 'NoneType'>
+DEBUG:root:found the the file 17347674_9.txt
+DEBUG:root:completed annotation of 17347674_3.txt
+DEBUG:root:completed annotation of 17347674_26.txt
+DEBUG:root:completed annotation of 17347674_31.txt
+DEBUG:root:completed annotation of 17347674_1.txt
+DEBUG:root:completed annotation of 17347674_35.txt
+DEBUG:root:completed annotation of 17347674_13.txt
+DEBUG:root:completed annotation of 17347674_12.txt
+DEBUG:root:found the the file 17347674_22.txt
+DEBUG:root:found the the file 17347674_39.txt
+DEBUG:root:found the the file 17347674_25.txt
+DEBUG:root:found the the file 17347674_30.txt
+DEBUG:root:found the the file 17347674_40.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:found the the file 17347674_21.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_30.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_30.txt
+DEBUG:root:the biodoc of 17347674_40.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_40.txt
+DEBUG:root:the biodoc of 17347674_39.txt is type <class 'NoneType'>
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:completed annotation of 17347674_39.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:found the the file 17347674_19.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:the biodoc of 17347674_25.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_21.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_25.txt
+DEBUG:root:cleaned the text
+DEBUG:root:completed annotation of 17347674_21.txt
+DEBUG:root:found the the file 17347674_37.txt
+DEBUG:root:cleaned the text
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_19.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_19.txt
+DEBUG:root:the biodoc of 17347674_37.txt is type <class 'NoneType'>
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:found the the file 17347674_18.txt
+DEBUG:root:completed annotation of 17347674_37.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 17347674_2.txt
+DEBUG:root:the biodoc of 17347674_22.txt is type <class 'NoneType'>
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:completed annotation of 17347674_22.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:the biodoc of 17347674_9.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_9.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:found the the file 17347674_4.txt
+DEBUG:root:found the the file 17347674_6.txt
+DEBUG:root:found the the file 17347674_5.txt
+DEBUG:root:the biodoc of 17347674_2.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_2.txt
+DEBUG:root:found the the file 17347674_16.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 17347674_34.txt
+DEBUG:root:found the the file 17347674_29.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 17347674_38.txt
+DEBUG:root:cleaned the text
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_16.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_16.txt
+DEBUG:root:found the the file 17347674_27.txt
+DEBUG:root:the biodoc of 17347674_34.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_34.txt
+DEBUG:root:read text with text.read()
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+DEBUG:root:the biodoc of 17347674_38.txt is type <class 'NoneType'>
+DEBUG:root:cleaned the text
+DEBUG:root:completed annotation of 17347674_38.txt
+DEBUG:root:cleaned the text
+DEBUG:root:the biodoc of 17347674_18.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_18.txt
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_29.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_29.txt
+DEBUG:root:the biodoc of 17347674_6.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_5.txt is type <class 'NoneType'>
+DEBUG:root:found the the file 17347674_7.txt
+DEBUG:root:completed annotation of 17347674_6.txt
+DEBUG:root:completed annotation of 17347674_5.txt
+DEBUG:root:found the the file 17347674_15.txt
+DEBUG:root:found the the file 17347674_10.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_4.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_4.txt
+DEBUG:root:found the the file 17347674_8.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:read text with text.read()
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_7.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_7.txt
+DEBUG:root:the biodoc of 17347674_10.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_10.txt
+DEBUG:root:the biodoc of 17347674_15.txt is type <class 'NoneType'>
+DEBUG:root:the biodoc of 17347674_27.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_15.txt
+DEBUG:root:completed annotation of 17347674_27.txt
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:the biodoc of 17347674_8.txt is type <class 'NoneType'>
+DEBUG:root:completed annotation of 17347674_8.txt
+DEBUG:root:did map to loadDocs function with docs. NO async
+DEBUG:root:closed pool
+DEBUG:root:joined pool
+INFO:root:done with everything!!
+INFO:root:Finished

@@ -62,7 +62,7 @@
 
 
   <!-- Tab panes -->
-	<div class="tab-content">
+	<ul class="tab-content">
 
 		<!--  Loop through cited article information like this --> 
 		<div role="tabpanel" class="tab-pane fade" id="WebDev">
@@ -97,14 +97,46 @@
 
 
 
-		<!-- Cosine similarity scores-->
+		<!-- Data analysis/visualization-->
 		<div role="tabpanel" class="tab-pane fade" id="dan">
-		  	<ul>
-          {% include 'vis.html' %}
+            <ul>
+            <div class="btn-group" role="group">
+            <!-- Split button -->
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-default">Topic Modle</button>
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">LSA</a></li>
+                        <li><a href="#">LDA</a></li>
+                      </ul>
+                    </div>
 
 
-		  	</ul>
-		</div>
+                 <div class="btn-group">
+                      <button type="button" class="btn btn-default">k</button>
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a href="#">k=3</a></li>
+                        <li><a href="#">k=4</a></li>
+                          <li><a href="#">k=5</a></li>
+                      </ul>
+                    </div>
+
+            </div>
+            </ul>
+
+
+             {% include 'vis_lda.html' %}
+
+        </div>
+
+
 
 	</div>
 
