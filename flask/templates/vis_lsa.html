@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
 <style>
 
 .node {
@@ -28,7 +26,6 @@
 }
 
 </style>
-<body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -45,7 +42,7 @@ var pack = d3.layout.pack()
     .size([diameter - margin, diameter - margin])
     .value(function(d) { return d.size; })
 
-var svg = d3.select("#dan").append("svg") //"#dan" for dashboard.html, otherwise "body"
+var svg = d3.select("#datavis").append("svg") //"#dan" for dashboard.html, otherwise "body"
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
