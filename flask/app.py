@@ -18,6 +18,8 @@ app.debug = True
 app.secret_key = 'super secret key'
 
 
+
+
 #Main page
 #Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
@@ -37,7 +39,7 @@ def cogecrawl():
 	except Exception as e:
 		#flash(e)
 		return render_template("dashboard.html", error=error) 
-	return render_template('dashboard.html', main_info=main_info, journals=journals, ner=ner)
+	return render_template("dashboard.html", main_info=main_info, journals=journals, ner=ner)
 
 
 
@@ -78,10 +80,9 @@ def trying():
 				
 				
 				#Connect to Processors service
-				path = "/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar"
-				api = ProcessorsAPI(jar_path=path, port=4242, keep_alive=True)
+				api = connect_to_Processors(4343) #method from content_management
 
-			
+
 				#if the entry does NOT exist in the db already, will need to retireve text and annotate
 				if check1 is None: 
 					flash('congrats you entered a new pubmedid lol')
@@ -90,11 +91,9 @@ def trying():
 					for mi in main:
 						main_info.append(mi)
 					for j in journals:
-						target_journals.append(j)	
-					user_prefix = '/home/hclent/data/'+user_input
-					num = len(journals) #how many docs there are? 
-					#Do_preprocessing() annotates the docs with pyProcessors  #Function in content_management.py
-					data, named_entities = do_preprocessing(num, user_input, api)
+						target_journals.append(j)
+
+					data, named_entities = do_ALL_multi_preprocessing(user_input, api)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
@@ -119,15 +118,13 @@ def trying():
 						main_info.append(mi)
 					for j in journals:
 						target_journals.append(j)
-					num = len(journals) #how many docs there are
-					user_prefix = '/home/hclent/data/'+user_input
-					#Do_preprocessing() annotates the docs with pyProcessors 
-					data, named_entities = already_have_preproc(num, user_input)
+						
+					data, named_entities = do_SOME_multi_preprocessing(user_input, api)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
 						ners.append(n)
-					#Do visualization and Topic Modeling
+					# #Do visualization and Topic Modeling
 					jsonDict = run_lsa1(user_input, data_samples, 2) #default = 2 "topics" for right now
 
 
