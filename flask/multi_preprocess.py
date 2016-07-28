@@ -43,7 +43,7 @@ api = connect_to_Processors(4343)
 #Returns list of strings e.g. ['1234_1.txt', '1234_2.txt', ...]
 def retrieveDocs(pmid):
   docs = [] #list of strings
-  folder = '/home/hclent/data/'
+  folder = '/home/hclent/data/'+pmid+'/' #look in folder named after pmid
   files = os.listdir(folder)
   for f in files:
     if pmid in f and 'doc' not in f:
@@ -70,9 +70,10 @@ def multiprocess(docs):
   print(results.get())
   i = 0
   for biodoc in results.get():
-    save_path = '/home/hclent/data/'
     running_doc = docs[i]
     pmid_i = running_doc.strip(".txt")
+    pmid = re.sub('\_\d*', '', pmid_i)
+    save_path = '/home/hclent/data/'+str(pmid)+'/' #save in folder named after pmid
     completeName = os.path.join(save_path, ('doc_'+str(pmid_i)+'.json'))
     i += 1
     with open(completeName, 'w') as out:
@@ -107,7 +108,10 @@ def preProcessing(text):
 def loadDocuments(doc):
   logging.debug("NEW TASK")
   #api = connect_to_Processors(4343) #could connect each time if don't want a global var
-  filenamePrefix = "/home/hclent/data/"  filename = filenamePrefix + str(doc) #str(i)
+  pmid_i = doc.strip(".txt")
+  pmid = re.sub('\_\d*', '', pmid_i)
+  filenamePrefix = "/home/hclent/data/"+str(pmid)+'/'
+  filename = filenamePrefix + str(doc) #str(i)
   logging.debug('found the the file '+str(doc))
   text = open(filename, 'r')
   text = text.read()
@@ -125,7 +129,7 @@ def loadDocuments(doc):
 #Output: String of lemmas
 def retrieveBioDocs(pmid):
   biodocs = [] #list of strings
-  folder = '/home/hclent/data/'
+  folder = '/home/hclent/data/'+pmid+'/'
   files = os.listdir(folder)
   for f in files:
     if pmid in f and 'doc' in f:
@@ -153,8 +157,11 @@ def loadBioDoc(biodocs):
   t1 = time.time()
   data_samples = []
   nes_list = []
-  for bd in biodocs:
-    filename = '/home/hclent/data/'+bd
+  for bd in biodocs: #e.g. doc_26502977_3.json
+    pmid_i = bd.strip('.json')
+    pmid = re.sub('(doc\_)', '', pmid_i)
+    pmid = re.sub('\_\d*', '', pmid)
+    filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
     with open(filename) as jf:
       data = Document.load_from_JSON(json.load(jf))
       lemmas = grab_lemmas(data)
@@ -164,6 +171,8 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
   return data_samples, nes_list
 
-# biodocs = retrieveBioDocs("17347674")
+# docs = retrieveDocs("26109675")
+# multiprocess(docs)
+# biodocs = retrieveBioDocs("26109675")
 # data_samples, nes_list = loadBioDoc(biodocs)
 # print(nes_list)

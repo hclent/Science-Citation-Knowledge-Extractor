@@ -106,6 +106,14 @@ def parsePMC(xml_string, pmid):
 def getContentPMC(pmid, pmcids_list):
 	t0 = time.time()
 	i = 1
+	dirname = '/home/hclent/data/'+pmid
+	try:
+		os.makedirs(dirname) #creates folder named after pmid
+	except OSError:
+		if os.path.isdir(dirname):
+			pass
+		else:
+			raise
 	for citation in pmcids_list:
 		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
 		xml_record = handle.read() #xml str
@@ -113,7 +121,7 @@ def getContentPMC(pmid, pmcids_list):
 		#print("* got xml record")
 		main_text = parsePMC(xml_record, pmid)
 		#print("* ready to print it")
-		save_path = '/home/hclent/data/' #must save to data
+		save_path = '/home/hclent/data/'+(str(pmid))+'/' #must save to data, in proper file
 		completeName = os.path.join(save_path, (str(pmid)+'_'+str(i)+'.txt'))
 		sys.stdout = open(completeName, "w")
 		print(main_text)
@@ -126,7 +134,8 @@ def getContentPMC(pmid, pmcids_list):
 
 # self_info = getMainInfo(my_pmid)
 # print()
-# pmc_ids = getCitationIDs(my_pmid)
+my_pmid = "26109675"
+pmc_ids = getCitationIDs(my_pmid)
 # print(pmc_ids)
 # print()
 # amount = len(pmc_ids)
@@ -146,7 +155,7 @@ def getContentPMC(pmid, pmcids_list):
 # print(journals)
 # 	print("PICKLED VER YO")
 # 	print(data)
-#getContentPMC(my_pmid, pmc_ids)
+getContentPMC(my_pmid, pmc_ids)
 
 ################### Notes ##############
 #Rarely, the XML will return this:
