@@ -1,14 +1,16 @@
 from processors import * #pyProcessors
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
+from app import api
 from lsa1 import * #mine
 import os.path, time, re
+
 
 
 #Set a PROCESSORS_SERVER environment variable.
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
-  path = '/home/hclent/anaconda3/envs/pyProcessors/lib/python3.4/site-packages/py34/processors-server.jar'
+  path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
   api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx16G")
   logging.info('Connected to pyProcessors')
   #Initialize the bionlp annotator by passing it a doc
@@ -44,25 +46,9 @@ def run_IR_not_db(user_input):
 	return main_info, target_journals
 
 
-# #Take pmid_n.txts and get stuff!
-# #Update: for not in DB, need to make json, for in DB, no need to make JSON
-# def do_preprocessing(num, user_input, api):
-# 	loadDocuments(num, user_input, api) #loads txt, pre-processes, and dumps to JSON
-# 	print(" * Converted txt to Docs ...")
-# 	data_samples, ner_list = loadBioDoc(num, user_input) #loads json
-# 	print(" * Got info from Docs ...")
-# 	return data_samples, ner_list
-#
-#
-# def already_have_preproc(num, user_input):
-# 	data_samples, ner_list = loadBioDoc(num, user_input) #loads json
-# 	print("* Got info from Docs ...")
-# 	return data_samples, ner_list
-
-
-#Annotate docs to json, and return data and nes
+#Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
 #This method is for user_input NOT already in DB, need to make json, for in DB, no need to make JSON
-def do_ALL_multi_preprocessing(user_input, api):
+def do_ALL_multi_preprocessing(user_input):
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
 	multiprocess(docs)
@@ -74,7 +60,7 @@ def do_ALL_multi_preprocessing(user_input, api):
 
 #Take annotated docs and return data and nes
 #This method is for user_input that IS already in the DB
-def do_SOME_multi_preprocessing(user_input, api):
+def do_SOME_multi_preprocessing(user_input):
 	t1 = time.time()
 	biodocs = retrieveBioDocs(user_input)
 	data_samples, nes_list = loadBioDoc(biodocs)

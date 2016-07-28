@@ -9,6 +9,7 @@ import logging
 
 # source activate py34 #my conda python environment for this
 
+
 #Create log
 logging.basicConfig(filename='.multi_preprocess.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -24,12 +25,18 @@ logging.info('Stopword settings set')
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
-  path = '/home/hclent/anaconda3/envs/pyProcessors/lib/python3.4/site-packages/py34/processors-server.jar'
+  path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
   api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx16G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   logging.info('Annotated something random to initialize bioNLP Processor')
   return api
+
+
+#Initialize API as global variable in multi_preprocess.py
+#We will keep it as a global variable because initializing the bioNLP processor has a cost
+#Do not want to initialize the processors over and over
+api = connect_to_Processors(4343)
 
 
 #Get all text docs for that pmid
@@ -50,6 +57,7 @@ def retrieveDocs(pmid):
 #Annotation of docs will be the process in the pool
 #Prints to JSON
 def multiprocess(docs):
+  t1 = time.time()
   pool = Pool(20)
   logging.debug('created worker pools')
   results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt', ...]
@@ -70,6 +78,7 @@ def multiprocess(docs):
     with open(completeName, 'w') as out:
       out.write(biodoc.to_JSON())
       logging.debug('printed to json')
+  logging.info("All biodoc creations: done in %0.3fs." % (time.time() - t1))
   logging.info('Finished')
 
 
@@ -97,8 +106,8 @@ def preProcessing(text):
 #Output: This doc is saved to JSON.
 def loadDocuments(doc):
   logging.debug("NEW TASK")
-  filenamePrefix = "/home/hclent/data/"
-  filename = filenamePrefix + str(doc) #str(i)
+  #api = connect_to_Processors(4343) #could connect each time if don't want a global var
+  filenamePrefix = "/home/hclent/data/"  filename = filenamePrefix + str(doc) #str(i)
   logging.debug('found the the file '+str(doc))
   text = open(filename, 'r')
   text = text.read()
@@ -110,15 +119,8 @@ def loadDocuments(doc):
   logging.debug("END OF TASK")
   return biodoc
 
-
-#t1 = time.time()
-api = connect_to_Processors(4343)
-#docs = retrieveDocs("18269575") #"17347674"
-#multiprocess(docs)
-#print("Execute everything: done in %0.3fs." % (time.time() - t1))
-
 ###################################################
-###################################
+
 #Input: Processors annotated biodocs
 #Output: String of lemmas
 def retrieveBioDocs(pmid):
@@ -148,6 +150,7 @@ def grab_nes(biodoc):
 #Input: Processors annotated biodocs (from JSON)
 #Output: List of strings of all lemmas
 def loadBioDoc(biodocs):
+  t1 = time.time()
   data_samples = []
   nes_list = []
   for bd in biodocs:
@@ -158,7 +161,9 @@ def loadBioDoc(biodocs):
       data_samples.append(lemmas)
       nes = grab_nes(data)
       nes_list.append(nes)
+  logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
   return data_samples, nes_list
 
-#biodocs = retrieveBioDocs("18269575")
-#data_samples, nes_list = loadBioDoc(biodocs)
+# biodocs = retrieveBioDocs("17347674")
+# data_samples, nes_list = loadBioDoc(biodocs)
+# print(nes_list)

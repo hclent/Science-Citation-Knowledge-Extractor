@@ -17,7 +17,6 @@ import xml.etree.ElementTree as ET
 Entrez.email = "hclent1@gmail.com" 
 Entrez.tool = "MyInfoRetrieval"
 
-my_pmid = 18952863
 
 #Input: pmid
 #Output: basic info on pmid as lists

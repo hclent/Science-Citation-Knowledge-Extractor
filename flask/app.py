@@ -80,7 +80,7 @@ def trying():
 				
 				
 				#Connect to Processors service
-				api = connect_to_Processors(4343) #method from content_management
+				#api = connect_to_Processors(4343) #method from content_management
 
 
 				#if the entry does NOT exist in the db already, will need to retireve text and annotate
@@ -93,7 +93,7 @@ def trying():
 					for j in journals:
 						target_journals.append(j)
 
-					data, named_entities = do_ALL_multi_preprocessing(user_input, api)
+					data, named_entities = do_ALL_multi_preprocessing(user_input)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
@@ -119,7 +119,7 @@ def trying():
 					for j in journals:
 						target_journals.append(j)
 						
-					data, named_entities = do_SOME_multi_preprocessing(user_input, api)
+					data, named_entities = do_SOME_multi_preprocessing(user_input)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
