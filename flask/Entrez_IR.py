@@ -5,6 +5,7 @@ from time import sleep
 import datetime
 import os.path
 import xml.etree.ElementTree as ET
+import logging
 
 
 #Entrez Information Retrieval
@@ -17,6 +18,11 @@ import xml.etree.ElementTree as ET
 Entrez.email = "hclent1@gmail.com" 
 Entrez.tool = "MyInfoRetrieval"
 
+#Create log
+logging.basicConfig(filename='.app.log',level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.info('Started')
+
 
 #Input: pmid
 #Output: basic info on pmid as lists
@@ -27,7 +33,7 @@ def getMainInfo(pmid):
 	title = [record[0]["Title"]] #make a list
 	authors = [record[0]["AuthorList"]]
 	journal = [record[0]["FullJournalName"]]
-	print("self info: done in %0.3fs." % (time.time() - t0))
+	logging.info("self info: done in %0.3fs." % (time.time() - t0))
 	return list(zip(title, authors, journal))
 
 
@@ -40,7 +46,7 @@ def getCitationIDs(pmid): #about the same speed as MainCrawl.py
 	results = Entrez.read(Entrez.elink(dbfrom="pubmed", db="pmc", LinkName="pubmed_pmc_refs", from_uid=pmid))
 	pmc_ids = [link["Id"] for link in results[0]["LinkSetDb"][0]["Link"]]
 	return pmc_ids #list
-	print("get Citation PMCIDs: done in %0.3fs." % (time.time() - t0))
+	logging.info("get Citation PMCIDs: done in %0.3fs." % (time.time() - t0))
 	time.sleep(3)
 
 
@@ -55,7 +61,7 @@ def getCitedInfo(pmcid_list):
 	pmc_urls = []
 	i = 1
 	for citation in pmcid_list:
-		print("citation no. " + str(i) + " ...")
+		logging.info("citation no. " + str(i) + " ...")
 		handle = Entrez.esummary(db="pmc", id=citation)
 		record = Entrez.read(handle)
 		t = record[0]["Title"]
@@ -69,7 +75,7 @@ def getCitedInfo(pmcid_list):
 		time.sleep(3)
 		i += 1
 	#main_info = (list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_urls)))
-	print("get citations info: done in %0.3fs." % (time.time() - t0))
+	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
 	return pmc_titles, pmc_authors, pmc_journals, pmc_urls
 
 
@@ -85,7 +91,7 @@ def parsePMC(xml_string, pmid):
 		#print("* Got abstract")
 		main_text.append(full_abs)
 	except Exception as e:
-		print("The following PMCID is not available")
+		logging.DEBUG("The following PMCID is not available")
 	try:
 		#Get main text and add to doc
 		text = root.findall('.//p')
@@ -94,7 +100,7 @@ def parsePMC(xml_string, pmid):
 			main_text.append(full_text)
 		#print("* Got main text")
 	except Exception as e:
-		print("Only gave us the absract")
+		logging.DEBUG("Only gave us the absract")
 	return main_text
 
 
@@ -127,15 +133,15 @@ def getContentPMC(pmid, pmcids_list):
 		print(main_text)
 		i += 1
 		time.sleep(3)
-	print("got documents: done in %0.3fs." % (time.time() - t0))
+	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 
 
 
 
 # self_info = getMainInfo(my_pmid)
 # print()
-my_pmid = "26109675"
-pmc_ids = getCitationIDs(my_pmid)
+# my_pmid = "26109675"
+# pmc_ids = getCitationIDs(my_pmid)
 # print(pmc_ids)
 # print()
 # amount = len(pmc_ids)
@@ -155,7 +161,7 @@ pmc_ids = getCitationIDs(my_pmid)
 # print(journals)
 # 	print("PICKLED VER YO")
 # 	print(data)
-getContentPMC(my_pmid, pmc_ids)
+#getContentPMC(my_pmid, pmc_ids)
 
 ################### Notes ##############
 #Rarely, the XML will return this:
