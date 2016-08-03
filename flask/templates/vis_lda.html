@@ -42,16 +42,17 @@ var pack = d3.layout.pack()
     .size([diameter - margin, diameter - margin])
     .value(function(d) { return d.size; })
 
-var svg = d3.select("#datavis").append("svg") //"#dan" for dashboard.html, otherwise "body"
+var svg = d3.select("#ldavis").append("svg") //"#dan" for dashboard.html, otherwise "body"
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 
+
 d3.json("{{ url_for('static', filename='coge_lda1.json') }}", function(error, root) {
   if (error) throw error;
-
+  console.log(root)
   var focus = root,
       nodes = pack.nodes(root),
       view;
@@ -73,7 +74,7 @@ d3.json("{{ url_for('static', filename='coge_lda1.json') }}", function(error, ro
 
   var node = svg.selectAll("circle,text");
 
-  d3.select("body")
+  d3.select("#ldavis")
       .style("background", color(-1))
       .on("click", function() { zoom(root); });
 

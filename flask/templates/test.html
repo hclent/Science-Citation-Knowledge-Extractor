@@ -34,7 +34,7 @@ var margin = 20,
 
 var color = d3.scale.linear()
     .domain([-1, 5])
-    .range(["hsl(250,01%,99%)", "hsl(300,60%,40%)"])
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
     .interpolate(d3.interpolateHcl);
 
 var pack = d3.layout.pack()
@@ -42,15 +42,18 @@ var pack = d3.layout.pack()
     .size([diameter - margin, diameter - margin])
     .value(function(d) { return d.size; })
 
-var svg = d3.select("#datavis").append("svg") //"#dan" for dashboard.html, otherwise "body"
+var svg = d3.select("#dan").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 
-d3.json("{{ url_for('static', filename='coge_lsa.json') }}", function(error, root) {
-  if (error) throw error;
+var myjson = {{ jsonDict|tojson }};
+//console.log(myjson)
+root = JSON.parse( myjson );
+//console.log(root)
+
 
   var focus = root,
       nodes = pack.nodes(root),
@@ -73,7 +76,7 @@ d3.json("{{ url_for('static', filename='coge_lsa.json') }}", function(error, roo
 
   var node = svg.selectAll("circle,text");
 
-  d3.select("#datavis")
+  d3.select("#dan")
       .style("background", color(-1))
       .on("click", function() { zoom(root); });
 
@@ -101,7 +104,7 @@ d3.json("{{ url_for('static', filename='coge_lsa.json') }}", function(error, roo
     node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
     circle.attr("r", function(d) { return d.r * k; });
   }
-});
+
 
 d3.select(self.frameElement).style("height", diameter + "px");
 

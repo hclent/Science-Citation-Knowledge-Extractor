@@ -26,3 +26,819 @@ DEBUG:root:retrieved list of Bio documents to work with
 INFO:root:Done assembling lemmas and nes: done in 0.356s.
 INFO:root:Execute everything: done in 0.365s.
 INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.210s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.647s.
+INFO:root:got documents: done in 11.666s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 25884402_2.txt
+DEBUG:root:found the the file 25884402_1.txt
+DEBUG:root:found the the file 25884402_3.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 25884402_3.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 25884402_2.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 25884402_1.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 305826
+DEBUG:root:the biodoc of 25884402_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 279331
+DEBUG:root:the biodoc of 25884402_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 871341
+DEBUG:root:the biodoc of 25884402_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 217.088s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.366s.
+INFO:root:Execute everything: done in 217.475s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.208s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.856s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.250s.
+INFO:root:Execute everything: done in 0.252s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.205s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.666s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.246s.
+INFO:root:Execute everything: done in 0.249s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.211s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.857s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.298s.
+INFO:root:Execute everything: done in 0.300s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.219s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.677s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.241s.
+INFO:root:Execute everything: done in 0.243s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.203s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.583s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.248s.
+INFO:root:Execute everything: done in 0.250s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 1.249s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.044s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.256s.
+INFO:root:Execute everything: done in 0.259s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.203s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.730s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.250s.
+INFO:root:Execute everything: done in 0.252s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.141s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.859s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.248s.
+INFO:root:Execute everything: done in 0.251s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.534s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.194s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.304s.
+INFO:root:Execute everything: done in 0.306s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.263s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.664s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.245s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.166s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.971s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.247s.
+INFO:root:Execute everything: done in 0.249s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.267s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.233s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.247s.
+INFO:root:Execute everything: done in 0.250s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.205s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 11.104s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.248s.
+INFO:root:Execute everything: done in 0.251s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.303s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.410s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.245s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.141s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.624s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.246s.
+INFO:root:Execute everything: done in 0.248s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.140s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.558s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.244s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.148s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.713s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.262s.
+INFO:root:Execute everything: done in 0.264s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.252s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.866s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.298s.
+INFO:root:Execute everything: done in 0.301s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.144s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.719s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.374s.
+INFO:root:Execute everything: done in 0.376s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.495s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.687s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.299s.
+INFO:root:Execute everything: done in 0.302s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.141s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.965s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.244s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.207s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.638s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.299s.
+INFO:root:Execute everything: done in 0.301s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.133s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.648s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.310s.
+INFO:root:Execute everything: done in 0.312s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.135s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.470s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.301s.
+INFO:root:Execute everything: done in 0.303s.
+INFO:root:JSON: {"name": "flare", "children": [{"name": "concept0", "children": [{"size": 700, "name": "intermediate host"}, {"size": 700, "name": "abstrusus brevior"}, {"size": 700, "name": "stage larva"}, {"size": 700, "name": "anterior extremity"}, {"size": 700, "name": "crenosoma vulpi"}]}, {"name": "concept1", "children": [{"size": 700, "name": "infected cat"}, {"size": 700, "name": "abstrusus infection"}, {"size": 700, "name": "domestic cat"}, {"size": 700, "name": "feline aelurostrongylosis"}, {"size": 700, "name": "cat infect"}]}]}
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.209s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.492s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.302s.
+INFO:root:Execute everything: done in 0.304s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.199s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.813s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.251s.
+INFO:root:Execute everything: done in 0.253s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.136s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.719s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.247s.
+INFO:root:Execute everything: done in 0.250s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.227s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.147s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 2.065s.
+INFO:root:Execute everything: done in 2.067s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.260s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.178s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.321s.
+INFO:root:Execute everything: done in 0.324s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.203s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.878s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 3.738s.
+INFO:root:Execute everything: done in 3.741s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.198s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.609s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.244s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.211s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.665s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.300s.
+INFO:root:Execute everything: done in 0.302s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:all done
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.210s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.852s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.292s.
+INFO:root:Execute everything: done in 0.294s.
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.156s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.516s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.349s.
+INFO:root:Execute everything: done in 0.351s.
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.655s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.246s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.312s.
+INFO:root:Execute everything: done in 0.315s.
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.150s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.539s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.361s.
+INFO:root:Execute everything: done in 0.364s.
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.139s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.624s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.303s.
+INFO:root:Execute everything: done in 0.305s.
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.232s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.887s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.290s.
+INFO:root:Execute everything: done in 0.292s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.138s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.165s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.240s.
+INFO:root:Execute everything: done in 0.242s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.145s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.653s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.257s.
+INFO:root:Execute everything: done in 0.261s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.207s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.743s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.246s.
+INFO:root:Execute everything: done in 0.248s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.323s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.635s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.319s.
+INFO:root:Execute everything: done in 0.322s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.140s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.872s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.245s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.143s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.075s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.258s.
+INFO:root:Execute everything: done in 0.261s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.373s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.041s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.244s.
+INFO:root:Execute everything: done in 0.247s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.149s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.622s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.242s.
+INFO:root:Execute everything: done in 0.245s.
+INFO:root: * Generated json for LSA visualization !

@@ -33,6 +33,7 @@ def do_LSA(X, vectorizer, k):
       term_Dict = {"name": term[0], "size": 700}
       concept_Dict["children"].append(term_Dict)
   jsonDict = re.sub('\'', '\"', str(jDict)) #json needs double quotes, not single quotes
+  print(jsonDict)
   return jsonDict
 
 

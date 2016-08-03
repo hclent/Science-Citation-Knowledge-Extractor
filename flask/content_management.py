@@ -82,7 +82,6 @@ def do_SOME_multi_preprocessing(user_input):
 def run_lsa1(user_input, data_samples, k):
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
-	#print(jsonDict)
 	logging.info(" * Generated json for LSA visualization !")
 	# Unsure whether or not I should save JSON or just pass it straight to Flask ... 
 	# save_path = '/Users/hclent/Desktop/webdev-biotool/flask/static/' #must save to static

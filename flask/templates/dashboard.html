@@ -90,7 +90,6 @@
 		<div role="tabpanel" class="tab-pane fade" id="ner">
 		  	<p>What organisms are they working with?</p> 
         {% for result in ner %}
-        <!--Sample results will go here-->
               <li>{{result}}</li>
         {% endfor %}
 		</div> 
@@ -112,9 +111,9 @@
                       </button>
                       <ul class="dropdown-menu">
                           <!-- TO DO: ajax req it and then append html in  div -->
-                        <li><a href="#lsa" id="lsa">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
+                        <li><a href="#lsa" id="lsa" onclick="toggle('datavis', 'ldavis')">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
 
-                        <li><a href="#lda" id="lda">LDA</a></li> <!-- and this button to include vis_lda.html -->
+                        <li><a href="#lda" id="lda" onclick="toggle('ldavis', 'datavis')">LDA</a></li> <!-- and this button to include vis_lda.html -->
 
                       </ul>
                     </div>
@@ -138,35 +137,26 @@
             </div>
             </ul>
 
-            <div id="datavis">
-                    {% include 'vis_lsa.html' %}
-            </div>
+            <div style="display:none" id="datavis">blllaahhhh</div>
 
-
+           <div style="display:none" id="ldavis"><p>{% include 'vis_lda.html' %}</p></div>
 
         </div>
 
-
-
+</ul>
 </div>
 
 
 
-<script>
-//  var btn1 = document.getElementById('lsa');
-//  btn1.addEventListener('click', toggle);
-
-
-//  function toggle() {
-//      console.log('LSA clicked!');
-//      var visspace = document.getElementById('datavis');
-//      visspace.style.display = visspace.style.display == 'none' ? '' : 'none';
-//      visspace = document.getElementById('blah');
-//      visspace.style.display = visspace.style.display == 'none' ? '' : 'none';
-//
-//
-//  }
-</script>
+ <script>
+  function toggle(vis1, vis2) {
+      //console.log('Button clicked!');
+      var visspace1 = document.getElementById(vis1);
+      var visspace2 = document.getElementById(vis2);
+      visspace1.style.display = visspace1.style.display == 'none' ? '' : 'none'; //if none, display, if not none -> none
+      visspace2.style.display = visspace2.style.display == '' ? 'none' : 'none'; //dont display other one!
+  }
+ </script>
 
 
 
