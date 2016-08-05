@@ -3,9 +3,10 @@ from Bio import Entrez
 import time, sys, pickle
 from time import sleep
 import datetime
-import os.path
+import os.path, logging, json, re
 import xml.etree.ElementTree as ET
-import logging
+from collections import defaultdict
+
 
 
 #Entrez Information Retrieval
@@ -58,6 +59,7 @@ def getCitedInfo(pmcid_list):
 	pmc_titles = []
 	pmc_authors = []
 	pmc_journals = []
+	pmc_dates = []
 	pmc_urls = []
 	i = 1
 	for citation in pmcid_list:
@@ -67,16 +69,18 @@ def getCitedInfo(pmcid_list):
 		t = record[0]["Title"]
 		a = record[0]["AuthorList"]
 		j = record[0]["FullJournalName"]
+		d = record[0]["PubDate"]
 		u = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC"+citation
 		pmc_titles.append(t)
 		pmc_authors.append(a)
 		pmc_journals.append(j)
+		pmc_dates.append(d)
 		pmc_urls.append(u)
 		time.sleep(3)
 		i += 1
 	#main_info = (list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_urls)))
 	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
-	return pmc_titles, pmc_authors, pmc_journals, pmc_urls
+	return pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls
 
 
 #Input: XML string of PMC entry generated with getContentPMC
@@ -136,18 +140,18 @@ def getContentPMC(pmid, pmcids_list):
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 
 
-
-
 # self_info = getMainInfo(my_pmid)
 # print()
-# my_pmid = "26109675"
-# pmc_ids = getCitationIDs(my_pmid)
+#"18952863, 18269575"
+#p1 = "18952863"
+#pmc_ids1 = getCitationIDs(p1)
 # print(pmc_ids)
 # print()
 # amount = len(pmc_ids)
 # print("THERE ARE " + str(amount) + " DOCUMENTS")
 # print()
-# main_info = list(getCitedInfo(pmc_ids))
+#pmc_titles1, pmc_authors1, pmc_journals1, pmc_dates1, pmc_urls1 = list(getCitedInfo(pmc_ids1))
+
 # print(main_info)
 # with open('p18952863.pickle', 'wb') as f:
 # 	pickle.dump(main_info, f)
@@ -169,4 +173,67 @@ def getContentPMC(pmid, pmcids_list):
 	# <!DOCTYPE pmc-articleset PUBLIC "-//NLM//DTD ARTICLE SET 2.0//EN" "http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd">
 	# <pmc-articleset><Reply Id="24948109" error="The following PMCID is not available: 24948109"/></pmc-articleset>
 #Thus pasrePMC() has exception handeling for this
+
+def journals_vis(journals, dates):
+	years_list = []
+	#print(dates) #step1 : get years
+	for d in dates:
+		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
+		years_list.append(y)
+	#print(years_list)
+
+	years_range = (years_list[-1], years_list[0]) #define years range with (oldest, newest)
+	#print(years_range)
+
+	#Associate journals with years
+	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
+	#print(journal_year)
+
+	#Dictionary with "Journal": [year, year]
+	#For looking up the years
+	jyDict = defaultdict(list)
+	i = 0
+	for j in journals:
+		if j == (journal_year[i][0]):
+			jyDict[j] += [journal_year[i][1]]
+			i+=1
+	#print(jyDict)
+
+	#Dictionary with "Journal": Number-of-publications
+	#For looking up the total
+	journalsTotalDict = defaultdict(lambda: 0)
+	sum = 0
+	for j in journals:
+		journalsTotalDict[j] += 1
+		sum +=1
+	#print(journalsTotalDict)
+	unique_journals = list(journalsTotalDict.keys())
+	#print(unique_journals)
+
+	publication_data = []
+	for j in unique_journals:
+		#print(j)
+		#Initiate the dictionary for this journal
+		journal_data = {
+			"name": j,
+			"articles": [], #[[year, number], [year, number]]
+			"total": journalsTotalDict[j]   #total can get from journalsTotalDict with key (total is value)
+		}
+		#print("Years a paper was in this journal: "+ str(jyDict[j]))
+		for year in range(int(years_range[0]), int(years_range[1]) + 1):
+			#print("checking " +str(year) +" ...")
+			sum = 0
+			for entry in jyDict[j]:
+				#print(" ... against "+str(entry))
+				if year == int(entry):
+					#print("The years match so I'm going to count now")
+					sum+=1
+				year_sum = [year, sum]
+				#print(year_sum)
+			journal_data["articles"].append(year_sum)
+
+		publication_data.append(journal_data)
+	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
+	return publication_data
+
 

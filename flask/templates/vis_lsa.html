@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
 <style>
 
 .node {
@@ -26,6 +28,7 @@
 }
 
 </style>
+<body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
 
@@ -34,7 +37,7 @@ var margin = 20,
 
 var color = d3.scale.linear()
     .domain([-1, 5])
-    .range(["hsl(250,01%,99%)", "hsl(300,60%,40%)"])
+    .range(["hsl(275,40%,99%)", "hsl(325,60%,40%)"]) //HSL Color Picker
     .interpolate(d3.interpolateHcl);
 
 var pack = d3.layout.pack()
@@ -42,7 +45,7 @@ var pack = d3.layout.pack()
     .size([diameter - margin, diameter - margin])
     .value(function(d) { return d.size; })
 
-var svg = d3.select("#datavis").append("svg") //"#dan" for dashboard.html, otherwise "body"
+var svg = d3.select("body").append("svg") //"#dan" for dashboard.html, otherwise "body"
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
@@ -73,7 +76,7 @@ d3.json("{{ url_for('static', filename='coge_lsa.json') }}", function(error, roo
 
   var node = svg.selectAll("circle,text");
 
-  d3.select("#datavis")
+  d3.select("body")
       .style("background", color(-1))
       .on("click", function() { zoom(root); });
 

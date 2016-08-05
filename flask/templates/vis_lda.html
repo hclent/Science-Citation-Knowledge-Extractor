@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
 <style>
 
 .node {
@@ -26,84 +28,85 @@
 }
 
 </style>
+<body>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
 
-var margin = 20,
-    diameter = 960;
+var margin1 = 20,
+    diameter1 = 960;
 
-var color = d3.scale.linear()
+var color1 = d3.scale.linear()
     .domain([-1, 5])
     .range(["hsl(250,01%,99%)", "hsl(300,60%,40%)"])
     .interpolate(d3.interpolateHcl);
 
-var pack = d3.layout.pack()
+var pack1 = d3.layout.pack()
     .padding(2)
-    .size([diameter - margin, diameter - margin])
-    .value(function(d) { return d.size; })
+    .size([diameter1 - margin1, diameter1 - margin1])
+    .value(function(dd) { return dd.size; })
 
-var svg = d3.select("#ldavis").append("svg") //"#dan" for dashboard.html, otherwise "body"
-    .attr("width", diameter)
-    .attr("height", diameter)
+var svg1 = d3.select("body").append("svg") //"#dan" for dashboard.html, otherwise "body"
+    .attr("width", diameter1)
+    .attr("height", diameter1)
   .append("g")
-    .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+    .attr("transform", "translate(" + diameter1 / 2 + "," + diameter1 / 2 + ")");
 
 
 
-d3.json("{{ url_for('static', filename='coge_lda1.json') }}", function(error, root) {
+d3.json("{{ url_for('static', filename='coge_lda1.json') }}", function(error, root1) {
   if (error) throw error;
-  console.log(root)
-  var focus = root,
-      nodes = pack.nodes(root),
-      view;
+  //console.log(root)
+  var focus1 = root1,
+      nodes1 = pack1.nodes(root1),
+      view1;
 
-  var circle = svg.selectAll("circle")
-      .data(nodes)
+  var circle1 = svg1.selectAll("circle")
+      .data(nodes1)
     .enter().append("circle")
-      .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-      .style("fill", function(d) { return d.children ? color(d.depth) : null; })
-      .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+      .attr("class", function(dd) { return dd.parent ? dd.children ? "node" : "node node--leaf" : "node node--root"; })
+      .style("fill", function(dd) { return dd.children ? color1(dd.depth) : null; })
+      .on("click", function(dd) { if (focus1 !== dd) zoom(dd), d3.event.stopPropagation(); });
 
-  var text = svg.selectAll("text")
-      .data(nodes)
+  var text1 = svg1.selectAll("text")
+      .data(nodes1)
     .enter().append("text")
       .attr("class", "label")
-      .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-      .style("display", function(d) { return d.parent === root ? "inline" : "none"; })
-      .text(function(d) { return d.name; });
+      .style("fill-opacity", function(dd) { return dd.parent === root1 ? 1 : 0; })
+      .style("display", function(dd) { return dd.parent === root1 ? "inline" : "none"; })
+      .text(function(dd) { return dd.name; });
 
-  var node = svg.selectAll("circle,text");
+  var node1 = svg1.selectAll("circle,text");
 
-  d3.select("#ldavis")
-      .style("background", color(-1))
-      .on("click", function() { zoom(root); });
+  d3.select("body")
+      .style("background", color1(-1))
+      .on("click", function() { zoom(root1); });
 
-  zoomTo([root.x, root.y, root.r * 2 + margin]);
+  zoomTo([root1.x, root1.y, root1.r * 2 + margin1]);
 
-  function zoom(d) {
-    var focus0 = focus; focus = d;
+  function zoom(dd) {
+    var focusF = focus1; focus1 = dd;
 
-    var transition = d3.transition()
+    var transition1 = d3.transition()
         .duration(d3.event.altKey ? 7500 : 750)
-        .tween("zoom", function(d) {
-          var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-          return function(t) { zoomTo(i(t)); };
+        .tween("zoom", function(dd) {
+          var i1 = d3.interpolateZoom(view1, [focus1.x, focus1.y, focus1.r * 2 + margin1]);
+          return function(t) { zoomTo(i1(t)); };
         });
 
-    transition.selectAll("text")
-      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-        .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-        .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-        .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+    transition1.selectAll("text")
+      .filter(function(dd) { return dd.parent === focus1 || this.style.display === "inline"; })
+        .style("fill-opacity", function(dd) { return dd.parent === focus1 ? 1 : 0; })
+        .each("start", function(dd) { if (dd.parent === focus1) this.style.display = "inline"; })
+        .each("end", function(dd) { if (dd.parent !== focus1) this.style.display = "none"; });
   }
 
   function zoomTo(v) {
-    var k = diameter / v[2]; view = v;
-    node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-    circle.attr("r", function(d) { return d.r * k; });
+    var k1 = diameter1 / v[2]; view1 = v;
+    node1.attr("transform", function(dd) { return "translate(" + (dd.x - v[0]) * k1 + "," + (dd.y - v[1]) * k1 + ")"; });
+    circle1.attr("r", function(dd) { return dd.r * k1; });
   }
 });
 
-d3.select(self.frameElement).style("height", diameter + "px");
+d3.select(self.frameElement).style("height", diameter1 + "px");
 
 </script>

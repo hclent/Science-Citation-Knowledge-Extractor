@@ -51,13 +51,13 @@
 
   <!-- Define Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation"><a href="#WebDev" aria-controls="WebDev" role="tab" data-toggle="tab">Information</a></li>
+    <li role="presentation"><a href="#citations" aria-controls="citations" role="tab" data-toggle="tab">Citations</a></li>
 
     <li role="presentation"><a href="#journals" aria-controls="journals" role="tab" data-toggle="tab">Journals</a></li>
     
-    <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NER</a></li>
+    <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NES</a></li>
     
-    <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Data Vis</a></li>
+    <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Topics</a></li>
   </ul>
 
 
@@ -65,7 +65,7 @@
 	<ul class="tab-content">
 
 		<!--  Loop through cited article information like this --> 
-		<div role="tabpanel" class="tab-pane fade" id="WebDev">
+		<div role="tabpanel" class="tab-pane fade" id="citations">
 		  	<p>Results for PMID(s): 18952863, 18269575</p> 
 		  	{% for result in main_info %}
 		  	<!--Sample results will go here-->
@@ -77,11 +77,10 @@
 
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
-		  	<p>Where are they published?</p> 
-                {% for result in journals %}
-        <!--Sample results will go here-->
-              <li>{{result}}</li>
-        {% endfor %}
+            <p>    </p>
+
+            <iframe  id="cogelda"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogejournals/" width="1100" height="1000" marginwidth="0", marginheight="0", scrolling="no"></iframe>
+
      
 		</div> 
 
@@ -111,9 +110,9 @@
                       </button>
                       <ul class="dropdown-menu">
                           <!-- TO DO: ajax req it and then append html in  div -->
-                        <li><a href="#lsa" id="lsa" onclick="toggle('datavis', 'ldavis')">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
+                        <li><a href="#lsa" id="lsa" onclick="toggle('cogelsa', 'cogelda')">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
 
-                        <li><a href="#lda" id="lda" onclick="toggle('ldavis', 'datavis')">LDA</a></li> <!-- and this button to include vis_lda.html -->
+                        <li><a href="#lda" id="lda" onclick="toggle('cogelda', 'cogelsa')">LDA</a></li> <!-- and this button to include vis_lda.html -->
 
                       </ul>
                     </div>
@@ -137,9 +136,9 @@
             </div>
             </ul>
 
-            <div style="display:none" id="datavis">blllaahhhh</div>
+            <iframe  id="cogelsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelsa/" width="1000" height="1000" marginwidth="0", marginheight="0", scrolling="no"></iframe>
 
-           <div style="display:none" id="ldavis"><p>{% include 'vis_lda.html' %}</p></div>
+            <iframe  id="cogelda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelda/" width="1000" height="1000" marginwidth="0", marginheight="0", scrolling="no"></iframe>
 
         </div>
 
