@@ -51,7 +51,7 @@ class pmidForm(Form):
 #Getting Flask-WTFs to work with sqlite3 here
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
-@app.route("/results/", methods=["GET", "POST"])
+@app.route('/results/', methods=["GET", "POST"])
 def trying():
 	form = pmidForm(secret_key='super secret key')
 	try:
@@ -59,6 +59,12 @@ def trying():
 			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			print(pmid_list)
+
+			q = '+'
+			query = str(q.join(pmid_list))
+			print("query: " + query)
+			action_redir = "https://geco.iplantcollaborative.org/hclent/bionlp/results/"+query
+			print(action_redir)
 
 			main_info = []
 			target_journals = []
@@ -142,12 +148,11 @@ def trying():
 				session['entered_id'] = True
 				session['engaged'] = 'engaged'
 
-
 		return render_template('results.html', form=form, main_info = main_info, target_journals = target_journals, ners=ners, jsonDict=jsonDict)
+
+
 	except Exception as e:
 		return(str(e))
-
-
 
 
 ################ Routes for visualization toggle ################
@@ -160,8 +165,7 @@ def cogelsa():
 def cogelda():
 	return render_template('vis_lda.html')
 
-
-@app.route('/cogejournals/') #default coge lda for iframe
+@app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
 	# completeName = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json'
 	# with open(completeName) as load_data:
@@ -174,29 +178,9 @@ def cogejournals():
 @app.route('/reslsa/', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa():
 	#need to get last user_input
-	form = pmidForm(secret_key='super secret key')
-	try:
-		if request.method == 'POST':
-			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
-			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
-
-			for user_input in pmid_list:
-				print("THIS IS THE USRINPT FROM /RESLSA/")
-				print(str(user_input))
-				user_input = str(user_input)
-
-				if user_input == pmid_list[-1]:
-					save_path = '/home/hclent/data/'+str(user_input)+'/'
-					completeName = os.path.join(save_path, ('lsa_'+(str(user_input))+'.json'))
-					print(completeName)
-
-					with open(completeName) as load_data:
-						jsonDict = json.load(load_data)
-					print("THIS IS THE jsonDict from /resla/ : ")
-					print(jsonDict)
-		return render_template('test.html', jsonDict=jsonDict)
-	except Exception as e:
-		return(str(e))
+	print("in routine resla")
+	jsonDict = {'potato': 5000}
+	return render_template('test.html', jsonDict=jsonDict)
 
 
 ########################################################################
