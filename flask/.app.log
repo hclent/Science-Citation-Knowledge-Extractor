@@ -3266,3 +3266,417 @@ DEBUG:root:retrieved list of Bio documents to work with
 INFO:root:Done assembling lemmas and nes: done in 0.334s.
 INFO:root:Execute everything: done in 0.347s.
 INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.273s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.601s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.294s.
+INFO:root:Execute everything: done in 0.296s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.211s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.115s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.243s.
+INFO:root:Execute everything: done in 0.245s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.250s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.630s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.295s.
+INFO:root:Execute everything: done in 0.297s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.226s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.717s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.255s.
+INFO:root:Execute everything: done in 0.257s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.186s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:get citations info: done in 22.701s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.126s.
+INFO:root:Execute everything: done in 0.137s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.735s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.428s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.288s.
+INFO:root:Execute everything: done in 0.290s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.252s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:get citations info: done in 22.595s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.049s.
+INFO:root:Execute everything: done in 0.050s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.141s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.732s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.298s.
+INFO:root:Execute everything: done in 0.301s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.139s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:get citations info: done in 22.256s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.059s.
+INFO:root:Execute everything: done in 0.061s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.144s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.480s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.294s.
+INFO:root:Execute everything: done in 0.297s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.137s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:get citations info: done in 22.547s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.060s.
+INFO:root:Execute everything: done in 0.062s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.207s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.161s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.295s.
+INFO:root:Execute everything: done in 0.297s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.496s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.780s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.298s.
+INFO:root:Execute everything: done in 0.301s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.268s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.895s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.243s.
+INFO:root:Execute everything: done in 0.245s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.213s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.807s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.296s.
+INFO:root:Execute everything: done in 0.298s.
+INFO:root: * Generated json for LSA visualization !
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.209s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.118s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.297s.
+INFO:root:Execute everything: done in 0.300s.
+INFO:root: * Generated json for LSA visualization !
