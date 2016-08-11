@@ -89,7 +89,6 @@ def trying():
 						target_dates.append(d)
 
 
-
 					data, named_entities = do_ALL_multi_preprocessing(user_input)
 					for d in data:
 						data_samples.append(d)

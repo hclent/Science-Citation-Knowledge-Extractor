@@ -1,13 +1,7 @@
 from __future__ import print_function
-from time import time
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
-import re, json, pickle
-import pprint
-
-
-#data_samples = pickle.load(open("18952863_all.p", "rb"))
-#data_samples = ['Here is one document about pickles', 'This is the second document about writing to pickle objects', 'I need a third text to look at']
+import re
 
 
 def get_tfidf(data): #data should be a list of strings for the documents
@@ -48,7 +42,6 @@ def topics_lda(tf_vectorizer, lda):
   print("\nTopics in LDA model:")
   tf_feature_names = tf_vectorizer.get_feature_names()
   jsonLDA = print_top_words(lda, tf_feature_names, 6)
-  #print(tf_feature_names)
   return jsonLDA
 
 

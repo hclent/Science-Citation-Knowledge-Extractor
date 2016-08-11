@@ -4932,3 +4932,1004 @@ INFO:root:Beginning Latent Dirichlet Allocation
 INFO:root:Printing JOURNALS to json
 INFO:root:Printing LSA to json
 INFO:root:Saving LDA to JSON
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.207s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:citation no. 8 ...
+INFO:root:get citations info: done in 26.074s.
+INFO:root:got documents: done in 27.853s.
+INFO:root:Beginning multiprocessing for NEW docs
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.143s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:citation no. 8 ...
+INFO:root:citation no. 9 ...
+INFO:root:citation no. 10 ...
+INFO:root:citation no. 11 ...
+INFO:root:get citations info: done in 35.169s.
+INFO:root:got documents: done in 37.757s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_6.txt
+DEBUG:root:found the the file 22389373_3.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_4.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_9.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_11.txt
+DEBUG:root:NEW TASK
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_8.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_5.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_2.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_7.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_10.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_10.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_6.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_7.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_8.txt
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_3.txt
+DEBUG:root:* beginning annotation of 22389373_11.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_5.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_1.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_9.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_4.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 47956
+DEBUG:root:the biodoc of 22389373_10.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 44684
+DEBUG:root:the biodoc of 22389373_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 489889
+DEBUG:root:the biodoc of 22389373_7.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 551504
+DEBUG:root:the biodoc of 22389373_8.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 707280
+DEBUG:root:the biodoc of 22389373_5.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 695753
+DEBUG:root:the biodoc of 22389373_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 713711
+DEBUG:root:the biodoc of 22389373_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 625851
+DEBUG:root:the biodoc of 22389373_11.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 614291
+DEBUG:root:the biodoc of 22389373_6.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 880739
+DEBUG:root:the biodoc of 22389373_9.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 1261936
+DEBUG:root:the biodoc of 22389373_4.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 365.380s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 1.327s.
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.223s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:citation no. 8 ...
+INFO:root:citation no. 9 ...
+INFO:root:citation no. 10 ...
+INFO:root:citation no. 11 ...
+INFO:root:get citations info: done in 34.819s.
+INFO:root:got documents: done in 38.455s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_6.txt
+DEBUG:root:found the the file 22389373_3.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_4.txt
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_9.txt
+DEBUG:root:found the the file 22389373_11.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_8.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_5.txt
+DEBUG:root:NEW TASK
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_2.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_7.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:NEW TASK
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 22389373_1.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22389373_10.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_10.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_8.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_11.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_3.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_5.txt
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:* beginning annotation of 22389373_6.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:* beginning annotation of 22389373_7.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_9.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_4.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22389373_1.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 44684
+DEBUG:root:the biodoc of 22389373_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 47956
+DEBUG:root:the biodoc of 22389373_10.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 489889
+DEBUG:root:the biodoc of 22389373_7.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 551504
+DEBUG:root:the biodoc of 22389373_8.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 707280
+DEBUG:root:the biodoc of 22389373_5.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 695753
+DEBUG:root:the biodoc of 22389373_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 713711
+DEBUG:root:the biodoc of 22389373_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 625851
+DEBUG:root:the biodoc of 22389373_11.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 614291
+DEBUG:root:the biodoc of 22389373_6.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 880739
+DEBUG:root:the biodoc of 22389373_9.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 1261936
+DEBUG:root:the biodoc of 22389373_4.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 377.557s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 1.299s.
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.204s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 10.029s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.291s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Saving LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.749s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:get citations info: done in 16.472s.
+INFO:root:got documents: done in 16.833s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_1.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_2.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 24929594_3.txt
+DEBUG:root:found the the file 24929594_5.txt
+DEBUG:root:found the the file 24929594_4.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_2.txt
+DEBUG:root:* beginning annotation of 24929594_1.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_5.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_4.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_3.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 44003
+DEBUG:root:the biodoc of 24929594_5.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 207087
+DEBUG:root:the biodoc of 24929594_4.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 321383
+DEBUG:root:the biodoc of 24929594_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 365416
+DEBUG:root:the biodoc of 24929594_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 550986
+DEBUG:root:the biodoc of 24929594_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 146.386s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.235s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Saving LDA to JSON
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.209s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:get citations info: done in 15.969s.
+INFO:root:got documents: done in 17.899s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_1.txt
+DEBUG:root:found the the file lsa_24929594.json
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file lda_24929594.json
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_2.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_4.txt
+DEBUG:root:found the the file 24929594_5.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 24929594_3.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file journals_24929594.json
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_5.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_4.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_1.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_3.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 44003
+DEBUG:root:the biodoc of 24929594_5.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 207087
+DEBUG:root:the biodoc of 24929594_4.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 321383
+DEBUG:root:the biodoc of 24929594_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 365416
+DEBUG:root:the biodoc of 24929594_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 550986
+DEBUG:root:the biodoc of 24929594_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.372s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:get citations info: done in 16.050s.
+INFO:root:got documents: done in 16.760s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_1.txt
+DEBUG:root:found the the file lsa_24929594.json
+DEBUG:root:found the the file lda_24929594.json
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24929594_2.txt
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 24929594_4.txt
+DEBUG:root:NEW TASK
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file 24929594_5.txt
+DEBUG:root:found the the file 24929594_3.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:found the the file journals_24929594.json
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_5.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_4.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_1.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24929594_3.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 44003
+DEBUG:root:the biodoc of 24929594_5.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 207087
+DEBUG:root:the biodoc of 24929594_4.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 321383
+DEBUG:root:the biodoc of 24929594_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 365416
+DEBUG:root:the biodoc of 24929594_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 550986
+DEBUG:root:the biodoc of 24929594_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.660s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:get citations info: done in 12.837s.
+INFO:root:got documents: done in 13.980s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 25061594_1.txt
+DEBUG:root:found the the file 25061594_2.txt
+DEBUG:root:found the the file 25061594_4.txt
+DEBUG:root:found the the file 25061594_3.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 25061594_3.txt
+DEBUG:root:cleaned the text
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 25061594_1.txt
+DEBUG:root:* beginning annotation of 25061594_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 25061594_4.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.146s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:get citations info: done in 12.786s.
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:processors.api:Starting processors-server (java -Xmx16G -cp /home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar NLPServer --port 4343 --host localhost) ...
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 173
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.204s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.155s.
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.394s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:citation no. 8 ...
+INFO:root:citation no. 9 ...
+INFO:root:get citations info: done in 28.781s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.650s.
+INFO:root:Execute everything: done in 0.656s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.202s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:get citations info: done in 6.567s.
+INFO:root:got documents: done in 6.732s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24876643_2.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24876643_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24876643_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24876643_1.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 32054
+DEBUG:root:the biodoc of 24876643_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 55140
+DEBUG:root:the biodoc of 24876643_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 8.351s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.015s.
+INFO:root:Execute everything: done in 8.368s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.174s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:citation no. 4 ...
+INFO:root:citation no. 5 ...
+INFO:root:citation no. 6 ...
+INFO:root:citation no. 7 ...
+INFO:root:citation no. 8 ...
+INFO:root:citation no. 9 ...
+INFO:root:get citations info: done in 28.862s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.552s.
+INFO:root:Execute everything: done in 0.558s.
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.141s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:get citations info: done in 6.811s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.017s.
+INFO:root:Execute everything: done in 0.018s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.143s.
+INFO:root:citation no. 1 ...
+INFO:root:get citations info: done in 3.334s.
+INFO:root:got documents: done in 3.232s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24876642_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24876642_1.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 41451
+DEBUG:root:the biodoc of 24876642_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 4.721s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.007s.
+INFO:root:Execute everything: done in 4.731s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.210s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.841s.
+INFO:root:got documents: done in 10.145s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24662463_2.txt
+DEBUG:root:found the the file 24662463_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 24662463_3.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24662463_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24662463_2.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 24662463_3.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 16988
+DEBUG:root:the biodoc of 24662463_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 315036
+DEBUG:root:the biodoc of 24662463_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 403957
+DEBUG:root:the biodoc of 24662463_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 153.700s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.178s.
+INFO:root:Execute everything: done in 153.888s.
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.149s.
+INFO:root:citation no. 1 ...
+INFO:root:get citations info: done in 3.346s.
+INFO:root:got documents: done in 3.267s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 16624631_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 16624631_1.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 55811
+DEBUG:root:the biodoc of 16624631_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 12.053s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.009s.
+INFO:root:Execute everything: done in 12.064s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.217s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.610s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.130s.
+INFO:root:Execute everything: done in 0.131s.
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.138s.
+INFO:root:citation no. 1 ...
+INFO:root:get citations info: done in 3.387s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.015s.
+INFO:root:Execute everything: done in 0.017s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.141s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.640s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.128s.
+INFO:root:Execute everything: done in 0.129s.
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.139s.
+INFO:root:citation no. 1 ...
+INFO:root:get citations info: done in 3.228s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.012s.
+INFO:root:Execute everything: done in 0.013s.
+INFO:root:PMID is NOT in the database
+INFO:root:self info: done in 0.139s.
+INFO:root:citation no. 1 ...
+INFO:root:get citations info: done in 3.529s.
+INFO:root:got documents: done in 3.250s.
+INFO:root:Beginning multiprocessing for NEW docs
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 10353694_1.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 10353694_1.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 47944
+DEBUG:root:the biodoc of 10353694_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 7.029s.
+INFO:root:Finished
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.008s.
+INFO:root:Execute everything: done in 7.040s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON

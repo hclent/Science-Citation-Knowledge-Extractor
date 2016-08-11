@@ -85,10 +85,10 @@ def do_ALL_multi_preprocessing(user_input):
 #This method is for user_input that IS already in the DB
 def do_SOME_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
-	#t1 = time.time()
+	t1 = time.time()
 	biodocs = retrieveBioDocs(user_input)
 	data_samples, nes_list = loadBioDoc(biodocs)
-	#logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return data_samples, nes_list
 
 
@@ -113,13 +113,12 @@ def run_lda1(data_samples): #set at defulat k=3, number of words=6
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
 	lda = fit_lda(tfidf)
 	jsonLDA = topics_lda(tfidf_vectorizer, lda)
-	#print(jsonDict)
 	return jsonLDA
 
 
 def print_lda(user_input, jsonLDA):
 	#Save the json for @app.route('/reslda/')
-	logging.info('Saving LDA to JSON')
+	logging.info('Printing LDA to JSON')
 	save_path = '/home/hclent/data/'+str(user_input)+'/'
 	completeName = os.path.join(save_path, ('lda_'+(str(user_input))+'.json'))
 	with open(completeName, 'w') as outfile:
