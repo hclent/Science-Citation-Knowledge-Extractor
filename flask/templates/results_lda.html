@@ -52,7 +52,7 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
 
-var myjson = {{ jsonDict|tojson }};
+var myjson = {{ jsonLDA|tojson }};
 console.log(myjson)
 root = JSON.parse( myjson );
 console.log(root)

@@ -1,3 +1,7 @@
+import re
+from collections import defaultdict
+
+
 def journals_vis(journals, dates):
 	years_list = []
 	#print(dates) #step1 : get years
@@ -57,4 +61,5 @@ def journals_vis(journals, dates):
 			journal_data["articles"].append(year_sum)
 
 		publication_data.append(journal_data)
+	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
 	return (publication_data)

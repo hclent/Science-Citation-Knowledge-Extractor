@@ -1,9 +1,10 @@
 from processors import * #pyProcessors
+import os.path, time, re, logging
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
-from app import api
 from lsa1 import * #mine
-import os.path, time, re, logging
+from lda1 import * #mine
+from journalvis import * #mine
 
 
 ## Supporting functions for app.py
@@ -12,7 +13,6 @@ import os.path, time, re, logging
 #Create log
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-logging.info('Started')
 
 
 #Set a PROCESSORS_SERVER environment variable.
@@ -42,7 +42,7 @@ def run_IR_in_db(user_input):
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
 	main_info = list(zip(target_title, target_authors, target_urls))
-	return main_info, target_journals
+	return main_info, target_journals, target_dates
 
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
@@ -54,7 +54,18 @@ def run_IR_not_db(user_input):
 	main_info = list(zip(target_title, target_authors, target_urls))
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
-	return main_info, target_journals
+	return main_info, target_journals, target_dates
+
+
+def print_journalvis(journals, dates, user_input):
+	publication_data = journals_vis(journals, dates)
+	print(publication_data)
+	logging.info('Printing JOURNALS to json')
+	save_path = '/home/hclent/data/'+str(user_input)+'/'
+	completeName = os.path.join(save_path, ('journals_'+(str(user_input))+'.json'))
+	with open(completeName, 'w') as outfile:
+		json.dump(publication_data, outfile)
+
 
 
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
@@ -74,23 +85,42 @@ def do_ALL_multi_preprocessing(user_input):
 #This method is for user_input that IS already in the DB
 def do_SOME_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
-	t1 = time.time()
+	#t1 = time.time()
 	biodocs = retrieveBioDocs(user_input)
 	data_samples, nes_list = loadBioDoc(biodocs)
-	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	#logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return data_samples, nes_list
 
 
 
 def run_lsa1(user_input, data_samples, k):
+	logging.info('Beginning Latent Semantic Analysis')
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
-	logging.info(" * Generated json for LSA visualization !")
 	return jsonDict
 
 def print_lsa(user_input, jsonDict):
 	#Save the json for @app.route('/reslsa/')
+	logging.info('Printing LSA to json')
 	save_path = '/home/hclent/data/'+str(user_input)+'/'
 	completeName = os.path.join(save_path, ('lsa_'+(str(user_input))+'.json'))
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonDict, outfile)
+
+
+def run_lda1(data_samples): #set at defulat k=3, number of words=6
+	logging.info('Beginning Latent Dirichlet Allocation')
+	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
+	lda = fit_lda(tfidf)
+	jsonLDA = topics_lda(tfidf_vectorizer, lda)
+	#print(jsonDict)
+	return jsonLDA
+
+
+def print_lda(user_input, jsonLDA):
+	#Save the json for @app.route('/reslda/')
+	logging.info('Saving LDA to JSON')
+	save_path = '/home/hclent/data/'+str(user_input)+'/'
+	completeName = os.path.join(save_path, ('lda_'+(str(user_input))+'.json'))
+	with open(completeName, 'w') as outfile:
+		json.dump(jsonLDA, outfile)

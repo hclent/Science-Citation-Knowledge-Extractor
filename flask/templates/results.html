@@ -50,11 +50,11 @@
 
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
-		  	<p>Where are they published?</p> 
-		  	{% for result in target_journals %}
-		  		<li>{{result}}</li>
-		  	{% endfor %}
-		</div> 
+		  	<p>Where are they published?</p>
+            <iframe  id="resjournals" src="https://geco.iplantcollaborative.org/hclent/bionlp/resjournals/{{query}}" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" ></iframe>
+
+
+		</div>
 
 
 		<!--  Put NERs here blegh --> 
@@ -109,7 +109,8 @@
 
                 <!--template var at end of link -->
            <iframe  id="reslsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslsa/{{query}}" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" ></iframe>
-     <!--      <iframe  id="reslda" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslda/{{query}}" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" ></iframe> -->
+
+          <iframe  id="reslda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslda/{{query}}" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" ></iframe>
 
 
 		</ul>
@@ -121,7 +122,6 @@
 
 <script>
   function toggle(vis1, vis2) {
-      //console.log('Button clicked!');
       var visspace1 = document.getElementById(vis1);
       var visspace2 = document.getElementById(vis2);
       visspace1.style.display = visspace1.style.display == 'none' ? '' : 'none'; //if none, display, if not none -> none
