@@ -177,22 +177,17 @@ def trying():
 		return(str(e))
 
 
+
+
+################ Routes for visualization toggle ################
+
 #Create Form for handling visualization options
 class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
 
 
-
-class stooopid(Form):
-	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
-	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
-
-
-################ Routes for visualization toggle ################
-
-
-################ Default Coge Data #################
+################ Default Coge Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions(secret_key='super secret key')
@@ -222,7 +217,7 @@ def cogelsa():
 
 @app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
 def cogelda():
-	form = stooopid(secret_key='super secret key')
+	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
@@ -252,7 +247,9 @@ def cogelda():
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
 	print("in app route /cogejournals/")
-	journals = '[{"name": "Nature genetics", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 1], [2016, 0]]}, {"name": "Scientific Reports", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 1], [2015, 0], [2016, 1]]}, {"name": "Molecular Biology and Evolution", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Frontiers in plant science", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 1], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Journal of Experimental Botany", "total": 3, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 1], [2013, 0], [2014, 1], [2015, 0], [2016, 1]]}, {"name": "Plant and Cell Physiology", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "Frontiers in Genetics", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 2]]}, {"name": "Applied and Environmental Microbiology", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 1]]}, {"name": "Journal of Molecular Evolution", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 2], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "BMC Genomics", "total": 19, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 5], [2014, 9], [2015, 2], [2016, 3]]}, {"name": "PLoS Genetics", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "GigaScience", "total": 3, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 2], [2015, 1], [2016, 0]]}, {"name": "The Plant Cell", "total": 11, "articles": [[2008, 0], [2009, 3], [2010, 0], [2011, 2], [2012, 2], [2013, 1], [2014, 3], [2015, 0], [2016, 0]]}, {"name": "Philosophical Transactions of the Royal Society B: Biological Sciences", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "Proceedings of the National Academy of Sciences of the United States of America", "total": 3, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 2], [2013, 1], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Parasites & Vectors", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 1], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Frontiers in Neuroscience", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 1], [2016, 0]]}, {"name": "Genetics", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 1], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "BMC Evolutionary Biology", "total": 6, "articles": [[2008, 0], [2009, 0], [2010, 1], [2011, 2], [2012, 0], [2013, 1], [2014, 0], [2015, 1], [2016, 1]]}, {"name": "BMC Genetics", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "BMC Bioinformatics", "total": 8, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 1], [2012, 3], [2013, 4], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Genome Biology and Evolution", "total": 6, "articles": [[2008, 0], [2009, 1], [2010, 0], [2011, 1], [2012, 0], [2013, 3], [2014, 0], [2015, 1], [2016, 0]]}, {"name": "Nature", "total": 1, "articles": [[2008, 1], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Annals of Botany", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 1], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "International Journal of Molecular Sciences", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "Nucleic Acids Research", "total": 8, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 3], [2012, 3], [2013, 0], [2014, 2], [2015, 0], [2016, 0]]}, {"name": "Plant Biotechnology Reports", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "PLoS ONE", "total": 16, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 2], [2012, 4], [2013, 1], [2014, 4], [2015, 3], [2016, 2]]}, {"name": "BioMed Research International", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 1]]}, {"name": "PLoS Biology", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 2], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Molecular Genetics and Genomics", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 1]]}, {"name": "The Plant journal : for cell and molecular biology", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 2], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Plant Physiology", "total": 3, "articles": [[2008, 1], [2009, 0], [2010, 0], [2011, 1], [2012, 0], [2013, 0], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "The ISME Journal", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "G3: Genes|Genomes|Genetics", "total": 3, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 2], [2015, 0], [2016, 0]]}, {"name": "Mobile Genetic Elements", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 1], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Genome Research", "total": 2, "articles": [[2008, 2], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Genes & Development", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 1], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "BMC Plant Biology", "total": 6, "articles": [[2008, 0], [2009, 0], [2010, 2], [2011, 1], [2012, 0], [2013, 0], [2014, 2], [2015, 1], [2016, 0]]}, {"name": "Genome Biology", "total": 2, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 1], [2012, 1], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "Frontiers in Plant Science", "total": 18, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 1], [2012, 3], [2013, 2], [2014, 1], [2015, 6], [2016, 5]]}, {"name": "The New Phytologist", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 1], [2014, 0], [2015, 0], [2016, 0]]}, {"name": "PeerJ", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 0], [2015, 1], [2016, 0]]}, {"name": "Plant Molecular Biology Reporter / Ispmb", "total": 1, "articles": [[2008, 0], [2009, 0], [2010, 0], [2011, 0], [2012, 0], [2013, 0], [2014, 1], [2015, 0], [2016, 0]]}, {"name": "Bioinformatics", "total": 3, "articles": [[2008, 0], [2009, 0], [2010, 1], [2011, 0], [2012, 2], [2013, 0], [2014, 0], [2015, 0], [2016, 0]]}]'
+	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
+	with open(completeName) as load_data:
+		journals = json.load(load_data) #doesn't need to be parsed
 	return render_template('journals.html', journals=journals)
 
 

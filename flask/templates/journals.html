@@ -51,9 +51,9 @@ var svg = d3.select("body").append("svg")
 // var dataset = [ [2001, 5], [2005, 15], [2006, 2], [2010, 20], [2012, 25] ];
 
 
-var myjson = {{ journals|tojson }};
+var data = {{ journals|tojson }};
 //console.log(myjson)
-data = JSON.parse( myjson );
+//data = JSON.parse( myjson );
 //console.log(data)
 
 
