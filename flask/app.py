@@ -18,10 +18,16 @@ app.debug = True
 app.secret_key = 'super secret key'
 
 
+#Create Form for handling user-entered pmid
+#Need to pass pmid in form to Entrez_IR.py
+class pmidForm(Form):
+	pmid = TextField('PubmedID')
+
+
 #Main page
 #Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
-@app.route("/cogecrawl/", methods=["GET", "POST"])
+@app.route("/cogecrawl/")
 def cogecrawl():
 	error = None
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_mainfo.pickle', 'rb')as f:
@@ -34,17 +40,10 @@ def cogecrawl():
 
 
 
-#Creat Form for handling user-entered pmid
-#Need to pass pmid in form to Entrez_IR.py
-class pmidForm(Form):
-	pmid = TextField('PubmedID')
-
-
-
 #Getting Flask-WTFs to work with sqlite3 here
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
-@app.route('/results/', methods=["GET", "POST"])
+@app.route('/results/', methods=["POST"])
 def trying():
 	logging.info("In app route RESULTS")
 	form = pmidForm(secret_key='super secret key')
@@ -104,7 +103,7 @@ def trying():
 						jsonDict = run_lsa1(user_input, data_samples, 2)
 
 						#Do Latent Dirichlet Allocation
-						jsonLDA = run_lda1(data_samples)
+						jsonLDA = run_lda1(data_samples, 3, 5)
 
 						print(user_input+" is the last one (JOURNALS")
 						print_journalvis(target_journals, target_dates, user_input)
@@ -151,9 +150,9 @@ def trying():
 						jsonDict = run_lsa1(user_input, data_samples, 2) #default = 2 "topics" for right now
 
 						#latent dirichlet allocation
-						jsonLDA = run_lda1(data_samples)
+						jsonLDA = run_lda1(data_samples, 3, 5)
 
-						print(user_input+" is the last one (JOURNALS")
+						logging.info(user_input+" is the last one (JOURNALS)")
 						print_journalvis(target_journals, target_dates, user_input)
 						print(user_input+" is the last one (LSA)")
 						print_lsa(user_input, jsonDict) #print lsa topic model to json
@@ -178,17 +177,77 @@ def trying():
 		return(str(e))
 
 
+#Create Form for handling visualization options
+class visOptions(Form):
+	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
+	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
+
+
+
+class stooopid(Form):
+	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
+	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
+
+
 ################ Routes for visualization toggle ################
 
 
 ################ Default Coge Data #################
-@app.route('/cogelsa/') #default coge lsa for iframe
+@app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
-	return render_template('vis_lsa.html')
+	form = visOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		k_clusters = form.k_val.data #2,3,4,or 5
+		print("the k value is " + str(k_clusters))
+		query = '18952863+18269575'
+		pmid_list = query.split('+') #list of string pmids
+		data_samples = []
+		for pmid in pmid_list:
+			data, nes = do_SOME_multi_preprocessing(pmid)
+			for d in data:
+				data_samples.append(d)
+		print("rerunning the analysis")
+		k = int(k_clusters)
+		jsonLSA = run_lsa1(pmid, data_samples, k)
+		print("did it all!")
+		return render_template('vis_lsa.html', form=form, jsonLSA=jsonLSA) #needs to be parsed
+	else: #if nothing is
+		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_lsa.json"
+		with open(completeName) as load_data:
+			jsonLSA = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
+		#so i'm going to read it in as a string that needs to be parsed anyway
+		jsonLSA = re.sub('\'', '\"', str(jsonLSA)) #json needs double quotes, not single quotes
+		return render_template('vis_lsa.html', form=form, jsonLSA=jsonLSA)
 
-@app.route('/cogelda/') #default coge lda for iframe
+
+@app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
 def cogelda():
-	return render_template('vis_lda.html')
+	form = stooopid(secret_key='super secret key')
+	if request.method == 'POST':
+		k_clusters = form.k_val.data #2,3,4,or 5
+		print("the k value is " + str(k_clusters))
+		num_words = form.w_words.data
+		print("the w value is "+str(num_words))
+		query = '18952863+18269575'
+		pmid_list = query.split('+') #list of string pmids
+		data_samples = []
+		for pmid in pmid_list:
+			data, nes = do_SOME_multi_preprocessing(pmid)
+			for d in data:
+				data_samples.append(d)
+		print("rerunning the analysis")
+		k = int(k_clusters)
+		w = int(num_words)
+		jsonLDA = run_lda1(data_samples, k, w)
+		return render_template('vis_lda.html', form=form, jsonLDA=jsonLDA)
+	else:
+		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_lda1.json"
+		with open(completeName) as load_data:
+			jsonLDA = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
+		#so i'm going to read it in as a string that needs to be parsed anyway
+		jsonLDA = re.sub('\'', '\"', str(jsonLDA)) #json needs double quotes, not single quotes
+		return render_template('vis_lda.html', form=form, jsonLDA=jsonLDA)
+
 
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():

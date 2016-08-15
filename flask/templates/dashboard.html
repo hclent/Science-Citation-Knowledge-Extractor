@@ -78,10 +78,7 @@
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
             <p>    </p>
-
-           <iframe  id="journals"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogejournals/" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no"></iframe>
-
-     
+           <iframe  id="journals"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogejournals/" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 		</div> 
 
 
@@ -99,46 +96,35 @@
 		<div role="tabpanel" class="tab-pane fade" id="dan">
             <ul>
 
+                <!-- Data visualization options form drop down -->
+    <div class="btn-group" role="group">
 
-            <div class="btn-group" role="group">
-            <!-- Split button -->
-                    <div class="btn-group" method="post">
-                      <button type="button" class="btn btn-default">Topic Modle</button>
-                      <button type="button" class="btn btn-default dropdown-toggle" id="topicmodel" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                      </button>
-                      <ul class="dropdown-menu">
-                          <!-- TO DO: ajax req it and then append html in  div -->
-                        <li><a href="#lsa" id="lsa" onclick="toggle('cogelsa', 'cogelda')">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
+    <!-- Split button -->
+            <div class="btn-group">
+              <button type="button" class="btn btn-default">Topic Modle</button>
+              <button type="button" class="btn btn-default dropdown-toggle" id="topicmodel" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+                  <!-- TO DO: form should return which topic model has been selected -->
+                <li><a href="#lsa" id="lsa" onclick="toggle('cogelsa', 'cogelda')">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
 
-                        <li><a href="#lda" id="lda" onclick="toggle('cogelda', 'cogelsa')">LDA</a></li> <!-- and this button to include vis_lda.html -->
+                <li><a href="#lda" id="lda" onclick="toggle('cogelda', 'cogelsa')">LDA</a></li> <!-- and this button to include vis_lda.html -->
 
-                      </ul>
-                    </div>
-
-                <div class="btn-group" method="post">
-                      <button type="button" class="btn btn-default">k</button>
-                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a href="#k2">k=2</a></li>
-                        <li><a href="#k3">k=3</a></li>
-                          <li><a href="#k4">k=4</a></li>
-                        <li><a href="#k5">k=5</a></li>
-
-                      </ul>
-                    </div>
-
-
+              </ul>
             </div>
+
+    </div>
+
+
+
+
             </ul>
 
-            <iframe  id="cogelsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelsa/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+            <iframe  id="cogelsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelsa/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
-            <iframe  id="cogelda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelda/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+            <iframe  id="cogelda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelda/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
         </div>
 

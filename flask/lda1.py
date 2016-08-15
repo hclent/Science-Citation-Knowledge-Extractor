@@ -13,9 +13,9 @@ def get_tfidf(data): #data should be a list of strings for the documents
   return tfidf, tfidf_vectorizer
 
 
-def fit_lda(tfidf):
+def fit_lda(tfidf, num_topics):
   print("* Initializing Latent Dirichlet Allocation ... ")
-  lda = LatentDirichletAllocation(n_topics=3, max_iter=25, learning_method='online', learning_offset=50., random_state=1)
+  lda = LatentDirichletAllocation(n_topics=num_topics, max_iter=25, learning_method='online', learning_offset=50., random_state=1)
   lda.fit(tfidf)
   print("* Successfully fit data to the model!!! ")
   return lda
@@ -38,14 +38,14 @@ def print_top_words(model, feature_names, n_top_words):
   return jDict
 
 
-def topics_lda(tf_vectorizer, lda):
+def topics_lda(tf_vectorizer, lda, n_top_words):
   print("\nTopics in LDA model:")
   tf_feature_names = tf_vectorizer.get_feature_names()
-  jsonLDA = print_top_words(lda, tf_feature_names, 6)
+  jsonLDA = print_top_words(lda, tf_feature_names, n_top_words)
   return jsonLDA
 
 
 # tfidf, tfidf_vectorizer = get_tfidf(data_samples)
-# lda = fit_lda(tfidf)
-# jsonLDA = topics_lda(tfidf_vectorizer, lda)
+# lda = fit_lda(tfidf, num_topics)
+# jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 # print(jsonDict)

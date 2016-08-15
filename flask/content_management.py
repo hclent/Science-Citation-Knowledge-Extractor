@@ -108,11 +108,11 @@ def print_lsa(user_input, jsonDict):
 		json.dump(jsonDict, outfile)
 
 
-def run_lda1(data_samples): #set at defulat k=3, number of words=6
+def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number of words=5
 	logging.info('Beginning Latent Dirichlet Allocation')
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
-	lda = fit_lda(tfidf)
-	jsonLDA = topics_lda(tfidf_vectorizer, lda)
+	lda = fit_lda(tfidf, num_topics)
+	jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 	return jsonLDA
 
 
