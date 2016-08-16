@@ -276,22 +276,40 @@ def resjournals(query):
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):
-	#need to get last user_input
-	#use id to do stuff
-	print("in routine resla")
-	print("RES-LSA ID: " +str(query))
-	#only want to load the json for the LAST id in the query (so includes all)
-	pmid_list = query.split('+') #list of string pmids
-	last_entry = pmid_list[-1]
-	print("the last entry is: " + str(last_entry))
-	file_name = "lsa_"+str(last_entry)+".json"
-	print("last entry's LSA is named: " + str(file_name))
-	savePath = "/home/hclent/data/"+str(last_entry)
-	completeName = os.path.join(savePath, file_name)
-	print("complete file: " + str(completeName))
-	with open(completeName) as load_data:
-		jsonDict = json.load(load_data)
-	return render_template('results_lsa.html', jsonDict=jsonDict)
+	form = visOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		print("the booten was clicked")
+		k_clusters = form.k_val.data #2,3,4,or 5
+		print("the k value is " + str(k_clusters))
+		pmid_list = query.split('+') #list of string pmids
+		print(pmid_list)
+		data_samples = []
+		for pmid in pmid_list:
+			data, nes = do_SOME_multi_preprocessing(pmid)
+			for d in data:
+				data_samples.append(d)
+		print("rerunning the analysis")
+		k = int(k_clusters)
+		temp_jsonDict = run_lsa1(pmid, data_samples, k)
+		print("did it all!")
+		return render_template('results_lsa.html', query=query, jsonDict=temp_jsonDict)
+	else:
+		#need to get last user_input
+		#use id to do stuff
+		print("in routine resla")
+		print("RES-LSA ID: " +str(query))
+		#only want to load the json for the LAST id in the query (so includes all)
+		pmid_list = query.split('+') #list of string pmids
+		last_entry = pmid_list[-1]
+		print("the last entry is: " + str(last_entry))
+		file_name = "lsa_"+str(last_entry)+".json"
+		print("last entry's LSA is named: " + str(file_name))
+		savePath = "/home/hclent/data/"+str(last_entry)
+		completeName = os.path.join(savePath, file_name)
+		print("complete file: " + str(completeName))
+		with open(completeName) as load_data:
+			jsonDict = json.load(load_data)
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict)
 
 
 @app.route('/reslda/<query>', methods=["GET", "POST"]) #user lsa for iframe
