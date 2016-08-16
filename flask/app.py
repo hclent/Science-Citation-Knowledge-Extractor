@@ -312,25 +312,43 @@ def reslsa(query):
 		return render_template('results_lsa.html', query=query, jsonDict=jsonDict)
 
 
-@app.route('/reslda/<query>', methods=["GET", "POST"]) #user lsa for iframe
+@app.route('/reslda/<query>', methods=["GET", "POST"]) #user lda for iframe
 def reslda(query):
-	#need to get last user_input
-	#use id to do stuff
-	print("in routine reslDa")
-	print("RES-LDA ID: " +str(query))
-	#only want to load the json for the LAST id in the query (so includes all)
-	pmid_list = query.split('+') #list of string pmids
-	last_entry = pmid_list[-1]
-	print("the last entry is: " + str(last_entry))
-	file_name = "lda_"+str(last_entry)+".json"
-	print("last entry's LDA is named: " + str(file_name))
-	savePath = "/home/hclent/data/"+str(last_entry)
-	completeName = os.path.join(savePath, file_name)
-	print("complete file: " + str(completeName))
-	with open(completeName) as load_data:
-		jsonLDA = json.load(load_data)
-	print(jsonLDA)
-	return render_template('results_lda.html', jsonLDA=jsonLDA)
+	form = visOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		k_clusters = form.k_val.data #2,3,4,or 5
+		print("the k value is " + str(k_clusters))
+		num_words = form.w_words.data
+		print("the w value is "+str(num_words))
+		pmid_list = query.split('+') #list of string pmids
+		data_samples = []
+		for pmid in pmid_list:
+			data, nes = do_SOME_multi_preprocessing(pmid)
+			for d in data:
+				data_samples.append(d)
+		print("rerunning the analysis")
+		k = int(k_clusters)
+		w = int(num_words)
+		temp_jsonLDA = run_lda1(data_samples, k, w)
+		return render_template('vis_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
+	else:
+		#need to get last user_input
+		#use id to do stuff
+		print("in routine reslDa")
+		print("RES-LDA ID: " +str(query))
+		#only want to load the json for the LAST id in the query (so includes all)
+		pmid_list = query.split('+') #list of string pmids
+		last_entry = pmid_list[-1]
+		print("the last entry is: " + str(last_entry))
+		file_name = "lda_"+str(last_entry)+".json"
+		print("last entry's LDA is named: " + str(file_name))
+		savePath = "/home/hclent/data/"+str(last_entry)
+		completeName = os.path.join(savePath, file_name)
+		print("complete file: " + str(completeName))
+		with open(completeName) as load_data:
+			jsonLDA = json.load(load_data)
+		print(jsonLDA)
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query)
 
 
 

@@ -8127,3 +8127,75 @@ DEBUG:root:retrieved list of Bio documents to work with
 INFO:root:Done assembling lemmas and nes: done in 0.534s.
 INFO:root:Execute everything: done in 0.540s.
 INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.607s.
+INFO:root:Execute everything: done in 0.613s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.155s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.650s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.314s.
+INFO:root:Execute everything: done in 0.317s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:25884402 is the last one (JOURNALS)
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:processors.api:Starting processors-server (java -Xmx16G -cp /home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar NLPServer --port 4343 --host localhost) ...
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 173
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:In app route RESULTS
+INFO:root:cleaning user input
+INFO:root:PMID is in the database
+INFO:root:self info: done in 0.224s.
+INFO:root:citation no. 1 ...
+INFO:root:citation no. 2 ...
+INFO:root:citation no. 3 ...
+INFO:root:get citations info: done in 9.796s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.315s.
+INFO:root:Execute everything: done in 0.318s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:25884402 is the last one (JOURNALS)
+INFO:root:Printing JOURNALS to json
+INFO:root:Printing LSA to json
+INFO:root:Printing LDA to JSON
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.257s.
+INFO:root:Execute everything: done in 0.259s.
+INFO:root:Beginning Latent Dirichlet Allocation
