@@ -85,10 +85,10 @@ def trying():
 					logging.info("done with main info list")
 					for j in journals:
 						target_journals.append(j)
-					logging.ingo("done with journal list")
+					logging.info("done with journal list")
 					for d in dates:
 						target_dates.append(d)
-					logging.info("done with dates list")
+					logging.info("done with dates list") 
 
 					logging.info("beginning multi-preprocessing")
 					data, named_entities = do_ALL_multi_preprocessing(user_input)
