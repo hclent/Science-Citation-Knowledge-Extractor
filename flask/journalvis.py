@@ -61,5 +61,13 @@ def journals_vis(journals, dates):
 			journal_data["articles"].append(year_sum)
 
 		publication_data.append(journal_data)
+
+	#Get some info about the publication before changing it to a string for the json
+	#some_journal = publication_data[0]
+	#print(some_journal)
+	#start_date = some_journal['articles'][0][0]
+	#end_date = some_journal['articles'][-1][0]
+	#year_range = (start_date, end_date)
+	#print(year_range)
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
 	return (publication_data)

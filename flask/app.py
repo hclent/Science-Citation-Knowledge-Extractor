@@ -82,12 +82,15 @@ def trying():
 					main, journals, dates = run_IR_not_db(user_input)
 					for mi in main:
 						main_info.append(mi)
+					logging.info("done with main info list")
 					for j in journals:
 						target_journals.append(j)
+					logging.ingo("done with journal list")
 					for d in dates:
 						target_dates.append(d)
+					logging.info("done with dates list")
 
-
+					logging.info("beginning multi-preprocessing")
 					data, named_entities = do_ALL_multi_preprocessing(user_input)
 					for d in data:
 						data_samples.append(d)
@@ -105,11 +108,11 @@ def trying():
 						#Do Latent Dirichlet Allocation
 						jsonLDA = run_lda1(data_samples, 3, 5)
 
-						print(user_input+" is the last one (JOURNALS")
+						logging.info(user_input+" is the last one (JOURNALS)")
 						print_journalvis(target_journals, target_dates, user_input)
-						print(user_input+" is the last one (LSA)")
+						logging.info(user_input+" is the last one (LSA)")
 						print_lsa(user_input, jsonDict) #print lsa topic model to json
-						print(user_input+" is the last one (LDA)")
+						logging.info(user_input+" is the last one (LDA)")
 						print_lda(user_input, jsonLDA)
 
 					#add to sqlite3 database entry
@@ -270,7 +273,7 @@ def resjournals(query):
 	print("complete file: " + str(completeName))
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
-	print(journals)
+	print(journals) #str
 	return render_template('results_journals.html', journals = journals)
 
 
@@ -288,8 +291,13 @@ def reslsa(query):
 			data, nes = do_SOME_multi_preprocessing(pmid)
 			for d in data:
 				data_samples.append(d)
+		num_pubs = int(len(data_samples))
+		print("there are  "+str(num_pubs)+ " publications")
 		print("rerunning the analysis")
 		k = int(k_clusters)
+		if num_pubs < k:
+			print("k value is larger than number of publications")
+			#flash("For LSA, you cannot have more topics than documents. Try again")
 		temp_jsonDict = run_lsa1(pmid, data_samples, k)
 		print("did it all!")
 		return render_template('results_lsa.html', query=query, jsonDict=temp_jsonDict)

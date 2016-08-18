@@ -58,14 +58,15 @@ def run_IR_not_db(user_input):
 
 
 def print_journalvis(journals, dates, user_input):
+	#num_journals = len(journals)
+	#print("there are "+str(num_journals)+" journals in total")
 	publication_data = journals_vis(journals, dates)
 	print(publication_data)
-	logging.info('Printing JOURNALS to json')
+	logging.info('Printing JOURNALS to JSON')
 	save_path = '/home/hclent/data/'+str(user_input)+'/'
 	completeName = os.path.join(save_path, ('journals_'+(str(user_input))+'.json'))
 	with open(completeName, 'w') as outfile:
 		json.dump(publication_data, outfile)
-
 
 
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
@@ -101,7 +102,7 @@ def run_lsa1(user_input, data_samples, k):
 
 def print_lsa(user_input, jsonDict):
 	#Save the json for @app.route('/reslsa/')
-	logging.info('Printing LSA to json')
+	logging.info('Printing LSA to JSON')
 	save_path = '/home/hclent/data/'+str(user_input)+'/'
 	completeName = os.path.join(save_path, ('lsa_'+(str(user_input))+'.json'))
 	with open(completeName, 'w') as outfile:

@@ -94,7 +94,7 @@ def parsePMC(xml_string, pmid):
 		#print("* Got abstract")
 		main_text.append(full_abs)
 	except Exception as e:
-		logging.DEBUG("The following PMCID is not available")
+		logging.info("The following PMCID is not available")
 	try:
 		#Get main text and add to doc
 		text = root.findall('.//p')
@@ -103,7 +103,7 @@ def parsePMC(xml_string, pmid):
 			main_text.append(full_text)
 		#print("* Got main text")
 	except Exception as e:
-		logging.DEBUG("Only gave us the absract")
+		logging.info("Only gave us the absract")
 	return main_text
 
 
@@ -137,6 +137,12 @@ def getContentPMC(pmid, pmcids_list):
 		i += 1
 		time.sleep(3)
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
+
+
+
+
+
+
 
 
 ################### Notes ##############
