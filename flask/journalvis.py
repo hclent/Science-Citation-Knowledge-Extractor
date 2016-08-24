@@ -4,9 +4,10 @@ from collections import defaultdict
 
 def journals_vis(journals, dates):
 	years_list = []
-	#print(dates) #step1 : get years
+	print(dates) #step1 : get years
 	for d in dates:
 		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
+		y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
 		years_list.append(y)
 	#print(years_list)
 
@@ -63,11 +64,11 @@ def journals_vis(journals, dates):
 		publication_data.append(journal_data)
 
 	#Get some info about the publication before changing it to a string for the json
-	#some_journal = publication_data[0]
-	#print(some_journal)
-	#start_date = some_journal['articles'][0][0]
-	#end_date = some_journal['articles'][-1][0]
-	#year_range = (start_date, end_date)
-	#print(year_range)
+	some_journal = publication_data[0]
+	print(some_journal)
+	start_date = some_journal['articles'][0][0]
+	end_date = some_journal['articles'][-1][0]
+	year_range = (start_date, end_date)
+	print(year_range)
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
 	return (publication_data)

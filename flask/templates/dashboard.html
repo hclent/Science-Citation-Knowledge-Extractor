@@ -78,16 +78,15 @@
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
             <p>    </p>
-           <iframe  id="journals"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogejournals/" width="1100" height="1500" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+           <iframe  id="journals"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogejournals/" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 		</div> 
 
 
 		<!--  Put NERs here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="ner">
 		  	<p>What organisms are they working with?</p> 
-        {% for result in ner %}
-              <li>{{result}}</li>
-        {% endfor %}
+           <iframe  id="nes"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" width="1100" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
 		</div> 
 
 

@@ -50,6 +50,18 @@ def getCitationIDs(pmid): #about the same speed as MainCrawl.py
 	time.sleep(3)
 
 
+#Input: a single citation
+#Output: title, authors, journals, date, url
+def connectToNCBI(citation):
+	handle = Entrez.esummary(db="pmc", id=citation)
+	record = Entrez.read(handle)
+	t = record[0]["Title"]
+	a = record[0]["AuthorList"]
+	j = record[0]["FullJournalName"]
+	d = record[0]["PubDate"]
+	u = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC"+citation
+	return t, a, j, d, u
+
 
 #Input: Citing pmcids
 #Output: Basic info about these pmcids
@@ -63,18 +75,50 @@ def getCitedInfo(pmcid_list):
 	i = 1
 	for citation in pmcid_list:
 		logging.info("citation no. " + str(i) + " ...")
-		handle = Entrez.esummary(db="pmc", id=citation)
-		record = Entrez.read(handle)
-		t = record[0]["Title"]
-		a = record[0]["AuthorList"]
-		j = record[0]["FullJournalName"]
-		d = record[0]["PubDate"]
-		u = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC"+citation
-		pmc_titles.append(t)
-		pmc_authors.append(a)
-		pmc_journals.append(j)
-		pmc_dates.append(d)
-		pmc_urls.append(u)
+		#sometimes the connection fails: Need to re-try
+		#
+		#Need to re-try if this happens:
+		try:
+			t, a, j, d, u = connectToNCBI(citation)
+			pmc_titles.append(t)
+			pmc_authors.append(a)
+			pmc_journals.append(j)
+			pmc_dates.append(d)
+			pmc_urls.append(u)
+		except Exception as e:
+			logging.info(str(e))
+			logging.info("Failed to connect to NCBI. Lets try again in 3 seconds... Retry 1/3")
+			time.sleep(3)
+			t, a, j, d, u = connectToNCBI(citation)
+			pmc_titles.append(t)
+			pmc_authors.append(a)
+			pmc_journals.append(j)
+			pmc_dates.append(d)
+			pmc_urls.append(u)
+		except Exception as e2:
+			logging.info(str(e2))
+			logging.info("Failed to connect to NCBI again. Let's try again in 5 seconds ... Retry 2/3")
+			time.sleep(5)
+			t, a, j, d, u = connectToNCBI(citation)
+			pmc_titles.append(t)
+			pmc_authors.append(a)
+			pmc_journals.append(j)
+			pmc_dates.append(d)
+			pmc_urls.append(u)
+		except Exception as e3:
+			logging.info(str(e3))
+			logging.info("Failed to connect to NCBI a third time. Try once more in 8 seconds before giving up ... Retry 3/3")
+			time.sleep(8)
+			t, a, j, d, u = connectToNCBI(citation)
+			pmc_titles.append(t)
+			pmc_authors.append(a)
+			pmc_journals.append(j)
+			pmc_dates.append(d)
+			pmc_urls.append(u)
+		except Exception as e4:
+			logging.info(str(e4))
+			logging.info("Failed to connect to NCBI 4 times. Let's skip this entry :( ")
+			pass
 		time.sleep(3)
 		i += 1
 	#main_info = (list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_urls)))
@@ -141,13 +185,11 @@ def getContentPMC(pmid, pmcids_list):
 
 
 
-
-
-
-
 ################### Notes ##############
 #Rarely, the XML will return this:
 	# <?xml version="1.0"?>
 	# <!DOCTYPE pmc-articleset PUBLIC "-//NLM//DTD ARTICLE SET 2.0//EN" "http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd">
 	# <pmc-articleset><Reply Id="24948109" error="The following PMCID is not available: 24948109"/></pmc-articleset>
 #Thus pasrePMC() has exception handeling for this
+
+# Beginning August, NCBI is having connection errors: "pmc is not db". Must add exception handling for it

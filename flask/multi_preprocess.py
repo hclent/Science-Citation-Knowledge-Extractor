@@ -128,6 +128,7 @@ def loadDocuments(doc):
 #Input: Processors annotated biodocs
 #Output: String of lemmas
 def retrieveBioDocs(pmid):
+  print("retrieving biodocs")
   biodocs = [] #list of strings
   folder = '/home/hclent/data/'+pmid+'/'
   files = os.listdir(folder)
@@ -139,6 +140,7 @@ def retrieveBioDocs(pmid):
 
 
 def grab_lemmas(biodoc):
+  print("making lemmas")
   lemmas_list = biodoc.lemmas #list
   keep_lemmas = [w for w in lemmas_list if w.lower() not in eng_stopwords]
   keep_lemmas = (' '.join(map(str, keep_lemmas))) #map to string. strings are necessary for the TFIDF
@@ -148,6 +150,7 @@ def grab_lemmas(biodoc):
 #Input: Processors annotated biodocs
 #Output: List of named entities
 def grab_nes(biodoc):
+  print("doing ners")
   ners_list = biodoc.nes
   return ners_list
 
@@ -171,8 +174,8 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
   return data_samples, nes_list
 
-# docs = retrieveDocs("26109675")
-# multiprocess(docs)
+#docs = retrieveDocs("26109675")
+#multiprocess(docs)
 # biodocs = retrieveBioDocs("26109675")
 # data_samples, nes_list = loadBioDoc(biodocs)
 # print(nes_list)

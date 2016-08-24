@@ -86,9 +86,12 @@ def trying():
 					for j in journals:
 						target_journals.append(j)
 					logging.info("done with journal list")
+					lenjournals = (len(target_journals))
+					logging.info("there are "+str(lenjournals)+" publications")
 					for d in dates:
 						target_dates.append(d)
-					logging.info("done with dates list") 
+					logging.info("done with dates list")
+
 
 					logging.info("beginning multi-preprocessing")
 					data, named_entities = do_ALL_multi_preprocessing(user_input)
@@ -96,7 +99,6 @@ def trying():
 						data_samples.append(d)
 					for n in named_entities:
 						ners.append(n)
-
 
 					## Once all the data has been acquired, do topic modeling
 					## Only want to save final topic model (not running topic models)
@@ -130,10 +132,16 @@ def trying():
 					main, journals, dates = run_IR_in_db(user_input)
 					for mi in main:
 						main_info.append(mi)
+					logging.info("done with main info list")
 					for j in journals:
 						target_journals.append(j)
+					logging.info("done with journals list")
+					lenjournals = (len(target_journals))
+					logging.info("there are "+str(lenjournals)+" publications")
 					for d in dates:
 						target_dates.append(d)
+					logging.info("done with dates list")
+
 
 					data, named_entities = do_SOME_multi_preprocessing(user_input)
 					for d in data:
@@ -249,11 +257,22 @@ def cogelda():
 
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
-	print("in app route /cogejournals/")
+	logging.info("in app route /cogejournals/")
 	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
 	with open(completeName) as load_data:
 		journals = json.load(load_data) #doesn't need to be parsed
 	return render_template('journals.html', journals=journals)
+
+
+@app.route('/cogewordcloud/') #default coge NES Word Cloud for iframe
+def cogewordcloud():
+	logging.info("in app route /cogewordcloud/")
+	return render_template('cg_wordcloud.html')
+
+
+@app.route('/cogeheatmap/') #default coge NES heatmap for iframe
+def cogeheatmap():
+	return render_template('test.html')
 
 
 ############### Results visualizations #############
@@ -296,7 +315,7 @@ def reslsa(query):
 		print("rerunning the analysis")
 		k = int(k_clusters)
 		if num_pubs < k:
-			print("k value is larger than number of publications")
+			logging.info("k value is larger than number of publications")
 			#flash("For LSA, you cannot have more topics than documents. Try again")
 		temp_jsonDict = run_lsa1(pmid, data_samples, k)
 		print("did it all!")
