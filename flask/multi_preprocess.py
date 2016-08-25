@@ -140,7 +140,6 @@ def retrieveBioDocs(pmid):
 
 
 def grab_lemmas(biodoc):
-  print("making lemmas")
   lemmas_list = biodoc.lemmas #list
   keep_lemmas = [w for w in lemmas_list if w.lower() not in eng_stopwords]
   keep_lemmas = (' '.join(map(str, keep_lemmas))) #map to string. strings are necessary for the TFIDF
@@ -150,7 +149,6 @@ def grab_lemmas(biodoc):
 #Input: Processors annotated biodocs
 #Output: List of named entities
 def grab_nes(biodoc):
-  print("doing ners")
   ners_list = biodoc.nes
   return ners_list
 

@@ -18134,3 +18134,66 @@ DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 
 INFO:root:Annotated something random to initialize bioNLP Processor
 INFO:root:in app route /cogejournals/
 INFO:root:in app route /cogewordcloud/
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.997s.
+INFO:root:Execute everything: done in 10.000s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 6.946s.
+INFO:root:Execute everything: done in 6.950s.
+INFO:root:Beginning Latent Semantic Analysis
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/

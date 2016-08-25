@@ -58,6 +58,10 @@
     <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NES</a></li>
     
     <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Topics</a></li>
+
+      <li role="presentation"><a href="#cluster" aria-controls="cluster" role="tab" data-toggle="tab">Clustering</a></li>
+
+
   </ul>
 
 
@@ -84,8 +88,33 @@
 
 		<!--  Put NERs here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="ner">
-		  	<p>What organisms are they working with?</p> 
-           <iframe  id="nes"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" width="1100" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <ul>
+		  	<p>What organisms are they working with?</p>
+             <div class="btn-group" role="group">
+
+    <!-- Split button -->
+            <div class="btn-group">
+              <button type="button" class="btn btn-default">Visualization</button>
+              <button type="button" class="btn btn-default dropdown-toggle" id="nes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+
+                <li><a href="#wc" id="wc" onclick="toggle('wordcloud', 'heatmap')">Word Cloud</a></li>
+
+                <li><a href="#hm" id="hm" onclick="toggle('heatmap', 'wordcloud')">Heatmap</a></li>
+
+              </ul>
+            </div>
+
+    </div>
+                </ul>
+            <br></br>
+
+           <iframe  id="wordcloud" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" width="1100" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
+            <iframe  id="heatmap" style="display:none"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogeheatmap/" width="1190" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 		</div> 
 
@@ -121,12 +150,24 @@
 
             </ul>
 
+            <br></br>
+
             <iframe  id="cogelsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelsa/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
             <iframe  id="cogelda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelda/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
         </div>
 
+
+
+        <!-- Clustering  -->
+		<div role="tabpanel" class="tab-pane fade" id="cluster">
+		  	<p>K-means</p>
+
+    <iframe  id="cogekm"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogekmeans/" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
+
+		</div>
 </ul>
 </div>
 

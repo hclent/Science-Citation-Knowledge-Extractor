@@ -10,7 +10,7 @@ from content_management import * #mine
 from processors import *
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
-#flask, Flask-WTF, nltk, bs4, lxml, requests, Biopython, pyProcessors
+#flask, Flask-WTF, nltk, bs4, lxml, requests, Biopython, pyProcessors, plotly
 
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
@@ -272,8 +272,12 @@ def cogewordcloud():
 
 @app.route('/cogeheatmap/') #default coge NES heatmap for iframe
 def cogeheatmap():
-	return render_template('test.html')
+	return render_template('heatmap1.html')
 
+
+@app.route('/cogekmeans/') #default coge kmreans for iframe
+def cogekmeans():
+	return render_template('cogekmeans.html')
 
 ############### Results visualizations #############
 @app.route('/resjournals/<query>', methods=["GET", "POST"]) #user journals for iframe
