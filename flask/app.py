@@ -272,12 +272,18 @@ def cogewordcloud():
 
 @app.route('/cogeheatmap/') #default coge NES heatmap for iframe
 def cogeheatmap():
-	return render_template('heatmap1.html')
+	return render_template('heatmap2.html')
 
 
 @app.route('/cogekmeans/') #default coge kmreans for iframe
 def cogekmeans():
 	return render_template('cogekmeans.html')
+
+
+@app.route('/testingstuff/')
+def testingshit():
+	print("testing stuff")
+	return render_template('heatmap2.html')
 
 ############### Results visualizations #############
 @app.route('/resjournals/<query>', methods=["GET", "POST"]) #user journals for iframe

@@ -18197,3 +18197,136 @@ DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 
 INFO:root:Annotated something random to initialize bioNLP Processor
 INFO:root:in app route /cogejournals/
 INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 12.278s.
+INFO:root:Execute everything: done in 12.291s.
+INFO:root:Beginning multiprocessing for PRE-EXISTING docs
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.126s.
+INFO:root:Execute everything: done in 8.131s.
+INFO:root:Beginning Latent Dirichlet Allocation
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:in app route /cogejournals/
+INFO:root:in app route /cogewordcloud/
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:Started
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+INFO:root:in app route /cogewordcloud/
+INFO:root:in app route /cogejournals/

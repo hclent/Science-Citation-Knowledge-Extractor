@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html>
+<!--word cloud scripts -->
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/d3.layout.cloud.js') }}"></script>
+
+<!--bootstrap scripts -->
+<link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
 <head>
     <title>Word Cloud Example</title>
 </head>
+
 <style>
     body {
         font-family:"Lucida Grande","Droid Sans",Arial,Helvetica,sans-serif;
@@ -20,7 +28,25 @@
         font-weight: bold;
     }
 </style>
+
 <body>
+
+
+<div class="btn-group btn-group-xs" role="group" aria-label="...">
+    <button type="button" class="btn btn-default">Bioprocess</button>
+  <button type="button" class="btn btn-default">Cell-lines</button>
+  <button type="button" class="btn btn-default">Cellular component</button>
+    <button type="button" class="btn btn-default">Family</button>
+     <button type="button" class="btn btn-default">Gene or gene product</button>
+    <button type="button" class="btn btn-default">Organ</button>
+    <button type="button" class="btn btn-default">Simple chemical</button>
+    <button type="button" class="btn btn-default">Site</button>
+    <button type="button" class="btn btn-default">Species</button>
+    <button type="button" class="btn btn-default">Tissue Type</button>
+    </div>
+
+
+
 
 </body>
 <script>

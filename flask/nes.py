@@ -1,11 +1,14 @@
 import re
 from collections import defaultdict
-from multi_preprocess import *
 import plotly.plotly as py
 import plotly.graph_objs as go
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-
+from plotly.offline import plot
 py.sign_in('hclent', 'eeg49e9880')
+from multi_preprocess import * #mine #connects to NLP Server
+import numpy as np
+from bokeh.plotting import figure, show, output_file
+from bokeh.models import HoverTool, ColumnDataSource
+from bokeh.sampledata.les_mis import data
 
 
 
@@ -39,7 +42,6 @@ def doHeatmap(nesDict, n, data_samples):
     x = [] # x list of documents
     z = [] # z list of lists with word counts for each document
 
-
     for word in nesDict:
         if nesDict[word] > n:
             y.append(word)
@@ -72,56 +74,36 @@ def doHeatmap(nesDict, n, data_samples):
     return x, y, z
 
 
-
 def plotHeatmap(x_docs, y_words, z_counts):
     data = [
         go.Heatmap(
             z = z_counts,
             x = x_docs,
             y = y_words,
+            colorscale=[[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
+
         )
     ]
-    #py.iplot(data, filename='labelled-heatmap')
-    plot(data)
+    #py.iplot(data, filename='labelled-heatmap') #plot to online
+    plot(data,  filename='heatmap3.html')
     print("plotted the heatmap!")
 
 
 
 bdocs1 = retrieveBioDocs("18269575")
-datas1, neslist1 = loadBioDoc(bdocs1)
-bdocs2 = retrieveBioDocs("18952863")
-datas2, neslist2 = loadBioDoc(bdocs2)
-
-for docs in datas2:
-    datas1.append(docs)
-print("added datas 2 to datas 1")
-for nes in neslist2:
-    neslist1.append(nes)
-print("added nes 2 to nes 1")
-
-
-
+data_samples, neslist1 = loadBioDoc(bdocs1)
 nesDict = frequency_list(neslist1)
-x_docs, y_words, z_counts = doHeatmap(nesDict, 200, datas1)
-plotHeatmap(x_docs, y_words, z_counts)
+# x_docs, y_words, z_counts = doHeatmap(nesDict, 100, data_samples)
+# plotHeatmap(x_docs, y_words, z_counts)
 
 
 
+def sortCategories(data_samples, nes_list): #nes list of dicts
+    for docDicts in nes_list:
+        print(docDicts)
 
 
-
-
-
-
-# biodocs2 = retrieveBioDocs("18952863")
-# data_samples2, nes_list2 = loadBioDoc(biodocs2)
-# for n in nes_list2:
-#     nes_list1.append(n)
-
-
-
-
-
+sortCategories(data_samples, neslist1)
 
 # Beginning and Inside
 # So the *I* signals that the mention continues.
