@@ -283,7 +283,7 @@ def cogekmeans():
 @app.route('/testingstuff/')
 def testingshit():
 	print("testing stuff")
-	return render_template('heatmap2.html')
+	return render_template('test.html')
 
 ############### Results visualizations #############
 @app.route('/resjournals/<query>', methods=["GET", "POST"]) #user journals for iframe

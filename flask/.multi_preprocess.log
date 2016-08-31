@@ -12197,3 +12197,418 @@ DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 
 INFO:root:Annotated something random to initialize bioNLP Processor
 DEBUG:root:retrieved list of Bio documents to work with
 INFO:root:Done assembling lemmas and nes: done in 8.558s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.158s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.869s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.741s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.432s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.869s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.541s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.546s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.985s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 10.913s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.638s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 7.886s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.308s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.192s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.171s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.242s.
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 11.444s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.265s.
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 12.379s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.243s.
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 7.934s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.254s.
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 9.258s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.272s.
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 7.986s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 0.221s.
+DEBUG:root:retrieved list of Bio documents to work with
+INFO:root:Done assembling lemmas and nes: done in 8.054s.
+INFO:root:Started
+INFO:root:Stopword settings set
+WARNING:root:Connecting to the pyProcessors server may take a while
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /annotate HTTP/1.1" 200 174
+INFO:processors.api:Connection with server established!
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /version HTTP/1.1" 200 17
+INFO:processors.api:Server version meets recommendations (v2.9)
+INFO:root:Connected to pyProcessors
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 738
+INFO:root:Annotated something random to initialize bioNLP Processor
+DEBUG:root:retrieved list of documents to processes
+DEBUG:root:created worker pools
+DEBUG:root:initialized map_async to loadDocs function with docs
+DEBUG:root:did map to loadDocs function with docs. WITH async
+DEBUG:root:closed pool
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22333134_3.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22333134_1.txt
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22333134_4.txt
+DEBUG:root:read text with text.read()
+DEBUG:root:read text with text.read()
+DEBUG:root:NEW TASK
+DEBUG:root:found the the file 22333134_2.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22333134_4.txt
+DEBUG:root:read text with text.read()
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:root:read text with text.read()
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22333134_3.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22333134_1.txt
+DEBUG:root:cleaned the text
+DEBUG:root:* beginning annotation of 22333134_2.txt
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+INFO:requests.packages.urllib3.connectionpool:Starting new HTTP connection (1): localhost
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 12378
+DEBUG:root:the biodoc of 22333134_4.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 1206120
+DEBUG:root:the biodoc of 22333134_1.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 1311077
+DEBUG:root:the biodoc of 22333134_2.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:requests.packages.urllib3.connectionpool:"POST /bionlp/annotate HTTP/1.1" 200 1626243
+DEBUG:root:the biodoc of 22333134_3.txt is type <class 'processors.ds.Document'>
+DEBUG:root:END OF TASK
+DEBUG:root:joined pool
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+DEBUG:root:printed to json
+INFO:root:All biodoc creations: done in 466.164s.
+INFO:root:Finished

@@ -165,6 +165,7 @@ def loadBioDoc(biodocs):
     filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
     with open(filename) as jf:
       data = Document.load_from_JSON(json.load(jf))
+      #print(type(data)) is <class 'processors.ds.Document'>
       lemmas = grab_lemmas(data)
       data_samples.append(lemmas)
       nes = grab_nes(data)
@@ -172,8 +173,8 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
   return data_samples, nes_list
 
-#docs = retrieveDocs("26109675")
+#docs = retrieveDocs("22333134")
 #multiprocess(docs)
-# biodocs = retrieveBioDocs("26109675")
+# biodocs = retrieveBioDocs("22333134")
 # data_samples, nes_list = loadBioDoc(biodocs)
 # print(nes_list)

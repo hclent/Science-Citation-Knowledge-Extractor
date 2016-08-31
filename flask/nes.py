@@ -5,16 +5,11 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 py.sign_in('hclent', 'eeg49e9880')
 from multi_preprocess import * #mine #connects to NLP Server
-import numpy as np
-from bokeh.plotting import figure, show, output_file
-from bokeh.models import HoverTool, ColumnDataSource
-from bokeh.sampledata.les_mis import data
 
 
-
-
-def frequency_list(nes_list): #returns list of Dicts
-    nes_stopwords = ['gene', 'genes', 'genetics', 'genome', 'chromosome', 'chromosomes', 'result', 'line', 'time']
+#Make dictionary with NES counts {'gluten': 5, 'span': 9}
+def frequency_dict(nes_list):
+    nes_stopwords = ['gene', 'genes', 'genetics', 'genome', 'genomic', 'chromosome', 'chromosomes', 'result', 'line', 'time']
     nesDict = defaultdict(lambda:0)
     for docs in nes_list:
         for key in docs:
@@ -24,7 +19,7 @@ def frequency_list(nes_list): #returns list of Dicts
                     nesDict[n] += 1
     return nesDict
 
-
+#D3 wordcloud
 def wordcloud(nesDict, x):
     wordcloud_list = []
     for nes in nesDict:
@@ -36,7 +31,7 @@ def wordcloud(nesDict, x):
     return wordcloud_list
 
 
-
+#makes the data for plotly heatmap
 def doHeatmap(nesDict, n, data_samples):
     y = [] # y list of words
     x = [] # x list of documents
@@ -73,7 +68,7 @@ def doHeatmap(nesDict, n, data_samples):
 
     return x, y, z
 
-
+#uses doHeatmap data and generates plotly graph
 def plotHeatmap(x_docs, y_words, z_counts):
     data = [
         go.Heatmap(
@@ -81,48 +76,44 @@ def plotHeatmap(x_docs, y_words, z_counts):
             x = x_docs,
             y = y_words,
             colorscale=[[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
-
         )
     ]
     #py.iplot(data, filename='labelled-heatmap') #plot to online
-    plot(data,  filename='heatmap3.html')
+    plot(data,  filename='blahblahblah.html')
     print("plotted the heatmap!")
 
 
-
-bdocs1 = retrieveBioDocs("18269575")
-data_samples, neslist1 = loadBioDoc(bdocs1)
-nesDict = frequency_list(neslist1)
-# x_docs, y_words, z_counts = doHeatmap(nesDict, 100, data_samples)
-# plotHeatmap(x_docs, y_words, z_counts)
-
-
-
 def sortCategories(data_samples, nes_list): #nes list of dicts
-    for docDicts in nes_list:
-        print(docDicts)
+    bioprocess = []
+    celllines = []
+    cellularcomp = []
+    family = []
+    geneorgp = []
+    organ = []
+    simplechem = []
+    site = []
+    species = []
+    tissuetype = []
+
+    for doc_nes_Dicts in nes_list:
+        # {'B-CellLine': [nes, nes, nes], 'I-Tissue': [nes, nes]}
+        for keys in doc_nes_Dicts:
+            #print(keys) #not all documents have all categories
+            if 'BioProcess' in keys:
+                print(keys)
+                print(doc_nes_Dicts[keys])
+            else:
+                pass
+        print("#######################")
 
 
-sortCategories(data_samples, neslist1)
+bdocs1 = retrieveBioDocs("18269575") #a bunch of strings
+data_samples, neslist1 = loadBioDoc(bdocs1)
+nesDict = frequency_dict(neslist1)
+x_docs, y_words, z_counts = doHeatmap(nesDict, 100, data_samples)
+plotHeatmap(x_docs, y_words, z_counts)
+#sortCategories(data_samples, neslist1)
 
-# Beginning and Inside
-# So the *I* signals that the mention continues.
-# I-Gene_or_gene_product
-# B-Family
-# B-CellType
-# B-Simple_chemical
-# B-TissueType
-# I-CellType
-# B-Organ
-# I-TissueType
-# I-Organ
-# I-Cellular_component
-# I-Family
-# B-CellLine
-# B-Gene_or_gene_product
-# B-Cellular_component
-# B-Species
-# B-BioProcess
 
 
 ########## Graveyard ###########

@@ -1,36 +1,16 @@
-<!DOCTYPE html>
 <html>
-<!--word cloud scripts -->
-<script src="//d3js.org/d3.v3.min.js"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/d3.layout.cloud.js') }}"></script>
-
-<!--bootstrap scripts -->
-<link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-
 <head>
-    <title>Word Cloud Example</title>
+    <!--word cloud scripts -->
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.layout.cloud.js') }}"></script>
+
+    <!--bootstrap scripts -->
+    <link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 </head>
 
-<style>
-    body {
-        font-family:"Lucida Grande","Droid Sans",Arial,Helvetica,sans-serif;
-    }
-    .legend {
-        border: 1px solid #555555;
-        border-radius: 5px 5px 5px 5px;
-        font-size: 0.8em;
-        margin: 10px;
-        padding: 8px;
-    }
-    .bld {
-        font-weight: bold;
-    }
-</style>
-
 <body>
-
 
 <div class="btn-group btn-group-xs" role="group" aria-label="...">
     <button type="button" class="btn btn-default">Bioprocess</button>
@@ -45,47 +25,41 @@
     <button type="button" class="btn btn-default">Tissue Type</button>
     </div>
 
-
-
-
 </body>
+
 <script>
+
+    var fill = d3.scale.category20();
 
 var frequency_list = [{"text": "gm11", "size": 13.5}, {"text": "step", "size": 57.5}, {"text": "s5", "size": 20.75}, {"text": "chromosomes", "size": 196.0}, {"text": "name", "size": 22.5}, {"text": "bess", "size": 22.0}, {"text": "jaz", "size": 12.75}, {"text": "papaya", "size": 44.75}, {"text": "s6", "size": 13.0}, {"text": "alpha", "size": 39.5}, {"text": "i2", "size": 17.0}, {"text": "salt", "size": 19.25}, {"text": "b.", "size": 13.0}, {"text": "hdziv", "size": 21.25}, {"text": "rice", "size": 165.25}, {"text": "rg10", "size": 48.0}, {"text": "transcription", "size": 82.5}, {"text": "light", "size": 17.75}, {"text": "hair", "size": 15.5}, {"text": "ribosomal", "size": 15.75}, {"text": "thaliana", "size": 275.5}, {"text": "prc1", "size": 18.25}, {"text": "animal", "size": 14.5}, {"text": "beta", "size": 24.25}, {"text": "biosynthesis", "size": 51.5}, {"text": "clock", "size": 37.25}, {"text": "kat5", "size": 16.75}, {"text": "i3", "size": 19.75}, {"text": "tomato", "size": 60.75}, {"text": "barley", "size": 46.25}, {"text": "d1", "size": 15.0}, {"text": "s1", "size": 61.75}, {"text": "o.", "size": 13.25}, {"text": "metabolism", "size": 32.75}, {"text": "root", "size": 51.75}, {"text": "extension", "size": 17.75}, {"text": "translation", "size": 18.25}, {"text": "leaf", "size": 44.5}, {"text": "pr", "size": 15.0}, {"text": "like genes", "size": 14.75}, {"text": "banana", "size": 36.0}, {"text": "gm14", "size": 19.0}, {"text": "oryza", "size": 20.75}, {"text": "ec", "size": 13.5}, {"text": "wheat", "size": 31.5}, {"text": "fish", "size": 14.25}, {"text": "bicolor", "size": 27.0}, {"text": "a.", "size": 167.5}, {"text": "rpl9", "size": 26.0}, {"text": "protein", "size": 26.5}, {"text": "pcr", "size": 19.0}, {"text": "chromosome", "size": 210.25}, {"text": "response", "size": 17.5}, {"text": "localization", "size": 19.0}, {"text": "ae", "size": 17.75}, {"text": "branch", "size": 59.25}, {"text": "sorghum", "size": 169.5}, {"text": "hvlux1", "size": 16.5}, {"text": "arabica", "size": 34.5}, {"text": "tail", "size": 15.5}, {"text": "rapa", "size": 87.75}, {"text": "link", "size": 17.0}, {"text": "clhst1", "size": 23.75}, {"text": "sativa", "size": 40.0}, {"text": "4a", "size": 15.0}, {"text": "organism", "size": 21.0}, {"text": "gene", "size": 94.0}, {"text": "grape", "size": 18.0}, {"text": "processes", "size": 52.5}, {"text": "acid", "size": 162.5}, {"text": "ox948", "size": 24.0}, {"text": "lycopersicum", "size": 18.0}, {"text": "blue", "size": 12.75}, {"text": "rpl9d", "size": 14.5}, {"text": "orange", "size": 20.0}, {"text": "center", "size": 16.0}, {"text": "fad3a", "size": 19.5}, {"text": "traits", "size": 35.5}, {"text": "case", "size": 70.5}, {"text": "c4", "size": 35.75}, {"text": "membrane", "size": 16.5}, {"text": "yeast", "size": 28.75}, {"text": "s.", "size": 24.25}, {"text": "fad3b", "size": 27.0}, {"text": "ap", "size": 13.0}, {"text": "impact", "size": 20.75}, {"text": "stage", "size": 32.25}, {"text": "leaves", "size": 50.0}, {"text": "names", "size": 22.0}, {"text": "kat2", "size": 15.25}, {"text": "soybean", "size": 62.25}, {"text": "wrky", "size": 16.75}, {"text": "fad3c", "size": 14.5}, {"text": "bacs", "size": 52.0}, {"text": "tify", "size": 20.25}, {"text": "clone", "size": 26.25}, {"text": "start", "size": 35.0}, {"text": "max", "size": 20.0}, {"text": "sir2", "size": 19.0}, {"text": "v1", "size": 13.0}, {"text": "time", "size": 150.25}, {"text": "seed", "size": 47.25}, {"text": "line", "size": 69.0}, {"text": "nac", "size": 22.5}, {"text": "c.", "size": 63.0}, {"text": "nerves", "size": 12.75}, {"text": "cell", "size": 17.75}, {"text": "fad3", "size": 26.5}, {"text": "s4", "size": 23.75}, {"text": "family", "size": 41.25}, {"text": "mhc", "size": 49.0}, {"text": "cenh3", "size": 36.5}, {"text": "meristem", "size": 15.5}, {"text": "flower", "size": 26.75}, {"text": "cysteine", "size": 28.75}, {"text": "toc1", "size": 20.25}, {"text": "tef", "size": 20.0}, {"text": "bovipain-2", "size": 17.75}, {"text": "scale", "size": 33.75}, {"text": "tissue", "size": 44.0}, {"text": "at-alpha", "size": 20.5}, {"text": "vvvq", "size": 15.75}, {"text": "maize", "size": 214.0}, {"text": "myosin", "size": 18.0}, {"text": "nitrogen", "size": 15.5}, {"text": "human", "size": 58.0}, {"text": "arabidopsis", "size": 119.5}, {"text": "result", "size": 60.0}, {"text": "crop", "size": 38.5}, {"text": "host", "size": 35.0}, {"text": "mcscanx", "size": 16.75}, {"text": "glycine", "size": 26.75}, {"text": "life", "size": 21.0}, {"text": "s3", "size": 30.25}, {"text": "differentiation", "size": 16.0}, {"text": "solanum", "size": 16.5}, {"text": "genes", "size": 193.25}, {"text": "rpl9c", "size": 29.0}, {"text": "s2", "size": 37.25}, {"text": "water", "size": 29.0}, {"text": "chicken", "size": 19.5}, {"text": "linolenic", "size": 58.0}, {"text": "test", "size": 36.5}, {"text": "proteins", "size": 45.25}, {"text": "base", "size": 37.0}, {"text": "vq", "size": 21.0}, {"text": "domain", "size": 22.0}, {"text": "lp", "size": 16.0}, {"text": "fruit", "size": 34.0}, {"text": "coffee", "size": 30.25}, {"text": "gene family", "size": 13.25}]
 
-var color = d3.scale.linear()
-            .domain([0,1,2,3,4,5,10,15,25,50,100])
-            .range(["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#a6d96a","#66bd63","#1a9850","#006837", "#fc8d62", "#3288bd","#5e4fa2"]);
 
-    d3.layout.cloud().size([750, 300])
-            .words(frequency_list)
-            .rotate(0)
-            .fontSize(function(d) { return d.size; })
-            .on("end", draw)
-            .start();
 
-    function draw(words) {
-        d3.select("body").append("svg")
-                .attr("width", 850)
-                .attr("height", 350)
-                .attr("class", "wordcloud")
-                .append("g")
-                // without the transform, words words would get cutoff to the left and top, they would
-                // appear outside of the SVG area
-                .attr("transform", "translate(320,200)")
-                .selectAll("text")
-                .data(words)
-                .enter().append("text")
-                .style("font-size", function(d) { return d.size + "px"; })
-                .style("fill", function(d, i) { return color(i); })
-                .attr("transform", function(d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-                })
-                .text(function(d) { return d.text; });
-    }
+  d3.layout.cloud().size([600, 600])
+      .words(frequency_list)
+      .rotate(function() { return ~~(Math.random() * 2) * 90; })
+      .font("Impact")
+      .fontSize(function(d) { return d.size; })
+      .on("end", draw)
+      .start();
+
+  function draw(words) {
+    d3.select("body").append("svg")
+        .attr("width", 600) //makes size of svg
+        .attr("height", 600)
+      .append("g")
+        .attr("transform", "translate(300,300)")//(L-R, up-down) (150,150 default) with 300,300 svg
+      .selectAll("text")
+        .data(words)
+      .enter().append("text")
+        .style("font-size", function(d) { return d.size + "px"; })
+        .style("font-family", "Impact")
+        .style("fill", function(d, i) { return fill(i); })
+        .attr("text-anchor", "middle")
+        .attr("transform", function(d) {
+          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+        })
+        .text(function(d) { return d.text; });
+  }
+
 </script>
-
-
-</html>
-
-
