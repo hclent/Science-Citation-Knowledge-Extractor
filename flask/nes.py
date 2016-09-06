@@ -1,22 +1,28 @@
 import re
 from collections import defaultdict
-import plotly.plotly as py
-import plotly.graph_objs as go
-from plotly.offline import plot
-py.sign_in('hclent', 'eeg49e9880')
+#import plotly.plotly as py
+#import plotly.graph_objs as go
+#from plotly.offline import plot
+#py.sign_in('hclent', 'eeg49e9880')
 from multi_preprocess import * #mine #connects to NLP Server
 
 
+###### changes to py-processors NLP #########
+
+
 #Make dictionary with NES counts {'gluten': 5, 'span': 9}
-def frequency_dict(nes_list):
-    nes_stopwords = ['gene', 'genes', 'genetics', 'genome', 'genomic', 'chromosome', 'chromosomes', 'result', 'line', 'time']
+def frequency_dict(nes_list, category_list):
+    #nes_stopwords = ['gene', 'genes', 'genetics', 'genome', 'genomic', 'chromosome', 'chromosomes', 'result', 'line', 'time']
     nesDict = defaultdict(lambda:0)
     for docs in nes_list:
         for key in docs:
-            nes = (docs[key])
-            for n in nes:
-                if n not in nes_stopwords:
-                    nesDict[n] += 1
+            for category in category_list: #no error with category 'Potato'
+                if key == category:
+                    nes = (docs[key])
+                    for n in nes:
+                        nesDict[n] += 1
+                    #     if n not in nes_stopwords:
+                    #        nesDict[n] += 1
     return nesDict
 
 #D3 wordcloud
@@ -24,8 +30,8 @@ def wordcloud(nesDict, x):
     wordcloud_list = []
     for nes in nesDict:
          if int(nesDict[nes]) > x:
-            #entry = {"text": nes, "size": nesDict[nes]} #no scaling
-            entry = {"text": nes, "size": nesDict[nes]*.25} #scaling
+            entry = {"text": nes, "size": nesDict[nes]} #no scaling
+            #entry = {"text": nes, "size": nesDict[nes]*.25} #scaling
             wordcloud_list.append(entry)
     wordcloud_list = re.sub('\'', "\"", str(wordcloud_list))
     return wordcloud_list
@@ -83,35 +89,18 @@ def plotHeatmap(x_docs, y_words, z_counts):
     print("plotted the heatmap!")
 
 
-def sortCategories(data_samples, nes_list): #nes list of dicts
-    bioprocess = []
-    celllines = []
-    cellularcomp = []
-    family = []
-    geneorgp = []
-    organ = []
-    simplechem = []
-    site = []
-    species = []
-    tissuetype = []
 
-    for doc_nes_Dicts in nes_list:
-        # {'B-CellLine': [nes, nes, nes], 'I-Tissue': [nes, nes]}
-        for keys in doc_nes_Dicts:
-            #print(keys) #not all documents have all categories
-            if 'BioProcess' in keys:
-                print(keys)
-                print(doc_nes_Dicts[keys])
-            else:
-                pass
-        print("#######################")
+# bdocs1 = retrieveBioDocs("18269575") #a bunch of strings
+# data_samples, neslist1 = loadBioDoc(bdocs1)
+# chosen_categories = ['CellLine', 'Cellular_component','Gene_or_gene_product', 'Site']
+# frequency_dict(neslist1, chosen_categories)
+
+# wcl = wordcloud(nesDict, 50)
+# print(wcl)
 
 
-bdocs1 = retrieveBioDocs("18269575") #a bunch of strings
-data_samples, neslist1 = loadBioDoc(bdocs1)
-nesDict = frequency_dict(neslist1)
-x_docs, y_words, z_counts = doHeatmap(nesDict, 100, data_samples)
-plotHeatmap(x_docs, y_words, z_counts)
+# x_docs, y_words, z_counts = doHeatmap(nesDict, 100, data_samples)
+# plotHeatmap(x_docs, y_words, z_counts)
 #sortCategories(data_samples, neslist1)
 
 

@@ -27,16 +27,21 @@ logging.info('Started')
 #Input: pmid
 #Output: basic info on pmid as lists
 def getMainInfo(pmid):
+	logging.info("beginning function getMainInfo")
 	t0 = time.time()
+	logging.info("making handle ... ")
 	handle = Entrez.esummary(db="pubmed", id=pmid)
+	logging.info("made the handle!")
 	record = Entrez.read(handle)
+	logging.info("made a record")
 	title = [record[0]["Title"]] #make a list
+	logging.info(title)
 	authors = [record[0]["AuthorList"]]
+	logging.info(authors)
 	journal = [record[0]["FullJournalName"]]
+	logging.info(journal)
 	logging.info("self info: done in %0.3fs." % (time.time() - t0))
 	return list(zip(title, authors, journal))
-
-
 
 
 #Input: Pmid
@@ -183,7 +188,12 @@ def getContentPMC(pmid, pmcids_list):
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 
 
-
+# stuff = getMainInfo("22555442")
+# print(stuff)
+# pmc_ids = getCitationIDs("22555442")
+# print(pmc_ids)
+# pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)
+# print(pmc_titles)
 
 ################### Notes ##############
 #Rarely, the XML will return this:

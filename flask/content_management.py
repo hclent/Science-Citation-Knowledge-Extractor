@@ -5,15 +5,18 @@ from multi_preprocess import * #mine
 from lsa1 import * #mine
 from lda1 import * #mine
 from journalvis import * #mine
+from nes import * #mine
 
 
 ## Supporting functions for app.py
 
+################## LOGGING #######################################################
 
 #Create log
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
+############# PROCESSORS SERVER ##################################################
 
 #Set a PROCESSORS_SERVER environment variable.
 #It may take a minute or so to load the large model files.
@@ -26,6 +29,8 @@ def connect_to_Processors(port_num):
   return api
 
 
+################### INPUT #########################################################
+
 #User can enter in as many pubmed ids as they want into text box
 #This method creates a list of them
 def multiple_pmid_input(user_input):
@@ -34,6 +39,7 @@ def multiple_pmid_input(user_input):
 	ids = clean.split() #list of pmids
 	return ids
 
+################### DATABASE #####################################################
 
 #If pmid (user input) in the database, just get main_info (authors, journals, ect)
 def run_IR_in_db(user_input):
@@ -56,6 +62,7 @@ def run_IR_not_db(user_input):
 	getContentPMC(user_input, pmc_ids)
 	return main_info, target_journals, target_dates
 
+############ DATA VISUALIZATIONS #################################################
 
 def print_journalvis(journals, dates, user_input):
 	#num_journals = len(journals)
@@ -69,6 +76,16 @@ def print_journalvis(journals, dates, user_input):
 		json.dump(publication_data, outfile)
 
 
+def vis_wordcloud(pmid, nes_categories, w_number):
+	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
+	data_samples, neslist = loadBioDoc(biodocs)
+	nesDict = frequency_dict(neslist, nes_categories)
+	wcl = wordcloud(nesDict, int(w_number))
+	print(wcl)
+	return wcl
+
+
+############ PROCESSING BIODOCS ############################################
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
 #This method is for user_input NOT already in DB, need to make json, for in DB, no need to make JSON
 def do_ALL_multi_preprocessing(user_input):
@@ -94,6 +111,7 @@ def do_SOME_multi_preprocessing(user_input):
 
 
 
+############ TOPIC MODELING ############################################
 def run_lsa1(user_input, data_samples, k):
 	logging.info('Beginning Latent Semantic Analysis')
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)

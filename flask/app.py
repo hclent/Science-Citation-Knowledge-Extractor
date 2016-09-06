@@ -10,8 +10,8 @@ from content_management import * #mine
 from processors import *
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
-#flask, Flask-WTF, nltk, bs4, lxml, requests, Biopython, pyProcessors, plotly
-
+#Flask-WTF, Biopython, py-Processors, plotly
+#flask, nltk, bs4, lxml, requests
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
 app.debug = True
@@ -197,7 +197,9 @@ class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
 
-
+class nesOptions(Form):
+	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'), (300, '300')])
+	#categories = BooleanField()
 ################ Default Coge Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
@@ -257,17 +259,31 @@ def cogelda():
 
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
-	logging.info("in app route /cogejournals/")
 	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
 	with open(completeName) as load_data:
 		journals = json.load(load_data) #doesn't need to be parsed
 	return render_template('journals.html', journals=journals)
 
 
-@app.route('/cogewordcloud/') #default coge NES Word Cloud for iframe
+@app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
-	logging.info("in app route /cogewordcloud/")
-	return render_template('cg_wordcloud.html')
+	form = nesOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		pmid = "18269575"
+		nes_categories = request.form.getlist('check')
+		print(nes_categories)
+		w_number = form.w_words.data
+		print("the w value is "+str(w_number))
+		wordcloud_data = vis_wordcloud(pmid, nes_categories, w_number)
+		return render_template('cg_wordcloud.html',  wordcloud_data=wordcloud_data)
+	else:
+		#Default data
+		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_wcloud1.json"
+		with open(completeName) as load_data:
+			wordcloud_data = json.load(load_data) #this result doesn't need to be parsed but unsure how to write that in javascript
+		#so i'm going to read it in as a string that needs to be parsed anyway
+		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #json needs double quotes, not single quotes
+		return render_template('cg_wordcloud.html', wordcloud_data=wordcloud_data)
 
 
 @app.route('/cogeheatmap/') #default coge NES heatmap for iframe
