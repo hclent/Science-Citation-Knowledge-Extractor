@@ -264,7 +264,7 @@ def cogejournals():
 		journals = json.load(load_data) #doesn't need to be parsed
 	return render_template('journals.html', journals=journals)
 
-
+##### NOT DONE FOR BOTH DOCUMENTS YET
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
 	form = nesOptions(secret_key='super secret key')
@@ -286,9 +286,23 @@ def cogewordcloud():
 		return render_template('cg_wordcloud.html', wordcloud_data=wordcloud_data)
 
 
-@app.route('/cogeheatmap/') #default coge NES heatmap for iframe
+@app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
-	return render_template('heatmap2.html')
+	form = nesOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		nes_categories = request.form.getlist('check')
+		print(nes_categories)
+		w_number = form.w_words.data
+		print("the w value is "+str(w_number))
+		pmid = "18269575"
+		x_docs, y_words, z_counts = vis_heatmap(pmid, nes_categories, w_number)
+		print(z_counts)
+		print(x_docs)
+		print(y_words)
+		return render_template('heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+	else:
+		#Default data
+		return render_template('heatmap1.html')
 
 
 @app.route('/cogekmeans/') #default coge kmreans for iframe
@@ -402,8 +416,6 @@ def reslda(query):
 			jsonLDA = json.load(load_data)
 		print(jsonLDA)
 		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query)
-
-
 
 ########################################################################
 

@@ -16,8 +16,8 @@
 
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" method="post">
 
-     <label for="categories">Filter with words occurring N or more times, from categories  </label>
-     <div id="categories">
+     <!-- <label for="options">Filter with words occurring N or more times, from categories  </label> -->
+     <div id="options">
 
           <div class="col-xs-1">
           <select class="form-control" id="w_words" name="w_words">
@@ -64,7 +64,7 @@
           <input class="form-check-input" type="checkbox" name="check" value="TissueType">Tissue-type</label>
     </div>
 
-  <button type="submit" class="btn btn-default btn-sm">Update</button>
+  <button type="submit" id="wcButton" class="btn btn-default btn-sm">Update</button>
 
 
 
@@ -114,4 +114,24 @@ var frequency_list = JSON.parse( myjson );
         .text(function(d) { return d.text; });
   }
 
+</script>
+
+<script>
+  var btn = document.getElementById('wcButton');
+  btn.addEventListener('click', loadProgress);
+
+  function loadProgress() {
+    console.log('Button clicked!');
+    var progressBar = document.getElementsByClassName('progress-bar')[0];
+    var interval = 30;
+    var currentValue = 0;
+    for (var i = 0; i < 100; i += interval) {
+      console.log('Setting interval', i)
+      setTimeout(function() {
+        currentValue += i;
+        console.log('Setting progress width to:', currentValue, '%');
+        progressBar.setAttribute('style', 'width: ' + currentValue + '%');
+      }, i);
+    }
+  }
 </script>

@@ -1,66 +1,34 @@
 <html>
 <head>
-    <!--word cloud scripts -->
-    <script src="//d3js.org/d3.v3.min.js"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/d3.layout.cloud.js') }}"></script>
+    <!--plotly scripts -->
+     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
     <!--bootstrap scripts -->
     <link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
 </head>
 
-<body>
 
-<p>hi hi hi</p>
-<div class="btn-group btn-group-xs" role="group" aria-label="...">
-    <button type="button" class="btn btn-default">Bioprocess</button>
-  <button type="button" class="btn btn-default">Cell-lines</button>
-  <button type="button" class="btn btn-default">Cellular component</button>
-    <button type="button" class="btn btn-default">Family</button>
-     <button type="button" class="btn btn-default">Gene or gene product</button>
-    <button type="button" class="btn btn-default">Organ</button>
-    <button type="button" class="btn btn-default">Simple chemical</button>
-    <button type="button" class="btn btn-default">Site</button>
-    <button type="button" class="btn btn-default">Species</button>
-    <button type="button" class="btn btn-default">Tissue Type</button>
-    </div>
-
-</body>
+<!-- Plots go in blank <div> elements.
+    You can size them in the plot layout,
+    or give the div a size as shown here.
+-->
+<div id="myDiv">  </div>
 
 <script>
-
-    var fill = d3.scale.category20();
-
-var frequency_list = [{"text": "gm11", "size": 13.5}, {"text": "step", "size": 57.5}, {"text": "s5", "size": 20.75}, {"text": "chromosomes", "size": 196.0}, {"text": "name", "size": 22.5}, {"text": "bess", "size": 22.0}, {"text": "jaz", "size": 12.75}, {"text": "papaya", "size": 44.75}, {"text": "s6", "size": 13.0}, {"text": "alpha", "size": 39.5}, {"text": "i2", "size": 17.0}, {"text": "salt", "size": 19.25}, {"text": "b.", "size": 13.0}, {"text": "hdziv", "size": 21.25}, {"text": "rice", "size": 165.25}, {"text": "rg10", "size": 48.0}, {"text": "transcription", "size": 82.5}, {"text": "light", "size": 17.75}, {"text": "hair", "size": 15.5}, {"text": "ribosomal", "size": 15.75}, {"text": "thaliana", "size": 275.5}, {"text": "prc1", "size": 18.25}, {"text": "animal", "size": 14.5}, {"text": "beta", "size": 24.25}, {"text": "biosynthesis", "size": 51.5}, {"text": "clock", "size": 37.25}, {"text": "kat5", "size": 16.75}, {"text": "i3", "size": 19.75}, {"text": "tomato", "size": 60.75}, {"text": "barley", "size": 46.25}, {"text": "d1", "size": 15.0}, {"text": "s1", "size": 61.75}, {"text": "o.", "size": 13.25}, {"text": "metabolism", "size": 32.75}, {"text": "root", "size": 51.75}, {"text": "extension", "size": 17.75}, {"text": "translation", "size": 18.25}, {"text": "leaf", "size": 44.5}, {"text": "pr", "size": 15.0}, {"text": "like genes", "size": 14.75}, {"text": "banana", "size": 36.0}, {"text": "gm14", "size": 19.0}, {"text": "oryza", "size": 20.75}, {"text": "ec", "size": 13.5}, {"text": "wheat", "size": 31.5}, {"text": "fish", "size": 14.25}, {"text": "bicolor", "size": 27.0}, {"text": "a.", "size": 167.5}, {"text": "rpl9", "size": 26.0}, {"text": "protein", "size": 26.5}, {"text": "pcr", "size": 19.0}, {"text": "chromosome", "size": 210.25}, {"text": "response", "size": 17.5}, {"text": "localization", "size": 19.0}, {"text": "ae", "size": 17.75}, {"text": "branch", "size": 59.25}, {"text": "sorghum", "size": 169.5}, {"text": "hvlux1", "size": 16.5}, {"text": "arabica", "size": 34.5}, {"text": "tail", "size": 15.5}, {"text": "rapa", "size": 87.75}, {"text": "link", "size": 17.0}, {"text": "clhst1", "size": 23.75}, {"text": "sativa", "size": 40.0}, {"text": "4a", "size": 15.0}, {"text": "organism", "size": 21.0}, {"text": "gene", "size": 94.0}, {"text": "grape", "size": 18.0}, {"text": "processes", "size": 52.5}, {"text": "acid", "size": 162.5}, {"text": "ox948", "size": 24.0}, {"text": "lycopersicum", "size": 18.0}, {"text": "blue", "size": 12.75}, {"text": "rpl9d", "size": 14.5}, {"text": "orange", "size": 20.0}, {"text": "center", "size": 16.0}, {"text": "fad3a", "size": 19.5}, {"text": "traits", "size": 35.5}, {"text": "case", "size": 70.5}, {"text": "c4", "size": 35.75}, {"text": "membrane", "size": 16.5}, {"text": "yeast", "size": 28.75}, {"text": "s.", "size": 24.25}, {"text": "fad3b", "size": 27.0}, {"text": "ap", "size": 13.0}, {"text": "impact", "size": 20.75}, {"text": "stage", "size": 32.25}, {"text": "leaves", "size": 50.0}, {"text": "names", "size": 22.0}, {"text": "kat2", "size": 15.25}, {"text": "soybean", "size": 62.25}, {"text": "wrky", "size": 16.75}, {"text": "fad3c", "size": 14.5}, {"text": "bacs", "size": 52.0}, {"text": "tify", "size": 20.25}, {"text": "clone", "size": 26.25}, {"text": "start", "size": 35.0}, {"text": "max", "size": 20.0}, {"text": "sir2", "size": 19.0}, {"text": "v1", "size": 13.0}, {"text": "time", "size": 150.25}, {"text": "seed", "size": 47.25}, {"text": "line", "size": 69.0}, {"text": "nac", "size": 22.5}, {"text": "c.", "size": 63.0}, {"text": "nerves", "size": 12.75}, {"text": "cell", "size": 17.75}, {"text": "fad3", "size": 26.5}, {"text": "s4", "size": 23.75}, {"text": "family", "size": 41.25}, {"text": "mhc", "size": 49.0}, {"text": "cenh3", "size": 36.5}, {"text": "meristem", "size": 15.5}, {"text": "flower", "size": 26.75}, {"text": "cysteine", "size": 28.75}, {"text": "toc1", "size": 20.25}, {"text": "tef", "size": 20.0}, {"text": "bovipain-2", "size": 17.75}, {"text": "scale", "size": 33.75}, {"text": "tissue", "size": 44.0}, {"text": "at-alpha", "size": 20.5}, {"text": "vvvq", "size": 15.75}, {"text": "maize", "size": 214.0}, {"text": "myosin", "size": 18.0}, {"text": "nitrogen", "size": 15.5}, {"text": "human", "size": 58.0}, {"text": "arabidopsis", "size": 119.5}, {"text": "result", "size": 60.0}, {"text": "crop", "size": 38.5}, {"text": "host", "size": 35.0}, {"text": "mcscanx", "size": 16.75}, {"text": "glycine", "size": 26.75}, {"text": "life", "size": 21.0}, {"text": "s3", "size": 30.25}, {"text": "differentiation", "size": 16.0}, {"text": "solanum", "size": 16.5}, {"text": "genes", "size": 193.25}, {"text": "rpl9c", "size": 29.0}, {"text": "s2", "size": 37.25}, {"text": "water", "size": 29.0}, {"text": "chicken", "size": 19.5}, {"text": "linolenic", "size": 58.0}, {"text": "test", "size": 36.5}, {"text": "proteins", "size": 45.25}, {"text": "base", "size": 37.0}, {"text": "vq", "size": 21.0}, {"text": "domain", "size": 22.0}, {"text": "lp", "size": 16.0}, {"text": "fruit", "size": 34.0}, {"text": "coffee", "size": 30.25}, {"text": "gene family", "size": 13.25}]
-
-
-
-  d3.layout.cloud().size([600, 600])
-      .words(frequency_list)
-      .rotate(function() { return ~~(Math.random() * 2) * 90; })
-      .font("Impact")
-      .fontSize(function(d) { return d.size; })
-      .on("end", draw)
-      .start();
-
-  function draw(words) {
-    d3.select("body").append("svg")
-        .attr("width", 600) //makes size of svg
-        .attr("height", 600)
-      .append("g")
-        .attr("transform", "translate(300,300)")//(L-R, up-down) (150,150 default) with 300,300 svg
-      .selectAll("text")
-        .data(words)
-      .enter().append("text")
-        .style("font-size", function(d) { return d.size + "px"; })
-        .style("font-family", "Impact")
-        .style("fill", function(d, i) { return fill(i); })
-        .attr("text-anchor", "middle")
-        .attr("transform", function(d) {
-          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-        })
-        .text(function(d) { return d.text; });
+var data = [
+  {
+      //z: counts, x: docs, y: words
+    z: [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [7, 15, 0, 17, 5, 45, 2, 1, 0, 4, 0, 1, 0, 4, 4, 3, 0, 7, 7, 5, 0, 7, 4, 8, 1, 0, 0, 0, 1, 0, 5, 6, 13, 1, 11, 9, 20, 9, 0, 0, 0, 0, 2, 2, 4, 1, 3, 0, 0, 0, 0, 0, 5, 7, 6, 2, 5, 0, 9, 0, 0, 3, 1, 22, 4, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0], [67, 23, 0, 4, 3, 0, 0, 3, 0, 0, 0, 14, 0, 6, 6, 1, 0, 5, 15, 11, 0, 5, 1, 3, 0, 2, 0, 0, 1, 0, 3, 2, 4, 0, 14, 8, 2, 2, 0, 0, 0, 0, 7, 3, 10, 9, 7, 3, 0, 0, 2, 3, 1, 1, 8, 8, 7, 0, 7, 0, 9, 8, 5, 22, 7, 3], [0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 2, 72, 0, 0, 11, 4, 0, 6, 1, 0, 0, 0, 0, 3, 0, 0, 0, 17, 13, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 4, 0, 6, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0], [3, 8, 0, 5, 1, 0, 7, 2, 0, 4, 1, 4, 0, 9, 5, 6, 0, 6, 15, 1, 0, 11, 1, 6, 0, 0, 0, 2, 1, 0, 2, 17, 2, 6, 7, 4, 1, 15, 4, 0, 0, 0, 8, 1, 3, 0, 16, 2, 0, 0, 0, 2, 1, 2, 1, 0, 5, 0, 0, 0, 6, 0, 2, 5, 2, 2], [3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0, 0, 43, 0, 0], [0, 2, 0, 2, 0, 4, 4, 6, 0, 10, 0, 0, 0, 4, 5, 2, 0, 3, 0, 2, 3, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 1, 3, 6, 3, 2, 0, 0, 0, 0, 13, 1, 7, 0, 11, 0, 0, 0, 0, 0, 1, 4, 0, 1, 5, 0, 9, 0, 10, 0, 12, 0, 0, 2], [18, 42, 3, 5, 2, 80, 7, 5, 0, 15, 0, 12, 0, 10, 6, 6, 0, 30, 3, 12, 24, 2, 10, 0, 0, 0, 0, 1, 9, 0, 22, 5, 16, 6, 34, 7, 21, 1, 1, 0, 0, 2, 1, 13, 43, 0, 11, 5, 0, 0, 0, 9, 4, 52, 9, 2, 2, 0, 5, 0, 14, 61, 55, 9, 24, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+    x: ['doc1', 'doc2', 'doc3', 'doc4', 'doc5', 'doc6', 'doc7', 'doc8', 'doc9', 'doc10', 'doc11', 'doc12', 'doc13', 'doc14', 'doc15', 'doc16', 'doc17', 'doc18', 'doc19', 'doc20', 'doc21', 'doc22', 'doc23', 'doc24', 'doc25', 'doc26', 'doc27', 'doc28', 'doc29', 'doc30', 'doc31', 'doc32', 'doc33', 'doc34', 'doc35', 'doc36', 'doc37', 'doc38', 'doc39', 'doc40', 'doc41', 'doc42', 'doc43', 'doc44', 'doc45', 'doc46', 'doc47', 'doc48', 'doc49', 'doc50', 'doc51', 'doc52', 'doc53', 'doc54', 'doc55', 'doc56', 'doc57', 'doc58', 'doc59', 'doc60', 'doc61', 'doc62', 'doc63', 'doc64', 'doc65', 'doc66'],
+    y: ['chromosomes', 'line', 'mhc', 'time', 'rapa', 'case', 'clock', 'step', 'chromosome', 'bacs'],
+    type: 'heatmap',
+      colorscale: [[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
   }
+];
 
-</script>
+Plotly.newPlot('myDiv', data);
+
+	</script>

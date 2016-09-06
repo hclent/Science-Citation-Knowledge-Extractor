@@ -84,6 +84,13 @@ def vis_wordcloud(pmid, nes_categories, w_number):
 	print(wcl)
 	return wcl
 
+def vis_heatmap(pmid, nes_categories, w_number):
+	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
+	data_samples, neslist = loadBioDoc(biodocs)
+	nesDict = frequency_dict(neslist, nes_categories)
+	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, data_samples)
+	return x_docs, y_words, z_counts
+
 
 ############ PROCESSING BIODOCS ############################################
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
