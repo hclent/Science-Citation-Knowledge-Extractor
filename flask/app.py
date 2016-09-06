@@ -218,14 +218,14 @@ def cogelsa():
 		k = int(k_clusters)
 		jsonLSA = run_lsa1(pmid, data_samples, k)
 		print("did it all!")
-		return render_template('vis_lsa.html', form=form, jsonLSA=jsonLSA) #needs to be parsed
+		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA) #needs to be parsed
 	else: #if nothing is
 		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_lsa.json"
 		with open(completeName) as load_data:
 			jsonLSA = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
 		#so i'm going to read it in as a string that needs to be parsed anyway
 		jsonLSA = re.sub('\'', '\"', str(jsonLSA)) #json needs double quotes, not single quotes
-		return render_template('vis_lsa.html', form=form, jsonLSA=jsonLSA)
+		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA)
 
 
 @app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
@@ -247,14 +247,14 @@ def cogelda():
 		k = int(k_clusters)
 		w = int(num_words)
 		jsonLDA = run_lda1(data_samples, k, w)
-		return render_template('vis_lda.html', form=form, jsonLDA=jsonLDA)
+		return render_template('coge_lda.html', form=form, jsonLDA=jsonLDA)
 	else:
 		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_lda1.json"
 		with open(completeName) as load_data:
 			jsonLDA = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
 		#so i'm going to read it in as a string that needs to be parsed anyway
 		jsonLDA = re.sub('\'', '\"', str(jsonLDA)) #json needs double quotes, not single quotes
-		return render_template('vis_lda.html', form=form, jsonLDA=jsonLDA)
+		return render_template('coge_lda.html', form=form, jsonLDA=jsonLDA)
 
 
 @app.route('/cogejournals/') #default coge journals for iframe
@@ -262,9 +262,10 @@ def cogejournals():
 	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
 	with open(completeName) as load_data:
 		journals = json.load(load_data) #doesn't need to be parsed
-	return render_template('journals.html', journals=journals)
+	return render_template('coge_journals.html', journals=journals)
 
 ##### NOT DONE FOR BOTH DOCUMENTS YET
+#only using pmid 18269575
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
 	form = nesOptions(secret_key='super secret key')
@@ -275,7 +276,7 @@ def cogewordcloud():
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
 		wordcloud_data = vis_wordcloud(pmid, nes_categories, w_number)
-		return render_template('cg_wordcloud.html',  wordcloud_data=wordcloud_data)
+		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data)
 	else:
 		#Default data
 		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_wcloud1.json"
@@ -283,9 +284,9 @@ def cogewordcloud():
 			wordcloud_data = json.load(load_data) #this result doesn't need to be parsed but unsure how to write that in javascript
 		#so i'm going to read it in as a string that needs to be parsed anyway
 		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #json needs double quotes, not single quotes
-		return render_template('cg_wordcloud.html', wordcloud_data=wordcloud_data)
+		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data)
 
-
+#only using pmid 18269575
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions(secret_key='super secret key')
@@ -299,15 +300,15 @@ def cogeheatmap():
 		print(z_counts)
 		print(x_docs)
 		print(y_words)
-		return render_template('heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words)
 	else:
 		#Default data
-		return render_template('heatmap1.html')
+		return render_template('coge_heatmap1.html')
 
 
 @app.route('/cogekmeans/') #default coge kmreans for iframe
 def cogekmeans():
-	return render_template('cogekmeans.html')
+	return render_template('coge_kmeans.html')
 
 
 @app.route('/testingstuff/')
@@ -397,7 +398,7 @@ def reslda(query):
 		k = int(k_clusters)
 		w = int(num_words)
 		temp_jsonLDA = run_lda1(data_samples, k, w)
-		return render_template('vis_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
+		return render_template('coge_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
 	else:
 		#need to get last user_input
 		#use id to do stuff
@@ -416,6 +417,12 @@ def reslda(query):
 			jsonLDA = json.load(load_data)
 		print(jsonLDA)
 		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query)
+
+
+
+@app.route('/reswordcloud/<query>', methods=["GET", "POST"]) #user lda for iframe
+def reswordcloud(query):
+	return render_template('test.html')
 
 ########################################################################
 

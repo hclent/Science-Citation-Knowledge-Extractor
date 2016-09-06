@@ -59,10 +59,8 @@
 
 		<!--  Put NERs here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="ner">
-		  	<p>What organisms are they working with?</p> 
-		  	{% for result in ners %}
-		  		<li>{{result}}</li>
-		  	{% endfor %}
+            <iframe  id="reswordcloud" src="https://geco.iplantcollaborative.org/hclent/bionlp/reswordcloud/{{query}}" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
 
 		</div> 
 
