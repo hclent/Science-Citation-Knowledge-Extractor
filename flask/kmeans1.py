@@ -24,10 +24,10 @@ def get_hashing(data):
 #Output: Clusters
 # labels = km.labels_
 # centroids = km.cluster_centers_
-def do_kemeans(sparse_matrix):
+def do_kemeans(sparse_matrix, k_clusters):
     t0 = time.time()
     print("* Beginning k-means clustering ... ")
-    num_clusters = 3
+    num_clusters = int(k_clusters)
     km = KMeans(init='k-means++', n_clusters=num_clusters)
     km.fit(sparse_matrix)
     clusters = km.labels_.tolist()
@@ -62,6 +62,12 @@ def plotKmeans(coordinates, clusters):
   x2_coordinates = []
   y2_coordinates = []
   z2_coordinates = []
+  x3_coordinates = []
+  y3_coordinates = []
+  z3_coordinates = []
+  x4_coordinates = []
+  y4_coordinates = []
+  z4_coordinates = []
   i = 0
   for vectors in coordinates:
     if clusters[i] == 0:
@@ -76,79 +82,23 @@ def plotKmeans(coordinates, clusters):
       x2_coordinates.append(vectors[0])
       y2_coordinates.append(vectors[1])
       z2_coordinates.append(vectors[2])
+    if clusters[i] == 3:
+      x3_coordinates.append(vectors[0])
+      y3_coordinates.append(vectors[1])
+      z3_coordinates.append(vectors[2])
+    if clusters[i] == 4:
+      x4_coordinates.append(vectors[0])
+      y4_coordinates.append(vectors[1])
+      z4_coordinates.append(vectors[2])
     i += 1
 
-  #for 2D, just "go.Scatter"
-  trace0 = go.Scatter3d(
-    x = x0_coordinates,
-    y = y0_coordinates,
-    z = z0_coordinates,
-    name = 'cluster 1',
-    mode = 'markers',
-    marker = dict(
-      size = 10,
-      color = 'rgba(152, 0, 0, .8)',
-        line = dict(
-            width = 2,
-            color = 'rgb(0, 0, 0)'
-        ),
-        opacity=0.8
-      )
-    )
 
-  trace1 = go.Scatter3d(
-      x = x1_coordinates,
-      y = y1_coordinates,
-      z = z1_coordinates,
-      name = 'cluster 2',
-      mode = 'markers',
-      marker = dict(
-          size = 10,
-          color = 'rgb(204, 204, 204)',
-          line = dict(
-              width = 2,
-          ),
-          opacity=0.8
-      )
-    )
-
-  trace2 = go.Scatter3d(
-    x = x2_coordinates,
-    y = y2_coordinates,
-    z = z2_coordinates,
-    name = 'cluster 3',
-    mode = 'markers',
-    marker = dict(
-        size = 10,
-        color = 'rgba(156, 165, 196, 0.95)',
-        line = dict(
-            width = 2,
-        ),
-        opacity=0.8
-      )
-    )
-
-
-  data = [trace0, trace1, trace2]
-  layout = go.Layout(
-    margin=dict(
-        l=0,
-        r=0,
-        b=0,
-        t=0
-    )
-  )
-
-  #For 2D
-  # layout = dict(title = 'K-means Clustering',
-  #             yaxis = dict(zeroline = False),
-  #             xaxis = dict(zeroline = False)
-  #            )
-
-  fig = dict(data=data, layout=layout)
-  #plot_url = py.plot(data, filename='simple-3d-scatter') #print to online
-  plot(data)
   print("done in %0.3fs." % (time.time() - t0))
+  return(x0_coordinates, y0_coordinates, z0_coordinates,
+         x1_coordinates, y1_coordinates, z1_coordinates,
+         z2_coordinates, z2_coordinates, z2_coordinates,
+         z3_coordinates, z3_coordinates, z3_coordinates,
+         z4_coordinates, z4_coordinates, z4_coordinates)
 
 
 bdocs1 = retrieveBioDocs("18269575")
@@ -164,12 +114,12 @@ hX, hasher = get_hashing(data_samples)
 print(hX.toarray())
 print(hX.shape)
 print()
-clusters = do_kemeans(hX) #list of cluster assignments
+clusters = do_kemeans(hX, 5) #list of cluster assignments
 coordinates = do_NMF(hX) #dimensionality reduction for visualization
-plotKmeans(coordinates, clusters) #format for Plotly scatterplot
+x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, z2_coordinates, z2_coordinates, z2_coordinates,z3_coordinates, z3_coordinates, z3_coordinates,z4_coordinates, z4_coordinates, z4_coordinates = plotKmeans(coordinates, clusters) #format for Plotly scatterplot
 
 
-
+print(z4_coordinates)
 
 
 ####### GRAVEYARD ##########
@@ -181,7 +131,6 @@ plotKmeans(coordinates, clusters) #format for Plotly scatterplot
 # from sklearn.pipeline import make_pipeline
 # from sklearn.preprocessing import Normalizer
 
-
 # def get_tfidf(data): #data should be a list of strings for the documents
 #   print("* Making tfidf with the data ...")
 #   tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(1, 3), norm='l2') #l2 projected on the euclidean unit sphere
@@ -192,7 +141,6 @@ plotKmeans(coordinates, clusters) #format for Plotly scatterplot
 # print(tfidfX.toarray())
 # print(tfidfX.shape)
 # print()
-
 
 # #Truncated SVD (LSA) for dimensionality reduction
 # #For plotting only (don't want to give Dimen-Reduced data to kmeans!)

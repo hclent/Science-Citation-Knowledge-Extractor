@@ -306,9 +306,15 @@ def cogeheatmap():
 		return render_template('coge_heatmap1.html')
 
 
-@app.route('/cogekmeans/') #default coge kmreans for iframe
+@app.route('/cogekmeans/', methods=["GET","POST"]) #default coge kmreans for iframe
 def cogekmeans():
-	return render_template('coge_kmeans.html')
+	form = visOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		k_clusters = form.k_val.data #2,3,4,or 5
+		print("the k value is " + str(k_clusters))
+		return render_template('coge_kmeans.html')
+	else:
+		return render_template('coge_kmeans.html')
 
 
 @app.route('/testingstuff/')
