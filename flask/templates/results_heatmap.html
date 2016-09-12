@@ -1,0 +1,89 @@
+<html>
+<head>
+    <!--plotly scripts -->
+     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!--bootstrap scripts -->
+    <link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+</head>
+<body>
+<form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/res_heatmap/{{query}}" method="post">
+
+     <!-- <label for="options">Filter with words occurring N or more times, from categories  </label> -->
+     <div id="options">
+
+          <div class="col-xs-1">
+          <select class="form-control" id="w_words" name="w_words">
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="150">150</option>
+          <option value="200">200</option>
+          </select>
+          </div>
+
+
+        <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="BioProcess">Bioprocess</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="CellLine">Cell-lines</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Cellular_component">Cellular components</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Family">Family</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Gene_or_gene_product">Gene or gene product</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Organ">Organ</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Simple_chemical">Simple Chemical</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Site">Site</label>
+
+     <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="Species">Species</label>
+
+            <label class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="check" value="TissueType">Tissue-type</label>
+    </div>
+
+  <button type="submit" id="wcButton" class="btn btn-default btn-sm">Update</button>
+
+
+
+    </label>
+    </div>
+
+</form>
+
+
+<div id="myDiv">  </div>
+
+<script>
+var data = [
+  {
+      //z: counts, x: docs, y: words
+    z: {{z_counts|safe}},
+    x: {{x_docs|safe}},
+    y: {{y_words|safe}},
+    type: 'heatmap',
+      colorscale: [[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
+  }
+];
+
+Plotly.newPlot('myDiv', data);
+
+	</script>

@@ -6,6 +6,7 @@ from lsa1 import * #mine
 from lda1 import * #mine
 from journalvis import * #mine
 from nes import * #mine
+from kmeans1 import * #mine
 
 
 ## Supporting functions for app.py
@@ -91,6 +92,15 @@ def vis_heatmap(pmid, nes_categories, w_number):
 	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, data_samples)
 	return x_docs, y_words, z_counts
 
+
+def vis_kmeans(pmid, num_clusters):
+	biodocs = retrieveBioDocs(str(pmid))
+	data_samples, neslist = loadBioDoc(biodocs)
+	hX, hasher = get_hashing(data_samples)
+	clusters = do_kemeans(hX, int(num_clusters)) #list of cluster assignments
+	coordinates = do_NMF(hX) #dimensionality reduction for visualization
+	x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = plotKmeans(coordinates, clusters) #format for Plotly scatterplot
+	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates
 
 ############ PROCESSING BIODOCS ############################################
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities

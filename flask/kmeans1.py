@@ -2,10 +2,6 @@ from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.decomposition import NMF
 from sklearn.cluster import KMeans
 import sys, pickle, math, random, numpy, time
-import plotly.plotly as py
-import plotly.graph_objs as go
-py.sign_in('hclent', 'eeg49e9880')
-from plotly.offline import plot
 from multi_preprocess import * #mine
 
 
@@ -96,30 +92,30 @@ def plotKmeans(coordinates, clusters):
   print("done in %0.3fs." % (time.time() - t0))
   return(x0_coordinates, y0_coordinates, z0_coordinates,
          x1_coordinates, y1_coordinates, z1_coordinates,
-         z2_coordinates, z2_coordinates, z2_coordinates,
-         z3_coordinates, z3_coordinates, z3_coordinates,
-         z4_coordinates, z4_coordinates, z4_coordinates)
+         x2_coordinates, y2_coordinates, z2_coordinates,
+         x3_coordinates, y3_coordinates, z3_coordinates,
+         x4_coordinates, y4_coordinates, z4_coordinates)
 
 
-bdocs1 = retrieveBioDocs("18269575")
-data_samples, neslist1 = loadBioDoc(bdocs1)
-bdocs2 = retrieveBioDocs("18952863")
-datas2, neslist2 = loadBioDoc(bdocs2)
-
-for docs in datas2:
-    data_samples.append(docs)
-print("added datas 2 to data_samples")
-
-hX, hasher = get_hashing(data_samples)
-print(hX.toarray())
-print(hX.shape)
-print()
-clusters = do_kemeans(hX, 5) #list of cluster assignments
-coordinates = do_NMF(hX) #dimensionality reduction for visualization
-x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, z2_coordinates, z2_coordinates, z2_coordinates,z3_coordinates, z3_coordinates, z3_coordinates,z4_coordinates, z4_coordinates, z4_coordinates = plotKmeans(coordinates, clusters) #format for Plotly scatterplot
-
-
-print(z4_coordinates)
+# bdocs1 = retrieveBioDocs("18269575")
+# data_samples, neslist1 = loadBioDoc(bdocs1)
+# bdocs2 = retrieveBioDocs("18952863")
+# datas2, neslist2 = loadBioDoc(bdocs2)
+#
+# for docs in datas2:
+#     data_samples.append(docs)
+# print("added datas 2 to data_samples")
+#
+# hX, hasher = get_hashing(data_samples)
+# print(hX.toarray())
+# print(hX.shape)
+# print()
+# clusters = do_kemeans(hX, 5) #list of cluster assignments
+# coordinates = do_NMF(hX) #dimensionality reduction for visualization
+# x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, z2_coordinates, z2_coordinates, z2_coordinates,z3_coordinates, z3_coordinates, z3_coordinates,z4_coordinates, z4_coordinates, z4_coordinates = plotKmeans(coordinates, clusters) #format for Plotly scatterplot
+#
+#
+# print(z4_coordinates)
 
 
 ####### GRAVEYARD ##########

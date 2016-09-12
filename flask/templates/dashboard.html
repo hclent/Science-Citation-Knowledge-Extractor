@@ -88,8 +88,7 @@
 
 		<!--  Put NERs here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="ner">
-            <ul>
-		  	<p>What organisms are they working with?</p>
+           
              <div class="btn-group" role="group">
 
     <!-- Split button -->
@@ -109,7 +108,7 @@
             </div>
 
     </div>
-                </ul>
+                </>
             <br></br>
 
            <iframe  id="wordcloud" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" width="1100" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
@@ -136,9 +135,9 @@
               </button>
               <ul class="dropdown-menu">
                   <!-- TO DO: form should return which topic model has been selected -->
-                <li><a href="#lsa" id="lsa" onclick="toggle('cogelsa', 'cogelda')">LSA</a></li> <!-- I want this button to include vis_lsa.html -->
+                <li><a href="#lsa" id="lsa" onclick="toggle('cogelsa', 'cogelda')">LSA</a></li> <!-- I want this button to include coge_lsa.html -->
 
-                <li><a href="#lda" id="lda" onclick="toggle('cogelda', 'cogelsa')">LDA</a></li> <!-- and this button to include vis_lda.html -->
+                <li><a href="#lda" id="lda" onclick="toggle('cogelda', 'cogelsa')">LDA</a></li> <!-- and this button to include coge_lda.html -->
 
               </ul>
             </div>

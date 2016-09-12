@@ -30,6 +30,8 @@
     <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NES</a></li>
     
     <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Topics</a></li>
+
+      <li role="presentation"><a href="#cluster" aria-controls="cluster" role="tab" data-toggle="tab">Clustering</a></li>
   </ul>
 
 
@@ -59,7 +61,30 @@
 
 		<!--  Put NERs here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="ner">
-            <iframe  id="reswordcloud" src="https://geco.iplantcollaborative.org/hclent/bionlp/reswordcloud/{{query}}" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
+              <div class="btn-group" role="group">
+
+    <!-- Split button -->
+            <div class="btn-group">
+              <button type="button" class="btn btn-default">Visualization</button>
+              <button type="button" class="btn btn-default dropdown-toggle" id="nes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+              </button>
+              <ul class="dropdown-menu">
+
+                <li><a href="#wc" id="wc" onclick="toggle('res_wordcloud', 'res_heatmap')">Word Cloud</a></li>
+
+                <li><a href="#hm" id="hm" onclick="toggle('res_heatmap', 'res_wordcloud')">Heatmap</a></li>
+
+              </ul>
+            </div>
+
+    </div>
+              
+            <br></br>
+            <iframe  id="res_wordcloud" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reswordcloud/{{query}}" width="1100" height="700" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="res_heatmap" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/res_heatmap/{{query}}" width="1100" height="700" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</div> 
@@ -97,6 +122,16 @@
 
 		</ul>
 	</div>
+
+
+
+		<!--  Loop through cited article information like this -->
+		<div role="tabpanel" class="tab-pane fade" id="cluster">
+		  	<p>K-means</p>
+
+      <iframe  id="res_kmeans"  src="https://geco.iplantcollaborative.org/hclent/bionlp/res_kmeans/{{query}}" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
+		</div>
 
 </div>
 </div>
