@@ -264,18 +264,27 @@ def cogejournals():
 		journals = json.load(load_data) #doesn't need to be parsed
 	return render_template('coge_journals.html', journals=journals)
 
-##### NOT DONE FOR BOTH DOCUMENTS YET#####
-#only using pmid 18269575
+
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
 	form = nesOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		pmid = "18269575"
+		nes_list = []
+
 		nes_categories = request.form.getlist('check')
 		print(nes_categories)
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
-		wordcloud_data = vis_wordcloud(pmid, nes_categories, w_number)
+
+		query = '18952863+18269575'
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for nerDicts in ners:
+				nes_list.append(nerDicts)
+
+		print(nes_list)
+		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data)
 	else:
 		#Default data
@@ -286,7 +295,7 @@ def cogewordcloud():
 		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #json needs double quotes, not single quotes
 		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data)
 
-#only using pmid 18269575
+#default data has only 1 of 2 pmids...
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions(secret_key='super secret key')
@@ -295,8 +304,20 @@ def cogeheatmap():
 		print(nes_categories)
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
-		pmid = "18269575"
-		x_docs, y_words, z_counts = vis_heatmap(pmid, nes_categories, w_number)
+
+		data_samples = []
+		nes_list = []
+
+		query = '18952863+18269575'
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for d in data:
+				data_samples.append(d)
+			for n in ners:
+				nes_list.append(n)
+
+		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 		print(z_counts)
 		print(x_docs)
 		print(y_words)
@@ -310,10 +331,17 @@ def cogeheatmap():
 def cogekmeans():
 	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		pmid = "18269575"
+		query = '18952863+18269575'
+
+		data_samples = []
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for d in data:
+				data_samples.append(d)
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(pmid, k_clusters)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
 		print(x0_coordinates)
 		print(x1_coordinates)
 		print(x2_coordinates)
@@ -326,12 +354,6 @@ def cogekmeans():
 							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 	else:
 		return render_template('coge_kmeans.html')
-
-
-@app.route('/testingstuff/')
-def testingshit():
-	print("testing stuff")
-	return render_template('test.html')
 
 ############### Results visualizations #############
 @app.route('/resjournals/<query>', methods=["GET", "POST"]) #user journals for iframe
@@ -441,21 +463,34 @@ def reslda(query):
 def reswordcloud(query):
 	form = nesOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		pmid = query
+		nes_list = []
 		nes_categories = request.form.getlist('check')
 		print(nes_categories)
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
-		wordcloud_data = vis_wordcloud(pmid, nes_categories, w_number)
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for nerDicts in ners:
+				nes_list.append(nerDicts)
+
+		print(nes_list)
+		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data)
 	else:
-		pmid = query
-		pmid_list = query.split('+') #list of string pmids
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		print(nes_categories)
 		w_number = 10
 		print("the w value is "+str(w_number))
-		wordcloud_data = vis_wordcloud(pmid, nes_categories, w_number)
+		nes_list = []
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for nerDicts in ners:
+				nes_list.append(nerDicts)
+
+		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
+
 		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data)
 
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
@@ -466,31 +501,58 @@ def res_heatmap(query):
 		print(nes_categories)
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
-		pmid = query
-		x_docs, y_words, z_counts = vis_heatmap(pmid, nes_categories, w_number)
+
+		data_samples = []
+		nes_list = []
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for d in data:
+				data_samples.append(d)
+			for n in ners:
+				nes_list.append(n)
+
+
+		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 		print(z_counts)
 		print(x_docs)
 		print(y_words)
 		return render_template('results_heatmap.html', query=query, pmid=pmid, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
 	else:
-		pmid = query
-		pmid_list = query.split('+') #list of string pmids
+		data_samples = []
+		nes_list = []
+
+
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		print(nes_categories)
 		w_number = 10
 		print("the w value is "+str(w_number))
-		x_docs, y_words, z_counts = vis_heatmap(pmid, nes_categories, w_number)
-		return render_template('results_heatmap.html', query=query, pmid=pmid, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for d in data:
+				data_samples.append(d)
+			for n in ners:
+				nes_list.append(n)
+
+		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
 
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
 def res_kmeans(query):
 	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		pmid = query
+
+		data_samples = []
 		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for d in data:
+				data_samples.append(d)
+
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(pmid, k_clusters)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
 		print(x0_coordinates)
 		print(x1_coordinates)
 		print(x2_coordinates)
@@ -503,11 +565,15 @@ def res_kmeans(query):
 		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 	else:
-		pmid = query
+		data_samples = []
 		pmid_list = query.split('+') #list of string pmids
+		for pmid in pmid_list:
+			data, ners = get_data_and_ner(pmid)
+			for d in data:
+				data_samples.append(d)
 		k_clusters = 3 #default is 3
 		print("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(pmid, k_clusters)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
 		print(x0_coordinates)
 		print(x1_coordinates)
 		print(x2_coordinates)
@@ -521,6 +587,11 @@ def res_kmeans(query):
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 
 ########################################################################
+@app.route('/testingstuff/')
+def testingshit():
+	print("testing stuff")
+	return render_template('test.html')
+
 
 #Handles 404 errors
 @app.errorhandler(404)

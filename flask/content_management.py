@@ -63,6 +63,12 @@ def run_IR_not_db(user_input):
 	getContentPMC(user_input, pmc_ids)
 	return main_info, target_journals, target_dates
 
+############# DATA SAMPLES AND NER ##############################################
+def get_data_and_ner(pmid):
+	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
+	data_samples, neslist = loadBioDoc(biodocs)
+	return data_samples, neslist
+
 ############ DATA VISUALIZATIONS #################################################
 
 def print_journalvis(journals, dates, user_input):
@@ -77,25 +83,21 @@ def print_journalvis(journals, dates, user_input):
 		json.dump(publication_data, outfile)
 
 
-def vis_wordcloud(pmid, nes_categories, w_number):
-	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
-	data_samples, neslist = loadBioDoc(biodocs)
+def vis_wordcloud(neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
+	print(nesDict)
 	wcl = wordcloud(nesDict, int(w_number))
 	print(wcl)
 	return wcl
 
-def vis_heatmap(pmid, nes_categories, w_number):
-	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
-	data_samples, neslist = loadBioDoc(biodocs)
+
+def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
 	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, data_samples)
 	return x_docs, y_words, z_counts
 
 
-def vis_kmeans(pmid, num_clusters):
-	biodocs = retrieveBioDocs(str(pmid))
-	data_samples, neslist = loadBioDoc(biodocs)
+def vis_kmeans(data_samples, num_clusters):
 	hX, hasher = get_hashing(data_samples)
 	clusters = do_kemeans(hX, int(num_clusters)) #list of cluster assignments
 	coordinates = do_NMF(hX) #dimensionality reduction for visualization

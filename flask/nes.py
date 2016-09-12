@@ -68,7 +68,14 @@ def doHeatmap(nesDict, n, data_samples):
     return x, y, z
 
 
-
+# bdocs1 = retrieveBioDocs("18269575")
+# data_samples, neslist1 = loadBioDoc(bdocs1)
+# bdocs2 = retrieveBioDocs("18952863")
+# datas2, neslist2 = loadBioDoc(bdocs2)
+#
+# print(neslist1)
+# print("########################################################################################################################")
+# print(neslist2)
 ########## Graveyard ###########
 #d3
 #{"data": [ {"timestamp": "time", "value": {"PM2.5": 30}}, ... , ...   ]     }
