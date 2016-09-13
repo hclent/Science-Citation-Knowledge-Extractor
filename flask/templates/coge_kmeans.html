@@ -10,6 +10,9 @@
 
 </head>
 <body>
+<h2> K-means Clustering </h2> <!--title goes here-->
+<p>   </p>
+
 <div id="controls">
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogekmeans/" method="post">
 <label for="buttongroup">clusters:</label>
@@ -24,9 +27,36 @@
 		   </select>
 		</div>
 
-		<button type="submit" class="btn btn-default">Update</button>
+		<button type="submit" id="kmeans" class="btn btn-default" data-toggle="modal" data-target="#myModal">Update</button>
 		</div>
 </form>
+</div>
+
+<!-- Progress modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Loading</h4>
+      </div>
+      <div class="modal-body">
+
+				<!-- Progress bar that doesn't actually move -->
+				<div class="progress">
+				  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+				    <span class="sr-only">45% Complete</span>
+				  </div>
+				</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <br></br>
@@ -95,3 +125,24 @@ var layout = {margin: {
 Plotly.newPlot('myDiv', data, layout);
 
 	</script>
+
+
+<script>
+  var btn = document.getElementById('kmeans');
+  btn.addEventListener('click', loadProgress);
+
+  function loadProgress() {
+    //console.log('Button clicked!');
+    var progressBar = document.getElementsByClassName('progress-bar')[0];
+    var interval = 30;
+    var currentValue = 0;
+    for (var i = 0; i < 100; i += interval) {
+      //console.log('Setting interval', i)
+      setTimeout(function() {
+        currentValue += i;
+        //console.log('Setting progress width to:', currentValue, '%');
+        progressBar.setAttribute('style', 'width: ' + currentValue + '%');
+      }, i);
+    }
+  }
+</script>

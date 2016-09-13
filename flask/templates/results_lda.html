@@ -34,7 +34,7 @@
 </style>
 
 <body>
-
+<h2> Latent Dirichlet Allocation </h2> <!--title goes here-->
 <p>   </p>
 <form class="form-inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/reslda/{{query}}" method="post">
 <div class="form-group">
@@ -55,10 +55,35 @@
         <option value="7">w=7</option>
       </select>
     </div>
-  <button type="submit" class="btn btn-default">Update</button>
+  <button type="submit" id="ldabutton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Update</button>
 </form>
 
+<!-- Progress modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Loading</h4>
+      </div>
+      <div class="modal-body">
 
+				<!-- Progress bar that doesn't actually move -->
+				<div class="progress">
+				  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+				    <span class="sr-only">45% Complete</span>
+				  </div>
+				</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
@@ -142,4 +167,24 @@ console.log(root)
 
 d3.select(self.frameElement).style("height", diameter + "px");
 
+</script>
+
+<script>
+  var btn = document.getElementById('ldabutton');
+  btn.addEventListener('click', loadProgress);
+
+  function loadProgress() {
+    //console.log('Button clicked!');
+    var progressBar = document.getElementsByClassName('progress-bar')[0];
+    var interval = 30;
+    var currentValue = 0;
+    for (var i = 0; i < 100; i += interval) {
+      //console.log('Setting interval', i)
+      setTimeout(function() {
+        currentValue += i;
+        //console.log('Setting progress width to:', currentValue, '%');
+        progressBar.setAttribute('style', 'width: ' + currentValue + '%');
+      }, i);
+    }
+  }
 </script>
