@@ -10,7 +10,7 @@ from content_management import * #mine
 from processors import *
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
-#Flask-WTF, Biopython, py-Processors, plotly
+#Flask-WTF, Biopython==1.67, py-Processors, plotly
 #flask, nltk, bs4, lxml, requests
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
@@ -32,11 +32,11 @@ def cogecrawl():
 	error = None
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_mainfo.pickle', 'rb')as f:
 		main_info = pickle.load(f)
-	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_nes.pickle', 'rb')as f:
-		ner = pickle.load(f)
+	# with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_nes.pickle', 'rb')as f:
+	# 	ner = pickle.load(f)
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
 		journals = pickle.load(f)
-	return render_template("dashboard.html", main_info=main_info, journals=journals, ner=ner)
+	return render_template("dashboard.html", main_info=main_info, journals=journals)
 
 
 
@@ -75,7 +75,7 @@ def trying():
 				check1 = c.fetchone()
 
 
-				#if the entry does NOT exist in the db already, will need to retireve text and annotate
+				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
 				if check1 is None:
 					flash('congrats you entered a new pubmedid lol')
 					#Using user_input for Information Retireval of "main info"
@@ -111,7 +111,13 @@ def trying():
 						jsonLDA = run_lda1(data_samples, 3, 5)
 
 						logging.info(user_input+" is the last one (JOURNALS)")
-						print_journalvis(target_journals, target_dates, user_input)
+						range_info = print_journalvis(target_journals, target_dates, user_input) #e.g. [(2008, 2009), 10, 7]
+						journal_years = range_info[0]
+						start_year = journal_years[0]
+						end_year = journal_years[1]
+						unique_publications = range_info[1]
+						unique_journals = range_info[2]
+
 						logging.info(user_input+" is the last one (LSA)")
 						print_lsa(user_input, jsonDict) #print lsa topic model to json
 						logging.info(user_input+" is the last one (LDA)")
@@ -125,7 +131,7 @@ def trying():
 					conn.commit()
 					flash("Writing PubmedID to database: successful")
 
-				#if the entry IS in the db, no need to retireve text from Entrez, just grab
+				#if the entry IS in the db, no need to retrieve text from Entrez, just grab
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval of "main info"
@@ -164,7 +170,13 @@ def trying():
 						jsonLDA = run_lda1(data_samples, 3, 5)
 
 						logging.info(user_input+" is the last one (JOURNALS)")
-						print_journalvis(target_journals, target_dates, user_input)
+						range_info = print_journalvis(target_journals, target_dates, user_input)
+						journal_years = range_info[0]
+						start_year = journal_years[0]
+						end_year = journal_years[1]
+						unique_publications = range_info[1]
+						unique_journals = range_info[2]
+
 						print(user_input+" is the last one (LSA)")
 						print_lsa(user_input, jsonDict) #print lsa topic model to json
 						print(user_input+" is the last one (LDA)")
@@ -181,7 +193,9 @@ def trying():
 				session['entered_id'] = True
 				session['engaged'] = 'engaged'
 
-		return render_template('results.html', form=form, main_info = main_info, target_journals = target_journals, ners=ners, query=query)
+		return render_template('results.html', form=form,
+	   			main_info = main_info, target_journals = target_journals, ners=ners, query=query,
+			   start_year=start_year, end_year=end_year, unique_publications=unique_publications, unique_journals=unique_journals)
 
 
 	except Exception as e:
@@ -190,17 +204,19 @@ def trying():
 
 
 
-################ Routes for visualization toggle ################
+################ Forms for visualization toggle ################
 
-#Create Form for handling visualization options
+
 class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
 
+
 class nesOptions(Form):
 	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'), (300, '300')])
-	#categories = BooleanField()
-################ Default Coge Data #############################
+
+
+################ Default CoGe Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions(secret_key='super secret key')
@@ -355,7 +371,8 @@ def cogekmeans():
 	else:
 		return render_template('coge_kmeans.html')
 
-############### Results visualizations #############
+
+############### Results visualizations #########################################
 @app.route('/resjournals/<query>', methods=["GET", "POST"]) #user journals for iframe
 def resjournals(query):
 	#need to get last user_input
@@ -458,7 +475,6 @@ def reslda(query):
 		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query)
 
 
-
 @app.route('/reswordcloud/<query>', methods=["GET", "POST"]) #user wordcloud for iframe
 def reswordcloud(query):
 	form = nesOptions(secret_key='super secret key')
@@ -492,6 +508,7 @@ def reswordcloud(query):
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 
 		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data)
+
 
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_heatmap(query):
@@ -537,6 +554,7 @@ def res_heatmap(query):
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+
 
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
 def res_kmeans(query):
@@ -586,7 +604,7 @@ def res_kmeans(query):
 		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 
-########################################################################
+#################### OTHER ####################################################
 @app.route('/testingstuff/')
 def testingshit():
 	print("testing stuff")
@@ -604,6 +622,6 @@ if __name__ == '__main__':
 	run_simple('0.0.0.0', 5000, app, use_reloader=True)
 	#app.run(host='0.0.0.0') #dont want app.run() for uwsgi
 
-########### GRAVEYARD ########
+########### GRAVEYARD ##########################################################
 
 

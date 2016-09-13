@@ -74,13 +74,15 @@ def get_data_and_ner(pmid):
 def print_journalvis(journals, dates, user_input):
 	#num_journals = len(journals)
 	#print("there are "+str(num_journals)+" journals in total")
-	publication_data = journals_vis(journals, dates)
+	publication_data, range_info = journals_vis(journals, dates)
 	print(publication_data)
+	print(range_info)
 	logging.info('Printing JOURNALS to JSON')
 	save_path = '/home/hclent/data/'+str(user_input)+'/'
 	completeName = os.path.join(save_path, ('journals_'+(str(user_input))+'.json'))
 	with open(completeName, 'w') as outfile:
 		json.dump(publication_data, outfile)
+	return range_info
 
 
 def vis_wordcloud(neslist, nes_categories, w_number):

@@ -3,6 +3,9 @@ from collections import defaultdict
 
 
 def journals_vis(journals, dates):
+	print("JOURNALS VISUALIZATION CRAP")
+	num_publications = len(journals)
+	print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
 	years_list = []
 	print(dates) #step1 : get years
 	for d in dates:
@@ -12,7 +15,7 @@ def journals_vis(journals, dates):
 	#print(years_list)
 
 	years_range = (years_list[-1], years_list[0]) #define years range with (oldest, newest)
-	#print(years_range)
+	print("YEARS RANGE: " + str(years_range))
 
 	#Associate journals with years
 	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
@@ -26,7 +29,9 @@ def journals_vis(journals, dates):
 		if j == (journal_year[i][0]):
 			jyDict[j] += [journal_year[i][1]]
 			i+=1
-	#print(jyDict)
+	#len(jyDict) is the amount of UNIQUE journals
+	number_unique_journals = len(jyDict)
+	print("IN "+str(number_unique_journals)+" UNIQUE JOURNALS")
 
 	#Dictionary with "Journal": Number-of-publications
 	#For looking up the total
@@ -63,12 +68,10 @@ def journals_vis(journals, dates):
 
 		publication_data.append(journal_data)
 
+	range_info = [years_range, num_publications, number_unique_journals]
+	print("RANGE INFO: ")
+	print(range_info)
 	#Get some info about the publication before changing it to a string for the json
-	some_journal = publication_data[0]
-	print(some_journal)
-	start_date = some_journal['articles'][0][0]
-	end_date = some_journal['articles'][-1][0]
-	year_range = (start_date, end_date)
-	print(year_range)
+	#Year range, number of publications, number of unique journals
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
-	return (publication_data)
+	return (publication_data, range_info)

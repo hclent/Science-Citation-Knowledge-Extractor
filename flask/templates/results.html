@@ -12,7 +12,7 @@
     <label for="PubmedID">Pubmed ID(s)</label>
     <input type="text" class="form-control" id="PubmedID" placeholder="18269575" name="pmid" value="{{request.form.pmid}}">
   </div>
-  <button type="submit" class="btn btn-default" type="submit">Submit</button>
+  <button type="submit" id= "myButton" class="btn btn-default" type="submit" data-toggle="modal" data-target="#myModal">Submit</button>
 </form>
 </div> 
 
@@ -52,7 +52,7 @@
 
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
-		  	<p>Where are they published?</p>
+		  	<h4> {{unique_publications}} publications in {{unique_journals}} different journals  </h4> <!--title goes here-->
             <iframe  id="resjournals" src="https://geco.iplantcollaborative.org/hclent/bionlp/resjournals/{{query}}" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
@@ -137,6 +137,36 @@
 </div>
 
 
+
+
+<!-- Progress modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Loading</h4>
+      </div>
+      <div class="modal-body">
+
+				<!-- Progress bar that doesn't actually move -->
+				<div class="progress">
+				  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+				    <span class="sr-only">45% Complete</span>
+				  </div>
+				</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script>
   function toggle(vis1, vis2) {
       var visspace1 = document.getElementById(vis1);
@@ -148,7 +178,25 @@
 
 
 
+<script>
+  var btn = document.getElementById('myButton');
+  btn.addEventListener('click', loadProgress);
 
+  function loadProgress() {
+    //console.log('Button clicked!');
+    var progressBar = document.getElementsByClassName('progress-bar')[0];
+    var interval = 30;
+    var currentValue = 0;
+    for (var i = 0; i < 100; i += interval) {
+      //console.log('Setting interval', i)
+      setTimeout(function() {
+        currentValue += i;
+        //console.log('Setting progress width to:', currentValue, '%');
+        progressBar.setAttribute('style', 'width: ' + currentValue + '%');
+      }, i);
+    }
+  }
+</script>
 
 {% endblock %}
 
