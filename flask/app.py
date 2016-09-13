@@ -115,6 +115,10 @@ def trying():
 						journal_years = range_info[0]
 						start_year = journal_years[0]
 						end_year = journal_years[1]
+						range_years = str(q.join(journal_years))
+						logging.info("range years: "+range_years)
+
+
 						unique_publications = range_info[1]
 						unique_journals = range_info[2]
 
@@ -174,6 +178,9 @@ def trying():
 						journal_years = range_info[0]
 						start_year = journal_years[0]
 						end_year = journal_years[1]
+						range_years = str(q.join(journal_years)) #2009+2016
+						logging.info("range years: "+range_years)
+
 						unique_publications = range_info[1]
 						unique_journals = range_info[2]
 
@@ -194,7 +201,7 @@ def trying():
 				session['engaged'] = 'engaged'
 
 		return render_template('results.html', form=form,
-	   			main_info = main_info, target_journals = target_journals, ners=ners, query=query,
+	   			main_info = main_info, target_journals = target_journals, query=query, range_years=range_years,
 			   start_year=start_year, end_year=end_year, unique_publications=unique_publications, unique_journals=unique_journals)
 
 
@@ -373,15 +380,22 @@ def cogekmeans():
 
 
 ############### Results visualizations #########################################
-@app.route('/resjournals/<query>', methods=["GET", "POST"]) #user journals for iframe
-def resjournals(query):
+@app.route('/resjournals/<query>/<range_years>', methods=["GET", "POST"]) #user journals for iframe
+def resjournals(query, range_years):
 	#need to get last user_input
 	print("in routine res-journals")
 	print("JOURNALS ID: " +str(query))
+	print("YEARS RANGE: " +str(range_years))
+	#Need years for range
+	years_list = range_years.split('+')
+	s_year = years_list[0]
+	e_year = years_list[1]
+
 	#only want to load the json for the LAST id in the query (so includes all)
 	pmid_list = query.split('+') #list of string pmids
 	last_entry = pmid_list[-1]
 	print("the last entry is: " + str(last_entry))
+
 	file_name = "journals_"+str(last_entry)+".json"
 	print("last entry's JOURNAL is named: " + str(file_name))
 	savePath = "/home/hclent/data/"+str(last_entry)
@@ -390,7 +404,7 @@ def resjournals(query):
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
 	print(journals) #str
-	return render_template('results_journals.html', journals = journals)
+	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year)
 
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
