@@ -71,15 +71,15 @@ def get_data_and_ner(pmid):
 
 ############ DATA VISUALIZATIONS #################################################
 
-def print_journalvis(journals, dates, user_input):
+def print_journalvis(journals, dates, user_input, query):
 	#num_journals = len(journals)
 	#print("there are "+str(num_journals)+" journals in total")
 	publication_data, range_info = journals_vis(journals, dates)
 	print(publication_data)
 	print(range_info)
 	logging.info('Printing JOURNALS to JSON')
-	save_path = '/home/hclent/data/'+str(user_input)+'/'
-	completeName = os.path.join(save_path, ('journals_'+(str(user_input))+'.json'))
+	save_path = '/home/hclent/data/'+str(user_input)+'/' #save in last pmid folder
+	completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
 	with open(completeName, 'w') as outfile:
 		json.dump(publication_data, outfile)
 	return range_info
@@ -139,14 +139,6 @@ def run_lsa1(user_input, data_samples, k):
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
 	return jsonDict
 
-def print_lsa(user_input, jsonDict):
-	#Save the json for @app.route('/reslsa/')
-	logging.info('Printing LSA to JSON')
-	save_path = '/home/hclent/data/'+str(user_input)+'/'
-	completeName = os.path.join(save_path, ('lsa_'+(str(user_input))+'.json'))
-	with open(completeName, 'w') as outfile:
-		json.dump(jsonDict, outfile)
-
 
 def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number of words=5
 	logging.info('Beginning Latent Dirichlet Allocation')
@@ -156,10 +148,22 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 	return jsonLDA
 
 
-def print_lda(user_input, jsonLDA):
+
+
+########### WRITING TO JSON ###############################################
+
+def print_lsa(query, user_input, jsonDict):
+	#Save the json for @app.route('/reslsa/')
+	logging.info('Printing LSA to JSON')
+	save_path = '/home/hclent/data/'+str(user_input)+'/' #in the folder of the last pmid
+	completeName = os.path.join(save_path, ('lsa_'+(str(query))+'.json')) #with the query for a name
+	with open(completeName, 'w') as outfile:
+		json.dump(jsonDict, outfile)
+
+def print_lda(query, user_input, jsonLDA):
 	#Save the json for @app.route('/reslda/')
 	logging.info('Printing LDA to JSON')
-	save_path = '/home/hclent/data/'+str(user_input)+'/'
-	completeName = os.path.join(save_path, ('lda_'+(str(user_input))+'.json'))
+	save_path = '/home/hclent/data/'+str(user_input)+'/' #in the folder of the last pmid
+	completeName = os.path.join(save_path, ('lda_'+(str(query))+'.json'))  #with the query for a name
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonLDA, outfile)

@@ -111,7 +111,7 @@ def trying():
 						jsonLDA = run_lda1(data_samples, 3, 5)
 
 						logging.info(user_input+" is the last one (JOURNALS)")
-						range_info = print_journalvis(target_journals, target_dates, user_input) #e.g. [(2008, 2009), 10, 7]
+						range_info = print_journalvis(target_journals, target_dates, user_input, query) #e.g. [(2008, 2009), 10, 7]
 						journal_years = range_info[0]
 						start_year = journal_years[0]
 						end_year = journal_years[1]
@@ -123,9 +123,9 @@ def trying():
 						unique_journals = range_info[2]
 
 						logging.info(user_input+" is the last one (LSA)")
-						print_lsa(user_input, jsonDict) #print lsa topic model to json
+						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
 						logging.info(user_input+" is the last one (LDA)")
-						print_lda(user_input, jsonLDA)
+						print_lda(query, user_input, jsonLDA) #print lda topic model to json
 
 					#add to sqlite3 database entry
 					unix = time.time()
@@ -174,7 +174,7 @@ def trying():
 						jsonLDA = run_lda1(data_samples, 3, 5)
 
 						logging.info(user_input+" is the last one (JOURNALS)")
-						range_info = print_journalvis(target_journals, target_dates, user_input)
+						range_info = print_journalvis(target_journals, target_dates, user_input, query)
 						journal_years = range_info[0]
 						start_year = journal_years[0]
 						end_year = journal_years[1]
@@ -185,9 +185,9 @@ def trying():
 						unique_journals = range_info[2]
 
 						print(user_input+" is the last one (LSA)")
-						print_lsa(user_input, jsonDict) #print lsa topic model to json
+						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
 						print(user_input+" is the last one (LDA)")
-						print_lda(user_input, jsonLDA)
+						print_lda(query, user_input, jsonLDA) #print lda topic model to json
 
 
 				#End cursor and connection to database
@@ -411,7 +411,6 @@ def resjournals(query, range_years):
 def reslsa(query):
 	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		print("the booten was clicked")
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
 		pmid_list = query.split('+') #list of string pmids
@@ -440,9 +439,9 @@ def reslsa(query):
 		pmid_list = query.split('+') #list of string pmids
 		last_entry = pmid_list[-1]
 		print("the last entry is: " + str(last_entry))
-		file_name = "lsa_"+str(last_entry)+".json"
+		file_name = "lsa_"+str(query)+".json" #file named after query
 		print("last entry's LSA is named: " + str(file_name))
-		savePath = "/home/hclent/data/"+str(last_entry)
+		savePath = "/home/hclent/data/"+str(last_entry) #saved in folder of last pmid
 		completeName = os.path.join(savePath, file_name)
 		print("complete file: " + str(completeName))
 		with open(completeName) as load_data:
@@ -478,9 +477,9 @@ def reslda(query):
 		pmid_list = query.split('+') #list of string pmids
 		last_entry = pmid_list[-1]
 		print("the last entry is: " + str(last_entry))
-		file_name = "lda_"+str(last_entry)+".json"
+		file_name = "lda_"+str(query)+".json" #file named after query
 		print("last entry's LDA is named: " + str(file_name))
-		savePath = "/home/hclent/data/"+str(last_entry)
+		savePath = "/home/hclent/data/"+str(last_entry) #saved in folder of last pmid
 		completeName = os.path.join(savePath, file_name)
 		print("complete file: " + str(completeName))
 		with open(completeName) as load_data:
