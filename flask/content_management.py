@@ -1,5 +1,5 @@
 from processors import * #pyProcessors
-import os.path, time, re, logging
+import os.path, time, re, logging, pickle
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
 from lsa1 import * #mine
@@ -62,12 +62,6 @@ def run_IR_not_db(user_input):
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
 	return main_info, target_journals, target_dates
-
-############# DATA SAMPLES AND NER ##############################################
-def get_data_and_ner(pmid):
-	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
-	data_samples, neslist = loadBioDoc(biodocs)
-	return data_samples, neslist
 
 ############ DATA VISUALIZATIONS #################################################
 
@@ -133,7 +127,7 @@ def do_SOME_multi_preprocessing(user_input):
 
 
 ############ TOPIC MODELING ############################################
-def run_lsa1(user_input, data_samples, k):
+def run_lsa1(data_samples, k):
 	logging.info('Beginning Latent Semantic Analysis')
 	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
@@ -150,7 +144,7 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 
 
 
-########### WRITING TO JSON ###############################################
+########### WRITING TO JSON / PICKLE ###############################################
 
 def print_lsa(query, user_input, jsonDict):
 	#Save the json for @app.route('/reslsa/')
@@ -167,3 +161,21 @@ def print_lda(query, user_input, jsonLDA):
 	completeName = os.path.join(save_path, ('lda_'+(str(query))+'.json'))  #with the query for a name
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonLDA, outfile)
+
+def print_data_and_nes(query, user_input, data_samples, nes_list):
+	logging.info('Printing data_samples to PICKLE')
+	save_path = '/home/hclent/data/'+str(user_input)+'/' #in the folder of the last pmid
+
+	data_completeName = os.path.join(save_path, ('data_samples_'+(str(query))+'.pickle'))  #with the query for a name
+	pickle.dump( data_samples, open( data_completeName, "wb" ) )
+
+	logging.info('Printing nes_list to PICKLE')
+	nes_completeName = os.path.join(save_path, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
+	pickle.dump( nes_list, open( nes_completeName, "wb" ) )
+
+
+############# GRAVEYARD ##############################################
+# def get_data_and_ner(pmid):
+# 	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
+# 	data_samples, neslist = loadBioDoc(biodocs)
+# 	return data_samples, neslist

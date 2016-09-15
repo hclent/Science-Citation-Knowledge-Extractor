@@ -44,7 +44,7 @@ def cogecrawl():
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
 @app.route('/results/', methods=["POST"])
-def trying():
+def results():
 	logging.info("In app route RESULTS")
 	form = pmidForm(secret_key='super secret key')
 	try:
@@ -105,7 +105,7 @@ def trying():
 					if user_input == pmid_list[-1]:
 
 						#Do Latent Semantic Analysis and return jsonDict for data vis
-						jsonDict = run_lsa1(user_input, data_samples, 2)
+						jsonDict = run_lsa1(data_samples, 2)
 
 						#Do Latent Dirichlet Allocation
 						jsonLDA = run_lda1(data_samples, 3, 5)
@@ -126,6 +126,9 @@ def trying():
 						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
 						logging.info(user_input+" is the last one (LDA)")
 						print_lda(query, user_input, jsonLDA) #print lda topic model to json
+
+
+						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 					#add to sqlite3 database entry
 					unix = time.time()
@@ -168,7 +171,7 @@ def trying():
 					if user_input == pmid_list[-1]:
 
 						# #Do visualization and Topic Modeling
-						jsonDict = run_lsa1(user_input, data_samples, 2) #default = 2 "topics" for right now
+						jsonDict = run_lsa1(data_samples, 2) #default = 2 "topics" for right now
 
 						#latent dirichlet allocation
 						jsonLDA = run_lda1(data_samples, 3, 5)
@@ -189,6 +192,8 @@ def trying():
 						print(user_input+" is the last one (LDA)")
 						print_lda(query, user_input, jsonLDA) #print lda topic model to json
 
+
+						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 				#End cursor and connection to database
 				c.close()
@@ -239,7 +244,7 @@ def cogelsa():
 				data_samples.append(d)
 		print("rerunning the analysis")
 		k = int(k_clusters)
-		jsonLSA = run_lsa1(pmid, data_samples, k)
+		jsonLSA = run_lsa1(data_samples, k)
 		print("did it all!")
 		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA) #needs to be parsed
 	else: #if nothing is
@@ -292,19 +297,13 @@ def cogejournals():
 def cogewordcloud():
 	form = nesOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		nes_list = []
 
 		nes_categories = request.form.getlist('check')
 		print(nes_categories)
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
 
-		query = '18952863+18269575'
-		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for nerDicts in ners:
-				nes_list.append(nerDicts)
+		nes_list =  pickle.load(open("/home/hclent/data/18269575/nes_18952863+18269575.pickle", "rb")) #pre-processed already
 
 		print(nes_list)
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
@@ -328,17 +327,8 @@ def cogeheatmap():
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
 
-		data_samples = []
-		nes_list = []
-
-		query = '18952863+18269575'
-		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for d in data:
-				data_samples.append(d)
-			for n in ners:
-				nes_list.append(n)
+		nes_list =  pickle.load(open("/home/hclent/data/18269575/nes_18952863+18269575.pickle", "rb")) #pre-processed already
+		data_samples =  pickle.load(open("/home/hclent/data/18269575/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 		print(z_counts)
@@ -354,14 +344,9 @@ def cogeheatmap():
 def cogekmeans():
 	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		query = '18952863+18269575'
 
-		data_samples = []
-		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for d in data:
-				data_samples.append(d)
+		data_samples =  pickle.load(open("/home/hclent/data/18269575/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
+
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
 		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
@@ -396,7 +381,7 @@ def resjournals(query, range_years):
 	last_entry = pmid_list[-1]
 	print("the last entry is: " + str(last_entry))
 
-	file_name = "journals_"+str(last_entry)+".json"
+	file_name = "journals_"+str(query)+".json"
 	print("last entry's JOURNAL is named: " + str(file_name))
 	savePath = "/home/hclent/data/"+str(last_entry)
 	completeName = os.path.join(savePath, file_name)
@@ -413,13 +398,19 @@ def reslsa(query):
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
+		# pmid_list = query.split('+') #list of string pmids
+		# print(pmid_list)
+		# data_samples = []
+		# for pmid in pmid_list:
+		# 	data, nes = do_SOME_multi_preprocessing(pmid)
+		# 	for d in data:
+		# 		data_samples.append(d)
+
 		pmid_list = query.split('+') #list of string pmids
-		print(pmid_list)
-		data_samples = []
-		for pmid in pmid_list:
-			data, nes = do_SOME_multi_preprocessing(pmid)
-			for d in data:
-				data_samples.append(d)
+		last_entry = pmid_list[-1]
+		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+
 		num_pubs = int(len(data_samples))
 		print("there are  "+str(num_pubs)+ " publications")
 		print("rerunning the analysis")
@@ -427,7 +418,7 @@ def reslsa(query):
 		if num_pubs < k:
 			logging.info("k value is larger than number of publications")
 			#flash("For LSA, you cannot have more topics than documents. Try again")
-		temp_jsonDict = run_lsa1(pmid, data_samples, k)
+		temp_jsonDict = run_lsa1(data_samples, k)
 		print("did it all!")
 		return render_template('results_lsa.html', query=query, jsonDict=temp_jsonDict)
 	else:
@@ -457,12 +448,19 @@ def reslda(query):
 		print("the k value is " + str(k_clusters))
 		num_words = form.w_words.data
 		print("the w value is "+str(num_words))
+
+		# data_samples = []
+		# for pmid in pmid_list:
+		# 	data, nes = do_SOME_multi_preprocessing(pmid)
+		# 	for d in data:
+		# 		data_samples.append(d)
+		#
+
 		pmid_list = query.split('+') #list of string pmids
-		data_samples = []
-		for pmid in pmid_list:
-			data, nes = do_SOME_multi_preprocessing(pmid)
-			for d in data:
-				data_samples.append(d)
+		last_entry = pmid_list[-1]
+		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+
 		print("rerunning the analysis")
 		k = int(k_clusters)
 		w = int(num_words)
@@ -492,16 +490,16 @@ def reslda(query):
 def reswordcloud(query):
 	form = nesOptions(secret_key='super secret key')
 	if request.method == 'POST':
-		nes_list = []
+
 		nes_categories = request.form.getlist('check')
 		print(nes_categories)
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
+
 		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for nerDicts in ners:
-				nes_list.append(nerDicts)
+		last_entry = pmid_list[-1]
+		filename = "/home/hclent/data/"+str(last_entry)+"/nes_"+str(query)+".pickle"
+		nes_list =  pickle.load(open(filename, "rb")) #pre-processed already
 
 		print(nes_list)
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
@@ -511,12 +509,11 @@ def reswordcloud(query):
 		print(nes_categories)
 		w_number = 10
 		print("the w value is "+str(w_number))
-		nes_list = []
+
 		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for nerDicts in ners:
-				nes_list.append(nerDicts)
+		last_entry = pmid_list[-1]
+		filename = "/home/hclent/data/"+str(last_entry)+"/nes_"+str(query)+".pickle"
+		nes_list =  pickle.load(open(filename, "rb")) #pre-processed already
 
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 
@@ -532,38 +529,32 @@ def res_heatmap(query):
 		w_number = form.w_words.data
 		print("the w value is "+str(w_number))
 
-		data_samples = []
-		nes_list = []
 		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for d in data:
-				data_samples.append(d)
-			for n in ners:
-				nes_list.append(n)
+		last_entry = pmid_list[-1]
+		nes_filename = "/home/hclent/data/"+str(last_entry)+"/nes_"+str(query)+".pickle"
+		nes_list =  pickle.load(open(nes_filename, "rb")) #pre-processed already
 
+		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 		print(z_counts)
 		print(x_docs)
 		print(y_words)
-		return render_template('results_heatmap.html', query=query, pmid=pmid, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
 	else:
-		data_samples = []
-		nes_list = []
-
-
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		print(nes_categories)
 		w_number = 10
 		print("the w value is "+str(w_number))
+
 		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for d in data:
-				data_samples.append(d)
-			for n in ners:
-				nes_list.append(n)
+		last_entry = pmid_list[-1]
+		nes_filename = "/home/hclent/data/"+str(last_entry)+"/nes_"+str(query)+".pickle"
+		nes_list =  pickle.load(open(nes_filename, "rb")) #pre-processed already
+
+		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
@@ -574,12 +565,10 @@ def res_kmeans(query):
 	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
 
-		data_samples = []
 		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for d in data:
-				data_samples.append(d)
+		last_entry = pmid_list[-1]
+		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
@@ -596,12 +585,11 @@ def res_kmeans(query):
 		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 	else:
-		data_samples = []
 		pmid_list = query.split('+') #list of string pmids
-		for pmid in pmid_list:
-			data, ners = get_data_and_ner(pmid)
-			for d in data:
-				data_samples.append(d)
+		last_entry = pmid_list[-1]
+		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+
 		k_clusters = 3 #default is 3
 		print("the k value is " + str(k_clusters))
 		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
