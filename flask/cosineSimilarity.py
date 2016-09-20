@@ -6,15 +6,22 @@ from collections import Counter
 #Input: publication
 #Output: normalized vector (counter), representing stringIn.
 
+
+# def loadScifi():
+
+
 #Example
-doc1 = "/home/hclent/data/18269575/18269575_62.txt"
-doc2 = "/home/hclent/data/18269575/18269575_63.txt"
-scifi = "/home/hclent/data/corpora/startrek/107.txt"
+# doc1 = "/home/hclent/data/18269575/18269575_62.txt"
+# doc2 = "/home/hclent/data/18269575/18269575_63.txt"
+# scifi = "/home/hclent/data/corpora/startrek/107.txt"
 
+doc1 = "I like cats cats."
+doc2 = "I like dogs."
+scifi = "We come in peace peace."
 
-def loadMessages(filename):
-    fcorpus = open(filename, 'r')
-    fcorpus = fcorpus.read() #str
+def loadMessages(fcorpus):
+    # fcorpus = open(filename, 'r')
+    # fcorpus = fcorpus.read() #str
 
     vectorCounter = makeVecs.text2vec(fcorpus)
 
@@ -23,7 +30,9 @@ def loadMessages(filename):
 
 vecs1 = loadMessages(doc1)
 print(vecs1)
+print("################################################################################################")
 vecs2 = loadMessages(doc2)
+print(vecs2)
 print("################################################################################################")
 vecs3= loadMessages(scifi)
 print(vecs3)
@@ -33,23 +42,23 @@ print(vecs3)
 def cosineSimilarityScore(vector1, vector2, vector3):
 
     cosine_sim_score1 = (str(makeVecs.cosine(vector1, vector1)))
-    print("cos (vec1, vec1): " + cosine_sim_score1)
+    print("cos (doc1, doc1): " + cosine_sim_score1)
 
 
     cosine_sim_score2 = (str(makeVecs.cosine(vector2, vector2)))
-    print("cos (vec2, vec2): " + cosine_sim_score2)
+    print("cos (doc2, doc2): " + cosine_sim_score2)
 
 
     cosine_sim_score_1_2 = (str(makeVecs.cosine(vector1, vector2)))
-    print("cos (vec1, vec2): " + cosine_sim_score_1_2)
+    print("cos (doc1, doc2): " + cosine_sim_score_1_2)
 
 
     cosine_sim_score_1_3 = (str(makeVecs.cosine(vector1, vector3)))
-    print("cos (vec1, vec3): " + cosine_sim_score_1_3)
+    print("cos (doc1, scifi): " + cosine_sim_score_1_3)
 
 
     cosine_sim_score_2_3 = (str(makeVecs.cosine(vector2, vector3)))
-    print("cos (vec2, vec3): " + cosine_sim_score_2_3)
+    print("cos (doc2, scifi): " + cosine_sim_score_2_3)
 
 
 cosineSimilarityScore(vecs1, vecs2, vecs3)

@@ -236,12 +236,10 @@ def cogelsa():
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
 		query = '18952863+18269575'
-		pmid_list = query.split('+') #list of string pmids
-		data_samples = []
-		for pmid in pmid_list:
-			data, nes = do_SOME_multi_preprocessing(pmid)
-			for d in data:
-				data_samples.append(d)
+
+		data_filename = "/home/hclent/data/18269575/data_samples_18952863+18269575.pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+
 		print("rerunning the analysis")
 		k = int(k_clusters)
 		jsonLSA = run_lsa1(data_samples, k)
@@ -265,12 +263,10 @@ def cogelda():
 		num_words = form.w_words.data
 		print("the w value is "+str(num_words))
 		query = '18952863+18269575'
-		pmid_list = query.split('+') #list of string pmids
-		data_samples = []
-		for pmid in pmid_list:
-			data, nes = do_SOME_multi_preprocessing(pmid)
-			for d in data:
-				data_samples.append(d)
+
+		data_filename = "/home/hclent/data/18269575/data_samples_18952863+18269575.pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+
 		print("rerunning the analysis")
 		k = int(k_clusters)
 		w = int(num_words)
