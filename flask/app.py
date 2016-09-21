@@ -5,12 +5,12 @@ import sqlite3, gc, time, datetime, pickle, os.path
 import sys
 from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
-from cogeCrawled_db import connection #mine
+from database_management import connection #mine
 from content_management import * #mine
 from processors import *
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
-#Flask-WTF, Biopython==1.67, py-Processors, plotly
+#Flask-WTF, Biopython==1.67, py-Processors
 #flask, nltk, bs4, lxml, requests
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
@@ -32,8 +32,6 @@ def cogecrawl():
 	error = None
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_mainfo.pickle', 'rb')as f:
 		main_info = pickle.load(f)
-	# with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_nes.pickle', 'rb')as f:
-	# 	ner = pickle.load(f)
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
 		journals = pickle.load(f)
 	return render_template("dashboard.html", main_info=main_info, journals=journals)
@@ -72,6 +70,7 @@ def results():
 				conn, c = connection()
 				#Check database for pmid #Does the entry exists in the db already?
 				c.execute("SELECT * FROM cogeCrawled WHERE pmids = (?)", (user_input, ))
+
 				check1 = c.fetchone()
 
 
@@ -79,7 +78,23 @@ def results():
 				if check1 is None:
 					flash('congrats you entered a new pubmedid lol')
 					#Using user_input for Information Retireval of "main info"
-					main, journals, dates = run_IR_not_db(user_input)
+					self_info, main, journals, dates = run_IR_not_db(user_input)
+
+					#add self_info to inputPapers database entry
+					for tup in self_info:
+						title = tup[0]
+						s = ', '
+						author = str(s.join(tup[1]))
+						journal = tup[2]
+						pubdate = tup[3]
+						url = tup[4]
+						unix = time.time()
+						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+						conn, c = connection()
+						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
+						conn.commit()
+						logging.info("Writing self_info to inputPapers db")
+
 					for mi in main:
 						main_info.append(mi)
 					logging.info("done with main info list")
@@ -142,7 +157,23 @@ def results():
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval of "main info"
-					main, journals, dates = run_IR_in_db(user_input)
+					self_info, main, journals, dates = run_IR_in_db(user_input)
+
+					#add to sqlite3 database entry
+					for tup in self_info:
+						title = tup[0]
+						s = ', '
+						author = str(s.join(tup[1]))
+						journal = tup[2]
+						pubdate = tup[3]
+						url = tup[4]
+						unix = time.time()
+						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+						conn, c = connection()
+						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
+						conn.commit()
+						logging.info("Writing self_info to inputPapers db")
+
 					for mi in main:
 						main_info.append(mi)
 					logging.info("done with main info list")
@@ -194,6 +225,7 @@ def results():
 
 
 						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+
 
 				#End cursor and connection to database
 				c.close()

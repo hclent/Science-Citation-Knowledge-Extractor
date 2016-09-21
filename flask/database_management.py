@@ -19,6 +19,7 @@ def connection():
 
 
 #Create table
+#this table will become obsolete
 def create_table():
 	c.execute('''CREATE TABLE IF NOT EXISTS cogeCrawled
 		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, 
@@ -56,24 +57,20 @@ def create_table_citations():
 
 
 
-
-
-
-def data_entry():
+def test_data_entry():
 	c.execute("INSERT INTO inputPapers VALUES(0, '09-20-2016', '000', 'title','author', 'journal', 'pubdate', 'www.website.come')")
 	conn.commit() #to save it to db
 	
 	c.execute("SELECT * FROM inputPapers")
 	[print(row) for row in c.fetchall()]
 	
-	#c.close()
-	#conn.close()
+	c.close()
+	conn.close()
 
 
 def print_cogeCrawled():
 	c.execute("SELECT * FROM cogeCrawled")
 	[print(row) for row in c.fetchall()]
-
 
 def print_inputPapers():
 	c.execute("SELECT * FROM inputPapers")
@@ -82,7 +79,6 @@ def print_inputPapers():
 def print_citations():
 	c.execute("SELECT * FROM citations")
 	[print(row) for row in c.fetchall()]
-
 
 
 print_inputPapers()

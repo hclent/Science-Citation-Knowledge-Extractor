@@ -40,8 +40,14 @@ def getMainInfo(pmid):
 	logging.info(authors)
 	journal = [record[0]["FullJournalName"]]
 	logging.info(journal)
+	pubdate = [record[0]["PubDate"]]
+	logging.info(pubdate)
+	url = "http://www.ncbi.nlm.nih.gov/pubmed/"+pmid
+	logging.info(url)
+	self_info = list(zip(title, authors, journal, pubdate, url))
+	logging.info(self_info)
 	logging.info("self info: done in %0.3fs." % (time.time() - t0))
-	return list(zip(title, authors, journal))
+	return self_info
 
 
 #Input: Pmid
@@ -143,7 +149,9 @@ def parsePMC(xml_string, pmid):
 		#print("* Got abstract")
 		main_text.append(full_abs)
 	except Exception as e:
-		logging.info("The following PMCID is not available")
+		logging.info("The following PMCID has no abstract")
+		string = "Some data"
+		main_text.append(string)
 	try:
 		#Get main text and add to doc
 		text = root.findall('.//p')
@@ -152,7 +160,9 @@ def parsePMC(xml_string, pmid):
 			main_text.append(full_text)
 		#print("* Got main text")
 	except Exception as e:
-		logging.info("Only gave us the absract")
+		logging.info("The following PMCID has no main text")
+		string = "data"
+		main_text.append(string)
 	return main_text
 
 
@@ -173,6 +183,8 @@ def getContentPMC(pmid, pmcids_list):
 		else:
 			raise
 	for citation in pmcids_list:
+		logging.info(str(i)+" paper")
+		logging.info("CITATION: " +str(citation))
 		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
 		xml_record = handle.read() #xml str
 		#print(xml_record)
@@ -188,11 +200,13 @@ def getContentPMC(pmid, pmcids_list):
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 
 
-# stuff = getMainInfo("22555442")
+# stuff = getMainInfo("15685220")
 # print(stuff)
-# pmc_ids = getCitationIDs("22555442")
+# pmc_ids = getCitationIDs("15685220")
 # print(pmc_ids)
-# pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)
+# print("possibly broken pages?")
+# print(pmc_ids[49])
+# pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(["4069365"])
 # print(pmc_titles)
 
 ################### Notes ##############

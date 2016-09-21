@@ -26,7 +26,7 @@ logging.info('Stopword settings set')
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
   path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx16G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx25G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   logging.info('Annotated something random to initialize bioNLP Processor')
@@ -120,6 +120,7 @@ def loadDocuments(doc):
   logging.debug("* beginning annotation of "  + str(doc) )
   biodoc = api.bionlp.annotate(clean_text) #annotates to JSON  #thread safe?
   logging.debug('the biodoc of ' + str(doc) + ' is type ' + str(type(biodoc)))
+
   logging.debug("END OF TASK")
   return biodoc
 

@@ -23,7 +23,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
   path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx16G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx25G")
   logging.info('Connected to pyProcessors')
   #Initialize the bionlp annotator by passing it a doc
   init_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
@@ -49,7 +49,7 @@ def run_IR_in_db(user_input):
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
 	main_info = list(zip(target_title, target_authors, target_urls))
-	return main_info, target_journals, target_dates
+	return self_info, main_info, target_journals, target_dates
 
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
@@ -61,7 +61,7 @@ def run_IR_not_db(user_input):
 	main_info = list(zip(target_title, target_authors, target_urls))
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
-	return main_info, target_journals, target_dates
+	return self_info, main_info, target_journals, target_dates
 
 ############ DATA VISUALIZATIONS #################################################
 
