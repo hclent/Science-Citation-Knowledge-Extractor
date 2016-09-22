@@ -58,8 +58,10 @@ def results():
 			main_info = [] #main_info are formatted citations from citations table in db
 			target_journals = []
 			target_dates = []
+			target_urls = []
 			data_samples = []
 			ners = []
+
 
 			for user_input in pmid_list:
 				print(str(user_input))
@@ -177,10 +179,14 @@ def results():
 
 
 					#after info written to db, now can access db and get formated main_info (main)
-					main = new_citations_from_db(user_input)
+					main, db_urls = new_citations_from_db(user_input)
 					for mi in main:
 						main_info.append(mi)
 					logging.info("done with main info list")
+					for url in db_urls:
+						target_urls.append(url)
+					logging.info("done with url list")
+
 
 
 
@@ -188,7 +194,7 @@ def results():
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval of "main info"
-					self_info, main, journals, dates, urls = run_IR_in_db(user_input)
+					self_info, main, journals, dates, db_urls = run_IR_in_db(user_input)
 
 					for mi in main:
 						main_info.append(mi)
@@ -201,6 +207,9 @@ def results():
 					for d in dates:
 						target_dates.append(d)
 					logging.info("done with dates list")
+					for url in db_urls:
+						target_urls.append(url)
+					logging.info("done with url list")
 
 
 					data, named_entities = do_SOME_multi_preprocessing(user_input)
@@ -252,7 +261,11 @@ def results():
 				session['entered_id'] = True
 				session['engaged'] = 'engaged'
 
-		return render_template('results.html', form=form,
+
+		citations_with_links = list(zip(main_info, target_urls))
+
+
+		return render_template('results.html', form=form, citations_with_links=citations_with_links,
 	   			main_info = main_info, target_journals = target_journals, query=query, range_years=range_years,
 			   start_year=start_year, end_year=end_year, unique_publications=unique_publications, unique_journals=unique_journals)
 
@@ -484,13 +497,6 @@ def reslda(query):
 		print("the k value is " + str(k_clusters))
 		num_words = form.w_words.data
 		print("the w value is "+str(num_words))
-
-		# data_samples = []
-		# for pmid in pmid_list:
-		# 	data, nes = do_SOME_multi_preprocessing(pmid)
-		# 	for d in data:
-		# 		data_samples.append(d)
-		#
 
 		pmid_list = query.split('+') #list of string pmids
 		last_entry = pmid_list[-1]

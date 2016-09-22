@@ -80,7 +80,7 @@ def run_IR_not_db(user_input):
 
 def new_citations_from_db(user_input):
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
-	return apa_citations
+	return apa_citations, db_urls
 	#apa_citations called 'main' in app.py
 
 
