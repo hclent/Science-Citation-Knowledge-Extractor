@@ -69,7 +69,8 @@ def results():
 				#Connect to database
 				conn, c = connection()
 				#Check database for pmid #Does the entry exists in the db already?
-				c.execute("SELECT * FROM cogeCrawled WHERE pmids = (?)", (user_input, ))
+				#Check inputPapers instead of cogeCrawled
+				c.execute("SELECT * FROM inputPapers WHERE pmid = (?)", (user_input, ))
 
 				check1 = c.fetchone()
 
@@ -81,38 +82,38 @@ def results():
 					self_info, main, journals, dates = run_IR_not_db(user_input)
 
 					#add self_info to inputPapers database entry
-					for tup in self_info:
-						title = tup[0]
-						s = ', '
-						author = str(s.join(tup[1]))
-						journal = tup[2]
-						pubdate = tup[3]
-						url = tup[4]
-
-						unix = time.time()
-						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-						conn, c = connection()
-						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
-						conn.commit()
-						logging.info("Writing self_info to inputPapers db")
-
-
-					for tup in main:
-						logging.info("TUP IN MAIN: ")
-						logging.info(tup)
-						pmcid = tup[0]
-						title = tup[1]
-						s = ', '
-						author = str(s.join(tup[2]))
-						journal = tup[3]
-						pubdate = tup[4]
-						url = tup[5]
-						unix = time.time()
-						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-						conn, c = connection()
-						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
-						conn.commit()
-						logging.info("Writing main_info to citations db")
+					# for tup in self_info:
+					# 	title = tup[0]
+					# 	s = ', '
+					# 	author = str(s.join(tup[1]))
+					# 	journal = tup[2]
+					# 	pubdate = tup[3]
+					# 	url = tup[4]
+                    #
+					# 	unix = time.time()
+					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+					# 	conn, c = connection()
+					# 	c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
+					# 	conn.commit()
+					# 	logging.info("Writing self_info to inputPapers db")
+                    #
+                    #
+					# for tup in main:
+					# 	logging.info("TUP IN MAIN: ")
+					# 	logging.info(tup)
+					# 	pmcid = tup[0]
+					# 	title = tup[1]
+					# 	s = ', '
+					# 	author = str(s.join(tup[2]))
+					# 	journal = tup[3]
+					# 	pubdate = tup[4]
+					# 	url = tup[5]
+					# 	unix = time.time()
+					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+					# 	conn, c = connection()
+					# 	c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
+					# 	conn.commit()
+					# 	logging.info("Writing main_info to citations db")
 
 					for mi in main:
 						main_info.append(mi)
@@ -164,21 +165,9 @@ def results():
 
 						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
-					#add to sqlite3 database entry
-					unix = time.time()
-					date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-					conn, c = connection()
-					c.execute("INSERT INTO cogeCrawled (datestamp, pmids) VALUES (?, ?)", (date, user_input)) #put user pmid into db
-					conn.commit()
-					flash("Writing PubmedID to database: successful")
 
-				#if the entry IS in the db, no need to retrieve text from Entrez, just grab
-				if check1 is not None:
-					flash("alreay exists in database :) ")
-					#Using user_input for Information Retireval of "main info"
-					self_info, main, journals, dates = run_IR_in_db(user_input)
-
-					#add to sqlite3 database entry
+					#after successfully retrieving papers, annotating, and doing topic models,
+					#add self_info to inputPapers database entry
 					for tup in self_info:
 						title = tup[0]
 						s = ', '
@@ -186,6 +175,7 @@ def results():
 						journal = tup[2]
 						pubdate = tup[3]
 						url = tup[4]
+
 						unix = time.time()
 						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 						conn, c = connection()
@@ -193,7 +183,7 @@ def results():
 						conn.commit()
 						logging.info("Writing self_info to inputPapers db")
 
-
+					#add main to citations database table
 					for tup in main:
 						logging.info("TUP IN MAIN: ")
 						logging.info(tup)
@@ -211,6 +201,14 @@ def results():
 						conn.commit()
 						logging.info("Writing main_info to citations db")
 
+
+
+
+				#if the entry IS in the db, no need to retrieve text from Entrez, just grab
+				if check1 is not None:
+					flash("alreay exists in database :) ")
+					#Using user_input for Information Retireval of "main info"
+					self_info, main, journals, dates = run_IR_in_db(user_input)
 
 					for mi in main:
 						main_info.append(mi)
