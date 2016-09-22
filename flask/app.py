@@ -88,12 +88,31 @@ def results():
 						journal = tup[2]
 						pubdate = tup[3]
 						url = tup[4]
+
 						unix = time.time()
 						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 						conn, c = connection()
 						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
 						conn.commit()
 						logging.info("Writing self_info to inputPapers db")
+
+
+					for tup in main:
+						logging.info("TUP IN MAIN: ")
+						logging.info(tup)
+						pmcid = tup[0]
+						title = tup[1]
+						s = ', '
+						author = str(s.join(tup[2]))
+						journal = tup[3]
+						pubdate = tup[4]
+						url = tup[5]
+						unix = time.time()
+						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+						conn, c = connection()
+						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
+						conn.commit()
+						logging.info("Writing main_info to citations db")
 
 					for mi in main:
 						main_info.append(mi)
@@ -173,6 +192,25 @@ def results():
 						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
 						conn.commit()
 						logging.info("Writing self_info to inputPapers db")
+
+
+					for tup in main:
+						logging.info("TUP IN MAIN: ")
+						logging.info(tup)
+						pmcid = tup[0]
+						title = tup[1]
+						s = ', '
+						author = str(s.join(tup[2]))
+						journal = tup[3]
+						pubdate = tup[4]
+						url = tup[5]
+						unix = time.time()
+						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+						conn, c = connection()
+						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
+						conn.commit()
+						logging.info("Writing main_info to citations db")
+
 
 					for mi in main:
 						main_info.append(mi)

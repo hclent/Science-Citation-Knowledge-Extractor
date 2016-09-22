@@ -25,7 +25,12 @@ logging.info('Started')
 
 
 #Input: pmid
-#Output: basic info on pmid as lists
+#Output: self info
+#[('KIFC1-like motor protein associates with the cephalopod manchette and participates in sperm nuclear morphogenesis in Octopus tankahkeei.',
+# ['Wang W', 'Zhu JQ', 'Yu HM', 'Tan FQ', 'Yang WX'],
+# 'PloS one',
+# '2010 Dec 20',
+# 'h')]
 def getMainInfo(pmid):
 	logging.info("beginning function getMainInfo")
 	t0 = time.time()
@@ -42,7 +47,7 @@ def getMainInfo(pmid):
 	logging.info(journal)
 	pubdate = [record[0]["PubDate"]]
 	logging.info(pubdate)
-	url = "http://www.ncbi.nlm.nih.gov/pubmed/"+pmid
+	url = ["http://www.ncbi.nlm.nih.gov/pubmed/"+pmid]
 	logging.info(url)
 	self_info = list(zip(title, authors, journal, pubdate, url))
 	logging.info(self_info)
@@ -200,14 +205,29 @@ def getContentPMC(pmid, pmcids_list):
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 
 
-# stuff = getMainInfo("15685220")
-# print(stuff)
-# pmc_ids = getCitationIDs("15685220")
-# print(pmc_ids)
-# print("possibly broken pages?")
-# print(pmc_ids[49])
-# pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(["4069365"])
-# print(pmc_titles)
+# stuff = getMainInfo("25055630")
+# pmc_ids = getCitationIDs("25055630")
+# pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)
+# main_info = list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls))
+# print(main_info)
+# print("############")
+# for tup in main_info:
+# 	title = tup[0]
+# 	author = tup[1]
+# 	journal = tup[2]
+# 	pubdate = tup[3]
+# 	url = tup[4]
+# 	print(title)
+# 	print("############")
+# 	print(author)
+# 	print("############")
+# 	print(journal)
+# 	print("############")
+# 	print(pubdate)
+# 	print("############")
+# 	print(url)
+# 	print("##############################")
+
 
 ################### Notes ##############
 #Rarely, the XML will return this:

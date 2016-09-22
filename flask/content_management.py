@@ -48,7 +48,7 @@ def run_IR_in_db(user_input):
 	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
-	main_info = list(zip(target_title, target_authors, target_urls))
+	main_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls))
 	return self_info, main_info, target_journals, target_dates
 
 
@@ -58,7 +58,7 @@ def run_IR_not_db(user_input):
 	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
-	main_info = list(zip(target_title, target_authors, target_urls))
+	main_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls))
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
 	return self_info, main_info, target_journals, target_dates
