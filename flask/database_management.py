@@ -35,19 +35,26 @@ def db_inputPapers_retrieval(user_input):
 def db_citations_retrieval(user_input):
 	c.execute('''SELECT title, author, journal, pubdate, url FROM citations WHERE citesPmid=?''', (user_input,))
 	apa_citations = []
-	target_journals = []
-	target_dates = []
+	db_journals = []
+	db_dates = []
+	db_urls = []
 	for row in c:
 		title = row[0]
 		author = row[1]
+
 		journal = row[2]
-		target_journals.append(journal)
+		db_journals.append(journal)
+
 		pubdate = row[3]
+		db_dates.append(pubdate)
+
 		url = row[4]
-		target_dates.append(pubdate)
+		db_urls.append(url)
+
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		apa_citations.append(apa)
-	return apa_citations, target_journals, target_dates
+	return apa_citations, db_journals, db_dates, db_urls
+
 
 
 #Create table for inputPapers

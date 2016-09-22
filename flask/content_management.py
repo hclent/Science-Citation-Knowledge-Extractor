@@ -43,6 +43,10 @@ def multiple_pmid_input(user_input):
 	return ids
 
 ################### DATABASE #####################################################
+'''
+apa_citations will be rendered as 'main' in app.py!!!!
+'''
+
 
 #If pmid (user input) in the inputPapers database,
 #get self_info for inputPapers table and
@@ -50,27 +54,37 @@ def multiple_pmid_input(user_input):
 def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
 	self_info = db_inputPapers_retrieval(user_input)
-	main_info, target_journals, target_dates = db_citations_retrieval(user_input)
-	return self_info, main_info, target_journals, target_dates
+	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
+	return self_info, apa_citations, db_journals, db_dates, db_urls
 
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
+#self_info, main_info, are written to db in app.py
+#target_journals and target_dates are used for data vis
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the database')
 	#first run to add things to database
-	#self_info gets added to database
+	#self_info is written to the database
 	self_info = getMainInfo(user_input)
 
-	#look at citations
+
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
+	#main_info is written to the database
+	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls))
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
 
-	#retrieve from database
-	main_info, db_journals, db_dates = db_citations_retrieval(user_input)
+	return self_info, new_info, target_journals, target_dates
 
-	return self_info, main_info, db_journals, db_dates
+
+def new_citations_from_db(user_input):
+	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
+	return apa_citations
+	#apa_citations called 'main' in app.py
+
+
+
 
 ############ DATA VISUALIZATIONS #################################################
 

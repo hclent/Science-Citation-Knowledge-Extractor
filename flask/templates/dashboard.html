@@ -51,7 +51,6 @@
 
   <!-- Define Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation"><a href="#citations" aria-controls="citations" role="tab" data-toggle="tab">Citations</a></li>
 
     <li role="presentation"><a href="#journals" aria-controls="journals" role="tab" data-toggle="tab">Journals</a></li>
     
@@ -61,6 +60,8 @@
 
       <li role="presentation"><a href="#cluster" aria-controls="cluster" role="tab" data-toggle="tab">Clustering</a></li>
 
+       <li role="presentation"><a href="#citations" aria-controls="citations" role="tab" data-toggle="tab">Citations</a></li>
+
       <li role="presentation"><a href="#scifi" aria-controls="scifi" role="tab" data-toggle="tab">SciFi</a></li>
 
 
@@ -69,16 +70,6 @@
 
   <!-- Tab panes -->
 	<ul class="tab-content">
-
-		<!--  Loop through cited article information like this --> 
-		<div role="tabpanel" class="tab-pane fade" id="citations">
-		  	<p>Results for PMID(s): 18952863, 18269575</p> 
-		  	{% for result in main_info %}
-		  	<!--Sample results will go here-->
-            	<li>{{result}}</li>
-		  	{% endfor %}
-		 
-		</div> 
 
 
 		<!--  Put journals here blegh --> 
@@ -166,6 +157,17 @@
          <iframe  id="cogekm"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogekmeans/" width="1000" height="800" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 		</div>
 
+
+
+	<!--  Citations -->
+		<div role="tabpanel" class="tab-pane fade" id="citations">
+            <h4> 164 publications have cited PMIDs: 18952863, 18269575</h4>
+		  	{% for result in main_info %}
+		  	<!--Sample results will go here-->
+            	<li>{{result}}</li>
+		  	{% endfor %}
+
+		</div> 
 
 
 		<div role="tabpanel" class="tab-pane fade" id="scifi">

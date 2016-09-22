@@ -55,7 +55,7 @@ def results():
 			query = str(q.join(pmid_list))
 			print("query: " + str(query))
 
-			main_info = []
+			main_info = [] #main_info are formatted citations from citations table in db
 			target_journals = []
 			target_dates = []
 			data_samples = []
@@ -77,13 +77,21 @@ def results():
 
 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
 				if check1 is None:
-					flash('congrats you entered a new pubmedid lol')
+					flash('new pubmedid lol')
 					#Using user_input for Information Retireval of "main info"
-					self_info, main, journals, dates = run_IR_not_db(user_input)
+					self_info, new_info, journals, dates = run_IR_not_db(user_input)
+					'''
+					'main' renamed to 'new_info'
+					need 'new_info' written to the database
+					but need this information formatted to citation form before printing it as `main`
+					so appending to 'main' will be moved to after new_info is put into db
 
-					for mi in main:
-						main_info.append(mi)
-					logging.info("done with main info list")
+
+
+					# for mi in main:
+					# 	main_info.append(mi)
+					# logging.info("done with main info list")
+					'''
 					for j in journals:
 						target_journals.append(j)
 					logging.info("done with journal list")
@@ -150,7 +158,7 @@ def results():
 						logging.info("Writing self_info to inputPapers db")
 
 					#add main to citations database table
-					for tup in main:
+					for tup in new_info:
 						logging.info("TUP IN MAIN: ")
 						logging.info(tup)
 						pmcid = tup[0]
@@ -165,16 +173,22 @@ def results():
 						conn, c = connection()
 						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
 						conn.commit()
-						logging.info("Writing main_info to citations db")
+						logging.info("Writing new_info to citations db")
+
+
+					#after info written to db, now can access db and get formated main_info (main)
+					main = new_citations_from_db(user_input)
+					for mi in main:
+						main_info.append(mi)
+					logging.info("done with main info list")
 
 
 
-
-				#if the entry IS in the db, no need to retrieve text from Entrez, just grab
+				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval of "main info"
-					self_info, main, journals, dates = run_IR_in_db(user_input)
+					self_info, main, journals, dates, urls = run_IR_in_db(user_input)
 
 					for mi in main:
 						main_info.append(mi)
@@ -427,13 +441,6 @@ def reslsa(query):
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		print("the k value is " + str(k_clusters))
-		# pmid_list = query.split('+') #list of string pmids
-		# print(pmid_list)
-		# data_samples = []
-		# for pmid in pmid_list:
-		# 	data, nes = do_SOME_multi_preprocessing(pmid)
-		# 	for d in data:
-		# 		data_samples.append(d)
 
 		pmid_list = query.split('+') #list of string pmids
 		last_entry = pmid_list[-1]
