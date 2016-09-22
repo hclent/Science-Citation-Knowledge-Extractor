@@ -1,5 +1,7 @@
 from processors import * #pyProcessors
 import os.path, time, re, logging, pickle
+
+from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
 from lsa1 import * #mine
@@ -42,26 +44,33 @@ def multiple_pmid_input(user_input):
 
 ################### DATABASE #####################################################
 
-#If pmid (user input) in the database, just get main_info (authors, journals, ect)
+#If pmid (user input) in the inputPapers database,
+#get self_info for inputPapers table and
+#main_info from citations table
 def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
-	self_info = getMainInfo(user_input)
-	pmc_ids = getCitationIDs(user_input)
-	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
-	main_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls))
+	self_info = db_inputPapers_retrieval(user_input)
+	main_info, target_journals, target_dates = db_citations_retrieval(user_input)
 	return self_info, main_info, target_journals, target_dates
 
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the database')
+	#first run to add things to database
+	#self_info gets added to database
 	self_info = getMainInfo(user_input)
+
+	#look at citations
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
-	main_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls))
 	#Get XML
 	getContentPMC(user_input, pmc_ids)
-	return self_info, main_info, target_journals, target_dates
+
+	#retrieve from database
+	main_info, db_journals, db_dates = db_citations_retrieval(user_input)
+
+	return self_info, main_info, db_journals, db_dates
 
 ############ DATA VISUALIZATIONS #################################################
 

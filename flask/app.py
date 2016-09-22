@@ -81,40 +81,6 @@ def results():
 					#Using user_input for Information Retireval of "main info"
 					self_info, main, journals, dates = run_IR_not_db(user_input)
 
-					#add self_info to inputPapers database entry
-					# for tup in self_info:
-					# 	title = tup[0]
-					# 	s = ', '
-					# 	author = str(s.join(tup[1]))
-					# 	journal = tup[2]
-					# 	pubdate = tup[3]
-					# 	url = tup[4]
-                    #
-					# 	unix = time.time()
-					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-					# 	conn, c = connection()
-					# 	c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
-					# 	conn.commit()
-					# 	logging.info("Writing self_info to inputPapers db")
-                    #
-                    #
-					# for tup in main:
-					# 	logging.info("TUP IN MAIN: ")
-					# 	logging.info(tup)
-					# 	pmcid = tup[0]
-					# 	title = tup[1]
-					# 	s = ', '
-					# 	author = str(s.join(tup[2]))
-					# 	journal = tup[3]
-					# 	pubdate = tup[4]
-					# 	url = tup[5]
-					# 	unix = time.time()
-					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-					# 	conn, c = connection()
-					# 	c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
-					# 	conn.commit()
-					# 	logging.info("Writing main_info to citations db")
-
 					for mi in main:
 						main_info.append(mi)
 					logging.info("done with main info list")
@@ -258,7 +224,6 @@ def results():
 						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
 						print(user_input+" is the last one (LDA)")
 						print_lda(query, user_input, jsonLDA) #print lda topic model to json
-
 
 						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
