@@ -2,6 +2,11 @@
 {% extends "header.html" %}
 
 {% block body %}
+<style>
+.list-group {
+    list-style: decimal inside !important
+}
+</style>
 
 
 <!-- Pubmed ID Submit form button -->
@@ -162,12 +167,17 @@
 	<!--  Citations -->
 		<div role="tabpanel" class="tab-pane fade" id="citations">
             <h4> 164 publications have cited PMIDs: 18952863, 18269575</h4>
-		  	{% for result in main_info %}
-		  	<!--Sample results will go here-->
-            	<li>{{result}}</li>
+            <ul class="list-group">
+		  	<!--results of MainCrawler.py pmc_spider-->
+		  	{% for result in citations_with_links %}
+		  		<!--<li>{{result}}</li>-->
+             <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
+
 		  	{% endfor %}
 
-		</div> 
+            </ul>
+
+		</div>
 
 
 		<div role="tabpanel" class="tab-pane fade" id="scifi">

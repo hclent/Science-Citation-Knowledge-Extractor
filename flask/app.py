@@ -30,11 +30,12 @@ class pmidForm(Form):
 @app.route("/cogecrawl/")
 def cogecrawl():
 	error = None
-	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_mainfo.pickle', 'rb')as f:
-		main_info = pickle.load(f)
+
+	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
+		citations_with_links = pickle.load(f)
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
 		journals = pickle.load(f)
-	return render_template("dashboard.html", main_info=main_info, journals=journals)
+	return render_template("dashboard.html", citations_with_links=citations_with_links, journals=journals)
 
 
 
