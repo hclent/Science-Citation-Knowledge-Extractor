@@ -33,9 +33,12 @@ def cogecrawl():
 
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
 		citations_with_links = pickle.load(f)
-	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
-		journals = pickle.load(f)
-	return render_template("dashboard.html", citations_with_links=citations_with_links, journals=journals)
+	# with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
+	# 	journals = pickle.load(f)
+
+	# with open("/home/hclent/data/18269575/journals_18952863+18269575.json") as load_data:
+	# 	journals = json.load(load_data)
+	return render_template("dashboard.html", citations_with_links=citations_with_links)
 
 
 
@@ -344,9 +347,12 @@ def cogelda():
 
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
-	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
-	with open(completeName) as load_data:
-		journals = json.load(load_data) #doesn't need to be parsed
+	# completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
+	# with open(completeName) as load_data:
+	# 	journals = json.load(load_data) #doesn't need to be parsed
+	with open("/home/hclent/data/18269575/journals_18952863+18269575.json") as load_data:
+		journals = json.load(load_data)
+
 	return render_template('coge_journals.html', journals=journals)
 
 

@@ -14,7 +14,7 @@ text.value{font-size:12px;font-weight:bold;}
 </head>
 <body>
 
-<h2> 152 publications in 45 different journals  </h2> <!--title goes here-->
+<h1> 164 publications in 47 different journals  </h1> <!--title goes here-->
 <script type="text/javascript">
 function truncate(str, maxLength, suffix) {
   if(str.length > maxLength) {
@@ -51,10 +51,10 @@ var svg = d3.select("body").append("svg")
 // var dataset = [ [2001, 5], [2005, 15], [2006, 2], [2010, 20], [2012, 25] ];
 
 
-var data = {{ journals|tojson }};
+var myjson = {{ journals|tojson }};
 //console.log(myjson)
-//data = JSON.parse( myjson );
-//console.log(data)
+data = JSON.parse( myjson );
+//
 
 
 
