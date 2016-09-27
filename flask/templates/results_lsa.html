@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+  <link href= "{{ url_for('static',
+	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
+	</script>
+
 <style>
 
 .node {
@@ -90,7 +94,9 @@
 
 
 
-<script src="//d3js.org/d3.v3.min.js"></script>
+<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
+
+
 <script>
 
 var margin = 20,

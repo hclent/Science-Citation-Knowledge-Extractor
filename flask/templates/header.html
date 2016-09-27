@@ -10,7 +10,9 @@
 	initial-scale=1">
 	
 	<link href= "{{ url_for('static', 
-	filename='css/bootstrap.min.css')}}" rel="stylesheet">
+	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+
+	 <!--<link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet"> -->
 
 	<!-- url image icon goes here -->
 	<link rel="shortcut icon" href="{{url_for('static', 
@@ -95,10 +97,15 @@
 
 
 	<!-- Scripts usually go here -->
-	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+	<script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
 
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}">
+	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
+
+
+ <!--<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
+
 
 
 </body>

@@ -174,8 +174,10 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
   return data_samples, nes_list
 
-#docs = retrieveDocs("22333134")
-#multiprocess(docs)
-# biodocs = retrieveBioDocs("22333134")
+# docs = retrieveDocs("27255547")
+# multiprocess(docs)
+# biodocs = retrieveBioDocs("27255547")
 # data_samples, nes_list = loadBioDoc(biodocs)
-# print(nes_list)
+# for category in nes_list:
+#   print(category)
+#   print("########################")

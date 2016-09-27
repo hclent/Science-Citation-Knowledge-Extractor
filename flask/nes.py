@@ -117,9 +117,39 @@ def doHeatmap(nesDict, n, data_samples):
     return x, y, z
 
 
-# bdocs1 = retrieveBioDocs("18269575")
-# data_samples, neslist = loadBioDoc(bdocs1)
+# def get_data_and_ner(pmid):
+# 	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
+# 	data_samples, neslist = loadBioDoc(biodocs)
+# 	return data_samples, neslist
+
+
+# data_samples = []
+# neslist = []
+#
+# ds1, nes1 = get_data_and_ner(18269575)
+# ds2, nes2 = get_data_and_ner(18952863)
+#
+# for d in ds1:
+#     data_samples.append(d)
+# for d in ds2:
+#     data_samples.append(d)
+# for n in nes1:
+#     neslist.append(n)
+# for n in nes2:
+#     neslist.append(n)
+# print("put all the things in the lists lol")
+#
+#
 # category_list = ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 # nesDict = frequency_dict(neslist, category_list)
-# z, y, z = doHeatmap(nesDict, 3, data_samples)
-
+# x, y, z = doHeatmap(nesDict, 100, data_samples)
+#
+# print("X:")
+# print(x)
+# print("######################################################################")
+# print("Y:")
+# print(y)
+# print("######################################################################")
+# print("Z:")
+# print(z)
+# print("######################################################################")

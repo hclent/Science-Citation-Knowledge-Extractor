@@ -1,0 +1,20 @@
+{
+  "name": "pubcrawl",
+  "version": "0.0.0",
+  "homepage": " ",
+  "license": " ",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/js/third-party",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.4.8",
+    "bootstrap": "~3.2.0",
+    "plotly": "https://github.com/plotly/plotly.js.git",
+    "d3-cloud": "https://github.com/jasondavies/d3-cloud.git"
+  }
+}
