@@ -427,6 +427,12 @@ def cogekmeans():
 		return render_template('coge_kmeans.html')
 
 
+
+@app.route('/coge_stats/')
+def coge_stats():
+	return render_template('coge_stats.html')
+
+
 ############### Results visualizations #########################################
 @app.route('/resjournals/<query>/<range_years>', methods=["GET", "POST"]) #user journals for iframe
 def resjournals(query, range_years):
@@ -634,25 +640,26 @@ def res_kmeans(query):
 		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 	else:
-		pmid_list = query.split('+') #list of string pmids
-		last_entry = pmid_list[-1]
-		data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		#pmid_list = query.split('+') #list of string pmids
+		#last_entry = pmid_list[-1]
+		#data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
+		#data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
-		k_clusters = 3 #default is 3
-		print("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
-		print(x0_coordinates)
-		print(x1_coordinates)
-		print(x2_coordinates)
-		print(x3_coordinates)
-		print(x4_coordinates)
-		return render_template('res_kmeans1.html', query=query,
-		   x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
-		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
-		   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
-		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
-		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
+		# k_clusters = 3 #default is 3
+		# print("the k value is " + str(k_clusters))
+		# x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
+		# print(x0_coordinates)
+		# print(x1_coordinates)
+		# print(x2_coordinates)
+		# print(x3_coordinates)
+		# print(x4_coordinates)
+		# return render_template('res_kmeans1.html', query=query,
+		#    x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
+		#    x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
+		#    x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
+		#    x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
+		#    x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
+		return render_template('res_kmeans1.html', query=query)
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')

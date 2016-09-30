@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title></title>
+<style>
+body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+}
+</style>
+</head>
+     <!--bootstrap scripts -->
+<link href= "{{ url_for('static',
+	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
+	</script>
+
+<body>
+
+<h2>Citation Statistics</h2>
+<ul class="list-group">
+  <li class="list-group-item">Total Num Citations: 164 </li>
+  <li class="list-group-item">Total Num Unique Citations: 140 </li>
+  <li class="list-group-item">Total Num Abstracts: ???? </li>
+  <li class="list-group-item">Total Num Whole Articles: ???? </li>
+  <li class="list-group-item">Total Num Sentences: 27,661 </li>
+  <li class="list-group-item">Total Num Tokens: 956,316</li>
+</ul>
+
+
+
+    <div id="venn"></div>
+
+</body>
+
+ <script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
+ <script src="{{ url_for('static', filename='js/third-party/venn.js/venn.js') }}"></script>
+
+
+
+<script>
+var sets = [{sets : [0], label : 'PMID:18269575 (75)', size : 75},
+            {sets : [1], label : 'PMID:18952863 (89)', size: 89},
+            {sets : [0,1], label: '24', size:24}
+            ];
+
+var chart = venn.VennDiagram()
+                 .width(600)
+                 .height(400);
+
+d3.select("#venn").datum(sets).call(chart);
+
+</script>

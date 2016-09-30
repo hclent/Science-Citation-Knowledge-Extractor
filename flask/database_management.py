@@ -56,6 +56,17 @@ def db_citations_retrieval(user_input):
 	return apa_citations, db_journals, db_dates, db_urls
 
 
+#Input: pmid that is cited
+#Output: list of titles for citation_venn.py
+def db_citation_titles(user_input):
+	c.execute('''SELECT title, author, journal, pubdate, url FROM citations WHERE citesPmid=?''', (user_input,))
+	db_titles = []
+	for row in c:
+		title = row[0]
+		db_titles.append(title)
+	return db_titles
+
+
 
 #Create table for inputPapers
 def create_table_input():
@@ -67,7 +78,8 @@ def create_table_input():
 		author TEXT,
 		journal TEXT,
 		pubdate TEXT,
-		url TEXT)''')
+		url TEXT,
+		num_citations NUMBER)''')
 
 
 #Create table for citations of the citations
@@ -81,7 +93,11 @@ def create_table_citations():
 		journal TEXT,
 		pubdate TEXT,
 		citesPmid TEXT,
-		url TEXT)''')
+		url TEXT,
+		abstract TEXT,
+		whole_article TEXT,
+		sents NUMBER,
+		tokens NUMBER)''')
 
 
 #test

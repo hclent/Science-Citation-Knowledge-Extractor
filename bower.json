@@ -15,6 +15,7 @@
     "d3": "~3.4.8",
     "bootstrap": "~3.2.0",
     "plotly": "https://github.com/plotly/plotly.js.git",
-    "d3-cloud": "https://github.com/jasondavies/d3-cloud.git"
+    "d3-cloud": "https://github.com/jasondavies/d3-cloud.git",
+    "venn.js": "https://github.com/benfred/venn.js.git"
   }
 }

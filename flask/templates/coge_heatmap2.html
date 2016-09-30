@@ -118,7 +118,12 @@ var data = [
   }
 ];
 
-Plotly.newPlot('myDiv', data);
+
+var layout = {
+  title: 'Distribution of Named Entities'
+}
+
+Plotly.newPlot('myDiv', data, layout);
 </script>
 
 
