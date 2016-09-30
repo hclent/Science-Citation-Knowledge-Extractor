@@ -70,10 +70,10 @@ def run_IR_not_db(user_input):
 
 	pmc_ids = getCitationIDs(user_input)
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
+	#Get content
+	all_abstract_check, all_article_check = getContentPMC(user_input, pmc_ids)
 	#main_info is written to the database
-	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls))
-	#Get XML
-	getContentPMC(user_input, pmc_ids)
+	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls, all_abstract_check, all_article_check))
 
 	return self_info, new_info, target_journals, target_dates
 
@@ -132,9 +132,9 @@ def do_ALL_multi_preprocessing(user_input):
 	docs = retrieveDocs(user_input)
 	multiprocess(docs)
 	biodocs = retrieveBioDocs(user_input)
-	data_samples, nes_list = loadBioDoc(biodocs)
+	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return data_samples, nes_list
+	return data_samples, nes_list, total_sentences, sum_tokens
 
 
 #Take annotated docs and return data and nes
@@ -143,9 +143,9 @@ def do_SOME_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
 	t1 = time.time()
 	biodocs = retrieveBioDocs(user_input)
-	data_samples, nes_list = loadBioDoc(biodocs)
+	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return data_samples, nes_list
+	return data_samples, nes_list, total_sentences, sum_tokens
 
 
 

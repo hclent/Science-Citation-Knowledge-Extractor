@@ -47,7 +47,9 @@ def retrieveDocs(pmid):
   files = os.listdir(folder)
   for f in files:
     if pmid in f and 'doc' not in f:
-      docs.append(f) #str
+      #dont read .json or pickle objs
+      if '.txt' in f:
+        docs.append(f) #str
   logging.debug('retrieved list of documents to processes')
   return docs
 
@@ -159,25 +161,48 @@ def loadBioDoc(biodocs):
   t1 = time.time()
   data_samples = []
   nes_list = []
+
+  total_sentences = []
+
+  total_tokens = []
+  sum_tokens = []
+
   for bd in biodocs: #e.g. doc_26502977_3.json
     pmid_i = bd.strip('.json')
     pmid = re.sub('(doc\_)', '', pmid_i)
     pmid = re.sub('\_\d*', '', pmid)
     filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
+    doc_tokens= []
     with open(filename) as jf:
       data = Document.load_from_JSON(json.load(jf))
       #print(type(data)) is <class 'processors.ds.Document'>
+      num_sentences = data.size
+      total_sentences.append(num_sentences)
+      for i in range(0, num_sentences):
+        s = data.sentences[i]
+        num_tokens = s.length
+        doc_tokens.append(num_tokens)
       lemmas = grab_lemmas(data)
       data_samples.append(lemmas)
       nes = grab_nes(data)
       nes_list.append(nes)
+      total_tokens.append(doc_tokens)
   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
-  return data_samples, nes_list
 
-# docs = retrieveDocs("27255547")
+  #add up tokens
+  for sents in total_tokens:
+    sum = 0
+    for tokens in sents:
+      sum += tokens
+    sum_tokens.append(sum)
+
+  logging.info("Done assembling sent counts and token counts")
+  return data_samples, nes_list, total_sentences, sum_tokens
+
+# docs = retrieveDocs("8108455")
+# print(docs)
 # multiprocess(docs)
-# biodocs = retrieveBioDocs("27255547")
-# data_samples, nes_list = loadBioDoc(biodocs)
-# for category in nes_list:
-#   print(category)
-#   print("########################")
+# biodocs = retrieveBioDocs("8108455")
+# data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
+# print(total_sentences)
+# print(sum_tokens)

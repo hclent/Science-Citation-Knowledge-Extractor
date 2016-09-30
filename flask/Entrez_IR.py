@@ -147,28 +147,47 @@ def getCitedInfo(pmcid_list):
 def parsePMC(xml_string, pmid):
 	main_text = []
 	root = ET.fromstring(xml_string) #parsed
+	abstract_check = [] #did it get the abstract? yes/no?
+	whole_article_check = [] #did it get the whole text? yes/no?
+
 	#Get abstract and add to doc
 	try:
 		abstract = root.find('.//abstract')
 		full_abs = ("".join(abstract.itertext()))
-		#print("* Got abstract")
+		logging.info("* Got abstract")
 		main_text.append(full_abs)
+		if full_abs: #if the abstract exists
+			abstract_check.append('yes')
 	except Exception as e:
 		logging.info("The following PMCID has no abstract")
 		string = "Some data"
 		main_text.append(string)
+		abstract_check.append('no')
 	try:
 		#Get main text and add to doc
 		text = root.findall('.//p')
-		for t in text:
-			full_text = ("".join(t.itertext()))
-			main_text.append(full_text)
-		#print("* Got main text")
+		#problem: will return an empty list if there is no text :(
+		#error handling here:
+		if not text:
+			logging.info("main text is empty!!!!!!!!!")
+			whole_article_check.append('no')
+		#if the text really does exist:
+		if text:
+			whole_article_check.append('yes')
+			for t in text:
+				full_text = ("".join(t.itertext()))
+				main_text.append(full_text)
+			logging.info("* Got main text")
 	except Exception as e:
 		logging.info("The following PMCID has no main text")
 		string = "data"
 		main_text.append(string)
-	return main_text
+		whole_article_check.append('no')
+	logging.info("ABSTRACT CHECK")
+	logging.info(abstract_check)
+	logging.info("WHOLE_ARTICLE CHECK")
+	logging.info(whole_article_check)
+	return main_text, abstract_check, whole_article_check
 
 
 
@@ -180,6 +199,8 @@ def getContentPMC(pmid, pmcids_list):
 	t0 = time.time()
 	i = 1
 	dirname = '/home/hclent/data/'+pmid
+	all_abstract_check = []
+	all_article_check = []
 	try:
 		os.makedirs(dirname) #creates folder named after pmid
 	except OSError:
@@ -193,9 +214,13 @@ def getContentPMC(pmid, pmcids_list):
 		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
 		xml_record = handle.read() #xml str
 		#print(xml_record)
-		#print("* got xml record")
-		main_text = parsePMC(xml_record, pmid)
-		#print("* ready to print it")
+		logging.info("* got xml record")
+		main_text, abstract_check, whole_article_check = parsePMC(xml_record, pmid)
+		for yn in abstract_check:
+			all_abstract_check.append(yn)
+		for yn in whole_article_check:
+			all_article_check.append(yn)
+		logging.info("* ready to print it")
 		save_path = '/home/hclent/data/'+(str(pmid))+'/' #must save to data, in proper file
 		completeName = os.path.join(save_path, (str(pmid)+'_'+str(i)+'.txt'))
 		sys.stdout = open(completeName, "w")
@@ -203,30 +228,41 @@ def getContentPMC(pmid, pmcids_list):
 		i += 1
 		time.sleep(3)
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
+	return all_abstract_check, all_article_check
 
 
-# stuff = getMainInfo("25055630")
-# pmc_ids = getCitationIDs("25055630")
+#stuff = getMainInfo("26503504")
+# pmc_ids = getCitationIDs("26503504")
+# #pmc_ids = [3159747, 3122376, 3117012] #middle PMC here is bad
 # pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)
-# main_info = list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls))
-# print(main_info)
-# print("############")
+# all_abstract_check, all_article_check = getContentPMC("26503504", pmc_ids)
+# main_info = list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls, all_abstract_check, all_article_check))
+#
+# logging.info(main_info)
+# logging.info("############")
 # for tup in main_info:
 # 	title = tup[0]
 # 	author = tup[1]
 # 	journal = tup[2]
 # 	pubdate = tup[3]
 # 	url = tup[4]
-# 	print(title)
-# 	print("############")
-# 	print(author)
-# 	print("############")
-# 	print(journal)
-# 	print("############")
-# 	print(pubdate)
-# 	print("############")
-# 	print(url)
-# 	print("##############################")
+# 	abstract = tup[5]
+# 	article = tup[6]
+# 	logging.info(title)
+# 	logging.info("############")
+# 	logging.info(author)
+# 	logging.info("############")
+# 	logging.info(journal)
+# 	logging.info("############")
+# 	logging.info(pubdate)
+# 	logging.info("############")
+# 	logging.info(url)
+# 	logging.info("############")
+# 	logging.info(abstract)
+# 	logging.info("############")
+# 	logging.info(article)
+# 	logging.info("##############################")
+
 
 
 ################### Notes ##############

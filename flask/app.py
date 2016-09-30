@@ -109,7 +109,7 @@ def results():
 
 
 					logging.info("beginning multi-preprocessing")
-					data, named_entities = do_ALL_multi_preprocessing(user_input)
+					data, named_entities, total_sentences, sum_tokens = do_ALL_multi_preprocessing(user_input)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
@@ -148,6 +148,7 @@ def results():
 
 					#after successfully retrieving papers, annotating, and doing topic models,
 					#add self_info to inputPapers database entry
+
 					for tup in self_info:
 						title = tup[0]
 						s = ', '
@@ -161,9 +162,11 @@ def results():
 						conn, c = connection()
 						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
 						conn.commit()
-						logging.info("Writing self_info to inputPapers db")
+					logging.info("Writing self_info to inputPapers db")
 
 					#add main to citations database table
+
+					i = 0
 					for tup in new_info:
 						logging.info("TUP IN MAIN: ")
 						logging.info(tup)
@@ -174,12 +177,19 @@ def results():
 						journal = tup[3]
 						pubdate = tup[4]
 						url = tup[5]
+						abstract = tup[6]
+						whole = tup[7]
+
+						sents = total_sentences[i]
+						tokens = sum_tokens[i]
+
 						unix = time.time()
 						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 						conn, c = connection()
-						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url)) #put user pmid into db
+						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url, abstract, whole, sents, tokens)) #put user pmid into db
 						conn.commit()
-						logging.info("Writing new_info to citations db")
+						i += 1
+					logging.info("Writing new_info to citations db")
 
 
 					#after info written to db, now can access db and get formated main_info (main)
@@ -216,7 +226,7 @@ def results():
 					logging.info("done with url list")
 
 
-					data, named_entities = do_SOME_multi_preprocessing(user_input)
+					data, named_entities, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
