@@ -66,6 +66,15 @@ def db_citation_titles(user_input):
 		db_titles.append(title)
 	return db_titles
 
+#Input: pmid that is cited
+#Output: list of pmc_ids for citation_venn.py
+def db_citation_pmc_ids(user_input):
+	c.execute('''SELECT pmcid FROM citations WHERE citesPmid=?''', (user_input,))
+	db_pmc_ids = []
+	for row in c:
+		pmcid = row[0]
+		db_pmc_ids.append(pmcid)
+	return db_pmc_ids
 
 
 #Create table for inputPapers

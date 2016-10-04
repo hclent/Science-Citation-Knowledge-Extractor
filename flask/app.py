@@ -85,7 +85,7 @@ def results():
 				if check1 is None:
 					flash('new pubmedid lol')
 					#Using user_input for Information Retireval of "main info"
-					self_info, new_info, journals, dates = run_IR_not_db(user_input)
+					self_info, new_info, journals, dates, num_citations = run_IR_not_db(user_input)
 					'''
 					'main' renamed to 'new_info'
 					need 'new_info' written to the database
@@ -149,6 +149,7 @@ def results():
 					#after successfully retrieving papers, annotating, and doing topic models,
 					#add self_info to inputPapers database entry
 
+
 					for tup in self_info:
 						title = tup[0]
 						s = ', '
@@ -156,11 +157,11 @@ def results():
 						journal = tup[2]
 						pubdate = tup[3]
 						url = tup[4]
-
+						#needs "num_citations"
 						unix = time.time()
 						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 						conn, c = connection()
-						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url) VALUES (?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url)) #put user pmid into db
+						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url, num_citations)) #put user pmid into db
 						conn.commit()
 					logging.info("Writing self_info to inputPapers db")
 

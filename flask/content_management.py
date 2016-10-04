@@ -66,16 +66,17 @@ def run_IR_not_db(user_input):
 	#first run to add things to database
 	#self_info is written to the database
 	self_info = getMainInfo(user_input)
-
-
 	pmc_ids = getCitationIDs(user_input)
+	num_citations = len(pmc_ids)
+
+
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
 	#Get content
 	all_abstract_check, all_article_check = getContentPMC(user_input, pmc_ids)
 	#main_info is written to the database
 	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls, all_abstract_check, all_article_check))
 
-	return self_info, new_info, target_journals, target_dates
+	return self_info, new_info, target_journals, target_dates, num_citations
 
 
 def new_citations_from_db(user_input):
