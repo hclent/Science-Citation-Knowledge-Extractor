@@ -29,8 +29,7 @@ body {
 //            {sets : [0,1], label: '24', size:24}
 //            ];
 
-var sets = [{'size': 75, 'label': 'PMID:18269575 (75)', 'sets': [0]}, {'size': 89, 'label': 'PMID:18952863 (89)', 'sets': [1]}, {'size': 31, 'label': 'PMID:10467567 (31)', 'sets': [2]}, {'size': 104, 'label': 'PMID:9108111 (104)', 'sets': [3]}, {'size': 24, 'label': '24', 'sets': [0, 1]}, {'size': 9, 'label': '9', 'sets': [2, 3]}];
-
+var sets = [{'sets': [0], 'size': 75, 'label': 'PMID:18269575 (75)'}, {'sets': [1], 'size': 31, 'label': 'PMID:10467567 (31)'}, {'sets': [2], 'size': 104, 'label': 'PMID:9108111 (104)'}, {'sets': [1, 2], 'size': 9, 'label': '9'}];
 var chart = venn.VennDiagram()
                  .width(600)
                  .height(400);

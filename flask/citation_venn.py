@@ -1,13 +1,11 @@
 from database_management import db_citation_titles, db_citation_pmc_ids
 from itertools import combinations
 from collections import defaultdict
-import re
 
-
-# {ref 1: [p1, p2], ref2: [p3]}
 
 #pmid_list = ['18269575']
-pmid_list = ['18269575', '18952863', '10467567', '9108111']
+#pmid_list = ['18269575', '10467567', '9108111']
+
 def make_venn(pmid_list):
     i = 0
     i_count = []
@@ -29,7 +27,7 @@ def make_venn(pmid_list):
         x = [int(i)]
         pmid_label = 'PMID:'+str(pmid)+' ('+str(len(pmc_ids))+')'
         pmid_Dict = {'sets': x, 'label': pmid_label, 'size': (len(pmc_ids))}
-        print(pmid_Dict)
+        #print(pmid_Dict)
         venn_data.append(pmid_Dict)
         i_count.append(str(i))
 
@@ -79,13 +77,13 @@ def make_venn(pmid_list):
             sum = 0
             for key, value in citationsDict.items():
                 if value == p_vals:
-                    print(str(key)+' has '+str(value)+' == '+str(p_vals))
+                    #print(str(key)+' has '+str(value)+' == '+str(p_vals))
                     sum += 1
             #print(sum)
             if sum > 0:
                 count_label = str(sum)
                 overlap_Dict = {'sets': p_vals, 'label': count_label, 'size': sum }
-                print(overlap_Dict)
+                #print(overlap_Dict)
                 venn_data.append(overlap_Dict)
 
 
@@ -94,11 +92,11 @@ def make_venn(pmid_list):
         pass
 
 
-    print(venn_data)
+    return venn_data
 
+# venn_data = make_venn(pmid_list)
+# print(venn_data)
 
-
-make_venn(pmid_list)
 
 ############# GRAVEYARD #######################
 # def format_venn(pmid_list):

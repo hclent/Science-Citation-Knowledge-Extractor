@@ -7,6 +7,7 @@ from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
 from database_management import connection #mine
 from content_management import * #mine
+from citation_venn import make_venn #mine
 from processors import *
 
 #If running in a virtual enviornment, must have modules also (pip) installed in that virtualenv! 
@@ -671,6 +672,13 @@ def res_kmeans(query):
 		#    x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
 		#    x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 		return render_template('res_kmeans1.html', query=query)
+
+
+@app.route('/res_stats/<query>', methods=["GET"])
+def res_stats(query):
+	pmid_list = query.split('+') #list of string pmids
+	venn_data = make_venn(pmid_list)
+	return render_template('results_stats.html', venn_data=venn_data)
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
