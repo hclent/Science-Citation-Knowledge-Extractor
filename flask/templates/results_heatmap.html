@@ -10,6 +10,11 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
 
+
+    <style>
+    .form-check-inline { margin-right: 5px }
+    </style>
+    
 </head>
 <body>
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/res_heatmap/{{query}}" method="post">
@@ -70,6 +75,11 @@
     </div>
 
 </form>
+
+<!--<div class="alert alert-warning alert-dismissible" role="alert">-->
+  <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+  <!--<strong>Default: </strong> N=10, all categories-->
+<!--</div>-->
 
 <!-- Progress modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

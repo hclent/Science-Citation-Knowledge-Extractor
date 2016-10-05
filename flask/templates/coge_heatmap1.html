@@ -15,10 +15,19 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
 
+<style>
+    .form-check-inline { margin-right: 5px }
+    </style>
+
 </head>
+
+
+
+
+
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogeheatmap/" method="post">
 
-     <label for="options">Filter with words occurring N or more times, from these categories:  </label>
+     <label for="options">Filter with words occurring N or more times, from these categories:</label>
      <div id="options">
 
           <div class="col-xs-1">
@@ -36,44 +45,48 @@
 
 
         <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="BioProcess">Bioprocess</label>
+          <input class="form-check-input" type="checkbox" name="check" value="BioProcess"> Bioprocess </label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="CellLine">Cell-lines</label>
+          <input class="form-check-input" type="checkbox" name="check" value="CellLine"> Cell-lines</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Cellular_component">Cellular components</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Cellular_component"> Cellular components</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Family">Family</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Family"> Family</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Gene_or_gene_product">Gene or gene product</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Gene_or_gene_product"> Gene or gene product</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Organ">Organ</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Organ"> Organ</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Simple_chemical">Simple Chemical</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Simple_chemical"> Simple Chemical</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Site">Site</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Site"> Site</label>
 
      <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Species">Species</label>
+          <input class="form-check-input" type="checkbox" name="check" value="Species"> Species</label>
 
             <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="TissueType">Tissue-type</label>
+          <input class="form-check-input" type="checkbox" name="check" value="TissueType"> Tissue-type</label>
     </div>
+
+
 
   <button type="submit" id="heatmap" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">Update</button>
 
 
 
-    </label>
-    </div>
+
+
 
 </form>
+
+
 
 <!-- Progress modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

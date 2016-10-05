@@ -130,8 +130,8 @@ def print_journalvis(journals, dates, user_input, query):
 	#num_journals = len(journals)
 	#print("there are "+str(num_journals)+" journals in total")
 	publication_data, range_info = journals_vis(journals, dates)
-	print(publication_data)
-	print(range_info)
+	logging.info(publication_data)
+	logging.info(range_info)
 	logging.info('Printing JOURNALS to JSON')
 	save_path = '/home/hclent/data/'+str(user_input)+'/' #save in last pmid folder
 	completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
@@ -142,9 +142,9 @@ def print_journalvis(journals, dates, user_input, query):
 
 def vis_wordcloud(neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
-	print(nesDict)
+	#print(nesDict)
 	wcl = wordcloud(nesDict, int(w_number))
-	print(wcl)
+	#print(wcl)
 	return wcl
 
 
