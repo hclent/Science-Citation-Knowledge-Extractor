@@ -1,42 +1,43 @@
-from multi_preprocess import *
+from content_management import *
+
+def recurate(user_input):
+  self_info, new_info, target_journals, target_dates, num_citations = run_IR_not_db(user_input)
+  conn, c = connection()
+
+  #update inputPapers for num_citations
+  for tup in self_info:
+      conn, c = connection()
+      c.execute("UPDATE inputPapers SET num_citations = ? WHERE pmid=?", (num_citations, user_input)) #put user pmid into db
+      conn.commit()
+  logging.info("UPDATING self_info to inputPapers db")
+
+  data_samples, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
+
+  logging.info(total_sentences)
+  logging.info(sum_tokens)
 
 
+  i = 0
+  #update citations for abstract, whole_article, sents, tokens
+  for tup in new_info:
+      logging.info("TUP IN MAIN: ")
+      logging.info(tup)
+      pmcid = tup[0]
+      abstract = tup[6]
+      whole = tup[7]
 
-def blahblah(biodocs):
-  total_sentences = []
-  total_tokens = []
-  for bd in biodocs: #e.g. doc_26502977_3.json
-    pmid_i = bd.strip('.json')
-    pmid = re.sub('(doc\_)', '', pmid_i)
-    pmid = re.sub('\_\d*', '', pmid)
-    filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
-    with open(filename) as jf:
-      data = Document.load_from_JSON(json.load(jf))
-      num_sentences = data.size
-      print(num_sentences)
-      total_sentences.append(num_sentences)
-      for i in range(0, num_sentences):
-        s = data.sentences[i]
-        num_tokens = s.length
-        print(num_tokens)
-        total_tokens.append(num_tokens)
+      logging.info("sents, tokens: ")
+      sents = total_sentences[i]
+      logging.info(sents)
+      tokens = sum_tokens[i]
+      logging.info(tokens)
 
-  sum = 0
-  for sent in total_sentences:
-    sum += sent
-  print("TOTAL SENTS: " + str(sum))
-
-  total = 0
-  for tokens in total_tokens:
-    total += tokens
-  print("TOTAL TOKENS: " + str(total))
+      conn, c = connection()
+      c.execute("UPDATE citations SET abstract=?, whole_article=?, sents =?, tokens=? WHERE pmcid=?", (abstract, whole, sents, tokens, pmcid) )
+      conn.commit()
+      i += 1
+  logging.info("UPDATING new_info to citations db")
 
 
-
-
-
-biodocs = retrieveBioDocs("18952863")
-blahblah(biodocs)
-
-
+recurate("25884402")
 

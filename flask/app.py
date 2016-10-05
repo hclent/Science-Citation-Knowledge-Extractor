@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, flash, url_for, redirect, session, g, Blueprint
 from flask_wtf import Form
-from wtforms import StringField, TextField, SelectField
+from wtforms import TextField, SelectField
 import sqlite3, gc, time, datetime, pickle, os.path
 import sys
 from werkzeug.serving import run_simple
@@ -30,15 +30,9 @@ class pmidForm(Form):
 #User inputs a pubmed id and is then redirected to /results
 @app.route("/cogecrawl/")
 def cogecrawl():
-	error = None
-
+	#error = None
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
 		citations_with_links = pickle.load(f)
-	# with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_journals.pickle', 'rb')as f:
-	# 	journals = pickle.load(f)
-
-	# with open("/home/hclent/data/18269575/journals_18952863+18269575.json") as load_data:
-	# 	journals = json.load(load_data)
 	return render_template("dashboard.html", citations_with_links=citations_with_links)
 
 
@@ -293,8 +287,6 @@ def results():
 
 
 ################ Forms for visualization toggle ################
-
-
 class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
@@ -302,7 +294,6 @@ class visOptions(Form):
 
 class nesOptions(Form):
 	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'), (300, '300')])
-
 
 ################ Default CoGe Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
@@ -359,12 +350,8 @@ def cogelda():
 
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
-	# completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/journal-publications.json"
-	# with open(completeName) as load_data:
-	# 	journals = json.load(load_data) #doesn't need to be parsed
 	with open("/home/hclent/data/18269575/journals_18952863+18269575.json") as load_data:
 		journals = json.load(load_data)
-
 	return render_template('coge_journals.html', journals=journals)
 
 
@@ -392,7 +379,7 @@ def cogewordcloud():
 		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #json needs double quotes, not single quotes
 		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data)
 
-#default data has only 1 of 2 pmids...
+
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions(secret_key='super secret key')
@@ -414,8 +401,9 @@ def cogeheatmap():
 		#Default data
 		return render_template('coge_heatmap1.html')
 
-#only using pmid 18269575
-@app.route('/cogekmeans/', methods=["GET","POST"]) #default coge kmreans for iframe
+
+
+@app.route('/cogekmeans/', methods=["GET","POST"]) #default coge k-means clustering for iframe
 def cogekmeans():
 	form = visOptions(secret_key='super secret key')
 	if request.method == 'POST':
@@ -440,7 +428,7 @@ def cogekmeans():
 
 
 
-@app.route('/coge_stats/')
+@app.route('/coge_stats/') #default coge statistics for iframe
 def coge_stats():
 	return render_template('coge_stats.html')
 
@@ -674,7 +662,7 @@ def res_kmeans(query):
 		return render_template('res_kmeans1.html', query=query)
 
 
-@app.route('/res_stats/<query>', methods=["GET"])
+@app.route('/res_stats/<query>', methods=["GET"]) #user statistics for iframe
 def res_stats(query):
 	pmid_list = query.split('+') #list of string pmids
 	venn_data = make_venn(pmid_list)
