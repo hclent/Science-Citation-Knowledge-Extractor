@@ -4,7 +4,7 @@ from collections import defaultdict
 
 
 #pmid_list = ['18269575']
-#pmid_list = ['18269575', '10467567', '9108111']
+pmid_list = ['18269575', '18952863']
 
 def make_venn(pmid_list):
     i = 0
@@ -14,6 +14,7 @@ def make_venn(pmid_list):
     pmc_id_list = [] #list of lists [[pmid_ids paper1], [pmid_ids paper2]]
 
     citationsDict = defaultdict(list)
+    possible_vals = []
 
     venn_data = []
     for pmid in pmid_list:
@@ -37,38 +38,47 @@ def make_venn(pmid_list):
 
     #if there is more than one pmid,
     if (len(pmid_list)) > 1:
-
+        #print("more than 1")
         #make dictionary of {citating: ['papers', 'that', 'are', 'cited'] }
         for citation in all_pmcids:
             j = 0
             papers = []
+
             for pmclist in pmc_id_list:
                 if citation in pmclist:
                     #print(str(citation) + " is in P"+str(j))
                     if j not in papers:
                         papers.append(j)
                 j +=1
-
+                #print(papers)
             citationsDict[citation] = papers
 
 
         ### enumerate all possible dictionary values ####
-        possible_vals = []
         s = ''
         combos = s.join(i_count) #format combos for 'combinations' method
-
-        for n in range(2, len(pmid_list)):
+        #print(combos)
+        for n in range(2, len(pmid_list)+1):
             compare_all = (combinations(combos, int(n)))
 
             for c in compare_all:
                 option_list = [] #dict keys are in list format [1, 2]
+                #print("c")
                 #print(c)
                 for number in c:
+                    #print("number")
+                    #print(number)
                     option_list.append(int(number))
 
                 possible_vals.append(option_list)
 
+        #print("inside possible_vals")
         #print(possible_vals)
+
+    #print(citationsDict)
+
+    #print("OUTSIDE possible vales")
+    #print(possible_vals)
 
     #if there were multiple pmids, must look at overlap
     if citationsDict:
@@ -89,13 +99,14 @@ def make_venn(pmid_list):
 
     #if there was only 1 input pmid, no other work needed
     if not citationsDict:
+        #print("there's no citationDict")
         pass
 
 
     return venn_data
 
-# venn_data = make_venn(pmid_list)
-# print(venn_data)
+venn_data = make_venn(pmid_list)
+#print(venn_data)
 
 
 ############# GRAVEYARD #######################

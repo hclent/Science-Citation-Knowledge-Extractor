@@ -666,7 +666,17 @@ def res_kmeans(query):
 def res_stats(query):
 	pmid_list = query.split('+') #list of string pmids
 	venn_data = make_venn(pmid_list)
-	return render_template('results_stats.html', venn_data=venn_data)
+	statistics = get_statistics(pmid_list)
+	sum_total = statistics[0]
+	unique = statistics[1]
+	sum_abstracts = statistics[2]
+	sum_whole = statistics[3]
+	sum_sents = statistics[4]
+	sum_tokens = statistics[5]
+
+	return render_template('results_stats.html', venn_data=venn_data, sum_total=sum_total,
+						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
+						   sum_sents=sum_sents, sum_tokens=sum_tokens)
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')

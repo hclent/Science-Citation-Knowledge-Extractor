@@ -1,7 +1,6 @@
-import sqlite3
-import time
-import datetime
-import random
+import sqlite3, time, datetime
+from collections import defaultdict
+
 
 #Basic SQLITE3 structure
 #Database in webdev-biotool for managing pmids and scraped webpages
@@ -75,6 +74,37 @@ def db_citation_pmc_ids(user_input):
 		title = row[0]
 		db_titles.append(title)
 	return db_titles
+
+
+def db_statistics(user_input):
+	pmidDict = defaultdict(int)
+	#{pmid: num citations}
+
+	pmcDict = defaultdict(list)
+    #dict value [0] = num abstracts
+    #dict value [1] = num whole articles
+    #dict value [2] = num sentences
+    #dict value [3] = num tokens
+	c.execute('''SELECT num_citations FROM inputPapers WHERE pmid=?''', (user_input,))
+	for row in c:
+		total_citations = row[0]
+		pmidDict[user_input] = total_citations
+
+
+	c.execute('''SELECT pmcid, abstract, whole_article, sents, tokens FROM citations WHERE citesPmid=?''', (user_input,))
+	for row in c:
+		pmcid = row[0]
+		abstract = row[1]
+		whole = row[2]
+		sents = row[3]
+		tokens = row[4]
+		pmcDict[pmcid] = [abstract, whole, sents, tokens]
+
+
+	return pmidDict, pmcDict
+
+
+
 
 
 #Create table for inputPapers

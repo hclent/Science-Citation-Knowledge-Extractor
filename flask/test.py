@@ -1,43 +1,67 @@
-from content_management import *
+from database_management import *
 
-def recurate(user_input):
-  self_info, new_info, target_journals, target_dates, num_citations = run_IR_not_db(user_input)
-  conn, c = connection()
-
-  #update inputPapers for num_citations
-  for tup in self_info:
-      conn, c = connection()
-      c.execute("UPDATE inputPapers SET num_citations = ? WHERE pmid=?", (num_citations, user_input)) #put user pmid into db
-      conn.commit()
-  logging.info("UPDATING self_info to inputPapers db")
-
-  data_samples, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
-
-  logging.info(total_sentences)
-  logging.info(sum_tokens)
+#total number
+#total unique (overlap)
 
 
-  i = 0
-  #update citations for abstract, whole_article, sents, tokens
-  for tup in new_info:
-      logging.info("TUP IN MAIN: ")
-      logging.info(tup)
-      pmcid = tup[0]
-      abstract = tup[6]
-      whole = tup[7]
-
-      logging.info("sents, tokens: ")
-      sents = total_sentences[i]
-      logging.info(sents)
-      tokens = sum_tokens[i]
-      logging.info(tokens)
-
-      conn, c = connection()
-      c.execute("UPDATE citations SET abstract=?, whole_article=?, sents =?, tokens=? WHERE pmcid=?", (abstract, whole, sents, tokens, pmcid) )
-      conn.commit()
-      i += 1
-  logging.info("UPDATING new_info to citations db")
+#pmcDict
+#dict value [0] = num abstracts
+#dict value [1] = num whole articles
+#dict value [2] = num sentences
+#dict value [3] = num tokens
 
 
-recurate("25884402")
+def get_statistics(pmid_list):
+    total = []
+    unique_pmcids = []
+
+    all_abstracts = []
+    all_whole = []
+    all_sents = []
+    all_tokens = []
+
+    for pmid in pmid_list:
+
+        pmidDict, pmcDict = db_statistics(pmid)
+        #print(pmidDict)
+        total.append(pmidDict[pmid])
+        print(pmcDict)
+        for key, value in pmcDict.items():
+
+            if key not in unique_pmcids:
+                unique_pmcids.append(key)
+            abstract = value[0]
+
+            if abstract == 'yes':
+                all_abstracts.append(abstract)
+
+            whole = value[1]
+            if abstract == 'yes':
+                all_whole.append(whole)
+
+            sent = value[2]
+            all_sents.append(sent)
+
+            token = value[3]
+            all_tokens.append(token)
+
+
+    sum_total = sum(total)
+    unique = (len(unique_pmcids))
+    sum_abstracts = len(all_abstracts)
+    sum_whole = len(all_whole)
+    sum_sents = sum(all_sents)
+    sum_tokens = sum(all_tokens)
+    statistics = [sum_total, unique, sum_abstracts, sum_whole, sum_sents, sum_tokens]
+    print(statistics)
+    return statistics
+
+
+
+
+get_statistics(["18269575", "18952863"])
+
+
+
+
 
