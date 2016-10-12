@@ -4,7 +4,7 @@ from collections import defaultdict
 
 
 #pmid_list = ['18269575']
-pmid_list = ['18269575', '18952863']
+#pmid_list = ['18269575', '18952863']
 
 def make_venn(pmid_list):
     i = 0
@@ -105,7 +105,7 @@ def make_venn(pmid_list):
 
     return venn_data
 
-venn_data = make_venn(pmid_list)
+#venn_data = make_venn(pmid_list)
 #print(venn_data)
 
 

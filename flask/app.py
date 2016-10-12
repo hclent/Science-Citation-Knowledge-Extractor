@@ -682,7 +682,10 @@ def res_stats(query):
 @app.route('/testingstuff/')
 def testingshit():
 	print("testing stuff")
-	return render_template('test.html')
+	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/templates/data.json"
+	with open(completeName) as load_data:
+		data = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
+	return render_template('test.html', data=data)
 
 
 #Handles 404 errors
