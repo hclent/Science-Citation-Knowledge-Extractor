@@ -115,7 +115,7 @@ def run_word2vec(path_to_sentences, model_name, num_docs):
     featureVec = makeFeatureVec(words, model, 100)
     print("FEATURE VEC:")
     print(featureVec)
-    num_docs = ['blah'] * num_docs
+    num_docs = ['blah'] * num_docs #just need something for the length
     reviewFeatureVecs = getAvgFeatureVecs(num_docs, model, 100)
     print("AVERAGE FEATURE VECTOR: ")
     print(reviewFeatureVecs)
@@ -134,9 +134,14 @@ print("-------------------------------------------------------------------------
 print("COGE: ")
 average_coge = run_word2vec('/home/hclent/data/18269575', 'coge_model', 165)
 
-#print("DOT PRODUCT: ")
-#normalized_st = LA.norm(average_st)
-# normalized_coge = LA.norm(average_coge)
 
-#print(np.dot(normalized_st, normalized_st))
+def cosine_similarity(vec1, vec2, N=8):
+        #Compute the cosine similarity of two WordVector instances
+        sim = np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
+        return float('{score:.{dec}f}'.format(score=sim, dec=N))
+
+print("DOT PRODUCT: ")
+print(cosine_similarity(average_st, average_coge))
+print(cosine_similarity(average_st, average_st))
+print(cosine_similarity(average_coge, average_coge))
 
