@@ -1,21 +1,46 @@
 import re
 from collections import defaultdict
+from database_management import db_citations_retrieval
 
 
-def journals_vis(journals, dates):
+def get_years_range(query):
+	years_list = []
+	pmid_list = query.split('+') #list of string pmids
+	#print(pmid_list)
+	for pmid in pmid_list:
+		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(pmid)
+		#print(db_dates) #step1 : get years
+		for d in db_dates:
+			y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
+			y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
+			years_list.append(int(y)) #append year as an int
+		#print("------------------------")
+	sorted_years = (sorted(years_list))
+	years_range = (str(sorted_years[0]), str(sorted_years[-1])) #define years range with (oldest, newest)
+	#print("YEARS RANGE: " + str(years_range))
+	
+
+	return years_range
+
+
+def journals_vis(journals, dates, years_range):
 	print("JOURNALS VISUALIZATION CRAP")
 	num_publications = len(journals)
 	print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
+
 	years_list = []
-	print(dates) #step1 : get years
+
+	#print(dates) #step1 : get years
 	for d in dates:
 		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
 		y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
 		years_list.append(y)
 	#print(years_list)
 
-	years_range = (years_list[-1], years_list[0]) #define years range with (oldest, newest)
-	print("YEARS RANGE: " + str(years_range))
+
+	# years_range = (years_list[-1], years_list[0]) #define years range with (oldest, newest)
+	# print("YEARS RANGE: " + str(years_range))
+
 
 	#Associate journals with years
 	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
@@ -75,3 +100,11 @@ def journals_vis(journals, dates):
 	#Year range, number of publications, number of unique journals
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
 	return (publication_data, range_info)
+
+
+
+
+
+
+
+

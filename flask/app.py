@@ -433,6 +433,11 @@ def coge_stats():
 	return render_template('coge_stats.html')
 
 
+@app.route('/coge_scifi/') #default coge scifi for iframe
+def coge_scifi():
+	return render_template('coge_scifi.html')
+
+
 ############### Results visualizations #########################################
 @app.route('/resjournals/<query>/<range_years>', methods=["GET", "POST"]) #user journals for iframe
 def resjournals(query, range_years):

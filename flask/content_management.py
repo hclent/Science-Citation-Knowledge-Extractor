@@ -79,13 +79,14 @@ def run_IR_not_db(user_input):
 	return self_info, new_info, target_journals, target_dates, num_citations
 
 
+#
 def new_citations_from_db(user_input):
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
 	return apa_citations, db_urls
 	#apa_citations called 'main' in app.py
 
 
-
+#Data for populating statistics page in app
 def get_statistics(pmid_list):
     total = []
     unique_pmcids = []
@@ -127,9 +128,12 @@ def get_statistics(pmid_list):
 ############ DATA VISUALIZATIONS #################################################
 
 def print_journalvis(journals, dates, user_input, query):
+	#first, get range:
+	years_range = get_years_range(query) #need range for ALL journals, not just last one
+
 	#num_journals = len(journals)
 	#print("there are "+str(num_journals)+" journals in total")
-	publication_data, range_info = journals_vis(journals, dates)
+	publication_data, range_info = journals_vis(journals, dates, years_range)
 	logging.info(publication_data)
 	logging.info(range_info)
 	logging.info('Printing JOURNALS to JSON')

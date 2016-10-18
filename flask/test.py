@@ -1,67 +1,11 @@
-from database_management import *
-
-#total number
-#total unique (overlap)
+import pickle
 
 
-#pmcDict
-#dict value [0] = num abstracts
-#dict value [1] = num whole articles
-#dict value [2] = num sentences
-#dict value [3] = num tokens
-
-
-def get_statistics(pmid_list):
-    total = []
-    unique_pmcids = []
-
-    all_abstracts = []
-    all_whole = []
-    all_sents = []
-    all_tokens = []
-
-    for pmid in pmid_list:
-
-        pmidDict, pmcDict = db_statistics(pmid)
-        #print(pmidDict)
-        total.append(pmidDict[pmid])
-        print(pmcDict)
-        for key, value in pmcDict.items():
-
-            if key not in unique_pmcids:
-                unique_pmcids.append(key)
-            abstract = value[0]
-
-            if abstract == 'yes':
-                all_abstracts.append(abstract)
-
-            whole = value[1]
-            if abstract == 'yes':
-                all_whole.append(whole)
-
-            sent = value[2]
-            all_sents.append(sent)
-
-            token = value[3]
-            all_tokens.append(token)
-
-
-    sum_total = sum(total)
-    unique = (len(unique_pmcids))
-    sum_abstracts = len(all_abstracts)
-    sum_whole = len(all_whole)
-    sum_sents = sum(all_sents)
-    sum_tokens = sum(all_tokens)
-    statistics = [sum_total, unique, sum_abstracts, sum_whole, sum_sents, sum_tokens]
-    print(statistics)
-    return statistics
-
-
-
-
-get_statistics(["18269575", "18952863"])
+cosine_scores = ['0.04657002719410238', '0.041267977274053236', '0.04649056397130176', '0.04343674015403301', '0.05439553633509477', '0.020645572858912303', '0.021556524580909488', '0.032967079083358566', '0.01228606783495943', '0.028745237563074486', '0.014944485726586864', '0.036958875768761994', '0.014254639961455661', '0.02581522436873336', '0.029736729896194736', '0.03930719766442098', '0.005364290972006162', '0.03626398210328182', '0.044296628943742505', '0.04382153422594468', '0.024865158768050698', '0.046711136586769675', '0.027046277880075006', '0.030251806041567984', '0.008293006860174496', '0.019676530169892122', '0.01583038827123292', '0.040494900315758135', '0.023105460618154543', '0.017066674210353506', '0.0343112123303452', '0.039139298867549445', '0.023871314028066144', '0.032798389216809526', '0.044147652529133566', '0.03569259909552262', '0.038067264167726704', '0.04232825603590635', '0.024772438928325504', '0.021126570446306506', '0.007656568118754497', '0.027409142155020084', '0.030433808525425585', '0.028482029831155373', '0.04359781544645079', '0.020733012271321384', '0.03640797492657973', '0.028603334369882008', '0.011701677872013842', '0.01174938072718333', '0.03369612245001695', '0.04227491758363502', '0.023823396867672632', '0.03158894993193158', '0.04292039501438765', '0.0417669814735388', '0.033066888899101664', '0.010903392713415123', '0.0298212923490729', '0.02540442739439534', '0.05786378073527899', '0.04069185397377349', '0.05896985951921523', '0.03298398793053432', '0.0316689737592572', '0.037752743411312614']
 
 
 
 
 
+data_samples = pickle.load(open("/home/hclent/data/18269575/data_samples_18952863+18269575.pickle", "rb")) #pre-processed
+print(len(data_samples))
