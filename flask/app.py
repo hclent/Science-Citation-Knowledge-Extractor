@@ -110,40 +110,8 @@ def results():
 					for n in named_entities:
 						ners.append(n)
 
-					## Once all the data has been acquired, do topic modeling
+					## Once all the data has been acquired, (no topic modeling yet)
 					## Only want to save final topic model (not running topic models)
-					if user_input == pmid_list[-1]:
-
-						#Do Latent Semantic Analysis and return jsonDict for data vis
-						jsonDict = run_lsa1(data_samples, 2)
-
-						#Do Latent Dirichlet Allocation
-						jsonLDA = run_lda1(data_samples, 3, 5)
-
-						logging.info(user_input+" is the last one (JOURNALS)")
-						range_info = print_journalvis(target_journals, target_dates, user_input, query) #e.g. [(2008, 2009), 10, 7]
-						journal_years = range_info[0]
-						start_year = journal_years[0]
-						end_year = journal_years[1]
-						range_years = str(q.join(journal_years))
-						logging.info("range years: "+range_years)
-
-
-						unique_publications = range_info[1]
-						unique_journals = range_info[2]
-
-						logging.info(user_input+" is the last one (LSA)")
-						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-						logging.info(user_input+" is the last one (LDA)")
-						print_lda(query, user_input, jsonLDA) #print lda topic model to json
-
-
-						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
-
-
-					#after successfully retrieving papers, annotating, and doing topic models,
-					#add self_info to inputPapers database entry
-
 
 					for tup in self_info:
 						title = tup[0]
@@ -186,6 +154,81 @@ def results():
 						conn.commit()
 						i += 1
 					logging.info("Writing new_info to citations db")
+
+					if user_input == pmid_list[-1]:
+
+						#Do Latent Semantic Analysis and return jsonDict for data vis
+						jsonDict = run_lsa1(data_samples, 2)
+
+						#Do Latent Dirichlet Allocation
+						jsonLDA = run_lda1(data_samples, 3, 5)
+
+						logging.info(user_input+" is the last one (JOURNALS)")
+						range_info = print_journalvis(target_journals, target_dates, user_input, query) #e.g. [(2008, 2009), 10, 7]
+						journal_years = range_info[0]
+						start_year = journal_years[0]
+						end_year = journal_years[1]
+						range_years = str(q.join(journal_years))
+						logging.info("range years: "+range_years)
+
+
+						unique_publications = range_info[1]
+						unique_journals = range_info[2]
+
+						logging.info(user_input+" is the last one (LSA)")
+						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
+						logging.info(user_input+" is the last one (LDA)")
+						print_lda(query, user_input, jsonLDA) #print lda topic model to json
+
+
+						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+
+
+					#after successfully retrieving papers, annotating, and doing topic models,
+					#add self_info to inputPapers database entry
+
+
+					# for tup in self_info:
+					# 	title = tup[0]
+					# 	s = ', '
+					# 	author = str(s.join(tup[1]))
+					# 	journal = tup[2]
+					# 	pubdate = tup[3]
+					# 	url = tup[4]
+					# 	#needs "num_citations"
+					# 	unix = time.time()
+					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+					# 	conn, c = connection()
+					# 	c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url, num_citations)) #put user pmid into db
+					# 	conn.commit()
+					# logging.info("Writing self_info to inputPapers db")
+                    #
+					# #add main to citations database table
+                    #
+					# i = 0
+					# for tup in new_info:
+					# 	logging.info("TUP IN MAIN: ")
+					# 	logging.info(tup)
+					# 	pmcid = tup[0]
+					# 	title = tup[1]
+					# 	s = ', '
+					# 	author = str(s.join(tup[2]))
+					# 	journal = tup[3]
+					# 	pubdate = tup[4]
+					# 	url = tup[5]
+					# 	abstract = tup[6]
+					# 	whole = tup[7]
+                    #
+					# 	sents = total_sentences[i]
+					# 	tokens = sum_tokens[i]
+                    #
+					# 	unix = time.time()
+					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+					# 	conn, c = connection()
+					# 	c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url, abstract, whole, sents, tokens)) #put user pmid into db
+					# 	conn.commit()
+					# 	i += 1
+					# logging.info("Writing new_info to citations db")
 
 
 					#after info written to db, now can access db and get formated main_info (main)
@@ -244,6 +287,7 @@ def results():
 
 						logging.info(user_input+" is the last one (JOURNALS)")
 						range_info = print_journalvis(target_journals, target_dates, user_input, query)
+						logging.info(range_info)
 						journal_years = range_info[0]
 						start_year = journal_years[0]
 						end_year = journal_years[1]
