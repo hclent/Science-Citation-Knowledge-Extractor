@@ -14,7 +14,7 @@
     <style>
     .form-check-inline { margin-right: 5px }
     </style>
-    
+
 </head>
 <body>
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/res_heatmap/{{query}}" method="post">
@@ -126,7 +126,9 @@ var data = [
 
 
 var layout = {
-  title: 'Distribution of Named Entities'
+  title: 'Distribution of Named Entities',
+    margin:{
+        l:151}
 }
 
 Plotly.newPlot('myDiv', data, layout);

@@ -86,21 +86,21 @@ def doHeatmap(nesDict, n, data_samples):
                         if grams != word:
                             runningDict[word] +=0
 
-                #trigrams
-                if len_word == 3:
-                    t = 3
-                    trigrams = [unigrams_list[i:i+t] for i in range(len(unigrams_list)-t)]
-                    for grams in trigrams:
-                        q = ' '
-                        grams = str(q.join(grams))
-                        if grams == word:
-                            runningDict[word] +=1
-                            #print(grams+' = '+word)
-                        if grams != word:
-                            runningDict[word] +=0
+                #trigrams are too long for this data visualization
+                # if len_word == 3:
+                #     t = 3
+                #     trigrams = [unigrams_list[i:i+t] for i in range(len(unigrams_list)-t)]
+                #     for grams in trigrams:
+                #         q = ' '
+                #         grams = str(q.join(grams))
+                #         if grams == word:
+                #             runningDict[word] +=1
+                #             #print(grams+' = '+word)
+                #         if grams != word:
+                #             runningDict[word] +=0
 
-                #4 grams
-                if len_word > 3:
+                #3 grams, 4 grams, +
+                if len_word > 2:
                     #print("the named entity is too long")
                     pass
                 #print(runningDict)
