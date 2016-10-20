@@ -16,10 +16,10 @@ def get_years_range(query):
 			years_list.append(int(y)) #append year as an int
 		#print("------------------------")
 	sorted_years = (sorted(years_list))
-	if sorted_years[-1] - sorted_years[0] < 10: #if the years range is less than ten, need to adjust that
-		start = sorted_years[0] - 9 #minus 9 from start year
+	if sorted_years[-1] - sorted_years[0] < 8: #if the years range is less than ten, need to adjust that
+		start = sorted_years[0] - 8 #minus 9 from start year
 		end = sorted_years[-1]
-		years_range = (str(start), str(end)) 
+		years_range = (str(start), str(end))
 	else:
 		years_range = (str(sorted_years[0]), str(sorted_years[-1])) #define years range with (oldest, newest)
 	#print("YEARS RANGE: " + str(years_range))

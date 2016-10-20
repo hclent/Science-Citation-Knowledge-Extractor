@@ -158,12 +158,24 @@ def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 	return x_docs, y_words, z_counts
 
 
-def vis_kmeans(data_samples, num_clusters):
+def vis_kmeans(data_samples, num_clusters, pmid_list):
+	#use query to get titles
+	titles = []
+	for pmid in pmid_list:
+		temp_titles = db_citation_titles(pmid)
+		for t in temp_titles:
+			titles.append(t)
+
 	hX, hasher = get_hashing(data_samples)
 	clusters = do_kemeans(hX, int(num_clusters)) #list of cluster assignments
 	coordinates = do_NMF(hX) #dimensionality reduction for visualization
-	x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = plotKmeans(coordinates, clusters) #format for Plotly scatterplot
-	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates
+	#zip coordinates and titles
+
+	zipped_coordinates = zip(coordinates, titles)
+	x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = plotKmeans(zipped_coordinates, clusters) #format for Plotly scatterplot
+
+
+	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4
 
 ############ PROCESSING BIODOCS ############################################
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities

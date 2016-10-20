@@ -68,12 +68,12 @@ def db_citation_titles(user_input):
 #Input: pmid that is cited
 #Output: list of pmc_ids for citation
 def db_citation_pmc_ids(user_input):
-	c.execute('''SELECT title, author, journal, pubdate, url FROM citations WHERE citesPmid=?''', (user_input,))
-	db_titles = []
+	c.execute('''SELECT pmcid FROM citations WHERE citesPmid=?''', (user_input,))
+	db_pmcids = []
 	for row in c:
-		title = row[0]
-		db_titles.append(title)
-	return db_titles
+		pmcid = row[0]
+		db_pmcids.append(pmcid)
+	return db_pmcids
 
 
 def db_statistics(user_input):

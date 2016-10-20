@@ -413,7 +413,8 @@ def cogewordcloud():
 
 		#logging.info(nes_list)
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
-		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data)
+		popup = ' '
+		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data, popup=popup)
 	else:
 		#Default data
 		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_wcloud1.json"
@@ -421,7 +422,8 @@ def cogewordcloud():
 			wordcloud_data = json.load(load_data) #this result doesn't need to be parsed but unsure how to write that in javascript
 		#so i'm going to read it in as a string that needs to be parsed anyway
 		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #json needs double quotes, not single quotes
-		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data)
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
+		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data, popup=popup)
 
 
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
@@ -453,20 +455,18 @@ def cogekmeans():
 	if request.method == 'POST':
 
 		data_samples =  pickle.load(open("/home/hclent/data/18269575/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
-
+		pmid_list = ['18952863', '18269575']
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
-		# print(x0_coordinates)
-		# print(x1_coordinates)
-		# print(x2_coordinates)
-		# print(x3_coordinates)
-		# print(x4_coordinates)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(data_samples, k_clusters, pmid_list)
+
 		return render_template('coge_kmeans2.html', x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 							   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 							   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
 							   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
-							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
+							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
+							   titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
+
 	else:
 		return render_template('coge_kmeans.html')
 
@@ -607,7 +607,8 @@ def reswordcloud(query):
 
 		#print(nes_list)
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
-		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data)
+		popup = ' '
+		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		logging.info(nes_categories)
@@ -620,8 +621,9 @@ def reswordcloud(query):
 		nes_list =  pickle.load(open(filename, "rb")) #pre-processed already
 
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 
-		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data)
+		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup)
 
 
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
@@ -645,7 +647,8 @@ def res_heatmap(query):
 		# print(z_counts)
 		# print(x_docs)
 		# print(y_words)
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+		popup = ' '
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		#print(nes_categories)
@@ -661,7 +664,9 @@ def res_heatmap(query):
 		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup)
 
 
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
@@ -676,7 +681,7 @@ def res_kmeans(query):
 
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(data_samples, k_clusters, pmid_list)
 		# print(x0_coordinates)
 		# print(x1_coordinates)
 		# print(x2_coordinates)
@@ -687,7 +692,8 @@ def res_kmeans(query):
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 		   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
 		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
-		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
+		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
+			titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
 		#pmid_list = query.split('+') #list of string pmids
 		#last_entry = pmid_list[-1]
