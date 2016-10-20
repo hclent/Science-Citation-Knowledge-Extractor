@@ -128,7 +128,7 @@ def results():
 						conn.commit()
 					logging.info("Writing self_info to inputPapers db")
 
-					#add main to citations database table
+					#add main/new to citations database table
 
 					i = 0
 					for tup in new_info:
@@ -182,53 +182,6 @@ def results():
 
 
 						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
-
-
-					#after successfully retrieving papers, annotating, and doing topic models,
-					#add self_info to inputPapers database entry
-
-
-					# for tup in self_info:
-					# 	title = tup[0]
-					# 	s = ', '
-					# 	author = str(s.join(tup[1]))
-					# 	journal = tup[2]
-					# 	pubdate = tup[3]
-					# 	url = tup[4]
-					# 	#needs "num_citations"
-					# 	unix = time.time()
-					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-					# 	conn, c = connection()
-					# 	c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url, num_citations)) #put user pmid into db
-					# 	conn.commit()
-					# logging.info("Writing self_info to inputPapers db")
-                    #
-					# #add main to citations database table
-                    #
-					# i = 0
-					# for tup in new_info:
-					# 	logging.info("TUP IN MAIN: ")
-					# 	logging.info(tup)
-					# 	pmcid = tup[0]
-					# 	title = tup[1]
-					# 	s = ', '
-					# 	author = str(s.join(tup[2]))
-					# 	journal = tup[3]
-					# 	pubdate = tup[4]
-					# 	url = tup[5]
-					# 	abstract = tup[6]
-					# 	whole = tup[7]
-                    #
-					# 	sents = total_sentences[i]
-					# 	tokens = sum_tokens[i]
-                    #
-					# 	unix = time.time()
-					# 	date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-					# 	conn, c = connection()
-					# 	c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url, abstract, whole, sents, tokens)) #put user pmid into db
-					# 	conn.commit()
-					# 	i += 1
-					# logging.info("Writing new_info to citations db")
 
 
 					#after info written to db, now can access db and get formated main_info (main)
