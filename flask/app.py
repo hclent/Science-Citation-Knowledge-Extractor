@@ -569,7 +569,7 @@ def reslda(query):
 		k = int(k_clusters)
 		w = int(num_words)
 		temp_jsonLDA = run_lda1(data_samples, k, w)
-		return render_template('coge_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
+		return render_template('results_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
 	else:
 		#need to get last user_input
 		#use id to do stuff
