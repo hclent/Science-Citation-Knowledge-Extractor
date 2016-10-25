@@ -52,7 +52,9 @@ def load_corpus(corpus):
 
 
 def load_datasamples(query):
-    data_samples = pickle.load(open('/home/hclent/data/18269575/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
+    pmid_list = query.split('+') #list of string pmids
+    last_entry = pmid_list[-1]
+    data_samples = pickle.load(open('/home/hclent/data/'+str(last_entry)+'/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
     #print(len(data_samples)) #num docs
     data_vecs_list = loadFromDataSamples(data_samples)
     return data_vecs_list

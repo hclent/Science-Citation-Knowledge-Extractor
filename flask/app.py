@@ -484,7 +484,6 @@ def resjournals(query, range_years):
 	logging.info("complete file: " + str(completeName))
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
-	logging.info(journals) #str
 	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year)
 
 
@@ -710,6 +709,37 @@ def res_stats(query):
 	return render_template('results_stats.html', venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
 						   sum_sents=sum_sents, sum_tokens=sum_tokens)
+
+
+@app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe
+def results_scifi(query):
+	form = corpusOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		logging.info("posted a thing in scifi!")
+		corpus = form.corpus.data
+		logging.info(corpus)
+		if corpus == 'startrek':
+			color = 'rgb(63, 100, 168)'
+			title = 'Star Trek: The Next Generation'
+		if corpus == 'frankenstein':
+			color = 'rgb(92, 59, 107)'
+			title = 'Frankenstein; or, The Modern Prometheus'
+		if corpus == 'youth':
+			color = 'rgb(142, 7, 7)'
+			title = 'Youth by Isaac Asimov'
+		if corpus == 'darwin':
+			color = 'rgb(8, 114, 32)'
+			title = 'On The Origin of Species'
+		x, y = vis_scifi(corpus, query)
+		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query)
+	else:
+		logging.info("scifi analysis")
+		corpus = 'startrek'
+		title = 'Star Trek: The Next Generation'
+		color = 'rgb(63, 100, 168)'
+		x, y = vis_scifi(corpus, query)
+		logging.info("done with x and y")
+		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query)
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
