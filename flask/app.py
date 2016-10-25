@@ -292,6 +292,10 @@ class visOptions(Form):
 class nesOptions(Form):
 	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'), (300, '300')])
 
+
+class corpusOptions(Form):
+	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),('darwin', 'darwin')])
+
 ################ Default CoGe Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
@@ -430,9 +434,30 @@ def coge_stats():
 	return render_template('coge_stats.html')
 
 
-@app.route('/coge_scifi/') #default coge scifi for iframe
+@app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
-	return render_template('coge_scifi.html')
+	form = corpusOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		logging.info("posted a thing in scifi!")
+		corpus = form.corpus.data
+		logging.info(corpus)
+		query = "18952863+18269575"
+		if corpus == 'startrek':
+			color = 'rgb(63, 100, 168)'
+			title = 'Star Trek: The Next Generation'
+		if corpus == 'frankenstein':
+			color = 'rgb(92, 59, 107)'
+			title = 'Frankenstein; or, The Modern Prometheus'
+		if corpus == 'youth':
+			color = 'rgb(142, 7, 7)'
+			title = 'Youth by Isaac Asimov'
+		if corpus == 'darwin':
+			color = 'rgb(8, 114, 32)'
+			title = 'On The Origin of Species'
+		x, y = vis_scifi(corpus, query)
+		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color)
+	else:
+		return render_template('coge_scifi.html')
 
 
 ############### Results visualizations #########################################

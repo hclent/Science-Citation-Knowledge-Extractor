@@ -118,6 +118,7 @@ def plotKmeans(coordinates, clusters):
 # t1 = db_citation_titles(18952863)
 # t2 = db_citation_titles(18269575)
 # titles = t1 + t2
+# print(titles)
 # hX, hasher = get_hashing(data_samples)
 # clusters = do_kemeans(hX, 5) #list of cluster assignments
 # coordinates = do_NMF(hX) #dimensionality reduction for visualization

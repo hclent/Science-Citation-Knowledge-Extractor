@@ -65,6 +65,18 @@ def db_citation_titles(user_input):
 		db_titles.append(title)
 	return db_titles
 
+
+#Input: pmid that is cited
+#Output: list of urls for heatmap and barchart hrefs
+def db_citation_urls(user_input):
+	c.execute('''SELECT url FROM citations WHERE citesPmid=?''', (user_input,))
+	db_urls = []
+	for row in c:
+		url = row[0]
+		db_urls.append(url)
+	return db_urls
+
+
 #Input: pmid that is cited
 #Output: list of pmc_ids for citation
 def db_citation_pmc_ids(user_input):
@@ -76,10 +88,11 @@ def db_citation_pmc_ids(user_input):
 	return db_pmcids
 
 
+#Input: pmid that is cited
+#output: dicts needed for statistics tab
 def db_statistics(user_input):
 	pmidDict = defaultdict(int)
 	#{pmid: num citations}
-
 	pmcDict = defaultdict(list)
     #dict value [0] = num abstracts
     #dict value [1] = num whole articles
@@ -90,7 +103,6 @@ def db_statistics(user_input):
 		total_citations = row[0]
 		pmidDict[user_input] = total_citations
 
-
 	c.execute('''SELECT pmcid, abstract, whole_article, sents, tokens FROM citations WHERE citesPmid=?''', (user_input,))
 	for row in c:
 		pmcid = row[0]
@@ -99,7 +111,6 @@ def db_statistics(user_input):
 		sents = row[3]
 		tokens = row[4]
 		pmcDict[pmcid] = [abstract, whole, sents, tokens]
-
 
 	return pmidDict, pmcDict
 
