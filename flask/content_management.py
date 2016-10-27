@@ -123,7 +123,19 @@ def get_statistics(pmid_list):
     #print(statistics)
     return statistics
 
-
+#take a query and generate x and y datapoints for pubs x year bar chart in "Stats" tab
+def stats_barchart(query):
+	pmid_list = query.split('+') #list of string pmids
+	journals = []
+	dates = []
+	for user_input in pmid_list:
+		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
+		for j in db_journals:
+			journals.append(j)
+		for d in db_dates:
+			dates.append(d)
+	x, y = paper_dates_barchart(journals, dates, query)
+	return x, y
 
 
 ############ DATA VISUALIZATIONS #################################################
@@ -178,7 +190,7 @@ def vis_kmeans(data_samples, num_clusters, pmid_list):
 
 	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4
 
-
+#visualization for scifi div
 def vis_scifi(corpus, query):
 	corpus_vec = load_corpus(corpus)
 	data_vecs_list = load_datasamples(query)

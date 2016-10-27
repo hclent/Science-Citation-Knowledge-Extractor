@@ -706,9 +706,13 @@ def res_stats(query):
 	sum_sents = statistics[4]
 	sum_tokens = statistics[5]
 
+	#get x, y coordinates for pubs x year bar chart.
+	x, y = stats_barchart(query)
+	
+
 	return render_template('results_stats.html', venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
-						   sum_sents=sum_sents, sum_tokens=sum_tokens)
+						   sum_sents=sum_sents, sum_tokens=sum_tokens, x=x, y=y)
 
 
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe

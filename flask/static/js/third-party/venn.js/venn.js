@@ -1472,7 +1472,7 @@
         return function() {
             var text = d3Selection.select(this),
                 data = text.datum(),
-                width = circles[data.sets[0]].radius || 50,
+                width = circles[data.sets[0]].radius || 60, //edited from 50 to 60
                 label = labeller(data) || '';
 
                 var words = label.split(/\s+/).reverse(),
@@ -1491,13 +1491,13 @@
                 line.push(word);
                 joined = line.join(" ");
                 tspan.text(joined);
-                if (joined.length > minChars && tspan.node().getComputedTextLength() > width) {
-                    line.pop();
-                    tspan.text(line.join(" "));
-                    line = [word];
-                    tspan = text.append("tspan").text(word);
-                    lineNumber++;
-                }
+                //if (joined.length > minChars && tspan.node().getComputedTextLength() > width) {
+                //    line.pop();
+                //    tspan.text(line.join(" "));
+                //    line = [word];
+                //    tspan = text.append("tspan").text(word);
+                //    lineNumber++;
+                //}
             }
 
             var initial = 0.35 - lineNumber * lineHeight / 2,
