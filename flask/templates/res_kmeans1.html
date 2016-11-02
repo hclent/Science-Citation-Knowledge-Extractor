@@ -65,15 +65,20 @@
 
 <br></br>
 <br></br>
+
 <div id="myDiv">  </div>
+<div id="clickInfo"> </div>
+
 
 <script>
+var myPlot = document.getElementById('myDiv'),
+	clickInfo = document.getElementById('clickInfo'),
 
-var trace1 = {
+	 trace1 = {
  x: {{x0_coordinates}},
     y: {{y0_coordinates}},
     z: {{z0_coordinates}},
-	//text: {{titles0 | safe}},
+	name: {{titles0 | safe}},
 	mode: 'markers',
 	marker: {
 		size: 12,
@@ -84,11 +89,11 @@ var trace1 = {
 	type: 'scatter3d'
 };
 
-var trace2 = {
+	trace2 = {
     x: {{x1_coordinates}},
     y: {{y1_coordinates}},
     z: {{z1_coordinates}},
-	//text: {{titles1 | safe}},
+	name: {{titles1 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(127, 127, 127)',
@@ -100,11 +105,11 @@ var trace2 = {
 		opacity: 0.8},
 	type: 'scatter3d'};
 
-var trace3 = {
+ trace3 = {
     x: {{x2_coordinates}},
     y: {{y2_coordinates}},
     z: {{z2_coordinates}},
-	//text: {{titles2 | safe}},
+	name: {{titles2 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(204, 204, 204)',
@@ -116,11 +121,11 @@ var trace3 = {
 		opacity: 0.8},
 	type: 'scatter3d'};
 
-var trace4 = {
+ trace4 = {
 	 x: {{x3_coordinates}},
     y: {{y3_coordinates}},
     z: {{z3_coordinates}},
-	//text: {{titles3 | safe}},
+	name: {{titles3 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(137, 140, 43)',
@@ -132,11 +137,11 @@ var trace4 = {
 		opacity: 0.8},
 	type: 'scatter3d'};
 
-var trace5 = {
+ trace5 = {
     x: {{x4_coordinates}},
     y: {{y4_coordinates}},
     z: {{z4_coordinates}},
-	//text: {{titles4 | safe}},
+	name: {{titles4 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(242, 65, 80)',
@@ -148,14 +153,27 @@ var trace5 = {
 		opacity: 0.8},
 	type: 'scatter3d'};
 
-var data = [trace1, trace2, trace3, trace4, trace5];
-var layout = {margin: {
+data = [trace1, trace2, trace3, trace4, trace5];
+ layout = {margin: {
 	l: 0,
 	r: 0,
 	b: 0,
 	t: 0
   }};
 Plotly.newPlot('myDiv', data, layout);
+
+	myPlot.on('plotly_click', function(data){
+	for (var i=0; i<data.points.length; i++) { //safety net
+		var selected_point = data.points[i];
+		var point_number = data.points[i].pointNumber;
+		var point_data = selected_point['data'];
+		var point_title = point_data['name'][point_number];
+		//var point_title = data.points[i]['data']['name'][data.points[i].pointNumber];
+		//console.log(point_title);
+
+		clickInfo.innerHTML = point_title;
+	}
+});  //end plotly_click
 
 	</script>
 

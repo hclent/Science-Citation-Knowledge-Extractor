@@ -27,10 +27,9 @@ def make_venn(pmid_list):
         #do first entries for venn
         x = [int(i)]
         pmid_label = 'PMID:'+str(pmid)+' ('+str(len(pmc_ids))+')'
-        href_base = 'https://www.ncbi.nlm.nih.gov/pubmed/'+str(pmid)
-        href_label = str('<a href="'+href_base+'">'+str(pmid_label)+'</a>')
-        #href_label = "a very very long label to test what the hell is going on label lololol <a>"
-        pmid_Dict = {'sets': x, 'label': href_label, 'size': (len(pmc_ids))}
+        #href_base = 'https://www.ncbi.nlm.nih.gov/pubmed/'+str(pmid)
+        #href_label = str('<a href="'+href_base+'">'+str(pmid_label)+'</a>')
+        pmid_Dict = {'sets': x, 'label': pmid_label, 'size': (len(pmc_ids))}
         #print(pmid_Dict)
         venn_data.append(pmid_Dict)
         i_count.append(str(i))
