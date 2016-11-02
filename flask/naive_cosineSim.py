@@ -65,6 +65,7 @@ def get_cosine_list(corpus_vec, data_vecs_list):
     for vec_n in data_vecs_list:
         cosine_sim_score_1_2 = cosineSimilarityScore(corpus_vec, vec_n)
         score = float("{0:.4f}".format(float(cosine_sim_score_1_2)))
+        score = float(score * 100) #.25 --> 25%
         cosine_list.append(score)
     return cosine_list
 

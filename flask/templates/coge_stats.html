@@ -30,7 +30,7 @@ body {
   <li class="list-group-item">Total Num Abstracts: 165 </li>
   <li class="list-group-item">Total Num Whole Articles: 165 </li>
   <li class="list-group-item">Total Num Sentences: 28,955 </li>
-  <li class="list-group-item">Total Num Tokens: 1,001,573 </li>
+  <li class="list-group-item">Total Num Tokens/Words: 1,001,573 </li>
 </ul>
 
 
@@ -45,7 +45,7 @@ body {
 
 
 <script>
-var sets = [{sets : [0], label : 'PMID:18269575 (75)', size : 75},
+var sets = [{sets : [0], label : '<a href="https://www.ncbi.nlm.nih.gov/pubmed/18269575">PMID:18269575 (75)</a>', size : 75},
             {sets : [1], label : 'PMID:18952863 (90)', size: 90},
             {sets : [0,1], label: '24', size:24}
             ];
@@ -55,6 +55,7 @@ var chart = venn.VennDiagram()
                  .height(400);
 
 d3.select("#venn").datum(sets).call(chart);
+
 
 </script>
 

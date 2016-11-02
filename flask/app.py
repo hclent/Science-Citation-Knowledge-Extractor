@@ -421,8 +421,8 @@ def cogekmeans():
 							   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 							   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
 							   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
-							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
-							   titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
+							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
+							   #titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 
 	else:
 		return render_template('coge_kmeans.html')
@@ -669,8 +669,8 @@ def res_kmeans(query):
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 		   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
 		   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
-		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
-			titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
+		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
+			#titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
 		#pmid_list = query.split('+') #list of string pmids
 		#last_entry = pmid_list[-1]
@@ -708,7 +708,7 @@ def res_stats(query):
 
 	#get x, y coordinates for pubs x year bar chart.
 	x, y = stats_barchart(query)
-	
+
 
 	return render_template('results_stats.html', venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
