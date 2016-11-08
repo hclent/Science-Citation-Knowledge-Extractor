@@ -16,7 +16,7 @@ def connection():
 
 
 #Input: pmid
-#Output: apa citation of that pmid
+#Output: apa citation of *THAT* pmid
 def db_inputPapers_retrieval(user_input):
 	c.execute('''SELECT title, author, journal, pubdate, url FROM inputPapers WHERE pmid=?''', (user_input,))
 	for row in c:
@@ -27,6 +27,23 @@ def db_inputPapers_retrieval(user_input):
 		url = row[4]
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		return apa
+
+
+#Input: pmid
+#Output: apa citations for citing pmCids as hyperlinks
+def db_citations_hyperlink_retrieval(user_input):
+	c.execute('''SELECT title, author, journal, pubdate, url FROM citations WHERE citesPmid=?''', (user_input,))
+	apa_citations = []
+	for row in c:
+		title = row[0]
+		author = row[1]
+		journal = row[2]
+		pubdate = row[3]
+		url = row[4]
+		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
+		href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
+		apa_citations.append(href_label)
+	return apa_citations
 
 
 #Input: pmid

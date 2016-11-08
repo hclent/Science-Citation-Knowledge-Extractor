@@ -176,10 +176,11 @@ def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 
 def vis_kmeans(data_samples, num_clusters, pmid_list):
 	#use query to get titles
-	titles = []
+	titles = [] #want citations instead of titles
 	for pmid in pmid_list:
-		temp_titles = db_citation_titles(pmid)
-		for t in temp_titles:
+		#temp_titles = db_citation_titles(pmid)
+		temp_titles = db_citations_hyperlink_retrieval(pmid) #return apa citation hyperlink for click data
+		for t in temp_titles: #
 			titles.append(t)
 
 	hX, hasher = get_hashing(data_samples)
@@ -189,9 +190,8 @@ def vis_kmeans(data_samples, num_clusters, pmid_list):
 
 	zipped_coordinates = zip(coordinates, titles)
 	x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = plotKmeans(zipped_coordinates, clusters) #format for Plotly scatterplot
-
-
 	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4
+
 
 #visualization for scifi div
 def vis_scifi(corpus, query):
@@ -199,8 +199,8 @@ def vis_scifi(corpus, query):
 	data_vecs_list = load_datasamples(query)
 	cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
 	sorted_combos = add_urls(query, cosine_list)
-	x, y = prepare_for_histogram(sorted_combos)
-	return x, y
+	x, y, names = prepare_for_histogram(sorted_combos)
+	return x, y, names
 
 
 ############ PROCESSING BIODOCS ############################################

@@ -1,6 +1,6 @@
 import naive_makeVecs as makeVecs
 import pickle
-from database_management import db_citation_urls
+from database_management import db_citation_urls, db_citations_hyperlink_retrieval
 
 
 #Load from pickled data_samples instead of filename
@@ -75,12 +75,19 @@ def add_urls(query, cosine_list):
     url_list = []
     doc_list = []
     histogram_labels = [] #this is what will be in the visualization
+    apa_labels = []
 
     pmid_list = query.split('+') #list of string pmids
     for user_input in pmid_list:
+        #get the urls
         urls = db_citation_urls(user_input)
         for url in urls:
             url_list.append(url)
+        #get hyperlinked apa citations for click event
+        citations = db_citations_hyperlink_retrieval(user_input)
+        for c in citations:
+            apa_labels.append(c)
+
     num_papers = len(url_list)
     for i in range(1, (num_papers+1)):
         name = str('Doc'+str(i))
@@ -91,17 +98,19 @@ def add_urls(query, cosine_list):
         histogram_labels.append(label)
     #need to sort the cosines and return a list
     #need to sort the histogram_labels to match that order
-    combo = list(zip(cosine_list, histogram_labels))
+    combo = list(zip(cosine_list, histogram_labels, apa_labels))
     sorted_combos = sorted(combo, reverse=False)
     return sorted_combos
 
 def prepare_for_histogram(sorted_combos):
     x = [] #url labels
     y = [] #data points
+    names = []
     for combo in sorted_combos:
         x.append(combo[1]) #append url label to x
         y.append(combo[0]) #append cosine score to y
-    return x, y
+        names.append(combo[2])
+    return x, y, names
 
 
 

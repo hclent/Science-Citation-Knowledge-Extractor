@@ -35,10 +35,16 @@
   </div>
 </form>
   <div id="myDiv" style="width: 680px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+<div id="clickInfo"> </div>
+
   <script>
-    var data = [{
+
+    var myPlot = document.getElementById('myDiv'),
+	clickInfo = document.getElementById('clickInfo'),
+    data = [{
     x: {{ x | safe }},
     y: {{ y | safe }} ,
+    name: {{names| safe}},
     marker: {
         color: '{{color | safe}}'
     },
@@ -46,13 +52,27 @@
     type: 'bar'
         }];
 
-            var layout = {
+            layout = {
               title: 'Cosine Similarity to {{title}} (%)'
             };
 
 
         Plotly.newPlot('myDiv', data, layout);
 
+      myPlot.on('plotly_click', function(data){
+	for (var i=0; i<data.points.length; i++) { //safety net
+		var selected_point = data.points[i];
+//        console.log(selected_point)
+
+		var point_number = data.points[i].pointNumber;
+		var point_data = selected_point['data'];
+		var point_title = point_data['name'][point_number];
+//		var point_title = data.points[i]['data']['name'][data.points[i].pointNumber];
+//		console.log(point_title);
+
+		clickInfo.innerHTML = point_title;
+	}
+});  //end plotly_click
   </script>
 
  <!-- Progress modal -->

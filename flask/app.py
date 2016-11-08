@@ -454,8 +454,9 @@ def coge_scifi():
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
-		x, y = vis_scifi(corpus, query)
-		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color)
+		x, y, names = vis_scifi(corpus, query)
+		print(names)
+		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color, names=names)
 	else:
 		return render_template('coge_scifi.html')
 
@@ -734,16 +735,16 @@ def results_scifi(query):
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
-		x, y = vis_scifi(corpus, query)
-		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query)
+		x, y, names = vis_scifi(corpus, query)
+		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names)
 	else:
 		logging.info("scifi analysis")
 		corpus = 'startrek'
 		title = 'Star Trek: The Next Generation'
 		color = 'rgb(63, 100, 168)'
-		x, y = vis_scifi(corpus, query)
+		x, y, names = vis_scifi(corpus, query)
 		logging.info("done with x and y")
-		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query)
+		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names)
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
