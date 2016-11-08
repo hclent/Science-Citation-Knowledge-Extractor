@@ -5,6 +5,7 @@ from time import sleep
 import datetime
 import os.path, logging, json, re
 import xml.etree.ElementTree as ET
+import pprint
 
 
 
@@ -51,8 +52,20 @@ def getMainInfo(pmid):
 	logging.info(url)
 	self_info = list(zip(title, authors, journal, pubdate, url))
 	logging.info(self_info)
+
 	logging.info("self info: done in %0.3fs." % (time.time() - t0))
 	return self_info
+
+#gives pmcid for the pmid
+def getAlternativeId(pmid):
+	handle = Entrez.efetch(db="pubmed", id=pmid, retmode="xml")
+	record = Entrez.read(handle)
+	data = record[0]["PubmedData"]
+	ids = data["ArticleIdList"]
+	pmc_id = ids[3] #PMC12345
+	pmcid = re.sub('PMC', '', pmc_id) #12345 without "PMC"
+	#print(pmcid)
+	return pmcid
 
 
 #Input: Pmid
@@ -231,7 +244,52 @@ def getContentPMC(pmid, pmcids_list):
 	return all_abstract_check, all_article_check
 
 
-#stuff = getMainInfo("26503504")
+#save self document with prefix "self_12345.txt"
+def get_self_ContentPMC(pmid, pmcids_list):
+	t0 = time.time()
+	i = 1
+	dirname = '/home/hclent/data/'+pmid
+	all_abstract_check = []
+	all_article_check = []
+	try:
+		os.makedirs(dirname) #creates folder named after pmid
+	except OSError:
+		if os.path.isdir(dirname):
+			pass
+		else:
+			raise
+	for citation in pmcids_list:
+		logging.info(str(i)+" paper")
+		logging.info("CITATION: " +str(citation))
+		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
+		xml_record = handle.read() #xml str
+		#print(xml_record)
+		logging.info("* got xml record")
+		main_text, abstract_check, whole_article_check = parsePMC(xml_record, pmid)
+		for yn in abstract_check:
+			all_abstract_check.append(yn)
+		for yn in whole_article_check:
+			all_article_check.append(yn)
+		logging.info("* ready to print it")
+		save_path = '/home/hclent/data/'+(str(pmid))+'/' #must save to data, in proper file
+		completeName = os.path.join(save_path, ('self_'+str(pmid)+'.txt')) #save self_paper as self_1234.txt
+		sys.stdout = open(completeName, "w")
+		print(main_text)
+		i += 1
+		time.sleep(3)
+	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
+	return all_abstract_check, all_article_check
+
+
+#retrieve the txt for input papers as well
+def getSelfText(pmid):
+	pmcid_list = [getAlternativeId(pmid)] #pmid --> list of 1 pmcid
+	get_self_ContentPMC(pmid, pmcid_list) #get self text
+
+#getSelfText("26503504")
+
+# stuff = getMainInfo("26503504")
+# print(stuff)
 # pmc_ids = getCitationIDs("26503504")
 # #pmc_ids = [3159747, 3122376, 3117012] #middle PMC here is bad
 # pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)

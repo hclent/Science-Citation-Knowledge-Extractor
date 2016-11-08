@@ -48,11 +48,10 @@ def retrieveDocs(pmid):
   for f in files:
     if pmid in f and 'doc' not in f:
       #dont read .json or pickle objs
-      if '.txt' in f:
+      if '.txt' in f and 'self' not in f: #don't include 'self' docs
         docs.append(f) #str
   logging.debug('retrieved list of documents to processes')
   return docs
-
 
 
 #Define function to call in parallel
