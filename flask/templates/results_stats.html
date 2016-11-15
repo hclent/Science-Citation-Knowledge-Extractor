@@ -22,6 +22,16 @@ body {
 
 </head>
 <body>
+
+<h2>Input paper(s)</h2>
+<ul class="list-group">
+
+            {% for result in input_click_citations %}
+             <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
+		  	{% endfor %}
+
+</ul>
+
 <h2>Citation Statistics</h2>
 <ul class="list-group">
   <li class="list-group-item">Total Num Citations: {{sum_total}} </li>

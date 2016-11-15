@@ -1297,6 +1297,7 @@
                 .attr("data-venn-sets", function(d) {
                     return d.sets.join("_");
                 });
+            //enter.append('a').attr("xlink:href", "www.google.com");
 
             var enterPath = enter.append("path"),
                 enterText = enter.append("text")
@@ -1482,23 +1483,31 @@
                 line = [word],
                 joined,
                 lineNumber = 0,
-                lineHeight = 1.1, // ems
-                tspan = text.text(null).append("tspan").text(word);
+                lineHeight = 1.1 // ems
 
-            while (true) {
-                word = words.pop();
-                if (!word) break;
-                line.push(word);
-                joined = line.join(" ");
-                tspan.text(joined);
-                //if (joined.length > minChars && tspan.node().getComputedTextLength() > width) {
-                //    line.pop();
-                //    tspan.text(line.join(" "));
-                //    line = [word];
-                //    tspan = text.append("tspan").text(word);
-                //    lineNumber++;
-                //}
-            }
+                var l = text.append("a").attr("xlink:href", label);
+                l.append("text").text(label);  //.style("pointer-events", "none")
+                //text.on("click", function() { window.open(label) });
+                //tspan = text.text(null).append("tspan").text(word);
+                //tspan = text.append("svg:a").attr("xlink:href", label);
+                //tspan = text.text(null).append("tspan").text(label).style("pointer-events", "none")
+                //tspan.append("a").attr("xlink:href", label);
+                //tspan = text.append("tspan").text(label)
+                //tspan.on("click", function() { console.log("Clicked!") } );
+            //while (true) {
+            //    word = words.pop();
+            //    if (!word) break;
+            //    line.push(word);
+            //    joined = line.join(" ");
+            //    tspan.text(joined);
+            //    //if (joined.length > minChars && tspan.node().getComputedTextLength() > width) {
+            //    //    line.pop();
+            //    //    tspan.text(line.join(" "));
+            //    //    line = [word];
+            //    //    tspan = text.append("tspan").text(word);
+            //    //    lineNumber++;
+            //    //}
+            //}
 
             var initial = 0.35 - lineNumber * lineHeight / 2,
                 x = text.attr("x"),

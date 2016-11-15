@@ -431,7 +431,9 @@ def cogekmeans():
 
 @app.route('/coge_stats/') #default coge statistics for iframe
 def coge_stats():
-	return render_template('coge_stats.html')
+	query = "18952863+18269575"
+	input_click_citations = statsSelfInfo(query)
+	return render_template('coge_stats.html', input_click_citations=input_click_citations)
 
 
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
@@ -698,6 +700,7 @@ def res_kmeans(query):
 @app.route('/res_stats/<query>', methods=["GET"]) #user statistics for iframe
 def res_stats(query):
 	pmid_list = query.split('+') #list of string pmids
+	input_click_citations = statsSelfInfo(query)
 	venn_data = make_venn(pmid_list)
 	statistics = get_statistics(pmid_list)
 	sum_total = statistics[0]
@@ -711,7 +714,8 @@ def res_stats(query):
 	x, y = stats_barchart(query)
 
 
-	return render_template('results_stats.html', venn_data=venn_data, sum_total=sum_total,
+	return render_template('results_stats.html', input_click_citations=input_click_citations,
+						   venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
 						   sum_sents=sum_sents, sum_tokens=sum_tokens, x=x, y=y)
 

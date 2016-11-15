@@ -126,6 +126,18 @@ def get_statistics(pmid_list):
     #print(statistics)
     return statistics
 
+#use query to get info about input papers
+def statsSelfInfo(query):
+    input_click_citations = []
+    pmid_list = query.split('+')  # list of string pmids
+    for user_input in pmid_list:
+        apa = db_inputPapers_retrieval(user_input)
+        url = "https://www.ncbi.nlm.nih.gov/pubmed/"+str(user_input)
+        href_label = (apa, url)
+        input_click_citations.append(href_label)
+    return(input_click_citations)
+
+
 #take a query and generate x and y datapoints for pubs x year bar chart in "Stats" tab
 def stats_barchart(query):
 	pmid_list = query.split('+') #list of string pmids
