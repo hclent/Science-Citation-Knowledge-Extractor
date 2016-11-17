@@ -11,6 +11,18 @@
 
 
 </head>
+   <!-- logic (Test Flash) -->
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-warning alert-dismissible" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close">x</button>
+					{{message}}
+				</div>
+
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
 
 
 <body>
@@ -24,6 +36,9 @@
   <option name="frankenstein" value="frankenstein">Frankenstein</option>
   <option name="youth" value="youth">Youth</option>
   <option name="darwin" value="darwin">On the Origin of Species</option>
+         {% for user_input in eligible_papers %}
+             <option name="{{user_input[0]}}" value="{{user_input[0]}}">PMID: {{user_input[1]}}</option>
+		  	{% endfor %}
        </select>
        </div>
 

@@ -51,6 +51,8 @@ def results():
 			logging.info(pmid_list)
 
 
+			# If the user inputs more than 5 PMIDs, return the home page and flash a warning
+			# Need 5 PMIDs or less
 			if len(pmid_list) > 5:
 				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
 				with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
@@ -303,7 +305,8 @@ class nesOptions(Form):
 
 class corpusOptions(Form):
 	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),
-											('darwin', 'darwin')])
+											('darwin', 'darwin'), ('paper1', 'paper1'), ('paper2', 'paper2'),
+											('paper3', 'paper3'), ('paper4', 'paper4'), ('paper5', 'paper5')])
 
 ################ Default CoGe Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
@@ -448,6 +451,9 @@ def coge_stats():
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions(secret_key='super secret key')
+	#decide eligible_papers
+	eligible_papers = [("paper1", "18952863")]
+
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
@@ -465,11 +471,18 @@ def coge_scifi():
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
-		x, y, names = vis_scifi(corpus, query)
-		print(names)
-		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color, names=names)
+		if corpus == 'paper1':
+			color =  'rgb(8, 114, 32)'
+			title =  'PMID: 18952863'
+		if corpus == 'paper2':
+			color =  'rgb(8, 114, 32)'
+			title = 'PMID: 18269575'
+		x, y, names = vis_scifi(corpus, query, eligible_papers)
+
+		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color, names=names, eligible_papers=eligible_papers)
 	else:
-		return render_template('coge_scifi.html')
+		flash('Some input paper(s) are not avaliable')
+		return render_template('coge_scifi.html', eligible_papers=eligible_papers)
 
 
 ############### Results visualizations #########################################
@@ -732,6 +745,10 @@ def res_stats(query):
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe
 def results_scifi(query):
 	form = corpusOptions(secret_key='super secret key')
+	pmid_list = query.split('+')  # list of string pmids
+	#decide eligible papers:
+	eligible_papers = inputEligible(query)
+	logging.info(eligible_papers)
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
@@ -748,16 +765,33 @@ def results_scifi(query):
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
-		x, y, names = vis_scifi(corpus, query)
-		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names)
+		if corpus == 'paper1':
+			color =  'rgb(8, 114, 32)'
+			title =  str('PMID: '+ str(eligible_papers[0][1]))
+		if corpus == 'paper2':
+			color =  'rgb(8, 114, 32)'
+			title = str('PMID: '+ str(eligible_papers[1][1]))
+		if corpus == 'paper3':
+			color = 'rgb(8, 114, 32)'
+			title = str('PMID: ' + eligible_papers[2][1])
+		if corpus == 'paper4':
+			color = 'rgb(8, 114, 32)'
+			title = str('PMID: ' + eligible_papers[3][1])
+		if corpus == 'paper5':
+			color = 'rgb(8, 114, 32)'
+			title = str('PMID: ' + eligible_papers[4][1])
+		x, y, names = vis_scifi(corpus, query, eligible_papers)
+		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 	else:
 		logging.info("scifi analysis")
 		corpus = 'startrek'
 		title = 'Star Trek: The Next Generation'
 		color = 'rgb(63, 100, 168)'
-		x, y, names = vis_scifi(corpus, query)
+		x, y, names = vis_scifi(corpus, query, eligible_papers)
 		logging.info("done with x and y")
-		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names)
+		if len(eligible_papers) < len(pmid_list):
+			flash('Some input paper(s) are not avaliable')
+		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')

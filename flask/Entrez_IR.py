@@ -302,7 +302,8 @@ def getSelfText(pmid):
 		logging.info(pmcid_list)
 		get_self_ContentPMC(pmid, pmcid_list)  # get self text
 
-#getSelfText("26503504")
+# getSelfText("18952863")
+# getSelfText("18269575")
 
 # stuff = getMainInfo("26503504")
 # print(stuff)

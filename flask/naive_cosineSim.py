@@ -1,6 +1,6 @@
-import naive_makeVecs as makeVecs
-import pickle
-from database_management import db_citation_urls, db_citations_hyperlink_retrieval
+import pickle, os
+import naive_makeVecs as makeVecs #mine
+from database_management import db_citation_urls, db_citations_hyperlink_retrieval #mine
 
 
 #Load from pickled data_samples instead of filename
@@ -21,7 +21,6 @@ def loadMessages(filename):
     return (vectorCounter)
 
 
-
 # Print cosine similarity scores
 def cosineSimilarityScore(vector1, vector2):
     # cos (self, self) should = 1
@@ -35,7 +34,8 @@ def cosineSimilarityScore(vector1, vector2):
     return cosine_sim_score_1_2
 
 
-def load_corpus(corpus):
+#only load eligible_papers into load_corpus
+def load_corpus(corpus, eligible_papers):
     if corpus == 'startrek':
         raw = "/home/hclent/data/corpora/startrek/105.txt"
         corpus_vec = loadMessages(raw)
@@ -48,6 +48,30 @@ def load_corpus(corpus):
     if corpus == 'youth':
         raw = "/home/hclent/data/corpora/youth.txt"
         corpus_vec = loadMessages(raw)
+    # For loading the query papers
+    # This code ASSUMES THAT THE QUERY PAPERS EXIST !!!!
+    if corpus == 'paper1':
+        paper1 = str(eligible_papers[0][1])
+        raw = str("/home/hclent/data/"+paper1+"/self_"+paper1+".txt")
+        corpus_vec = loadMessages(raw)
+    if corpus == 'paper2':
+        paper2 = str(eligible_papers[1][1])
+        raw = str("/home/hclent/data/"+paper2+"/self_"+paper2+".txt")
+        corpus_vec = loadMessages(raw)
+    if corpus == 'paper3':
+        paper3 = str(eligible_papers[2][1])
+        raw = str("/home/hclent/data/"+paper3+"/self_"+paper3+".txt")
+        corpus_vec = loadMessages(raw)
+    if corpus == 'paper4':
+        paper4 = str(eligible_papers[3][1])
+        raw = str("/home/hclent/data/"+paper4+"/self_"+paper4+".txt")
+        corpus_vec = loadMessages(raw)
+    if corpus == 'paper5':
+        paper5 = str(eligible_papers[4][1])
+        raw = str("/home/hclent/data/"+paper5+"/self_"+paper5+".txt")
+        corpus_vec = loadMessages(raw)
+    #also gonna have to put in an exception handler for if there is no PMCID for the input paper (thus no corpus)
+    #can return a flash error for that
     return corpus_vec
 
 
@@ -111,7 +135,5 @@ def prepare_for_histogram(sorted_combos):
         y.append(combo[0]) #append cosine score to y
         names.append(combo[2])
     return x, y, names
-
-
 
 

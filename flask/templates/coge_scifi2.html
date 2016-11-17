@@ -24,6 +24,10 @@
   <option name="frankenstein" value="frankenstein">Frankenstein</option>
   <option name="youth" value="youth">Youth</option>
   <option name="darwin" value="darwin">On the Origin of Species</option>
+         {% for user_input in eligible_papers %}
+             <option name="{{user_input[0]}}" value="{{user_input[0]}}">PMID: {{user_input[1]}}</option>
+		  	{% endfor %}
+        
        </select>
        </div>
 

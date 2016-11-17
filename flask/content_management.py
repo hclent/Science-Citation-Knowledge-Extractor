@@ -55,6 +55,9 @@ apa_citations will be rendered as 'main' in app.py!!!!
 def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
 	self_info = db_inputPapers_retrieval(user_input)
+	##### currently most entries don't have the self_ text so we'll keep this in here for now
+	getSelfText(user_input)
+	######### delete getSelfText from this function later ############
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
 	return self_info, apa_citations, db_journals, db_dates, db_urls
 
@@ -206,9 +209,26 @@ def vis_kmeans(data_samples, num_clusters, pmid_list):
 	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4
 
 
+#scifi visualization
+#are query papers eligible to be loaded as a corpus?
+#first pass: check to see if the self_ text exists
+#later on can check databse instead.
+def inputEligible(query):
+	papers = []
+	values = ['paper1', 'paper2', 'paper3', 'paper4', 'paper5']
+	pmid_list = query.split('+')  # list of string pmids
+	for pmid in pmid_list:
+		filename= str("/home/hclent/data/" + pmid + "/self_" + pmid + ".txt")
+		truth_value = os.path.isfile(filename)
+		if truth_value is True:
+			papers.append(pmid)
+
+	eligible_papers = list(zip(values, papers))
+	return eligible_papers
+
 #visualization for scifi div
-def vis_scifi(corpus, query):
-	corpus_vec = load_corpus(corpus)
+def vis_scifi(corpus, query, eligible_papers):
+	corpus_vec = load_corpus(corpus, eligible_papers)
 	data_vecs_list = load_datasamples(query)
 	cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
 	sorted_combos = add_urls(query, cosine_list)
