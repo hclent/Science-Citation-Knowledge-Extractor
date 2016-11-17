@@ -129,6 +129,7 @@ def loadDocuments(doc):
 
 #Input: Processors annotated biodocs
 #Output: String of lemmas
+##### THESE ARE NOT SORTED AND SHOULD PROBABLY BE SORTED ####
 def retrieveBioDocs(pmid):
   print("retrieving biodocs")
   biodocs = [] #list of strings
@@ -166,11 +167,23 @@ def loadBioDoc(biodocs):
   total_tokens = []
   sum_tokens = []
 
-  for bd in biodocs: #e.g. doc_26502977_3.json
-    pmid_i = bd.strip('.json')
-    pmid = re.sub('(doc\_)', '', pmid_i)
-    pmid = re.sub('\_\d*', '', pmid)
-    filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
+
+  bd = biodocs[0] #just grab an example to get file name info
+
+  pmid_i = bd.strip('.json')
+  pmid = re.sub('(doc\_)', '', pmid_i)
+  pmid = re.sub('\_\d*', '', pmid)
+
+  # for bd in biodocs: #e.g. doc_26502977_3.json
+  #   pmid_i = bd.strip('.json')
+  #   pmid = re.sub('(doc\_)', '', pmid_i)
+  #   pmid = re.sub('\_\d*', '', pmid)
+
+  #need to load the files in ORDER so that data_samples is in order
+  for b in range(1, len(biodocs)+1):
+    #filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
+    filename = '/home/hclent/data/' + (str(pmid)) + '/' + "doc_"+str(pmid)+"_"+str(b)+".json"
+    print(filename)
     doc_tokens= []
     with open(filename) as jf:
       data = Document.load_from_JSON(json.load(jf))
@@ -198,10 +211,11 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling sent counts and token counts")
   return data_samples, nes_list, total_sentences, sum_tokens
 
-# docs = retrieveDocs("8108455")
+# docs = retrieveDocs("18269575")
 # print(docs)
 # multiprocess(docs)
-# biodocs = retrieveBioDocs("8108455")
+# biodocs = retrieveBioDocs("18269575")
+# loadBioDoc(biodocs)
 # data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
 # print(total_sentences)
 # print(sum_tokens)
