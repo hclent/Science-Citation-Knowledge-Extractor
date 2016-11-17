@@ -51,11 +51,11 @@ def results():
 			logging.info(pmid_list)
 
 
-			# if len(pmid_list) > 5:
-			# 	flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
-			# 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
-			# 		citations_with_links = pickle.load(f)
-			# 	return render_template("dashboard.html", citations_with_links=citations_with_links)
+			if len(pmid_list) > 5:
+				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
+				with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
+					citations_with_links = pickle.load(f)
+				return render_template("dashboard.html", citations_with_links=citations_with_links)
 
 
 			q = '+'
