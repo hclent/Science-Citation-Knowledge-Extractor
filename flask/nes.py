@@ -124,33 +124,33 @@ def doHeatmap(nesDict, n, data_samples):
 
 
 #deciding k for num of clusters
-def elbowMethod(z):
-    z_array = np.array(z)
-    linkArray =  linkage(z_array, 'average')
-    last = linkArray[-10:, 2]
-    # last_rev = last[::-1]
-    # idxs = np.arange(1, len(last) + 1)
-    acceleration = np.diff(last, 2)  # 2nd derivative of the distances
-    acceleration_rev = acceleration[::-1]
-    k = acceleration_rev.argmax() + 2  # if idx 0 is the max of this we want 2 clusters
-    if k > 6:
-        k = 6
-        print("k is greater than 6 yikes")
-    else:
-        print("clusters: " + str(k))
-    return k
+# def elbowMethod(z):
+#     z_array = np.array(z)
+#     linkArray =  linkage(z_array, 'average')
+#     last = linkArray[-10:, 2]
+#     # last_rev = last[::-1]
+#     # idxs = np.arange(1, len(last) + 1)
+#     acceleration = np.diff(last, 2)  # 2nd derivative of the distances
+#     acceleration_rev = acceleration[::-1]
+#     k = acceleration_rev.argmax() + 2  # if idx 0 is the max of this we want 2 clusters
+#     if k > 6:
+#         k = 6
+#         print("k is greater than 6 yikes")
+#     else:
+#         print("clusters: " + str(k))
+#     return k
 
 
 #perform k-means on y-axis values (i.e. z matrix)
 def do_kmeans_on_y(z, k_clusters):
     sparse_matrix = np.array(z)
     t0 = time.time()
-    print("* Beginning k-means clustering ... ")
+    #print("* Beginning k-means clustering ... ")
     num_clusters = int(k_clusters)
     km = KMeans(init='k-means++', n_clusters=num_clusters)
     km.fit(sparse_matrix)
     clusters = km.labels_.tolist()
-    print("done in %0.3fs." % (time.time() - t0))
+    #print("done in %0.3fs." % (time.time() - t0))
     return clusters
 
 #re-order the y-axis now for the new clustered heatmap
@@ -193,7 +193,7 @@ def doClustermap(nesDict, n, data_samples, new_order, old_x):
         match1 = p1.search(word)
         if not match1:
             lemma_Dict[word] += nesDict[word]
-    print("* made lemmas dict ...")
+    #print("* made lemmas dict ...")
 
     for word in new_order:
 
@@ -232,7 +232,7 @@ def doClustermap(nesDict, n, data_samples, new_order, old_x):
     for i in range(1, len(old_x) + 1):
         docname = "doc" + str(i)
         x.append(docname)
-    print("* done with stuff ...")
+    #print("* done with stuff ...")
     return x, y, z
 
 
@@ -240,7 +240,7 @@ def doClustermap(nesDict, n, data_samples, new_order, old_x):
 
 def get_data_and_ner(pmid):
     biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
-    print(biodocs)
+    #print(biodocs)
     data_samples, neslist, sents, tokens = loadBioDoc(biodocs)
     return data_samples, neslist
 

@@ -131,7 +131,7 @@ def loadDocuments(doc):
 #Output: String of lemmas
 ##### THESE ARE NOT SORTED AND SHOULD PROBABLY BE SORTED ####
 def retrieveBioDocs(pmid):
-  print("retrieving biodocs")
+  #print("retrieving biodocs")
   biodocs = [] #list of strings
   folder = '/home/hclent/data/'+pmid+'/'
   files = os.listdir(folder)

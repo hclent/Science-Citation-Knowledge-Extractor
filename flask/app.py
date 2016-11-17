@@ -796,7 +796,7 @@ def results_scifi(query):
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
 def testingshit():
-	print("testing stuff")
+	#print("testing stuff")
 	completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/templates/data.json"
 	with open(completeName) as load_data:
 		data = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript

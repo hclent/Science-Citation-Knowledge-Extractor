@@ -1,17 +1,20 @@
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.decomposition import NMF
 from sklearn.cluster import KMeans
-import sys, pickle, math, random, numpy, time
+import sys, pickle, math, random, numpy, time, logging
 from database_management import db_citation_titles
+
+logging.basicConfig(filename='.app.log',level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 #Input: Eata_samples (list of lists containing strings)
 #Output: Sparse matrix, l2 normalization for preserving Euclidean distance
 def get_hashing(data):
   t0 = time.time()
-  print("* Making hashing vectorizor with the data ...")
+  logging.info("* Making hashing vectorizor with the data ...")
   hasher = HashingVectorizer(stop_words='english', ngram_range=(1,3), norm='l2', non_negative=True) #l2 projected on the euclidean unit sphere
   hX = hasher.fit_transform(data)
-  print("done in %0.3fs." % (time.time() - t0))
+  logging.info("done in %0.3fs." % (time.time() - t0))
   return hX, hasher
 
 
@@ -21,12 +24,12 @@ def get_hashing(data):
 # centroids = km.cluster_centers_
 def do_kemeans(sparse_matrix, k_clusters):
     t0 = time.time()
-    print("* Beginning k-means clustering ... ")
+    logging.info("* Beginning k-means clustering ... ")
     num_clusters = int(k_clusters)
     km = KMeans(init='k-means++', n_clusters=num_clusters)
     km.fit(sparse_matrix)
     clusters = km.labels_.tolist()
-    print("done in %0.3fs." % (time.time() - t0))
+    logging.info("done in %0.3fs." % (time.time() - t0))
     return clusters
 
 
@@ -35,10 +38,10 @@ def do_kemeans(sparse_matrix, k_clusters):
 #Output: list of Cartesian coordinates for each document vector
 def do_NMF(sparse_matrix):
   t0 = time.time()
-  print("* Performing NMF on sparse matrix ... ")
+  logging.info("* Performing NMF on sparse matrix ... ")
   nmf = NMF(n_components=3)
   coordinates = nmf.fit_transform(sparse_matrix)
-  print("done in %0.3fs." % (time.time() - t0))
+  logging.info("done in %0.3fs." % (time.time() - t0))
   return(coordinates)
 
 
@@ -48,7 +51,7 @@ def do_NMF(sparse_matrix):
 #coordinates must be a zip where ([vector], 'title')
 def plotKmeans(coordinates, clusters):
   t0 = time.time()
-  print("* Preparing to plot now ... ")
+  logging.info("* Preparing to plot now ... ")
   x0_coordinates = []
   y0_coordinates = []
   z0_coordinates = []
@@ -105,7 +108,7 @@ def plotKmeans(coordinates, clusters):
     i += 1
 
 
-  print("done in %0.3fs." % (time.time() - t0))
+  logging.info("done in %0.3fs." % (time.time() - t0))
   return(x0_coordinates, y0_coordinates, z0_coordinates,
          x1_coordinates, y1_coordinates, z1_coordinates,
          x2_coordinates, y2_coordinates, z2_coordinates,

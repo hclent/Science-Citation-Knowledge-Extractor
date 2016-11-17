@@ -30,9 +30,9 @@ def get_years_range(query):
 
 
 def journals_vis(journals, dates, years_range):
-	print("JOURNALS VISUALIZATION CRAP")
+	#print("JOURNALS VISUALIZATION CRAP")
 	num_publications = len(journals)
-	print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
+	#print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
 
 	years_list = []
 
@@ -58,7 +58,7 @@ def journals_vis(journals, dates, years_range):
 			i+=1
 	#len(jyDict) is the amount of UNIQUE journals
 	number_unique_journals = len(jyDict)
-	print("IN "+str(number_unique_journals)+" UNIQUE JOURNALS")
+	#print("IN "+str(number_unique_journals)+" UNIQUE JOURNALS")
 
 	#Dictionary with "Journal": Number-of-publications
 	#For looking up the total
@@ -96,8 +96,8 @@ def journals_vis(journals, dates, years_range):
 		publication_data.append(journal_data)
 
 	range_info = [years_range, num_publications, number_unique_journals]
-	print("RANGE INFO: ")
-	print(range_info)
+	#print("RANGE INFO: ")
+	#print(range_info)
 	#Get some info about the publication before changing it to a string for the json
 	#Year range, number of publications, number of unique journals
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
