@@ -70,6 +70,7 @@ def run_IR_not_db(user_input):
 
 	pmc_ids = getCitationIDs(user_input)
 	num_citations = len(pmc_ids)
+	logging.info(num_citations)
 
 
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
@@ -133,8 +134,8 @@ def statsSelfInfo(query):
     for user_input in pmid_list:
         apa = db_inputPapers_retrieval(user_input)
         url = "https://www.ncbi.nlm.nih.gov/pubmed/"+str(user_input)
-        href_label = (apa, url)
-        input_click_citations.append(href_label)
+        href_label = (apa, url) #store apa and url as a tuple
+        input_click_citations.append(href_label) #then append to list
     return(input_click_citations)
 
 

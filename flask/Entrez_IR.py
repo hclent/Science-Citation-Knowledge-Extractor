@@ -58,14 +58,25 @@ def getMainInfo(pmid):
 
 #gives pmcid for the pmid
 def getAlternativeId(pmid):
+	logging.info("in function get AlternativeID")
 	handle = Entrez.efetch(db="pubmed", id=pmid, retmode="xml")
+	logging.info("made the handle")
 	record = Entrez.read(handle)
+	logging.info("made the record")
 	data = record[0]["PubmedData"]
 	ids = data["ArticleIdList"]
-	pmc_id = ids[3] #PMC12345
-	pmcid = re.sub('PMC', '', pmc_id) #12345 without "PMC"
-	#print(pmcid)
-	return pmcid
+	logging.info(ids)
+	try:
+		pmc_id = ids[3] #PMC12345
+		pmcid = re.sub('PMC', '', pmc_id) #12345 without "PMC"
+		logging.info("pmcid for input paper" + str(pmcid))
+		#print(pmcid)
+		return pmcid
+	except Exception as e:
+		logging.info(e)
+		logging.info("there was no PMCID for this paper")
+		fake_pmcid = "None"
+		return fake_pmcid
 
 
 #Input: Pmid
@@ -284,7 +295,12 @@ def get_self_ContentPMC(pmid, pmcids_list):
 #retrieve the txt for input papers as well
 def getSelfText(pmid):
 	pmcid_list = [getAlternativeId(pmid)] #pmid --> list of 1 pmcid
-	get_self_ContentPMC(pmid, pmcid_list) #get self text
+	fake_list = ["None"]
+	if pmcid_list == fake_list:
+		logging.info("there wasn't a matching PMCID for the input PMID")
+	else:
+		logging.info(pmcid_list)
+		get_self_ContentPMC(pmid, pmcid_list)  # get self text
 
 #getSelfText("26503504")
 

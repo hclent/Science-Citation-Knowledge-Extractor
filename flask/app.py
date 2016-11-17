@@ -50,6 +50,14 @@ def results():
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			logging.info(pmid_list)
 
+
+			# if len(pmid_list) > 5:
+			# 	flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
+			# 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
+			# 		citations_with_links = pickle.load(f)
+			# 	return render_template("dashboard.html", citations_with_links=citations_with_links)
+
+
 			q = '+'
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
@@ -290,11 +298,12 @@ class visOptions(Form):
 
 
 class nesOptions(Form):
-	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'), (300, '300')])
-
+	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'),
+											  (300, '300')])
 
 class corpusOptions(Form):
-	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),('darwin', 'darwin')])
+	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),
+											('darwin', 'darwin')])
 
 ################ Default CoGe Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe

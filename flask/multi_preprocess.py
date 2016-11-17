@@ -174,16 +174,12 @@ def loadBioDoc(biodocs):
   pmid = re.sub('(doc\_)', '', pmid_i)
   pmid = re.sub('\_\d*', '', pmid)
 
-  # for bd in biodocs: #e.g. doc_26502977_3.json
-  #   pmid_i = bd.strip('.json')
-  #   pmid = re.sub('(doc\_)', '', pmid_i)
-  #   pmid = re.sub('\_\d*', '', pmid)
 
   #need to load the files in ORDER so that data_samples is in order
   for b in range(1, len(biodocs)+1):
     #filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
     filename = '/home/hclent/data/' + (str(pmid)) + '/' + "doc_"+str(pmid)+"_"+str(b)+".json"
-    print(filename)
+    #print(filename)
     doc_tokens= []
     with open(filename) as jf:
       data = Document.load_from_JSON(json.load(jf))
