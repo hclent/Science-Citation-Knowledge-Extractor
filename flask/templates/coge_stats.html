@@ -29,7 +29,7 @@ body {
             {% for result in input_click_citations %}
              <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
 		  	{% endfor %}
-    
+
 </ul>
 
 <h2>Citation Statistics</h2>
@@ -55,8 +55,8 @@ body {
 
 <script>
 var sets = [{sets : [0], label : 'PMID:18269575 (75)', size : 75},
-            //{sets : [1], label : 'PMID:18952863 (90)', size: 90},
-            {sets : [1], label : 'http://www.google.com', size: 90},
+            {sets : [1], label : 'PMID:18952863 (90)', size: 90},
+            //{sets : [1], label : 'http://www.google.com', size: 90},
             {sets : [0,1], label: '24', size:24}
             ];
 
@@ -80,7 +80,7 @@ d3.select("#venn").datum(sets).call(chart);
         }];
 
             var layout = {
-              title: 'Publications per Year'
+              title: 'Citations by Year'
             };
 
 

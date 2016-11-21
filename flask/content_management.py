@@ -56,7 +56,7 @@ def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
 	self_info = db_inputPapers_retrieval(user_input)
 	##### currently most entries don't have the self_ text so we'll keep this in here for now
-	getSelfText(user_input)
+	#getSelfText(user_input)
 	######### delete getSelfText from this function later ############
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
 	return self_info, apa_citations, db_journals, db_dates, db_urls
@@ -166,7 +166,6 @@ def print_journalvis(journals, dates, user_input, query):
 	#num_journals = len(journals)
 	#print("there are "+str(num_journals)+" journals in total")
 	publication_data, range_info = journals_vis(journals, dates, years_range)
-	logging.info(publication_data)
 	logging.info(range_info)
 	logging.info('Printing JOURNALS to JSON')
 	save_path = '/home/hclent/data/'+str(user_input)+'/' #save in last pmid folder

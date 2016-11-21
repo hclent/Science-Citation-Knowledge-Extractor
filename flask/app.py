@@ -453,7 +453,6 @@ def coge_scifi():
 	form = corpusOptions(secret_key='super secret key')
 	#decide eligible_papers
 	eligible_papers = [("paper1", "18952863")]
-
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
@@ -748,7 +747,7 @@ def results_scifi(query):
 	pmid_list = query.split('+')  # list of string pmids
 	#decide eligible papers:
 	eligible_papers = inputEligible(query)
-	logging.info(eligible_papers)
+	logging.info("eligible papers: " +str(eligible_papers))
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
@@ -773,13 +772,13 @@ def results_scifi(query):
 			title = str('PMID: '+ str(eligible_papers[1][1]))
 		if corpus == 'paper3':
 			color = 'rgb(8, 114, 32)'
-			title = str('PMID: ' + eligible_papers[2][1])
+			title = str('PMID: ' + str(eligible_papers[2][1]))
 		if corpus == 'paper4':
 			color = 'rgb(8, 114, 32)'
-			title = str('PMID: ' + eligible_papers[3][1])
+			title = str('PMID: ' + str(eligible_papers[3][1]))
 		if corpus == 'paper5':
 			color = 'rgb(8, 114, 32)'
-			title = str('PMID: ' + eligible_papers[4][1])
+			title = str('PMID: ' + str(eligible_papers[4][1]))
 		x, y, names = vis_scifi(corpus, query, eligible_papers)
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 	else:
