@@ -91,8 +91,7 @@ def results():
 					flash('new pubmedid lol')
 					#Using user_input for Information Retireval of "main info"
 					self_info, new_info, journals, dates, num_citations = run_IR_not_db(user_input)
-					#If its NOT in the db, we also need to try scraping it and writing that info to db
-					scrape_and_write_Input(user_input)
+
 					'''
 					'main' renamed to 'new_info'
 					need 'new_info' written to the database
@@ -114,13 +113,60 @@ def results():
 						target_dates.append(d)
 					logging.info("done with dates list")
 
+					# add main/new to citations database table
+					# need these added to the db in order to annotate the papers
+
+					for tup in new_info:
+						logging.info("TUP IN MAIN: ")
+						logging.info(tup)
+						pmcid = tup[0]
+						title = tup[1]
+						s = ', '
+						author = str(s.join(tup[2]))
+						journal = tup[3]
+						pubdate = tup[4]
+						url = tup[5]
+						abstract = tup[6]
+						whole = tup[7]
+
+						#can no longer write sents and tokens here because new_info must be added to db before annotation
+						#sents = total_sentences[i]
+						#tokens = sum_tokens[i]
+
+						unix = time.time()
+						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+						conn, c = connection()
+						c.execute(
+							"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+							(date, pmcid, title, author, journal, pubdate, user_input, url, abstract, whole))  # put user pmid into db
+						conn.commit()
+
+					logging.info("Writing citing new_info to citations db")
 
 					logging.info("beginning multi-preprocessing")
 					data, named_entities, total_sentences, sum_tokens = do_ALL_multi_preprocessing(user_input)
+
+					#put total_sents and sum_tokens info into db
+					i = 0
+					for tup in new_info:
+						logging.info(tup)
+						pmcid = tup[0]
+						logging.info(pmcid)
+						sents = total_sentences[i]
+						logging.info(sents)
+						tokens = sum_tokens[i]
+						logging.info(tokens)
+						conn, c = connection()
+						c.execute("UPDATE citations SET sents=?, tokens=? WHERE pmcid=?", (sents, tokens, pmcid))
+						conn.commit()
+						i += 1
+					logging.info("updated the db")
+
 					for d in data:
 						data_samples.append(d)
 					for n in named_entities:
 						ners.append(n)
+
 
 					## Once all the data has been acquired, (no topic modeling yet)
 					## Only want to save final topic model (not running topic models)
@@ -140,32 +186,9 @@ def results():
 						conn.commit()
 					logging.info("Writing self_info to inputPapers db")
 
-					#add main/new to citations database table
+					# If its NOT in the db, we also need to try scraping it and writing that info to db
+					scrape_and_write_Input(user_input)
 
-					i = 0
-					for tup in new_info:
-						logging.info("TUP IN MAIN: ")
-						logging.info(tup)
-						pmcid = tup[0]
-						title = tup[1]
-						s = ', '
-						author = str(s.join(tup[2]))
-						journal = tup[3]
-						pubdate = tup[4]
-						url = tup[5]
-						abstract = tup[6]
-						whole = tup[7]
-
-						sents = total_sentences[i]
-						tokens = sum_tokens[i]
-
-						unix = time.time()
-						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-						conn, c = connection()
-						c.execute("INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (date, pmcid, title, author, journal, pubdate, user_input, url, abstract, whole, sents, tokens)) #put user pmid into db
-						conn.commit()
-						i += 1
-					logging.info("Writing new_info to citations db")
 
 					if user_input == pmid_list[-1]: #if its the last pmid
 

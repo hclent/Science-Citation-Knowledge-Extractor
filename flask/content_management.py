@@ -82,7 +82,7 @@ def run_IR_not_db(user_input):
 def scrape_and_write_Input(user_input):
 	logging.info('retrieve Self text, and write to db')
 	self_pmcid, self_abstract_check, self_article_check = getSelfText(user_input)
-	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check) #put getSelfText into database
+	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check)  # put getSelfText into database
 
 #
 def new_citations_from_db(user_input):
@@ -216,21 +216,25 @@ def inputEligible(query):
 	pmid_list = query.split('+')  # list of string pmids
 	for pmid in pmid_list:
 		pmcid = pmid2pmcid(pmid)
-		#print(pmid + " = " + pmcid)
-		#get the pmcid of the pmid
-		prefix = pmcid[0:3]
-		suffix = pmcid[3:6]
-		filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.txt' # look in folder that matches pmcid
-		#print(filename)
-		truth_value = os.path.isfile(filename)
-		if truth_value is True:
+		if pmcid != "NA":
+			print(pmcid)
+			#print(pmid + " = " + pmcid)
+			#get the pmcid of the pmid
+			prefix = pmcid[0:3]
+			suffix = pmcid[3:6]
+			filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.txt' # look in folder that matches pmcid
 			#print(filename)
-			papers.append(pmid)
-			path_to_paper.append(filename)
-
+			truth_value = os.path.isfile(filename)
+			if truth_value is True:
+				#print(filename)
+				papers.append(pmid)
+				path_to_paper.append(filename)
 	eligible_papers = list(zip(values, papers, path_to_paper))
 	return eligible_papers
 
+
+# eligible_papers = inputEligible('16393471')
+# print(eligible_papers)
 
 #visualization for scifi div
 def vis_scifi(corpus, query, eligible_papers):
@@ -249,6 +253,7 @@ def do_ALL_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW docs')
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
+	logging.info(docs)
 	multiprocess(docs)
 	biodocs = retrieveBioDocs(user_input)
 	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
