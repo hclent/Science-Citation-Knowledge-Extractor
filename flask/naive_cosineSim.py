@@ -48,10 +48,13 @@ def load_corpus(corpus, eligible_papers):
     if corpus == 'youth':
         raw = "/home/hclent/data/corpora/youth.txt"
         corpus_vec = loadMessages(raw)
+    if corpus == 'austen':
+        raw = "/home/hclent/data/corpora/austen.txt"
+        corpus_vec = loadMessages(raw)
     # For loading the query papers
-    # This code ASSUMES THAT THE QUERY PAPERS EXIST !!!!
+    # eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
     if corpus == 'paper1':
-        raw = str(eligible_papers[0][2])
+        raw = str(eligible_papers[0][2]) #'/home/hclent/data/pmcids/259/367/2593677.txt'
         corpus_vec = loadMessages(raw)
     if corpus == 'paper2':
         raw = str(eligible_papers[1][2])

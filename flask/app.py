@@ -307,8 +307,8 @@ class nesOptions(Form):
 
 class corpusOptions(Form):
 	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),
-											('darwin', 'darwin'), ('paper1', 'paper1'), ('paper2', 'paper2'),
-											('paper3', 'paper3'), ('paper4', 'paper4'), ('paper5', 'paper5')])
+											('darwin', 'darwin'), ('austen', 'austen'), ('paper1', 'paper1'),
+											('paper2', 'paper2'),('paper3', 'paper3'), ('paper4', 'paper4'), ('paper5', 'paper5')])
 
 ################ Default CoGe Data #############################
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
@@ -472,6 +472,9 @@ def coge_scifi():
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
+		if corpus == 'austen':
+			color = 'rgb(191, 110, 167)'
+			title = 'Pride and Prejudice'
 		if corpus == 'paper1':
 			color =  'rgb(8, 114, 32)'
 			title =  'PMID: 18952863'
@@ -752,6 +755,9 @@ def results_scifi(query):
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
+		if corpus == 'austen':
+			color = 'rgb(191, 110, 167)'
+			title = 'Pride and Prejudice'
 		if corpus == 'paper1':
 			color =  'rgb(8, 114, 32)'
 			title =  str('PMID: '+ str(eligible_papers[0][1]))
