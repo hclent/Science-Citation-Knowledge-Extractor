@@ -6,6 +6,7 @@ from nltk.corpus import stopwords
 import os.path
 from multiprocessing import Pool
 import logging
+from database_management import db_citation_pmc_ids #mine
 
 # source activate py34 #my conda python environment for this
 
@@ -39,17 +40,18 @@ def connect_to_Processors(port_num):
 api = connect_to_Processors(4343)
 
 
-#Get all text docs for that pmid
-#Returns list of strings e.g. ['1234_1.txt', '1234_2.txt', ...]
+#Get all text files for that pmid
+#Returns list of strings with paths+filename e.g. ['123/456/123456.txt', ...]
 def retrieveDocs(pmid):
   docs = [] #list of strings
-  folder = '/home/hclent/data/'+pmid+'/' #look in folder named after pmid
-  files = os.listdir(folder)
-  for f in files:
-    if pmid in f and 'doc' not in f:
-      #dont read .json or pickle objs
-      if '.txt' in f and 'self' not in f: #don't include 'self' docs
-        docs.append(f) #str
+  #connect to db for citing id's
+  db_pmcids = db_citation_pmc_ids(pmid)
+  for pmcid in db_pmcids:
+    prefix = pmcid[0:3]
+    suffix = pmcid[3:6]
+    folder = '/home/hclent/data/pmcids/'+str(prefix)+'/'+str(suffix) #look in folder that matches pmcid
+    filename = str(folder + '/' + str(pmcid)) + '.txt'
+    docs.append(filename)
   logging.debug('retrieved list of documents to processes')
   return docs
 
@@ -68,15 +70,21 @@ def multiprocess(docs):
   logging.debug('closed pool')
   pool.join()
   logging.debug('joined pool')
-  print(results.get())
+  logging.info(results.get())
   i = 0
   for biodoc in results.get():
     running_doc = docs[i]
-    pmid_i = running_doc.strip(".txt")
-    pmid = re.sub('\_\d*', '', pmid_i)
-    save_path = '/home/hclent/data/'+str(pmid)+'/' #save in folder named after pmid
-    completeName = os.path.join(save_path, ('doc_'+str(pmid_i)+'.json'))
+
+    #clean the doc's filename to get just the pmcid
+    pmcid_filename = running_doc.strip(".txt") #strip the .txt
+    pmcid_filename = pmcid_filename.strip('/home/hclent/data/pmcids/')
+    pmcid = re.sub('^\d{3}\/\d*\/', '', pmcid_filename)
+    prefix = pmcid[0:3]
+    suffix = pmcid[3:6]
+    save_path = '/home/hclent/data/pmcids/'+str(prefix)+'/'+str(suffix) #look in folder that matches pmcid
+    completeName = os.path.join(save_path, (str(pmcid)+'.json'))
     i += 1
+
     with open(completeName, 'w') as out:
       out.write(biodoc.to_JSON())
       logging.debug('printed to json')
@@ -107,23 +115,20 @@ def preProcessing(text):
 #Output: Then it makes a "biodoc" using the PyProcessor's "BioNLP" Processor. This step takes a while for longer docs
 #Output: This doc is saved to JSON.
 def loadDocuments(doc):
-  logging.debug("NEW TASK")
+  #logging.debug("NEW TASK")
   #api = connect_to_Processors(4343) #could connect each time if don't want a global var
-  pmid_i = doc.strip(".txt")
-  pmid = re.sub('\_\d*', '', pmid_i)
-  filenamePrefix = "/home/hclent/data/"+str(pmid)+'/'
-  filename = filenamePrefix + str(doc) #str(i)
   logging.debug('found the the file '+str(doc))
-  text = open(filename, 'r')
+  #read the text
+  text = open(doc, 'r')
   text = text.read()
   logging.debug('read text with text.read()')
   clean_text = preProcessing(text)
   logging.debug("* beginning annotation of "  + str(doc) )
   biodoc = api.bionlp.annotate(clean_text) #annotates to JSON  #thread safe?
   logging.debug('the biodoc of ' + str(doc) + ' is type ' + str(type(biodoc)))
-
   logging.debug("END OF TASK")
   return biodoc
+
 
 ###################################################
 
@@ -133,11 +138,14 @@ def loadDocuments(doc):
 def retrieveBioDocs(pmid):
   #print("retrieving biodocs")
   biodocs = [] #list of strings
-  folder = '/home/hclent/data/'+pmid+'/'
-  files = os.listdir(folder)
-  for f in files:
-    if pmid in f and 'doc' in f:
-      biodocs.append(f) #str
+
+  db_pmcids = db_citation_pmc_ids(pmid)
+  for pmcid in db_pmcids:
+    prefix = pmcid[0:3]
+    suffix = pmcid[3:6]
+    folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
+    filename = str(folder + '/' + str(pmcid)) + '.json'
+    biodocs.append(filename)
   logging.debug('retrieved list of Bio documents to work with')
   return biodocs
 
@@ -156,7 +164,7 @@ def grab_nes(biodoc):
   return ners_list
 
 #Input: Processors annotated biodocs (from JSON)
-#Output: List of strings of all lemmas
+#Output: data_samples, nes_list, and counts
 def loadBioDoc(biodocs):
   t1 = time.time()
   data_samples = []
@@ -167,21 +175,10 @@ def loadBioDoc(biodocs):
   total_tokens = []
   sum_tokens = []
 
-
-  bd = biodocs[0] #just grab an example to get file name info
-
-  pmid_i = bd.strip('.json')
-  pmid = re.sub('(doc\_)', '', pmid_i)
-  pmid = re.sub('\_\d*', '', pmid)
-
-
-  #need to load the files in ORDER so that data_samples is in order
-  for b in range(1, len(biodocs)+1):
-    #filename = '/home/hclent/data/'+(str(pmid))+'/'+bd
-    filename = '/home/hclent/data/' + (str(pmid)) + '/' + "doc_"+str(pmid)+"_"+str(b)+".json"
-    #print(filename)
+  for doc in biodocs:
     doc_tokens= []
-    with open(filename) as jf:
+
+    with open(doc) as jf:
       data = Document.load_from_JSON(json.load(jf))
       #print(type(data)) is <class 'processors.ds.Document'>
       num_sentences = data.size
@@ -207,11 +204,31 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling sent counts and token counts")
   return data_samples, nes_list, total_sentences, sum_tokens
 
-# docs = retrieveDocs("18269575")
+# docs = retrieveDocs("21187923")
 # print(docs)
 # multiprocess(docs)
-# biodocs = retrieveBioDocs("18269575")
-# loadBioDoc(biodocs)
+# biodocs = retrieveBioDocs("21106768")
+# print(biodocs)
 # data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
 # print(total_sentences)
 # print(sum_tokens)
+
+
+
+
+
+################ GRAVEYARD ###############################
+
+# Get all text docs for that pmid
+# Returns list of strings e.g. ['1234_1.txt', '1234_2.txt', ...]
+# def retrieveDocs(pmid):
+#   docs = [] #list of strings
+#   folder = '/home/hclent/data/'+pmid+'/' #look in folder named after pmid
+#   files = os.listdir(folder)
+#   for f in files:
+#     if pmid in f and 'doc' not in f:
+#       #dont read .json or pickle objs
+#       if '.txt' in f and 'self' not in f: #don't include 'self' docs
+#         docs.append(f) #str
+#   logging.debug('retrieved list of documents to processes')
+#   return docs

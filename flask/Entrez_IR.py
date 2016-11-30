@@ -31,7 +31,7 @@ logging.info('Started')
 # ['Wang W', 'Zhu JQ', 'Yu HM', 'Tan FQ', 'Yang WX'],
 # 'PloS one',
 # '2010 Dec 20',
-# 'h')]
+# 'www.blah')]
 def getMainInfo(pmid):
 	logging.info("beginning function getMainInfo")
 	t0 = time.time()
@@ -52,9 +52,9 @@ def getMainInfo(pmid):
 	logging.info(url)
 	self_info = list(zip(title, authors, journal, pubdate, url))
 	logging.info(self_info)
-
 	logging.info("self info: done in %0.3fs." % (time.time() - t0))
 	return self_info
+
 
 #gives pmcid for the pmid
 def getAlternativeId(pmid):
@@ -75,7 +75,7 @@ def getAlternativeId(pmid):
 	except Exception as e:
 		logging.info(e)
 		logging.info("there was no PMCID for this paper")
-		fake_pmcid = "None"
+		fake_pmcid = "NA"
 		return fake_pmcid
 
 
@@ -85,12 +85,13 @@ def getCitationIDs(pmid): #about the same speed as MainCrawl.py
 	t0 = time.time()
 	results = Entrez.read(Entrez.elink(dbfrom="pubmed", db="pmc", LinkName="pubmed_pmc_refs", from_uid=pmid))
 	pmc_ids = [link["Id"] for link in results[0]["LinkSetDb"][0]["Link"]]
-	return pmc_ids #list
 	logging.info("get Citation PMCIDs: done in %0.3fs." % (time.time() - t0))
-	time.sleep(3)
+	time.sleep(3) #sleep for 3 seconds to give the API a rest
+	return pmc_ids #list
 
 
-#Input: a single citation
+
+#Input: a single citation (pmcid)
 #Output: title, authors, journals, date, url
 def connectToNCBI(citation):
 	handle = Entrez.esummary(db="pmc", id=citation)
@@ -99,7 +100,7 @@ def connectToNCBI(citation):
 	a = record[0]["AuthorList"]
 	j = record[0]["FullJournalName"]
 	d = record[0]["PubDate"]
-	u = "http://www.ncbi.nlm.nih.gov/pmc/articles/PMC"+citation
+	u = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC"+citation
 	return t, a, j, d, u
 
 
@@ -168,7 +169,7 @@ def getCitedInfo(pmcid_list):
 
 #Input: XML string of PMC entry generated with getContentPMC
 #Output: Abstract and journal text
-def parsePMC(xml_string, pmid):
+def parsePMC(xml_string):
 	main_text = []
 	root = ET.fromstring(xml_string) #parsed
 	abstract_check = [] #did it get the abstract? yes/no?
@@ -176,6 +177,7 @@ def parsePMC(xml_string, pmid):
 
 	#Get abstract and add to doc
 	try:
+		#check for new line!
 		abstract = root.find('.//abstract')
 		full_abs = ("".join(abstract.itertext()))
 		logging.info("* Got abstract")
@@ -215,75 +217,50 @@ def parsePMC(xml_string, pmid):
 
 
 
-
-#Input: pmid and the list of pmcids citing it
+#Input: the list of pmcids citing some pmid
 #For each citing pmc_id, this function gest the xml, which is then parsed by parsePMC()
-#Output: Journal texts for each pmcid
-def getContentPMC(pmid, pmcids_list):
+#Output: Journal texts for each pmcid saved as pmcid.txt to the folder pmcid[:3]/pmicd[3:6] for better organization
+def getContentPMC(pmcids_list):
 	t0 = time.time()
 	i = 1
-	dirname = '/home/hclent/data/'+pmid
+
 	all_abstract_check = []
 	all_article_check = []
-	try:
-		os.makedirs(dirname) #creates folder named after pmid
-	except OSError:
-		if os.path.isdir(dirname):
-			pass
-		else:
-			raise
+
 	for citation in pmcids_list:
+
+		prefix = '/home/hclent/data/pmcids/' + str(citation[0:3]) #folder for first 3 digits of pmcid
+		suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+
+		try:
+			os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
+		except OSError:
+			if os.path.isdir(prefix):
+				pass
+			else:
+				raise
+
+		try:
+			os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
+		except OSError:
+			if os.path.isdir(suffix):
+				pass
+			else:
+				raise
+
 		logging.info(str(i)+" paper")
 		logging.info("CITATION: " +str(citation))
 		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
 		xml_record = handle.read() #xml str
 		#print(xml_record)
 		logging.info("* got xml record")
-		main_text, abstract_check, whole_article_check = parsePMC(xml_record, pmid)
+		main_text, abstract_check, whole_article_check = parsePMC(xml_record)
 		for yn in abstract_check:
 			all_abstract_check.append(yn)
 		for yn in whole_article_check:
 			all_article_check.append(yn)
 		logging.info("* ready to print it")
-		save_path = '/home/hclent/data/'+(str(pmid))+'/' #must save to data, in proper file
-		completeName = os.path.join(save_path, (str(pmid)+'_'+str(i)+'.txt'))
-		sys.stdout = open(completeName, "w")
-		print(main_text)
-		i += 1
-		time.sleep(3)
-	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
-	return all_abstract_check, all_article_check
-
-
-#save self document with prefix "self_12345.txt"
-def get_self_ContentPMC(pmid, pmcids_list):
-	t0 = time.time()
-	i = 1
-	dirname = '/home/hclent/data/'+pmid
-	all_abstract_check = []
-	all_article_check = []
-	try:
-		os.makedirs(dirname) #creates folder named after pmid
-	except OSError:
-		if os.path.isdir(dirname):
-			pass
-		else:
-			raise
-	for citation in pmcids_list:
-		logging.info(str(i)+" paper")
-		logging.info("CITATION: " +str(citation))
-		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
-		xml_record = handle.read() #xml str
-		#print(xml_record)
-		logging.info("* got xml record")
-		main_text, abstract_check, whole_article_check = parsePMC(xml_record, pmid)
-		for yn in abstract_check:
-			all_abstract_check.append(yn)
-		for yn in whole_article_check:
-			all_article_check.append(yn)
-		logging.info("* ready to print it")
-		save_path = '/home/hclent/data/'+(str(pmid))+'/' #must save to data, in proper file
-		completeName = os.path.join(save_path, ('self_'+str(pmid)+'.txt')) #save self_paper as self_1234.txt
+		completeName = os.path.join(suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
 		sys.stdout = open(completeName, "w")
 		print(main_text)
 		i += 1
@@ -295,22 +272,33 @@ def get_self_ContentPMC(pmid, pmcids_list):
 #retrieve the txt for input papers as well
 def getSelfText(pmid):
 	pmcid_list = [getAlternativeId(pmid)] #pmid --> list of 1 pmcid
-	fake_list = ["None"]
+	fake_list = ["NA"] #not avaliable
 	if pmcid_list == fake_list:
 		logging.info("there wasn't a matching PMCID for the input PMID")
+		fake_pmcid = fake_list[0] #str
+		fake_abstract = "NA" #str
+		fake_article = "NA" #str
+		return fake_pmcid, fake_abstract, fake_article #if there's nothing, we'll fill the db with "NA"
 	else:
 		logging.info(pmcid_list)
-		get_self_ContentPMC(pmid, pmcid_list)  # get self text
+		self_pmcid = pmcid_list[0] #str
+		self_abstract_check, self_article_check = getContentPMC(pmcid_list)
+		abstract = self_abstract_check[0] #str
+		article = self_article_check[0] #str
+		return self_pmcid, abstract, article
 
-# getSelfText("18952863")
+# self_pmcid, self_abstract_check, self_article_check = getSelfText("18952863")
+# logging.info(self_pmcid)
+# logging.info(self_abstract_check)
+# logging.info(self_article_check)
 # getSelfText("18269575")
+# getSelfText("23530224")
 
-# stuff = getMainInfo("26503504")
-# print(stuff)
-# pmc_ids = getCitationIDs("26503504")
-# #pmc_ids = [3159747, 3122376, 3117012] #middle PMC here is bad
+#pmc_ids = getCitationIDs("23530224")
+#print(pmc_ids)
+#pmc_ids = ['3159747', '3122376', '3117012'] #middle PMC here is bad
 # pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)
-# all_abstract_check, all_article_check = getContentPMC("26503504", pmc_ids)
+#all_abstract_check, all_article_check = getContentPMC(pmc_ids)
 # main_info = list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls, all_abstract_check, all_article_check))
 #
 # logging.info(main_info)

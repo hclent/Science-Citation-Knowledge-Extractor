@@ -132,55 +132,68 @@ def db_statistics(user_input):
 	return pmidDict, pmcDict
 
 
+#After you've scraped the input_paper, write the information about abstract, article, and self_pmcid to db
+def updateInputPapers(user_input, self_pmcid, abstract, article):
+	#from function getSelfText(user_input)
+    #put pmcid, abstract check, and article check into db from
+    conn, c = connection()
+    c.execute("UPDATE inputPapers SET abstract=?, whole_article=?, pmcid =? WHERE pmid=?",(abstract, article, self_pmcid, user_input))  # put user pmid into db
+    conn.commit()
 
+
+#convert pmid2pmcid
+def pmid2pmcid(user_input):
+	c.execute('''SELECT pmcid FROM inputPapers WHERE pmid=?''', (user_input,))
+	for pmcid in c:
+		return pmcid[0] #return first thing in tuple ('2836516',)
 
 
 #Create table for inputPapers
-def create_table_input():
-	c.execute('''CREATE TABLE IF NOT EXISTS inputPapers
-		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		datestamp TEXT,
-		pmid TEXT,
-		title TEXT,
-		author TEXT,
-		journal TEXT,
-		pubdate TEXT,
-		url TEXT,
-		num_citations NUMBER)''')
-
-
-#Create table for citations of the citations
-def create_table_citations():
-	c.execute('''CREATE TABLE IF NOT EXISTS citations
-		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		datestamp TEXT,
-		pmcid TEXT,
-		title TEXT,
-		author TEXT,
-		journal TEXT,
-		pubdate TEXT,
-		citesPmid TEXT,
-		url TEXT,
-		abstract TEXT,
-		whole_article TEXT,
-		sents NUMBER,
-		tokens NUMBER)''')
-
-
-#test
-def test_data_entry():
-	c.execute("INSERT INTO citations VALUES(0, '09-21-2016', '000', 'title','author', 'journal', 'pubdate', 'pmid', 'www.website.com')")
-	conn.commit() #to save it to db
-	
-	c.execute("SELECT * FROM citations")
-	[print(row) for row in c.fetchall()]
-	
-	c.close()
-	conn.close()
-
-
-#print table
-def print_inputPapers():
-	c.execute("SELECT * FROM inputPapers")
-	[print(row) for row in c.fetchall()]
+# def create_table_input():
+# 	c.execute('''CREATE TABLE IF NOT EXISTS inputPapers
+# 		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+# 		datestamp TEXT,
+# 		pmid TEXT,
+# 		title TEXT,
+# 		author TEXT,
+# 		journal TEXT,
+# 		pubdate TEXT,
+# 		url TEXT,
+# 		num_citations NUMBER)''')
+#
+#
+# #Create table for citations of the citations
+# def create_table_citations():
+# 	c.execute('''CREATE TABLE IF NOT EXISTS citations
+# 		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+# 		datestamp TEXT,
+# 		pmcid TEXT,
+# 		title TEXT,
+# 		author TEXT,
+# 		journal TEXT,
+# 		pubdate TEXT,
+# 		citesPmid TEXT,
+# 		url TEXT,
+# 		abstract TEXT,
+# 		whole_article TEXT,
+# 		sents NUMBER,
+# 		tokens NUMBER)''')
+#
+#
+# #test
+# def test_data_entry():
+# 	c.execute("INSERT INTO citations VALUES(0, '09-21-2016', '000', 'title','author', 'journal', 'pubdate', 'pmid', 'www.website.com')")
+# 	conn.commit() #to save it to db
+#
+# 	c.execute("SELECT * FROM citations")
+# 	[print(row) for row in c.fetchall()]
+#
+# 	c.close()
+# 	conn.close()
+#
+#
+# #print table
+# def print_inputPapers():
+# 	c.execute("SELECT * FROM inputPapers")
+# 	[print(row) for row in c.fetchall()]
 

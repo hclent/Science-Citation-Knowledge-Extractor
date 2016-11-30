@@ -1,6 +1,6 @@
 import pickle, os
 import naive_makeVecs as makeVecs #mine
-from database_management import db_citation_urls, db_citations_hyperlink_retrieval #mine
+from database_management import db_citation_urls, db_citations_hyperlink_retrieval, pmid2pmcid #mine
 
 
 #Load from pickled data_samples instead of filename
@@ -76,9 +76,7 @@ def load_corpus(corpus, eligible_papers):
 
 
 def load_datasamples(query):
-    pmid_list = query.split('+') #list of string pmids
-    last_entry = pmid_list[-1]
-    data_samples = pickle.load(open('/home/hclent/data/'+str(last_entry)+'/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
+    data_samples = pickle.load(open('/home/hclent/data/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
     #print(len(data_samples)) #num docs
     data_vecs_list = loadFromDataSamples(data_samples)
     return data_vecs_list

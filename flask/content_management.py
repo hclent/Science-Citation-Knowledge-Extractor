@@ -55,9 +55,6 @@ apa_citations will be rendered as 'main' in app.py!!!!
 def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
 	self_info = db_inputPapers_retrieval(user_input)
-	##### currently most entries don't have the self_ text so we'll keep this in here for now
-	#getSelfText(user_input)
-	######### delete getSelfText from this function later ############
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
 	return self_info, apa_citations, db_journals, db_dates, db_urls
 
@@ -67,25 +64,25 @@ def run_IR_in_db(user_input):
 #target_journals and target_dates are used for data vis
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the database')
-	#first run to add things to database
-	#self_info is written to the database
-	self_info = getMainInfo(user_input)
+	self_info = getMainInfo(user_input) #self_info is written to the database in app.py
 
 	pmc_ids = getCitationIDs(user_input)
 	num_citations = len(pmc_ids)
 	logging.info(num_citations)
 
-
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
-	#Get self papers as txt
-	getSelfText(user_input)
 	#Get content
-	all_abstract_check, all_article_check = getContentPMC(user_input, pmc_ids)
-	#main_info is written to the database
+	all_abstract_check, all_article_check = getContentPMC(pmc_ids)
+	#main_info is written to the database in app.py
 	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls, all_abstract_check, all_article_check))
 
 	return self_info, new_info, target_journals, target_dates, num_citations
 
+#If the pmid is NOT in the db, we also need to getSelfText and write that info to db
+def scrape_and_write_Input(user_input):
+	logging.info('retrieve Self text, and write to db')
+	self_pmcid, self_abstract_check, self_article_check = getSelfText(user_input)
+	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check) #put getSelfText into database
 
 #
 def new_citations_from_db(user_input):
@@ -168,7 +165,7 @@ def print_journalvis(journals, dates, user_input, query):
 	publication_data, range_info = journals_vis(journals, dates, years_range)
 	logging.info(range_info)
 	logging.info('Printing JOURNALS to JSON')
-	save_path = '/home/hclent/data/'+str(user_input)+'/' #save in last pmid folder
+	save_path = '/home/hclent/data/journals/' #save in journals folder
 	completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
 	with open(completeName, 'w') as outfile:
 		json.dump(publication_data, outfile)
@@ -217,7 +214,11 @@ def inputEligible(query):
 	values = ['paper1', 'paper2', 'paper3', 'paper4', 'paper5']
 	pmid_list = query.split('+')  # list of string pmids
 	for pmid in pmid_list:
-		filename= str("/home/hclent/data/" + pmid + "/self_" + pmid + ".txt")
+		pmcid = pmid2pmcid(pmid)
+		#get the pmcid of the pmid
+		prefix = pmcid[0:3]
+		suffix = pmcid[3:6]
+		filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
 		truth_value = os.path.isfile(filename)
 		if truth_value is True:
 			papers.append(pmid)
@@ -284,7 +285,7 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 def print_lsa(query, user_input, jsonDict):
 	#Save the json for @app.route('/reslsa/')
 	logging.info('Printing LSA to JSON')
-	save_path = '/home/hclent/data/'+str(user_input)+'/' #in the folder of the last pmid
+	save_path = '/home/hclent/data/topics/lsa' #in the folder of the last pmid
 	completeName = os.path.join(save_path, ('lsa_'+(str(query))+'.json')) #with the query for a name
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonDict, outfile)
@@ -292,20 +293,21 @@ def print_lsa(query, user_input, jsonDict):
 def print_lda(query, user_input, jsonLDA):
 	#Save the json for @app.route('/reslda/')
 	logging.info('Printing LDA to JSON')
-	save_path = '/home/hclent/data/'+str(user_input)+'/' #in the folder of the last pmid
+	save_path = '/home/hclent/data/topics/lda' #in the folder of the last pmid
 	completeName = os.path.join(save_path, ('lda_'+(str(query))+'.json'))  #with the query for a name
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonLDA, outfile)
 
 def print_data_and_nes(query, user_input, data_samples, nes_list):
 	logging.info('Printing data_samples to PICKLE')
-	save_path = '/home/hclent/data/'+str(user_input)+'/' #in the folder of the last pmid
+	save_path = '/home/hclent/data/data_samples/' #in the folder 'data_samples'
 
 	data_completeName = os.path.join(save_path, ('data_samples_'+(str(query))+'.pickle'))  #with the query for a name
 	pickle.dump( data_samples, open( data_completeName, "wb" ) )
 
 	logging.info('Printing nes_list to PICKLE')
-	nes_completeName = os.path.join(save_path, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
+	save_path2 = '/home/hclent/data/nes/' #in the folder 'data_samples'
+	nes_completeName = os.path.join(save_path2, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
 	pickle.dump( nes_list, open( nes_completeName, "wb" ) )
 
 
