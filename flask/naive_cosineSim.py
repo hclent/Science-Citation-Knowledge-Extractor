@@ -51,24 +51,19 @@ def load_corpus(corpus, eligible_papers):
     # For loading the query papers
     # This code ASSUMES THAT THE QUERY PAPERS EXIST !!!!
     if corpus == 'paper1':
-        paper1 = str(eligible_papers[0][1])
-        raw = str("/home/hclent/data/"+paper1+"/self_"+paper1+".txt")
+        raw = str(eligible_papers[0][2])
         corpus_vec = loadMessages(raw)
     if corpus == 'paper2':
-        paper2 = str(eligible_papers[1][1])
-        raw = str("/home/hclent/data/"+paper2+"/self_"+paper2+".txt")
+        raw = str(eligible_papers[1][2])
         corpus_vec = loadMessages(raw)
     if corpus == 'paper3':
-        paper3 = str(eligible_papers[2][1])
-        raw = str("/home/hclent/data/"+paper3+"/self_"+paper3+".txt")
+        raw = str(eligible_papers[2][2])
         corpus_vec = loadMessages(raw)
     if corpus == 'paper4':
-        paper4 = str(eligible_papers[3][1])
-        raw = str("/home/hclent/data/"+paper4+"/self_"+paper4+".txt")
+        raw = str(eligible_papers[3][2])
         corpus_vec = loadMessages(raw)
     if corpus == 'paper5':
-        paper5 = str(eligible_papers[4][1])
-        raw = str("/home/hclent/data/"+paper5+"/self_"+paper5+".txt")
+        raw = str(eligible_papers[4][2])
         corpus_vec = loadMessages(raw)
     #also gonna have to put in an exception handler for if there is no PMCID for the input paper (thus no corpus)
     #can return a flash error for that
@@ -76,7 +71,7 @@ def load_corpus(corpus, eligible_papers):
 
 
 def load_datasamples(query):
-    data_samples = pickle.load(open('/home/hclent/data/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
+    data_samples = pickle.load(open('/home/hclent/data/data_samples/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
     #print(len(data_samples)) #num docs
     data_vecs_list = loadFromDataSamples(data_samples)
     return data_vecs_list

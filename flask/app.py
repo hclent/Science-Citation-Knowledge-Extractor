@@ -454,7 +454,7 @@ def coge_stats():
 def coge_scifi():
 	form = corpusOptions(secret_key='super secret key')
 	#decide eligible_papers
-	eligible_papers = [("paper1", "18952863")]
+	eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data

@@ -212,19 +212,25 @@ def vis_kmeans(data_samples, num_clusters, pmid_list):
 def inputEligible(query):
 	papers = []
 	values = ['paper1', 'paper2', 'paper3', 'paper4', 'paper5']
+	path_to_paper = []
 	pmid_list = query.split('+')  # list of string pmids
 	for pmid in pmid_list:
 		pmcid = pmid2pmcid(pmid)
+		#print(pmid + " = " + pmcid)
 		#get the pmcid of the pmid
 		prefix = pmcid[0:3]
 		suffix = pmcid[3:6]
-		filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
+		filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.txt' # look in folder that matches pmcid
+		#print(filename)
 		truth_value = os.path.isfile(filename)
 		if truth_value is True:
+			#print(filename)
 			papers.append(pmid)
+			path_to_paper.append(filename)
 
-	eligible_papers = list(zip(values, papers))
+	eligible_papers = list(zip(values, papers, path_to_paper))
 	return eligible_papers
+
 
 #visualization for scifi div
 def vis_scifi(corpus, query, eligible_papers):
