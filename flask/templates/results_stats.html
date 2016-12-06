@@ -52,35 +52,14 @@ body {
 
 
 <script>
-
 var sets = {{venn_data |safe }};
-
-//var tspan = document.getElementsByTagName("tspan");
-//var map = {'&lt': '<', '&gt': '>'};
-//str = tspan.replace(/&([^;]+);/g, (m, c) => map[c])
 
 var chart = venn.VennDiagram()
                  .width(600)
                  .height(400);
 
 d3.select("#venn").datum(sets).call(chart);
-
-//document.getElementByTagName("label").innerHTML=stringtodecode;
-//stringtodecode=document.getElementByTagName("label").innerText;
-
-//getElementByTagName("label").innerText;
-
 </script>
-
-<!--<script>-->
-    <!--$('#venn').each(function(){-->
-    <!--var $this = $(this);-->
-    <!--var t = $this.text();-->
-    <!--$this.html(t.replace('&lt','<').replace('&gt', '>'));-->
-<!--});-->
-    <!--</script>-->
-
-
 
 
  <!-- BAR CHART -->
@@ -89,8 +68,6 @@ d3.select("#venn").datum(sets).call(chart);
     var data = [{
     x: {{x | safe}},
     y: {{y | safe}},
-
-
     type: 'bar'
         }];
 

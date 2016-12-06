@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
+<!--Boostrap-->
   <link href= "{{ url_for('static',
 	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
 
-<style>
+<!--D3-->
+<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
 
+<style>
 .node {
   cursor: pointer;
 }
@@ -38,13 +41,6 @@
 <body>
 <h2> Latent Semantic Analysis </h2> <!--title goes here-->
 <p>   </p>
-
-<!--<div class="alert alert-warning alert-dismissible" role="alert">-->
-  <!--<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-  <!--<strong>Warning!</strong> Cannot have more topics than documents.-->
-<!--</div>-->
-
- <!-- TO DO: form should return which K val has been selected -->
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/reslsa/{{query}}" method="post">
 <div class="form-group">
   <label for="buttongroup">topics:</label>
@@ -93,12 +89,7 @@
 </div>
 
 
-
-<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
-
-
 <script>
-
 var margin = 20,
     diameter = 960;
 
@@ -175,10 +166,9 @@ console.log(root)
     circle.attr("r", function(d) { return d.r * k; });
   }
 
-
 d3.select(self.frameElement).style("height", diameter + "px");
-
 </script>
+
 
 <script>
   var btn = document.getElementById('lsabutton');

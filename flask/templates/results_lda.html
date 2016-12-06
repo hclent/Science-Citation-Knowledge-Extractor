@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
+<!--Bootstrap-->
   <link href= "{{ url_for('static',
 	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
 	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
+
+<!--D3-->
+<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
 
 <style>
 
@@ -87,10 +92,9 @@
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
+
 
 <script>
-
 var margin = 20,
     diameter = 960;
 

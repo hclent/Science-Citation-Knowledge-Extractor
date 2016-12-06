@@ -1,12 +1,9 @@
 <html>
 <head>
     <!--plotly scripts -->
-    <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
 <script src="{{ url_for('static', filename='js/third-party/plotly/dist/plotly.min.js') }}"></script>
+
     <!--bootstrap scripts -->
-   <!-- <link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script> -->
 	<link href= "{{ url_for('static',
 	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
     <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
@@ -17,7 +14,7 @@
 
 </head>
 <body>
-<h2> K-means Clustering </h2> <!--title goes here-->
+<h2> K-means Clustering </h2> 
 <p>   </p>
 
 <div id="controls">
