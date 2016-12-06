@@ -423,6 +423,7 @@ def cogewordcloud():
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions(secret_key='super secret key')
+	query = '18952863+18269575'
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
@@ -433,10 +434,11 @@ def cogeheatmap():
 		data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+		titles = vis_heatmapTitles(query)
 		#print(z_counts)
 		#print(x_docs)
 		#print(y_words)
-		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words)
+		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles)
 	else:
 		#Default data
 		return render_template('coge_heatmap1.html')
@@ -680,11 +682,12 @@ def res_heatmap(query):
 		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+		titles = vis_heatmapTitles(query)
 		# print(z_counts)
 		# print(x_docs)
 		# print(y_words)
 		popup = ' '
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		#print(nes_categories)
@@ -699,9 +702,9 @@ def res_heatmap(query):
 		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
 
 		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
-
+		titles = vis_heatmapTitles(query)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 
 
 

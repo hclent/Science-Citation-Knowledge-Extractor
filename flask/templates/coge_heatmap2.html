@@ -112,30 +112,49 @@
 
 
 <div id="myDiv">  </div>
+<div id="clickInfo"> </div>
 
 </body>
 
 <script>
-var data = [
+var myPlot = document.getElementById('myDiv'),
+	clickInfo = document.getElementById('clickInfo'),
+    data = [
   {
       //z: counts, x: docs, y: words
     z: {{z_counts|safe}},
     x: {{x_docs|safe}},
     y: {{y_words|safe}},
+    name: {{titles|safe}},
     type: 'heatmap',
       colorscale: [[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
   }
 ];
 
 
-var layout = {
+layout = {
   title: 'Distribution of Named Entities',
       margin:{
     l:150}
 }
 
 Plotly.newPlot('myDiv', data, layout);
-</script>
+myPlot.on('plotly_click', function(data){
+	for (var i=0; i<data.points.length; i++) { //safety net
+        var selected_point = data.points[i];
+
+		var point_numbers = data.points[i].pointNumber; //two numbers
+        var point_number = point_numbers[1]; //grab the second number
+		var point_data = selected_point['data'];
+		var point_title = point_data['name'][point_number];
+		//var point_title = data.points[i]['data']['name'][data.points[i].pointNumber];
+
+//
+		clickInfo.innerHTML = point_title;
+	}
+});  //end plotly_click
+
+	</script>
 
 
 <script>

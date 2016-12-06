@@ -185,6 +185,16 @@ def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, data_samples)
 	return x_docs, y_words, z_counts
 
+#for getting heatmap titles
+def vis_heatmapTitles(query):
+	titles = []  # want citations instead of titles
+	pmid_list = query.split('+')  # list of string pmids
+	for pmid in pmid_list:
+		temp_titles = db_citations_hyperlink_retrieval(pmid)  # return apa citation hyperlink for click data
+		for t in temp_titles:  #
+			titles.append(t)
+	return titles
+
 
 def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
 	logging.info("starting clustermap")
