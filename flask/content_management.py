@@ -218,7 +218,6 @@ def vis_kmeans(data_samples, num_clusters, pmid_list):
 	clusters = do_kemeans(hX, int(num_clusters)) #list of cluster assignments
 	coordinates = do_NMF(hX) #dimensionality reduction for visualization
 	#zip coordinates and titles
-
 	zipped_coordinates = zip(coordinates, titles)
 	x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = plotKmeans(zipped_coordinates, clusters) #format for Plotly scatterplot
 	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4
