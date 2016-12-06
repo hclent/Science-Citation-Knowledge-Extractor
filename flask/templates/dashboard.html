@@ -100,20 +100,26 @@
               </button>
               <ul class="dropdown-menu">
 
-                <li><a href="#wc" id="wc" onclick="toggle('wordcloud', 'heatmap')">Word Cloud</a></li>
+                <li><a href="#wc" id="wc" onclick="toggle3('wordcloud', 'heatmap', 'clustermap')">Word Cloud</a></li>
 
-                <li><a href="#hm" id="hm" onclick="toggle('heatmap', 'wordcloud')">Heatmap</a></li>
+                <li><a href="#hm" id="hm" onclick="toggle3('heatmap', 'wordcloud', 'clustermap')">Heatmap</a></li>
+
+                  <li><a href="#cm" id="cm" onclick="toggle3('clustermap', 'wordcloud', 'heatmap')">Clustermap</a></li>
 
               </ul>
             </div>
 
     </div>
+            <!--this </> below doesn't seem to match anything but if you remove it or make it a div, things go crazy-->
                 </>
+
             <br></br>
 
            <iframe  id="wordcloud" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
             <iframe  id="heatmap" style="display:none"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogeheatmap/" width="850" height="800" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
+        <iframe  id="clustermap" style="display:none"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogeclustermap/" width="850" height="1200" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 		</div> 
 
@@ -216,6 +222,17 @@
  </script>
 
 
+ <script>
+  function toggle3(vis1, vis2, vis3) {
+      //console.log('Button clicked!');
+      var visspace1 = document.getElementById(vis1);
+      var visspace2 = document.getElementById(vis2);
+      var visspace3 = document.getElementById(vis3);
+      visspace1.style.display = visspace1.style.display == 'none' ? '' : 'none'; //if none, display, if not none -> none
+      visspace2.style.display = visspace2.style.display == '' ? 'none' : 'none'; //dont display other ones!
+      visspace3.style.display = visspace3.style.display == '' ? 'none' : 'none'; //dont display other ones!
+  }
+ </script>
 
 
 <script>

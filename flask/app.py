@@ -442,6 +442,25 @@ def cogeheatmap():
 		return render_template('coge_heatmap1.html')
 
 
+@app.route('/cogeclustermap/', methods=["GET","POST"]) #default coge clustermap
+def cogeclustermap():
+	query = '18952863+18269575'
+	form = nesOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		nes_categories = request.form.getlist('check')
+		logging.info(nes_categories)
+		w_number = form.w_words.data
+		logging.info("the w value is " + str(w_number))
+
+		nes_list = pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb"))  # pre-processed already
+		data_samples = pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb"))  # p
+		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
+		image = '/images/'+saveName
+		return render_template('coge_clustermap.html', image=image)
+	else:
+		image = "images/coge_clustermap.png"
+		return render_template('coge_clustermap.html', image=image)
+
 
 @app.route('/cogekmeans/', methods=["GET","POST"]) #default coge k-means clustering for iframe
 def cogekmeans():
@@ -683,6 +702,43 @@ def res_heatmap(query):
 
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup)
+
+
+
+@app.route('/res_clustermap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
+def res_clustermap(query):
+	form = nesOptions(secret_key='super secret key')
+	if request.method == 'POST':
+		nes_categories = request.form.getlist('check')
+		logging.info(nes_categories)
+		w_number = form.w_words.data
+		logging.info("the w value is "+str(w_number))
+
+		nes_filename = "/home/hclent/data/nes/nes_"+str(query)+".pickle"
+		nes_list =  pickle.load(open(nes_filename, "rb")) #pre-processed already
+
+		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
+		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+
+		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
+		image = '/images/' + saveName
+		return render_template('results_clustermap.html', image=image, query=query)
+	else:
+		nes_categories = ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ',
+						  'Simple_chemical', 'Site', 'Species', 'TissueType']
+		w_number = 10
+		logging.info("the w value is " + str(w_number))
+
+		nes_filename = "/home/hclent/data/nes/nes_" + str(query) + ".pickle"
+		nes_list = pickle.load(open(nes_filename, "rb"))  # pre-processed already
+
+		data_filename = "/home/hclent/data/data_samples/data_samples_" + str(query) + ".pickle"
+		data_samples = pickle.load(open(data_filename, "rb"))  # pre-processed already
+
+		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
+		image = '/images/' + saveName
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
+		return render_template('results_clustermap.html', image=image, popup=popup, query=query)
 
 
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe

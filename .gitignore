@@ -1,3 +1,4 @@
 *.log
 *.pyc
+*.png
 bower_components

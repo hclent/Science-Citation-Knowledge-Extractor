@@ -48,7 +48,7 @@ def getMainInfo(pmid):
 	logging.info(journal)
 	pubdate = [record[0]["PubDate"]]
 	logging.info(pubdate)
-	url = ["http://www.ncbi.nlm.nih.gov/pubmed/"+pmid]
+	url = ["https://www.ncbi.nlm.nih.gov/pubmed/"+pmid]
 	logging.info(url)
 	self_info = list(zip(title, authors, journal, pubdate, url))
 	logging.info(self_info)
@@ -301,32 +301,6 @@ def getSelfText(pmid):
 #all_abstract_check, all_article_check = getContentPMC(pmc_ids)
 # main_info = list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls, all_abstract_check, all_article_check))
 #
-# logging.info(main_info)
-# logging.info("############")
-# for tup in main_info:
-# 	title = tup[0]
-# 	author = tup[1]
-# 	journal = tup[2]
-# 	pubdate = tup[3]
-# 	url = tup[4]
-# 	abstract = tup[5]
-# 	article = tup[6]
-# 	logging.info(title)
-# 	logging.info("############")
-# 	logging.info(author)
-# 	logging.info("############")
-# 	logging.info(journal)
-# 	logging.info("############")
-# 	logging.info(pubdate)
-# 	logging.info("############")
-# 	logging.info(url)
-# 	logging.info("############")
-# 	logging.info(abstract)
-# 	logging.info("############")
-# 	logging.info(article)
-# 	logging.info("##############################")
-
-
 
 ################### Notes ##############
 #Rarely, the XML will return this:

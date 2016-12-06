@@ -1,7 +1,5 @@
 <html>
 <head>
-    <!--plotly scripts -->
-     <script src="{{ url_for('static', filename='js/third-party/plotly/dist/plotly.min.js') }}"></script>
 
     <!--bootstrap scripts -->
     <link href= "{{ url_for('static',
@@ -10,16 +8,15 @@
 	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
 
-
-    <style>
+<style>
     .form-check-inline { margin-right: 5px }
     </style>
 
+
 </head>
 <body>
-{{popup | safe}} 
 
-<form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/res_clustermap/{{query}}" method="post">
+<form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogeclustermap/" method="post">
 
      <label for="options">Filter with words occurring N or more times, from these categories:  </label>
      <div id="options">
@@ -69,15 +66,14 @@
           <input class="form-check-input" type="checkbox" name="check" value="TissueType">Tissue-type</label>
     </div>
 
-  <button type="submit" id="heatmapbutton" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">Update</button>
+  <button type="submit" id="clustermap" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">Update</button>
 
 
 
     </label>
-    </div>
+
 
 </form>
-
 
 <!-- Progress modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -100,7 +96,7 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="footer" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
@@ -108,34 +104,14 @@
 
 
 
-<div id="myDiv">  </div>
+<div id="myDiv">
+<img src="{{url_for('static', filename=image) }}"></img>
+</div>
+
+</body>
 
 <script>
-var data = [
-  {
-      //z: counts, x: docs, y: words
-    z: {{z_counts|safe}},
-    x: {{x_docs|safe}},
-    y: {{y_words|safe}},
-    type: 'heatmap',
-      colorscale: [[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
-  }
-];
-
-
-var layout = {
-  title: 'Distribution of Named Entities',
-    margin:{
-        l:151}
-}
-
-Plotly.newPlot('myDiv', data, layout);
-
-	</script>
-
-
-<script>
-  var btn = document.getElementById('heatmapbutton');
+  var btn = document.getElementById('clustermap');
   btn.addEventListener('click', loadProgress);
 
   function loadProgress() {

@@ -148,6 +148,12 @@ def pmid2pmcid(user_input):
 		return pmcid[0] #return first thing in tuple ('2836516',)
 
 
+def retrieveAllPmcids():
+	c.execute('''SELECT pmcid FROM citations''')
+	in_db_pmcids = [pmcid[0] for pmcid in c]
+	return in_db_pmcids
+
+
 #Create table for inputPapers
 # def create_table_input():
 # 	c.execute('''CREATE TABLE IF NOT EXISTS inputPapers

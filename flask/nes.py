@@ -1,10 +1,12 @@
-import re
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+import seaborn as sns
+import pandas as pd
+import re, os
 from collections import defaultdict
 from processors import *
-import numpy as np
-from sklearn.decomposition import NMF
-from scipy.cluster.hierarchy import dendrogram, linkage
-from sklearn.cluster import KMeans
+
 import pickle, random, time
 from multi_preprocess import retrieveBioDocs, loadBioDoc
 
@@ -140,102 +142,39 @@ def doHeatmap(nesDict, n, data_samples):
 #         print("clusters: " + str(k))
 #     return k
 
+#format x, y, z for Seaborn cluster map
+def make_seaborn_data(x, y, z):
+    seaData = []
 
-#perform k-means on y-axis values (i.e. z matrix)
-def do_kmeans_on_y(z, k_clusters):
-    sparse_matrix = np.array(z)
-    t0 = time.time()
-    #print("* Beginning k-means clustering ... ")
-    num_clusters = int(k_clusters)
-    km = KMeans(init='k-means++', n_clusters=num_clusters)
-    km.fit(sparse_matrix)
-    clusters = km.labels_.tolist()
-    #print("done in %0.3fs." % (time.time() - t0))
-    return clusters
+    d = 0
+    for document in x:
+        i = 0
+        for word in y:
+            # print(i)
+            count = z[i][d]  # z[i] = word, z[i][j] = count of word for document
+            data = (word, document, count)
+            seaData.append(data)
 
-#re-order the y-axis now for the new clustered heatmap
-def sort_y(clusters, y):
-    pairs = list(zip(clusters, y))
-    # print(pairs)
-    list0 = []
-    list1 = []
-    list2 = []
-    list3 = []
-    list4 = []
-    list5 = []
+            i += 1
+        d += 1
+    return seaData
 
-    for p in pairs:
-        if p[0] == 0:
-            list0.append(p[1])
-        if p[0] == 1:
-            list1.append(p[1])
-        if p[0] == 2:
-            list2.append(p[1])
-        if p[0] == 3:
-            list3.append(p[1])
-        if p[0] == 4:
-            list4.append(p[1])
-        if p[0] == 5:
-            list4.append(p[1])
-    new_order = list0 + list1 + list2 + list3 + list4 + list5
-    return new_order
+#make jpeg clusterMap
+def makeClusterMap(seaData, query):
+    seaFrame = pd.DataFrame((seaData), columns=['word', 'publication', 'count'])
+    sea2 = seaFrame.pivot("word", "publication", "count")
+    seamap = sns.clustermap(sea2)
+    hm = seamap.ax_heatmap.get_position()
+    plt.setp(seamap.ax_heatmap.yaxis.get_majorticklabels(), fontsize=6, rotation=0)
+    seamap.ax_heatmap.set_position([hm.x0, hm.y0, hm.width, hm.height])
+    col = seamap.ax_col_dendrogram.get_position()
+    seamap.ax_col_dendrogram.set_position([col.x0, col.y0, col.width, col.height])
 
-
-# heatmap coordinates for handling a clustered y-axis
-def doClustermap(nesDict, n, data_samples, new_order, old_x):
-    x = []
-    y = []
-    z = []
-
-    lemma_Dict = defaultdict(lambda: 0)
-    for word in nesDict:
-        p1 = re.compile('[a-z]{2,}[b-df-hj-np-tv-z]{1,}(es$|s$)')
-        match1 = p1.search(word)
-        if not match1:
-            lemma_Dict[word] += nesDict[word]
-    #print("* made lemmas dict ...")
-
-    for word in new_order:
-
-        # for word in lemma_Dict:
-        split_word = word.split(" ")
-        len_word = len(split_word)
-        if int(lemma_Dict[word]) > int(n):
-            y.append(word)
-            word_counts = []
-            for j in range(0, len(data_samples)):  # go in order. nes are clustered, not docs
-                documents = data_samples[int(j)]
-                unigrams_list = documents.split(" ")
-                runningDict = defaultdict(lambda: 0)
-                if len_word == 1:
-                    for unigram in unigrams_list:
-                        if unigram == word:
-                            runningDict[word] += 1
-                        if unigram != word:
-                            runningDict[word] += 0
-                if len_word == 2:
-                    b = 2
-                    bigrams = [unigrams_list[i:i + b] for i in range(len(unigrams_list) - b)]
-                    for grams in bigrams:
-                        q = ' '
-                        grams = str(q.join(grams))
-                        if grams == word:
-                            runningDict[word] += 1
-                            # print(grams+' = '+word)
-                        if grams != word:
-                            runningDict[word] += 0
-                if len_word > 2:
-                    pass
-                word_counts.append(runningDict[word])
-            z.append(word_counts)
-
-    for i in range(1, len(old_x) + 1):
-        docname = "doc" + str(i)
-        x.append(docname)
-    #print("* done with stuff ...")
-    return x, y, z
-
-
+    save_path = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/images'  # in the folder 'clustermaps'
+    save_name = ('cm_' + (str(query)) + '.png')
+    completeName = os.path.join(save_path, save_name)  # with the query for a name
+    seamap.savefig(completeName)
+    return save_name
 
 
 def get_data_and_ner(pmid):

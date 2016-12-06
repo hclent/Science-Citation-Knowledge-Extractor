@@ -186,6 +186,15 @@ def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 	return x_docs, y_words, z_counts
 
 
+def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
+	logging.info("starting clustermap")
+	x, y, z = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+	logging.info("making clustermap data")
+	seaData = make_seaborn_data(x, y, z)
+	logging.info("saving clustermap png")
+	saveName = makeClusterMap(seaData, query)
+	return saveName #return filename
+
 def vis_kmeans(data_samples, num_clusters, pmid_list):
 	#use query to get titles
 	titles = [] #want citations instead of titles

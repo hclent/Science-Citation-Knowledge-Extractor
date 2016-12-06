@@ -73,9 +73,11 @@
               </button>
               <ul class="dropdown-menu">
 
-                <li><a href="#wc" id="wc" onclick="toggle('res_wordcloud', 'res_heatmap')">Word Cloud</a></li>
+                <li><a href="#wc" id="wc" onclick="toggle3('res_wordcloud', 'res_heatmap', 'res_clustermap')">Word Cloud</a></li>
 
-                <li><a href="#hm" id="hm" onclick="toggle('res_heatmap', 'res_wordcloud')">Heatmap</a></li>
+                <li><a href="#hm" id="hm" onclick="toggle3('res_heatmap', 'res_wordcloud', 'res_clustermap')">Heatmap</a></li>
+
+                  <li><a href="#cm" id="cm" onclick="toggle3('res_clustermap', 'res_wordcloud', 'res_heatmap')">Clustermap</a></li>
 
               </ul>
             </div>
@@ -85,6 +87,7 @@
             <br></br>
             <iframe  id="res_wordcloud" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reswordcloud/{{query}}" width="1100" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
             <iframe  id="res_heatmap" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/res_heatmap/{{query}}" width="975" height="800" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="res_clustermap" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/res_clustermap/{{query}}" width="975" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</div> 
@@ -204,6 +207,17 @@
   }
  </script>
 
+<script>
+  function toggle3(vis1, vis2, vis3) {
+      //console.log('Button clicked!');
+      var visspace1 = document.getElementById(vis1);
+      var visspace2 = document.getElementById(vis2);
+      var visspace3 = document.getElementById(vis3);
+      visspace1.style.display = visspace1.style.display == 'none' ? '' : 'none'; //if none, display, if not none -> none
+      visspace2.style.display = visspace2.style.display == '' ? 'none' : 'none'; //dont display other ones!
+      visspace3.style.display = visspace3.style.display == '' ? 'none' : 'none'; //dont display other ones!
+  }
+ </script>
 
 
 <script>
