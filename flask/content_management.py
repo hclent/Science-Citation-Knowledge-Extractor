@@ -82,9 +82,11 @@ def run_IR_not_db(user_input):
 def scrape_and_write_Input(user_input):
 	logging.info('retrieve Self text, and write to db')
 	self_pmcid, self_abstract_check, self_article_check = getSelfText(user_input)
+	logging.info("PMICD: ")
+	logging.info(self_pmcid)
 	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check)  # put getSelfText into database
 
-#
+
 def new_citations_from_db(user_input):
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
 	return apa_citations, db_urls
@@ -238,13 +240,14 @@ def inputEligible(query):
 			print(pmcid)
 			#print(pmid + " = " + pmcid)
 			#get the pmcid of the pmid
+
 			prefix = pmcid[0:3]
 			suffix = pmcid[3:6]
 			filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.txt' # look in folder that matches pmcid
 			#print(filename)
 			truth_value = os.path.isfile(filename)
 			if truth_value is True:
-				#print(filename)
+				#print(filename) #NA won't exist
 				papers.append(pmid)
 				path_to_paper.append(filename)
 	eligible_papers = list(zip(values, papers, path_to_paper))

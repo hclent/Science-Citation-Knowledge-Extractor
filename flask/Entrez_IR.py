@@ -59,14 +59,15 @@ def getMainInfo(pmid):
 #gives pmcid for the pmid
 def getAlternativeId(pmid):
 	logging.info("in function get AlternativeID")
-	handle = Entrez.efetch(db="pubmed", id=pmid, retmode="xml")
-	logging.info("made the handle")
-	record = Entrez.read(handle)
-	logging.info("made the record")
-	data = record[0]["PubmedData"]
-	ids = data["ArticleIdList"]
-	logging.info(ids)
 	try:
+		handle = Entrez.efetch(db="pubmed", id=pmid, retmode="xml")
+		logging.info("made the handle")
+		record = Entrez.read(handle)
+		logging.info("made the record")
+		data = record[0]["PubmedData"]
+		ids = data["ArticleIdList"]
+		logging.info(ids)
+	#try:
 		pmc_id = ids[3] #PMC12345
 		pmcid = re.sub('PMC', '', pmc_id) #12345 without "PMC"
 		logging.info("pmcid for input paper" + str(pmcid))
@@ -77,6 +78,7 @@ def getAlternativeId(pmid):
 		logging.info("there was no PMCID for this paper")
 		fake_pmcid = "NA"
 		return fake_pmcid
+
 
 
 #Input: Pmid
