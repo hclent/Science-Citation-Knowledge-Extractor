@@ -725,23 +725,24 @@ def res_clustermap(query):
 
 		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
 		image = '/images/' + saveName
-		return render_template('results_clustermap.html', image=image, query=query)
+
+		return render_template('results_clustermap.html',image=image, query=query)
 	else:
-		nes_categories = ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ',
-						  'Simple_chemical', 'Site', 'Species', 'TissueType']
-		w_number = 10
-		logging.info("the w value is " + str(w_number))
-
-		nes_filename = "/home/hclent/data/nes/nes_" + str(query) + ".pickle"
-		nes_list = pickle.load(open(nes_filename, "rb"))  # pre-processed already
-
-		data_filename = "/home/hclent/data/data_samples/data_samples_" + str(query) + ".pickle"
-		data_samples = pickle.load(open(data_filename, "rb"))  # pre-processed already
-
-		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
-		image = '/images/' + saveName
-		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
-		return render_template('results_clustermap.html', image=image, popup=popup, query=query)
+		# nes_categories = ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ',
+		# 				  'Simple_chemical', 'Site', 'Species', 'TissueType']
+		# w_number = 10
+		# logging.info("the w value is " + str(w_number))
+        #
+		# nes_filename = "/home/hclent/data/nes/nes_" + str(query) + ".pickle"
+		# nes_list = pickle.load(open(nes_filename, "rb"))  # pre-processed already
+        #
+		# data_filename = "/home/hclent/data/data_samples/data_samples_" + str(query) + ".pickle"
+		# data_samples = pickle.load(open(data_filename, "rb"))  # pre-processed already
+        #
+		# saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
+		# image = '/images/' + saveName
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Choose N and categories to run clustermap.</div>'
+		return render_template('results_clustermapH.html', query=query, popup=popup)
 
 
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
