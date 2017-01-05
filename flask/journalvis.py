@@ -2,6 +2,35 @@ import re, operator
 from collections import defaultdict
 from database_management import db_citations_retrieval
 
+def paper_dates_barchart(journals, dates, query):
+	x_vals = []
+	y_vals = []
+
+
+	yearDict = defaultdict(lambda:0)
+	years_list = []
+
+	years_range = get_years_range(query)
+
+	for d in dates:
+		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
+		y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
+		years_list.append(y)
+
+	# Associate journals with years
+	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
+
+	for year in range(int(years_range[0]), int(years_range[1]) + 1):
+		for pair in journal_year:
+			if year == int(pair[1]):
+				yearDict[year] +=1
+
+	for year in sorted(yearDict):
+		x_vals.append(year)
+		y_vals.append(yearDict[year])
+
+	return x_vals, y_vals
+
 
 def get_years_range(query):
 	years_list = []
@@ -27,8 +56,8 @@ def get_years_range(query):
 	return years_range
 
 
-def journals_vis(journals, dates, years_range):
-	#print("JOURNALS VISUALIZATION CRAP")
+def journals_vis(journals, dates, years_range, query):
+	#print("JOURNALS VISUALIZATION")
 	num_publications = len(journals)
 	#print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
 
@@ -61,10 +90,10 @@ def journals_vis(journals, dates, years_range):
 	#Dictionary with "Journal": Number-of-publications
 	#For looking up the total
 	journalsTotalDict = defaultdict(lambda: 0)
-	sum = 0
+	sum_j = 0
 	for j in journals:
 		journalsTotalDict[j] += 1
-		sum +=1
+		sum_j +=1
 	#print(journalsTotalDict)
 
 	#Sorted by counts MOST --> LEAST
@@ -87,54 +116,50 @@ def journals_vis(journals, dates, years_range):
 		#print("Years a paper was in this journal: "+ str(jyDict[j]))
 		for year in range(int(years_range[0]), int(years_range[1]) + 1):
 			#print("checking " +str(year) +" ...")
-			sum = 0
+			sum_y = 0
 			for entry in jyDict[j]:
 				#print(" ... against "+str(entry))
 				if year == int(entry):
 					#print("The years match so I'm going to count now")
-					sum+=1
-				year_sum = [year, sum]
+					sum_y+=1
+				year_sum = [year, sum_y]
 				#print(year_sum)
 			journal_data["articles"].append(year_sum)
 
 		publication_data.append(journal_data)
 
 	range_info = [years_range, num_publications, number_unique_journals]
+
+	## add a TOTAL SUM row to the top of the journals visualization
+	x, y = paper_dates_barchart(journals, dates, query)
+	total_sum = sum(y)
+	total_articles = [[year, count] for year, count in zip(x, y)]
+	total_name = "TOTAL"
+	top_row = {
+		"name": total_name,
+		"articles": total_articles,
+		"total": total_sum
+	}
+
+	publication_data = [top_row] + publication_data
+
 	#print("RANGE INFO: ")
 	#print(range_info)
 	#Get some info about the publication before changing it to a string for the json
 	#Year range, number of publications, number of unique journals
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
+
 	return (publication_data, range_info)
 
 
+# apa_citations1, db_journals1, db_dates1, db_urls1 = db_citations_retrieval("18952863")
+# apa_citations2, db_journals2, db_dates2, db_urls2 = db_citations_retrieval("18269575")
+# journals = db_journals1 + db_journals2
+# dates = db_dates1 + db_dates2
+# years_range = get_years_range("18952863+18269575")
+# publication_data, range_info = journals_vis(journals, dates, years_range, "18952863+18269575")
+# print(publication_data)
 
-def paper_dates_barchart(journals, dates, query):
-	x_vals = []
-	y_vals = []
 
 
-	yearDict = defaultdict(lambda:0)
-	years_list = []
-
-	years_range = get_years_range(query)
-
-	for d in dates:
-		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
-		y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
-		years_list.append(y)
-
-	# Associate journals with years
-	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
-
-	for year in range(int(years_range[0]), int(years_range[1]) + 1):
-		for pair in journal_year:
-			if year == int(pair[1]):
-				yearDict[year] +=1
-
-	for year in sorted(yearDict):
-		x_vals.append(year)
-		y_vals.append(yearDict[year])
-
-	return x_vals, y_vals
 

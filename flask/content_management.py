@@ -164,7 +164,7 @@ def print_journalvis(journals, dates, user_input, query):
 
 	#num_journals = len(journals)
 	#print("there are "+str(num_journals)+" journals in total")
-	publication_data, range_info = journals_vis(journals, dates, years_range)
+	publication_data, range_info = journals_vis(journals, dates, years_range, query)
 	logging.info(range_info)
 	logging.info('Printing JOURNALS to JSON')
 	save_path = '/home/hclent/data/journals/' #save in journals folder
@@ -206,6 +206,7 @@ def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
 	logging.info("saving clustermap png")
 	saveName = makeClusterMap(seaData, query)
 	return saveName #return filename
+
 
 def vis_kmeans(data_samples, num_clusters, pmid_list):
 	#use query to get titles
