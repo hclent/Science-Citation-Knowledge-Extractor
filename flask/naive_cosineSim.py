@@ -51,6 +51,34 @@ def load_corpus(corpus, eligible_papers):
     if corpus == 'austen':
         raw = "/home/hclent/data/corpora/austen.txt"
         corpus_vec = loadMessages(raw)
+    #new
+    if corpus == 'brain_speech':
+        raw = "/home/hclent/data/corpora/brain_speech.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'bible':
+        raw = "/home/hclent/data/corpora/bible.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'grecoroman':
+        raw = "/home/hclent/data/corpora/grecoroman_med.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'last_evolution':
+        raw = "/home/hclent/data/corpora/last_evolution.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'mars':
+        raw = "/home/hclent/data/corpora/mars.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'mouse':
+        raw = "/home/hclent/data/corpora/mouse.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'sherlock':
+        raw = "/home/hclent/data/corpora/sherlock.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'yeast':
+        raw = "/home/hclent/data/corpora/yeast.txt"
+        corpus_vec = loadMessages(raw)
+    if corpus == 'chrom1':
+        raw = "/home/hclent/data/corpora/ChromNum01.txt"
+        corpus_vec = loadMessages(raw)
     # For loading the query papers
     # eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
     if corpus == 'paper1':

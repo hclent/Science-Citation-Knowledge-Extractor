@@ -330,7 +330,11 @@ class nesOptions(Form):
 
 class corpusOptions(Form):
 	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),
-											('darwin', 'darwin'), ('austen', 'austen'), ('paper1', 'paper1'),
+											('darwin', 'darwin'), ('austen', 'austen'),
+											('brain_speech','brain_speech'), ('bible','bible'), ('grecoroman','grecoroman'),
+											('last_evolution','last_evolution'), ('mars','mars'), ('mouse','mouse'),
+											('sherlock','sherlock'),('yeast','yeast'),
+											('paper1', 'paper1'),
 											('paper2', 'paper2'),('paper3', 'paper3'), ('paper4', 'paper4'), ('paper5', 'paper5')])
 
 ################ Default CoGe Data #############################
@@ -504,21 +508,45 @@ def coge_scifi():
 		corpus = form.corpus.data
 		logging.info(corpus)
 		query = "18952863+18269575"
-		if corpus == 'startrek':
-			color = 'rgb(63, 100, 168)'
-			title = 'Star Trek: The Next Generation'
-		if corpus == 'frankenstein':
-			color = 'rgb(92, 59, 107)'
-			title = 'Frankenstein; or, The Modern Prometheus'
-		if corpus == 'youth':
-			color = 'rgb(142, 7, 7)'
-			title = 'Youth by Isaac Asimov'
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
+		if corpus == 'yeast':
+			color = 'rgb(8, 114, 32)'
+			title = 'Yeast by Thomas Henry Huxley'
+		if corpus == 'mouse':
+			color = 'rgb(8, 114, 32)'
+			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
+		if corpus == 'brain_speech':
+			color = 'rgb(8, 114, 32)'
+			title = 'The Brain and The Voice in Speech and Song by Mott Frederick Walker'
+		if corpus == 'grecoroman':
+			color = 'rgb(8, 114, 32)'
+			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
+		if corpus == 'startrek':
+			color = 'rgb(63, 100, 168)'
+			title = 'Star Trek: The Next Generation'
+		if corpus == 'mars':
+			color = 'rgb(63, 100, 168)'
+			title = 'Guilliver of Mars by Edwin Arnold'
+		if corpus == 'last_evolution':
+			color = 'rgb(63, 100, 168)'
+			title = 'The Last Evolution by John W. Campbell'
+		if corpus == 'youth':
+			color = 'rgb(142, 7, 7)'
+			title = 'Youth by Isaac Asimov'
+		if corpus == 'frankenstein':
+			color = 'rgb(92, 59, 107)'
+			title = 'Frankenstein; or, The Modern Prometheus'
+		if corpus == 'sherlock':
+			color = 'rgb(92, 59, 107)'
+			title = 'Sherlock Holmes by Sir Arthur Conan Doyle'
 		if corpus == 'austen':
 			color = 'rgb(191, 110, 167)'
 			title = 'Pride and Prejudice'
+		if corpus == 'bible':
+			color = 'rgb(92, 59, 107)'
+			title = 'The Bible'
 		if corpus == 'paper1':
 			color =  'rgb(8, 114, 32)'
 			title =  'PMID: 18952863'
@@ -826,21 +854,45 @@ def results_scifi(query):
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
 		logging.info(corpus)
-		if corpus == 'startrek':
-			color = 'rgb(63, 100, 168)'
-			title = 'Star Trek: The Next Generation'
-		if corpus == 'frankenstein':
-			color = 'rgb(92, 59, 107)'
-			title = 'Frankenstein; or, The Modern Prometheus'
-		if corpus == 'youth':
-			color = 'rgb(142, 7, 7)'
-			title = 'Youth by Isaac Asimov'
 		if corpus == 'darwin':
 			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
+		if corpus == 'yeast':
+			color = 'rgb(8, 114, 32)'
+			title = 'Yeast by Thomas Henry Huxley'
+		if corpus == 'mouse':
+			color = 'rgb(8, 114, 32)'
+			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
+		if corpus == 'brain_speech':
+			color = 'rgb(8, 114, 32)'
+			title = 'The Brain and The Voice in Speech and Song by Mott Frederick Walker'
+		if corpus == 'grecoroman':
+			color = 'rgb(8, 114, 32)'
+			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
+		if corpus == 'startrek':
+			color = 'rgb(63, 100, 168)'
+			title = 'Star Trek: The Next Generation'
+		if corpus == 'mars':
+			color = 'rgb(63, 100, 168)'
+			title = 'Guilliver of Mars by Edwin Arnold'
+		if corpus == 'last_evolution':
+			color = 'rgb(63, 100, 168)'
+			title = 'The Last Evolution by John W. Campbell'
+		if corpus == 'youth':
+			color = 'rgb(142, 7, 7)'
+			title = 'Youth by Isaac Asimov'
+		if corpus == 'frankenstein':
+			color = 'rgb(92, 59, 107)'
+			title = 'Frankenstein; or, The Modern Prometheus'
+		if corpus == 'sherlock':
+			color = 'rgb(92, 59, 107)'
+			title = 'Sherlock Holmes by Sir Arthur Conan Doyle'
 		if corpus == 'austen':
 			color = 'rgb(191, 110, 167)'
 			title = 'Pride and Prejudice'
+		if corpus == 'bible':
+			color = 'rgb(92, 59, 107)'
+			title = 'The Bible'
 		if corpus == 'paper1':
 			color =  'rgb(8, 114, 32)'
 			title =  str('PMID: '+ str(eligible_papers[0][1]))

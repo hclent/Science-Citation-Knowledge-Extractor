@@ -20,11 +20,19 @@
   <div id="buttongroup">
      <div class="col-xs-6 col-sm-4">
     <select class="form-control" id="corpus" name="corpus">
+        <option name="darwin" value="darwin">On the Origin of Species</option>
+        <option name="yeast" value="yeast">Yeast</option>
+        <option name="mouse" value="mouse">The Dancing Mouse</option>
+        <option name="brain_speech" value="brain_speech">The Brain & The Voice</option>
+        <option name="grecoroman" value="grecoroman">Outlines of Greek & Roman Medicine</option>
       <option name="startrek" value="startrek">Star Trek corpus</option>
-  <option name="frankenstein" value="frankenstein">Frankenstein</option>
-  <option name="youth" value="youth">Youth</option>
-  <option name="darwin" value="darwin">On the Origin of Species</option>
+        <option name="mars" value="mars">Guilliver of Mars</option>
+        <option name="last_evolution" value="last_evolution">The Last Evolution</option>
+         <option name="youth" value="youth">Youth</option>
+        <option name="frankenstein" value="frankenstein">Frankenstein</option>
+        <option name="sherlock" value="sherlock">Sherlock Holmes</option>
     <option name="austen" value="austen">Pride and Prejudice</option>
+    <option name="bible" value="bible">The Bible</option>
          {% for user_input in eligible_papers %}
              <option name="{{user_input[0]}}" value="{{user_input[0]}}">PMID: {{user_input[1]}}</option>
 		  	{% endfor %}
