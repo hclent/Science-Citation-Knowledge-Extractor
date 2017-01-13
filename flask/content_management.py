@@ -255,18 +255,22 @@ def inputEligible(query):
 	return eligible_papers
 
 
-# eligible_papers = inputEligible('16393471')
-# print(eligible_papers)
-
 #visualization for scifi div
 def vis_scifi(corpus, query, eligible_papers):
-	corpus_vec = load_corpus(corpus, eligible_papers)
+	corpus_vec, color = load_corpus(corpus, eligible_papers)
+	eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)
 	data_vecs_list = load_datasamples(query)
 	cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
-	sorted_combos = add_urls(query, cosine_list)
-	x, y, names = prepare_for_histogram(sorted_combos)
-	return x, y, names
+	sorted_combos = add_urls(query, cosine_list, color)
+	all_sorted_combos = add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines)
+	x, y, names, color_list = prepare_for_histogram(all_sorted_combos)
+	return x, y, names, color_list
 
+# eligible_papers = inputEligible('18952863')
+# print(eligible_papers)
+# [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
+# x, y, names = vis_scifi('darwin', '18952863+18269575', eligible_papers)
+# print(len(names))
 
 ############ PROCESSING BIODOCS ############################################
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities

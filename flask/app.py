@@ -501,7 +501,6 @@ def coge_stats():
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions(secret_key='super secret key')
-	#decide eligible_papers
 	eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
@@ -509,55 +508,37 @@ def coge_scifi():
 		logging.info(corpus)
 		query = "18952863+18269575"
 		if corpus == 'darwin':
-			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
 		if corpus == 'yeast':
-			color = 'rgb(8, 114, 32)'
 			title = 'Yeast by Thomas Henry Huxley'
 		if corpus == 'mouse':
-			color = 'rgb(8, 114, 32)'
 			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
 		if corpus == 'brain_speech':
-			color = 'rgb(8, 114, 32)'
 			title = 'The Brain and The Voice in Speech and Song by Mott Frederick Walker'
 		if corpus == 'grecoroman':
-			color = 'rgb(8, 114, 32)'
 			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
 		if corpus == 'startrek':
-			color = 'rgb(63, 100, 168)'
 			title = 'Star Trek: The Next Generation'
 		if corpus == 'mars':
-			color = 'rgb(63, 100, 168)'
 			title = 'Guilliver of Mars by Edwin Arnold'
 		if corpus == 'last_evolution':
-			color = 'rgb(63, 100, 168)'
 			title = 'The Last Evolution by John W. Campbell'
 		if corpus == 'youth':
-			color = 'rgb(142, 7, 7)'
 			title = 'Youth by Isaac Asimov'
 		if corpus == 'frankenstein':
-			color = 'rgb(92, 59, 107)'
 			title = 'Frankenstein; or, The Modern Prometheus'
 		if corpus == 'sherlock':
-			color = 'rgb(92, 59, 107)'
 			title = 'Sherlock Holmes by Sir Arthur Conan Doyle'
 		if corpus == 'austen':
-			color = 'rgb(191, 110, 167)'
 			title = 'Pride and Prejudice'
 		if corpus == 'bible':
-			color = 'rgb(92, 59, 107)'
 			title = 'The Bible'
 		if corpus == 'paper1':
-			color =  'rgb(8, 114, 32)'
 			title =  'PMID: 18952863'
-		# if corpus == 'paper2':
-		# 	color =  'rgb(8, 114, 32)'
-		# 	title = 'PMID: 18269575'
-		x, y, names = vis_scifi(corpus, query, eligible_papers)
-
+		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
 		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color, names=names, eligible_papers=eligible_papers)
 	else:
-		flash('Some input paper(s) are not avaliable')
+		flash('Some input paper(s) are not avaliable for TextCompare')
 		return render_template('coge_scifi.html', eligible_papers=eligible_papers)
 
 
@@ -855,70 +836,51 @@ def results_scifi(query):
 		corpus = form.corpus.data
 		logging.info(corpus)
 		if corpus == 'darwin':
-			color = 'rgb(8, 114, 32)'
 			title = 'On The Origin of Species'
 		if corpus == 'yeast':
-			color = 'rgb(8, 114, 32)'
 			title = 'Yeast by Thomas Henry Huxley'
 		if corpus == 'mouse':
-			color = 'rgb(8, 114, 32)'
 			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
 		if corpus == 'brain_speech':
-			color = 'rgb(8, 114, 32)'
 			title = 'The Brain and The Voice in Speech and Song by Mott Frederick Walker'
 		if corpus == 'grecoroman':
-			color = 'rgb(8, 114, 32)'
 			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
 		if corpus == 'startrek':
-			color = 'rgb(63, 100, 168)'
 			title = 'Star Trek: The Next Generation'
 		if corpus == 'mars':
-			color = 'rgb(63, 100, 168)'
 			title = 'Guilliver of Mars by Edwin Arnold'
 		if corpus == 'last_evolution':
-			color = 'rgb(63, 100, 168)'
 			title = 'The Last Evolution by John W. Campbell'
 		if corpus == 'youth':
-			color = 'rgb(142, 7, 7)'
 			title = 'Youth by Isaac Asimov'
 		if corpus == 'frankenstein':
-			color = 'rgb(92, 59, 107)'
 			title = 'Frankenstein; or, The Modern Prometheus'
 		if corpus == 'sherlock':
-			color = 'rgb(92, 59, 107)'
 			title = 'Sherlock Holmes by Sir Arthur Conan Doyle'
 		if corpus == 'austen':
-			color = 'rgb(191, 110, 167)'
 			title = 'Pride and Prejudice'
 		if corpus == 'bible':
-			color = 'rgb(92, 59, 107)'
 			title = 'The Bible'
 		if corpus == 'paper1':
-			color =  'rgb(8, 114, 32)'
 			title =  str('PMID: '+ str(eligible_papers[0][1]))
 		if corpus == 'paper2':
-			color =  'rgb(8, 114, 32)'
 			title = str('PMID: '+ str(eligible_papers[1][1]))
 		if corpus == 'paper3':
-			color = 'rgb(8, 114, 32)'
 			title = str('PMID: ' + str(eligible_papers[2][1]))
 		if corpus == 'paper4':
-			color = 'rgb(8, 114, 32)'
 			title = str('PMID: ' + str(eligible_papers[3][1]))
 		if corpus == 'paper5':
-			color = 'rgb(8, 114, 32)'
 			title = str('PMID: ' + str(eligible_papers[4][1]))
-		x, y, names = vis_scifi(corpus, query, eligible_papers)
+		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 	else:
 		logging.info("scifi analysis")
-		corpus = 'startrek'
-		title = 'Star Trek: The Next Generation'
-		color = 'rgb(63, 100, 168)'
-		x, y, names = vis_scifi(corpus, query, eligible_papers)
+		corpus = 'darwin'
+		title = 'On The Origin of Species'
+		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
 		logging.info("done with x and y")
 		if len(eligible_papers) < len(pmid_list):
-			flash('Some input paper(s) are not avaliable')
+			flash('Some input paper(s) are not avaliable for TextCompare')
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 
 #################### OTHER ####################################################
