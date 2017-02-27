@@ -27,7 +27,7 @@ logging.info('Stopword settings set')
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
   path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx25G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx36G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   logging.info('Annotated something random to initialize bioNLP Processor')
@@ -126,6 +126,30 @@ def loadDocuments(doc):
   logging.debug("* beginning annotation of "  + str(doc) )
   biodoc = api.bionlp.annotate(clean_text) #annotates to JSON  #thread safe?
   logging.debug('the biodoc of ' + str(doc) + ' is type ' + str(type(biodoc)))
+
+  ### let's try some trouble shooting for documents that failed
+  if "processors.ds.Document" not in str(type(biodoc)):
+    logging.debug("annotating this document failed! :( Let's try again HALF SIZE .... ")
+    logging.debug(clean_text)
+    doc_length = len(clean_text)
+    half_length = int(doc_length * 0.5)
+    half_clean_text = clean_text[0:half_length]
+    biodoc = api.bionlp.annotate(half_clean_text)
+    logging.debug('SECOND TRY: the biodoc of ' + str(doc) + ' is type ' + str(type(biodoc)))
+    if "processors.ds.Document" not in str(type(biodoc)):
+      #cut in half
+      doc_length = len(clean_text)
+      qt_length = int(doc_length * 0.25)
+      qt_clean_text = clean_text[0:qt_length]
+      biodoc =  api.bionlp.annotate(qt_clean_text)
+      logging.debug('THIRD TRY (QUARTER SIZE): the biodoc of ' + str(doc) + ' is type ' + str(type(biodoc)))
+      #if that still fails, return a blank json dict
+      if "processors.ds.Document" not in str(type(biodoc)):
+        fake_clean_text = 'error annotating document'
+        biodoc = api.bionlp.annotate(fake_clean_text)
+  #
+  #
+  #
   logging.debug("END OF TASK")
   return biodoc
 

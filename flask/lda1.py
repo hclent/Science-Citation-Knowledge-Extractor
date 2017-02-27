@@ -32,7 +32,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 
 def get_tfidf(data): #data should be a list of strings for the documents
   logging.info("* Preparing to vectorize data ...")
-  tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(1, 2), norm='l2')
+  tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 4), norm='l2')
   logging.info("* Fitting data to vector ...")
   tfidf = tfidf_vectorizer.fit_transform(data)
   logging.info("* Successfully fit data to the vector !!! ")

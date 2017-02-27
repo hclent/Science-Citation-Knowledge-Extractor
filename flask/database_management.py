@@ -105,6 +105,9 @@ def db_citation_pmc_ids(user_input):
 	return db_pmcids
 
 
+
+
+
 #Input: pmid that is cited
 #output: dicts needed for statistics tab
 def db_statistics(user_input):
@@ -146,6 +149,7 @@ def pmid2pmcid(user_input):
 	c.execute('''SELECT pmcid FROM inputPapers WHERE pmid=?''', (user_input,))
 	for pmcid in c:
 		return pmcid[0] #return first thing in tuple ('2836516',)
+		# will return NoneType if its not there apparently :)
 
 
 def retrieveAllPmcids():
@@ -153,6 +157,11 @@ def retrieveAllPmcids():
 	in_db_pmcids = [pmcid[0] for pmcid in c]
 	return in_db_pmcids
 
+
+def retrieveAllPmids():
+	c.execute('''SELECT pmid FROM inputPapers''')
+	pmid_list = [pmid[0] for pmid in c]
+	return pmid_list
 
 #Create table for inputPapers
 # def create_table_input():

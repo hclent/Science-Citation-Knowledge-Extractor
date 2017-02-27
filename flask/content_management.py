@@ -1,5 +1,5 @@
 from processors import * #pyProcessors
-import os.path, time, re, logging, pickle
+import os.path, time, re, logging, pickle, json
 
 from database_management import * #mine
 from Entrez_IR import * #mine
@@ -48,6 +48,22 @@ def multiple_pmid_input(user_input):
 apa_citations will be rendered as 'main' in app.py!!!!
 '''
 
+def annotation_check(user_input):
+	a_check = [] #yes or no
+	pmc_ids = getCitationIDs(user_input)
+	for citation in pmc_ids:
+		prefix = '/home/hclent/data/pmcids/' + str(citation[0:3])  # folder for first 3 digits of pmcid
+		suffix = prefix + '/' + str(citation[3:6])  # folder for second 3 digits of pmcid nested in prefix
+		filename = suffix + '/' + str(citation) + '.json'
+		with open(filename) as data_file:
+			data = json.load(data_file)
+			if "error annotating document" in data["text"][:25]:
+				a_check.append("no")
+			else:
+				a_check.append("yes")
+	return a_check
+
+
 
 #If pmid (user input) in the inputPapers database,
 #get self_info for inputPapers table and
@@ -72,8 +88,12 @@ def run_IR_not_db(user_input):
 
 	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
 	#Get content
+
 	all_abstract_check, all_article_check = getContentPMC(pmc_ids)
 	#main_info is written to the database in app.py
+
+	#check if the document was properly annotated or not
+
 	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls, all_abstract_check, all_article_check))
 
 	return self_info, new_info, target_journals, target_dates, num_citations

@@ -90,6 +90,8 @@ def results():
 				if check1 is None:
 					flash('new pubmedid lol')
 					#Using user_input for Information Retireval of "main info"
+					#This function needs to have a check to not SCRAPE OR ANNOTATE currently existing docs
+					#But still want them in db
 					self_info, new_info, journals, dates, num_citations = run_IR_not_db(user_input)
 
 					'''
@@ -145,19 +147,21 @@ def results():
 
 					logging.info("beginning multi-preprocessing")
 					data, named_entities, total_sentences, sum_tokens = do_ALL_multi_preprocessing(user_input)
+					a_check = annotation_check(user_input)
 
-					#put total_sents and sum_tokens info into db
+					#put total_sents and sum_tokens info and annotation check into db
 					i = 0
 					for tup in new_info:
 						logging.info(tup)
 						pmcid = tup[0]
+						a_ch = a_check[i]
 						logging.info(pmcid)
 						sents = total_sentences[i]
 						logging.info(sents)
 						tokens = sum_tokens[i]
 						logging.info(tokens)
 						conn, c = connection()
-						c.execute("UPDATE citations SET sents=?, tokens=? WHERE pmcid=?", (sents, tokens, pmcid))
+						c.execute("UPDATE citations SET sents=?, tokens=?, annotated=? WHERE pmcid=?", (sents, tokens, a_ch, pmcid))
 						conn.commit()
 						i += 1
 					logging.info("updated the db")
