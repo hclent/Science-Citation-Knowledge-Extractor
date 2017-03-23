@@ -1,0 +1,2235 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Interactive Aminoacid Similarity Network</title>
+		<style>
+            body {position:relative;margin:0 auto;font-family:"Courier","sans-serif";background-color:powder}
+            div{border:0px solid;}
+            input.slider{margin:5px auto;width: 300px;font-size: 1em;}
+			.radioButton{ vertical-align: middle; margin-top: 1px;font-family:"Helvetica Neue","sans-serif";color:darkslategray}
+
+			.aaSection{font-family:"HelveticaNeue-Light","Helvetica Neue","Helvetica","sans-serif"}
+
+			p{font-family:"HelveticaNeue-Light","Helvetica Neue","Helvetica","sans-serif";
+				text-align:justify;
+				font-size:0.9em;
+				clear:both;
+				color:royalblue;}
+			.coloring{position:relative}
+			#groupColor{ position:relative}
+            rect {opacity:0.8; float:right; position:relative;z-index:2}
+			.node {fill:Beige; opacity:1;stroke:teal; stroke-opacity:0.3; stroke-width:1px;}
+			.cursor {fill:none;stroke:brown;pointer-events:none;}
+            .link {}
+            .text { opacity:0.3;}
+            .linklabel{fill:black; opacity:0.3;font-family:"Helvetica Neue","sans-serif";font-size:0.5em}
+            .sliderText{ font-family:"Helvetica Neue","sans-serif";}
+            .info {float:left; font-family:Helvetica; font-size:0.7em}
+            .groupText{font-family:"Helvetica Neue","sans-serif";font-size:1em}
+            .graph{padding-bottom:8px;}
+
+            #container{margin:0 auto;margin-top: 20px;min-width: 600px;max-width: 1208px;border:2px solid;border-color:turquoise;border-radius:15px;min-height: 704px;background-color:white}
+            #header{background-color:turquoise;border-color:turquoise;border-top-left-radius:10px;border-top-right-radius:10px;text-align:center;color:ivory;height:30px;font-size:1.5em;}
+            #graphs{clear:both;}
+            #networkWrap{float:left;width:600px;margin:0 auto;background-color:white}
+            #volcanoWrap{float:left;width:600px;margin:0 auto;background-color:white}
+            #bottom{clear:both;height:20px;border-bottom-right-radius:10px;border-bottom-left-radius:10px;text-align:center;background-color:white}
+
+        </style>
+        <script>
+		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		  ga('create', 'UA-45026694-1', 'ahmetrasit.com');
+		  ga('send', 'pageview');
+
+		</script>
+
+		<!--D3-->
+		<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
+
+
+		<script type="text/javascript">
+
+
+			var coloring = [
+				[
+					{name:'Acidic',color:'gold'},
+					{name:'Aliphatic',color:'coral'},
+					{name:'Aromatic',color:'aquamarine'},
+					{name:'Basic',color:'darkgray'},
+					{name:'Cyclic',color:'darkseagreen'},
+					{name:'Hydroxyl/Sulfur',color:'lavender'},
+				],
+				[
+					{name:'Aliphatic',color:'coral'},
+					{name:'Positive ',color:'gold'},
+					{name:'Polar, neutral',color:'darkgray'},
+					{name:'Negative',color:'darkseagreen'},
+					{name:'Aromatic',color:'aquamarine'},
+				],
+				[
+					{name:'Nonpolar',color:'lavender'},
+					{name:'Basic polar',color:'gold'},
+					{name:'Polar',color:'darkgray'},
+					{name:'Acidic polar',color:'darkseagreen'},
+				],
+				[
+					{name:'Neutral',color:'lavender'},
+					{name:'Positive',color:'gold'},
+					{name:'Negative',color:'darkseagreen'},
+				],
+				[
+					{name:'Hydrophobic',color:'darkgray'},
+					{name:'Hydrophilic',color:'darkseagreen'},
+				],
+				[
+					{name:'Neutral',color:'lavender'},
+					{name:'Acidic',color:'darkseagreen'},
+					{name:'Weak basic',color:'LightGoldenRodYellow '},
+					{name:'Basic',color:'gold'},
+					{name:'Weak acidic',color:'palegreen'},
+				],
+				[
+					{name:'1',color:'darkgray'},
+					{name:'2',color:'darkseagreen'},
+					{name:'3',color:'aquamarine'},
+					{name:'4',color:'lavender'},
+					{name:'6',color:'coral'},
+				],
+				[
+					{name:'Yes',color:'gold'},
+					{name:'No',color:'darkgray'},
+					{name:'Conditionally',color:'lavender'},
+				]
+
+			];
+
+
+			var base2color = [
+				[
+					{name:'A', color:'coral'},
+					{name:'R', color:'darkgray'},
+					{name:'N', color:'gold'},
+					{name:'D', color:'gold'},
+					{name:'C', color:'lavender'},
+					{name:'E', color:'gold'},
+					{name:'Q', color:'gold'},
+					{name:'G', color:'coral'},
+					{name:'H', color:'darkgray'},
+					{name:'I', color:'coral'},
+					{name:'L', color:'coral'},
+					{name:'K', color:'darkgray'},
+					{name:'M', color:'lavender'},
+					{name:'F', color:'aquamarine'},
+					{name:'P', color:'darkseagreen'},
+					{name:'S', color:'lavender'},
+					{name:'T', color:'lavender'},
+					{name:'W', color:'aquamarine'},
+					{name:'Y', color:'aquamarine'},
+					{name:'V', color:'coral'}
+				],
+				[
+					{name:'A', color:'coral'},
+					{name:'R', color:'gold'},
+					{name:'N', color:'darkgray'},
+					{name:'D', color:'darkseagreen'},
+					{name:'C', color:'darkseagreen'},
+					{name:'E', color:'darkseagreen'},
+					{name:'Q', color:'darkgray'},
+					{name:'G', color:'coral'},
+					{name:'H', color:'gold'},
+					{name:'I', color:'coral'},
+					{name:'L', color:'coral'},
+					{name:'K', color:'gold'},
+					{name:'M', color:'coral'},
+					{name:'F', color:'aquamarine'},
+					{name:'P', color:'coral'},
+					{name:'S', color:'darkgray'},
+					{name:'T', color:'darkgray'},
+					{name:'W', color:'aquamarine'},
+					{name:'Y', color:'darkseagreen'},
+					{name:'V', color:'coral'}
+				],
+				[
+					{name:'A', color:'lavender'},
+					{name:'R', color:'gold'},
+					{name:'N', color:'darkgray'},
+					{name:'D', color:'darkseagreen'},
+					{name:'C', color:'lavender'},
+					{name:'E', color:'darkseagreen'},
+					{name:'Q', color:'darkgray'},
+					{name:'G', color:'lavender'},
+					{name:'H', color:'gold'},
+					{name:'I', color:'lavender'},
+					{name:'L', color:'lavender'},
+					{name:'K', color:'gold'},
+					{name:'M', color:'lavender'},
+					{name:'F', color:'lavender'},
+					{name:'P', color:'lavender'},
+					{name:'S', color:'darkgray'},
+					{name:'T', color:'darkgray'},
+					{name:'W', color:'lavender'},
+					{name:'Y', color:'darkgray'},
+					{name:'V', color:'lavender'}
+				],
+				[
+					{name:'A', color:'lavender'},
+					{name:'R', color:'gold'},
+					{name:'N', color:'lavender'},
+					{name:'D', color:'darkseagreen'},
+					{name:'C', color:'lavender'},
+					{name:'E', color:'darkseagreen'},
+					{name:'Q', color:'lavender'},
+					{name:'G', color:'lavender'},
+					{name:'H', color:'lavender'},
+					{name:'I', color:'lavender'},
+					{name:'L', color:'lavender'},
+					{name:'K', color:'gold'},
+					{name:'M', color:'lavender'},
+					{name:'F', color:'lavender'},
+					{name:'P', color:'lavender'},
+					{name:'S', color:'lavender'},
+					{name:'T', color:'lavender'},
+					{name:'W', color:'lavender'},
+					{name:'Y', color:'lavender'},
+					{name:'V', color:'lavender'},
+				],
+				[
+					{name:'A', color:'darkgray'},
+					{name:'R', color:'darkseagreen'},
+					{name:'N', color:'darkseagreen'},
+					{name:'D', color:'darkseagreen'},
+					{name:'C', color:'darkgray'},
+					{name:'E', color:'darkseagreen'},
+					{name:'Q', color:'darkseagreen'},
+					{name:'G', color:'darkgray'},
+					{name:'H', color:'darkseagreen'},
+					{name:'I', color:'darkgray'},
+					{name:'L', color:'darkgray'},
+					{name:'K', color:'darkseagreen'},
+					{name:'M', color:'darkgray'},
+					{name:'F', color:'darkgray'},
+					{name:'P', color:'darkgray'},
+					{name:'S', color:'darkseagreen'},
+					{name:'T', color:'darkseagreen'},
+					{name:'W', color:'darkseagreen'},
+					{name:'Y', color:'darkseagreen'},
+					{name:'V', color:'darkgray'},
+				],
+				[
+					{name:'A', color:'lavender'},
+					{name:'R', color:'gold'},
+					{name:'N', color:'lavender'},
+					{name:'D', color:'darkseagreen'},
+					{name:'C', color:'darkseagreen'},
+					{name:'E', color:'darkseagreen'},
+					{name:'Q', color:'LightGoldenRodYellow '},
+					{name:'G', color:'lavender'},
+					{name:'H', color:'LightGoldenRodYellow '},
+					{name:'I', color:'lavender'},
+					{name:'L', color:'lavender'},
+					{name:'K', color:'gold'},
+					{name:'M', color:'lavender'},
+					{name:'F', color:'lavender'},
+					{name:'P', color:'lavender'},
+					{name:'S', color:'palegreen'},
+					{name:'T', color:'palegreen'},
+					{name:'W', color:'LightGoldenRodYellow '},
+					{name:'Y', color:'palegreen'},
+					{name:'V', color:'lavender'},
+				],
+				[
+					{name:'A', color:'lavender'},
+					{name:'R', color:'coral'},
+					{name:'N', color:'darkseagreen'},
+					{name:'D', color:'darkseagreen'},
+					{name:'C', color:'darkseagreen'},
+					{name:'E', color:'darkseagreen'},
+					{name:'Q', color:'darkseagreen'},
+					{name:'G', color:'lavender'},
+					{name:'H', color:'darkseagreen'},
+					{name:'I', color:'aquamarine'},
+					{name:'L', color:'coral'},
+					{name:'K', color:'darkseagreen'},
+					{name:'M', color:'darkgray'},
+					{name:'F', color:'darkseagreen'},
+					{name:'P', color:'lavender'},
+					{name:'S', color:'coral'},
+					{name:'T', color:'lavender'},
+					{name:'W', color:'darkgray'},
+					{name:'Y', color:'darkseagreen'},
+					{name:'V', color:'lavender'},
+				],
+				[
+					{name:'A', color:'darkgray'},
+					{name:'R', color:'lavender'},
+					{name:'N', color:'darkgray'},
+					{name:'D', color:'darkgray'},
+					{name:'C', color:'lavender'},
+					{name:'E', color:'lavender'},
+					{name:'Q', color:'darkgray'},
+					{name:'G', color:'lavender'},
+					{name:'H', color:'gold'},
+					{name:'I', color:'gold'},
+					{name:'L', color:'gold'},
+					{name:'K', color:'gold'},
+					{name:'M', color:'gold'},
+					{name:'F', color:'gold'},
+					{name:'P', color:'darkgray'},
+					{name:'S', color:'darkgray'},
+					{name:'T', color:'gold'},
+					{name:'W', color:'gold'},
+					{name:'Y', color:'lavender'},
+					{name:'V', color:'gold'},
+				]
+
+			];
+
+
+			var aa2size = [
+				[
+				//empty for substitution matrix
+				],
+				[
+					{name:'A', value:'1.8'},
+					{name:'R', value:'-4.5'},
+					{name:'N', value:'-3.5'},
+					{name:'D', value:'-3.5'},
+					{name:'C', value:'2.5'},
+					{name:'E', value:'-3.5'},
+					{name:'Q', value:'-3.5'},
+					{name:'G', value:'-0.4'},
+					{name:'H', value:'-3.2'},
+					{name:'I', value:'4.5'},
+					{name:'L', value:'3.8'},
+					{name:'K', value:'-3.9'},
+					{name:'M', value:'1.9'},
+					{name:'F', value:'2.8'},
+					{name:'P', value:'-1.6'},
+					{name:'S', value:'-0.8'},
+					{name:'T', value:'-0.7'},
+					{name:'W', value:'-0.9'},
+					{name:'Y', value:'-1.3'},
+					{name:'V', value:'4.2'},
+				],
+				[
+					{name:'A', value:'6.01'},
+					{name:'R', value:'10.76'},
+					{name:'N', value:'5.41'},
+					{name:'D', value:'2.85'},
+					{name:'C', value:'5.05'},
+					{name:'E', value:'3.15'},
+					{name:'Q', value:'5.65'},
+					{name:'G', value:'6.06'},
+					{name:'H', value:'7.6'},
+					{name:'I', value:'6.05'},
+					{name:'L', value:'6.01'},
+					{name:'K', value:'9.6'},
+					{name:'M', value:'5.74'},
+					{name:'F', value:'5.49'},
+					{name:'P', value:'6.3'},
+					{name:'S', value:'5.68'},
+					{name:'T', value:'5.6'},
+					{name:'W', value:'5.89'},
+					{name:'Y', value:'5.64'},
+					{name:'V', value:'6'},
+				],
+				[
+					{name:'A', value:'2.35'},
+					{name:'R', value:'1.82'},
+					{name:'N', value:'2.14'},
+					{name:'D', value:'1.99'},
+					{name:'C', value:'1.92'},
+					{name:'E', value:'2.1'},
+					{name:'Q', value:'2.17'},
+					{name:'G', value:'2.35'},
+					{name:'H', value:'1.8'},
+					{name:'I', value:'2.32'},
+					{name:'L', value:'2.33'},
+					{name:'K', value:'2.16'},
+					{name:'M', value:'2.13'},
+					{name:'F', value:'2.2'},
+					{name:'P', value:'1.95'},
+					{name:'S', value:'2.19'},
+					{name:'T', value:'2.09'},
+					{name:'W', value:'2.46'},
+					{name:'Y', value:'2.2'},
+					{name:'V', value:'2.39'},
+				],
+				[
+					{name:'A', value:'9.87'},
+					{name:'R', value:'8.99'},
+					{name:'N', value:'8.72'},
+					{name:'D', value:'9.9'},
+					{name:'C', value:'10.7'},
+					{name:'E', value:'9.47'},
+					{name:'Q', value:'9.13'},
+					{name:'G', value:'9.78'},
+					{name:'H', value:'9.33'},
+					{name:'I', value:'9.76'},
+					{name:'L', value:'9.74'},
+					{name:'K', value:'9.06'},
+					{name:'M', value:'9.28'},
+					{name:'F', value:'9.31'},
+					{name:'P', value:'10.64'},
+					{name:'S', value:'9.21'},
+					{name:'T', value:'9.1'},
+					{name:'W', value:'9.41'},
+					{name:'Y', value:'9.21'},
+					{name:'V', value:'9.74'},
+				],
+				[
+					{name:'A', value:'67'},
+					{name:'R', value:'148'},
+					{name:'N', value:'96'},
+					{name:'D', value:'91'},
+					{name:'C', value:'86'},
+					{name:'E', value:'109'},
+					{name:'Q', value:'114'},
+					{name:'G', value:'48'},
+					{name:'H', value:'118'},
+					{name:'I', value:'124'},
+					{name:'L', value:'124'},
+					{name:'K', value:'135'},
+					{name:'M', value:'124'},
+					{name:'F', value:'135'},
+					{name:'P', value:'90'},
+					{name:'S', value:'73'},
+					{name:'T', value:'93'},
+					{name:'W', value:'163'},
+					{name:'Y', value:'141'},
+					{name:'V', value:'105'},
+				],
+				[
+					{name:'A', value:'7.8'},
+					{name:'R', value:'5.1'},
+					{name:'N', value:'4.3'},
+					{name:'D', value:'5.3'},
+					{name:'C', value:'1.9'},
+					{name:'E', value:'6.3'},
+					{name:'Q', value:'4.2'},
+					{name:'G', value:'7.2'},
+					{name:'H', value:'2.3'},
+					{name:'I', value:'5.3'},
+					{name:'L', value:'9.1'},
+					{name:'K', value:'5.9'},
+					{name:'M', value:'2.3'},
+					{name:'F', value:'3.9'},
+					{name:'P', value:'5.2'},
+					{name:'S', value:'6.8'},
+					{name:'T', value:'5.9'},
+					{name:'W', value:'1.4'},
+					{name:'Y', value:'3.2'},
+					{name:'V', value:'6.6'},
+				],
+				[
+					{name:'A', value:'71.0788'},
+					{name:'R', value:'156.1875'},
+					{name:'N', value:'114.1039'},
+					{name:'D', value:'115.0886'},
+					{name:'C', value:'103.1388'},
+					{name:'E', value:'129.1155'},
+					{name:'Q', value:'128.1307'},
+					{name:'G', value:'57.0519'},
+					{name:'H', value:'137.1411'},
+					{name:'I', value:'113.1594'},
+					{name:'L', value:'113.1594'},
+					{name:'K', value:'128.1741'},
+					{name:'M', value:'131.1986'},
+					{name:'F', value:'147.1766'},
+					{name:'P', value:'97.1167'},
+					{name:'S', value:'87.0782'},
+					{name:'T', value:'101.1051'},
+					{name:'W', value:'186.2132'},
+					{name:'Y', value:'163.176'},
+					{name:'V', value:'99.1326'},
+				]
+			];
+
+			var sizeIndex = 0;
+
+
+			var graph;
+			var currFile = "BLOSUM62";
+			var currLimit = 1;
+			var currLinks = [];
+			var currLinkValues = [];
+			var currAa = [];
+
+			function myGraph(el) {
+
+				// Add and remove elements on the graph object
+				this.addNode = function (id, r, c) {
+					nodes.push({"id":id, "r":r, "color":c});
+					update();
+				};
+
+				this.removeNode = function (id) {
+					var i = 0;
+					var n = findNode(id);
+					while (i < links.length) {
+						if ((links[i]["source"] == n)||(links[i]["target"] == n))
+						{
+							links.splice(i,1);
+						}
+						else i++;
+					}
+					nodes.splice(findNodeIndex(id),1);
+					update();
+				};
+
+				this.removeLink = function (source,target){
+					for(var i=0;i<links.length;i++)
+					{
+						if(links[i].source.id == source && links[i].target.id == target)
+						{
+							links.splice(i,1);
+							break;
+						}
+					}
+					update();
+				};
+
+				this.removeallLinks = function(){
+					links.splice(0,links.length);
+					update();
+				};
+
+				this.removeAllNodes = function(){
+					nodes.splice(0,links.length);
+					update();
+				};
+
+				this.addLink = function (source, target, value) {
+					links.push({"source":findNode(source),"target":findNode(target),"value":value});
+					update();
+				};
+
+				var findNode = function(id) {
+					for (var i in nodes) {
+						if (nodes[i]["id"] === id) return nodes[i];};
+				};
+
+				var findNodeIndex = function(id) {
+					for (var i=0;i<nodes.length;i++) {
+						if (nodes[i].id==id){
+							return i;
+						}
+					};
+				};
+
+				// set up the D3 visualisation in the specified element
+				var w = 600,
+					h = 600;
+				var vis = d3.select("#graph")
+					.append("svg:svg")
+					.attr("width", w)
+					.attr("height", h)
+					.attr("id","svg")
+					.attr("pointer-events", "all")
+					//.attr("viewBox","0 0 "+w+" "+h)
+					.attr("perserveAspectRatio","xMinYMid")
+					.append("svg:g");
+
+				var force = d3.layout.force();
+
+				var nodes = force.nodes(),
+					links = force.links();
+
+				var update = function () {
+					var link = vis.selectAll("line")
+						.data(links, function(d) {
+							return d.source.id + "-" + d.target.id;
+							});
+
+					link.enter().append("line")
+						.attr("id",function(d){return d.source.id + "-" + d.target.id;})
+						.attr("opacity", 1)
+						.attr("stroke-width", 1)
+						.attr("stroke", "blue")
+						.transition().duration(500)
+						.attr("opacity", 0.3)
+						.attr("stroke-width", function(d){return (Math.abs(d.value)+1)*1.5})
+						.attr("stroke", function(d){
+							if (d.value>0){return "teal"}else{return "pink"}})
+						.attr("class","link");
+					link.append("title")
+					.text(function(d){return d.value;});
+
+					link.exit().transition().delay(500).remove();
+
+
+
+
+
+					var node = vis.selectAll("g.node")
+						.data(nodes, function(d) {
+							return d.id;}).on('mouseover', showAaInfo);
+
+					var nodeEnter = node.enter().append("g")
+						.attr("class", "node")
+						.call(force.drag);
+
+					nodeEnter.append("svg:circle")
+					.attr("r", function(d){return d.r*3})
+					.attr("id",function(d) { return "Node_"+d.id;})
+					.attr("fill", function(d){return d.color})
+					.attr("class","nodeStrokeClass");
+
+					nodeEnter.append("svg:text")
+					.attr("text-anchor", "middle")
+					.attr("class","textClass")
+					.attr("id",function(d) { return "Node_"+d.id;})
+					.attr("fill", "black")
+					.attr("font-size", function(d){return d.r*6})
+					.attr("text-align", "center")
+					//.attr("dx", function(d){return -d.r*1.2})
+					.attr("dy", function(d){return d.r*1.9})
+					.text( function(d){return d.id;});
+
+					node.exit().remove();
+					force.friction(0.9);
+					force.on("tick", function() {
+
+
+
+						node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y         + ")"; });
+
+						link.attr("x1", function(d) { return d.source.x; })
+						  .attr("y1", function(d) { return d.source.y; })
+						  .attr("x2", function(d) { return d.target.x; })
+						  .attr("y2", function(d) { return d.target.y; });
+
+
+					});
+
+					// Restart the force layout.
+					force
+					.gravity(.2)
+					.friction(0.7)
+					.charge(-1200)
+					.distance(100)
+					.linkDistance(100)
+					.size([w, h])
+					.start();
+				};
+
+
+				// Make it all go
+				update();
+
+			}
+
+
+
+
+			function initialize(){
+				graph = new myGraph("#graph");
+				data = [];
+				skipList = ["*", "B", "Z", "X"];
+				//aaColor = ["Aquamarine", "Aquamarine", "Aquamarine", "DarkGray", "DarkGray", "DarkGray", "DarkSeaGreen", "DarkSeaGreen", "DarkSeaGreen", "coral", "coral", "coral", "coral", "Lavender", "Lavender", "Lavender", "Gold", "Gold", "Gold"]
+				d3.csv("BLOSUM62.csv", function(curr){
+					data = curr;
+					for(var i=0; i<data.length; i++){
+
+						currAa[i] = data[i][""];
+						if (skipList.indexOf(currAa[i]) > -1 ){continue;}
+						graph.addNode(data[i][""], data[i][currAa[i]], base2color[0][i].color);
+
+					}
+
+					for(var j=0; j<currAa.length; j++){
+						if (skipList.indexOf(currAa[j]) > -1 ){continue;}
+						for(var i=j; i<data.length; i++){
+							if (skipList.indexOf(currAa[i]) > -1 ){continue;}
+							if(data[i][currAa[j]] >= currLimit){
+								pair = [currAa[i], currAa[j]];
+								pair = pair.sort();
+								graph.addLink(pair[0], pair[1], Math.abs((data[i][currAa[j]]+20))/50);
+								currLinks.push(pair[0] + "-" + pair[1]);
+								currLinkValues.push(data[i][currAa[j]]);
+								//console.log(pair[0] + "-" + pair[1]);
+							}
+						}
+					}
+					//console.log(aalist);
+				});
+
+
+				var sliderData = [	{"label":"30", "x":0, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"35", "x":23, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"40", "x":40, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"45", "x":64, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"50", "x":80, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"55", "x":104, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"60", "x":123, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"62", "x":130, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"65", "x":147, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"70", "x":162, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"75", "x":186, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"80", "x":203, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"85", "x":226, "y":10, "fs":"0.5em", "fc":"black"},
+									{"label":"90", "x":244, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"100", "x":280, "y":20, "fs":"0.9em", "fc":"black"},
+									{"label":"-4", "x":311, "y":15, "fs":"0.9em", "fc":"red"},
+									{"label":"-3", "x":346, "y":15, "fs":"0.9em", "fc":"red"},
+									{"label":"-2", "x":382, "y":15, "fs":"0.9em", "fc":"red"},
+									{"label":"-1", "x":418, "y":15, "fs":"0.9em", "fc":"red"},
+									{"label":"0", "x":454, "y":20, "fs":"1.4em", "fc":"red"},
+									{"label":"1", "x":491, "y":15, "fs":"0.9em", "fc":"blue"},
+									{"label":"2", "x":528, "y":15, "fs":"0.9em", "fc":"blue"},
+									{"label":"3", "x":563, "y":15, "fs":"0.9em", "fc":"blue"},
+									{"label":"4", "x":598, "y":15, "fs":"0.9em", "fc":"blue"},
+									{"label":"BLOSUM % IDENTITY", "x":70, "y":-3, "fs":"1em", "fc":"gainsboro"},
+									{"label":"SUBSTITION SCORE THRESHOLD", "x":335, "y":-3, "fs":"1em", "fc":"gainsboro"}
+					];
+				var sl = d3.select("#blosumSlider").append("svg")
+							.attr("height", 35)
+							.attr("width", 620)
+							.attr("color", "ligthgray");
+						sl.selectAll("text")
+							.data(sliderData).enter().append("svg:text")
+							.attr("class", "sliderText")
+							.text(function(d){return d.label})
+							.attr("x", function(d){return d.x} )
+							.attr("y", function(d){return d.y+15})
+							.attr("font-size", function(d){return d.fs})
+							.attr("fill", function(d){return d.fc});
+
+				updateNodeSizeRadioButton();
+				updateNodeColorRadioButton();
+
+
+				var gc = d3.select("div#groupColor").append('svg')
+					.attr("width", 350)
+					.attr("height", 100);
+
+				var rect = gc.selectAll("rect").data([0,1,2,3,4,5]).enter();
+
+				rect.append("rect").attr("fill", "snow")
+					.attr('class', 'coloring')
+					.attr('id', function(d){return "_"+d;})
+					//.attr('top', function(d,i){return i*10})
+					//.attr('position', 'relative')
+					.attr("width", 110)
+					.attr("height", 40)
+					.attr('x', function(d,i){
+						if(i<3){return i*115}
+						else{return (i-3)*115}
+					})
+					.attr('y', function(d,i){
+						if(i<3){return 0}
+						else{return 45}
+					});
+				rect.append('text').text('empty')
+					.attr('class', 'groupText')
+					.attr('id', function(d){return "_t"+d;})
+					.attr('y', 20)
+					.attr('x', function(d,i){
+						if(i<3){return i*115+54}
+						else{return (i-3)*115+54}
+					})
+					.attr('y', function(d,i){
+						if(i<3){return 25}
+						else{return 70}
+					})
+					.attr('text-anchor', 'middle');
+
+				nodeColor(coloring[0],0);
+
+			}
+
+
+
+			function newMatrix(newFile, limit){
+				newAa = [];
+				skipList = ["*", "B", "Z", "X"];
+				//console.log("|"+newFile + "|");
+				//not valid for sizeIndex=0 since it is for substitution matrix
+				var curr = aa2size[sizeIndex];
+				var temp=[];
+				var dict = {};
+				for(var i=0;i<curr.length;i++){
+					temp.push(parseFloat(curr[i].value));
+					dict[curr[i].name] = curr[i].value;
+				}
+				var domainCurr = d3.extent(temp);
+				var sizeScale = d3.scale.linear().domain(domainCurr).range([15,40])
+				//console.log("domain:\t" + domainCurr);
+
+					d3.csv(newFile+".csv", function(newData){
+						for(var i=0; i<newData.length; i++){
+							newAa[i] = newData[i][""];
+							newAaIndex = currAa.indexOf(newAa[i]);
+							if (newAa[i] != currAa[i]){
+								console.log("the order of two files do not match!");
+								console.log(newAa[i] + currAa[i]);
+								}
+							if (skipList.indexOf(newAa[i]) > -1 ){continue;}
+							//console.log(newAa[i]);
+							//console.log(newData[i][newAa[i]]);
+
+							var rValue;
+
+							if (sizeIndex == 0){
+								rValue = newData[i][newAa[i]]*3;
+							}else {
+								rValue = sizeScale(parseFloat(dict[newAa[i]]));
+								//console.log(newAa[i] + rValue + " " + dict[newAa[i]]);
+							}
+
+
+							d3.selectAll("circle#Node_" + newAa[i]).transition().duration(500).ease("elastic")
+								.attr("r", rValue);
+							d3.selectAll("text#Node_" + newAa[i]).transition().duration(500).ease("elastic")
+								.attr("text-anchor", "middle")
+								.attr("font-size", rValue*2)
+								//.attr("dx", function(d){return rValue*1.2/3})
+								.attr("dy", function(d){return rValue*1.9/3});
+						}
+
+
+
+
+						for(var i=0; i<newAa.length; i++){
+							if (skipList.indexOf(newAa[i]) > -1 ){continue;}
+							for(var j=i; j<newAa.length; j++){
+								if (skipList.indexOf(newAa[j]) > -1 ){continue;}
+
+								pair = [newAa[i], newAa[j]];
+								pair = pair.sort();
+
+								var linkIndex = currLinks.indexOf(pair[0] + "-" + pair[1]);
+
+								if (linkIndex>-1){
+									if (newData[i][newAa[j]] >= limit){
+										if (currLinkValues[linkIndex] == newData[i][newAa[j]]){
+											//do nothing, no change
+										}else {	//strength of the link changes
+											//graph.removeLink(pair[0], pair[1]);
+											//graph.addLink(pair[0], pair[1], newData[i][newAa[j]]);
+											d3.select("line#"+ pair[0] + "-" + pair[1])
+												.attr("opacity", 1)
+												.attr("stroke", "gray")
+												.transition().duration(500).ease("elastic")
+												.attr("opacity", 0.3)
+												.attr("stroke-width", function(d){return d.value*1.5})
+												.attr("stroke", "teal");
+											currLinkValues[linkIndex] = newData[i][newAa[j]];
+											//console.log("SC>\t" + pair + currLinkValues[linkIndex] +"-"+ newData[i][newAa[j]]);
+										}
+									}else {
+										d3.select("line#"+ pair[0] + "-" + pair[1])
+												.attr("opacity", 1)
+												.attr("stroke", "red")
+												.transition().duration(500).ease("elastic")
+												.attr("opacity", 0);
+										graph.removeLink(pair[0], pair[1]);
+										currLinks.splice(linkIndex,1);
+										currLinkValues.splice(linkIndex,1);
+										//console.log("RM>\t"+ pair + "-" + data[i][currAa[j]]);
+									}
+								}else {
+									if (newData[i][newAa[j]]>=limit){
+										//console.log(newData[i][newAa[j]]>limit);
+										//console.log(newData[i][newAa[j]] + " > " + limit);
+										//console.log(typeof(newData[i][newAa[j]]) + "   " + typeof(limit));
+										graph.addLink(pair[0], pair[1], newData[i][newAa[j]]);
+										currLinks.push(pair[0] + "-" + pair[1]);
+										currLinkValues.push(data[i][currAa[j]]);
+										//console.log("NP>\t" + limit + "\t" + pair + "-" + data[i][currAa[j]])
+
+									}else {
+										//do nothing, no change
+									}
+								}
+
+							}
+						}
+
+					//console.log(aalist);
+				});
+				currFile = newFile;
+				currLimit = limit;
+			}
+
+
+			function showAaInfo(d,i){
+				var info = [
+							{name:'A',long:'Alanine',short:'Ala , A',def:'Very abundant, very versatile. More stiff than glycine, but small enough to pose only small steric limits for the protein conformation. It behaves fairly neutrally, and can be located in both hydrophilic regions on the protein outside and the hydrophobic areas inside.',codons:'GCU, GCC, GCA, GCG',stats:'71.0788 Da | 7.8%',},
+							{name:'R',long:'Arginine',short:'Arg , R',def:'Functionally similar to lysine.',codons:'CGU, CGC, CGA, CGG, AGA, AGG',stats:'156.1875 Da | 5.1%',},
+							{name:'N',long:'Asparagine',short:'Asn , N',def:'Similar to aspartic acid. Asn contains an amide group where Asp has a carboxyl.',codons:'AAU, AAC',stats:'114.1039 Da | 4.3%',},
+							{name:'D',long:'Aspartic acid',short:'Asp , D',def:'Behaves similarly to glutamic acid. Carries a hydrophilic acidic group with strong negative charge. Usually is located on the outer surface of the protein, making it water-soluble. Binds to positively-charged molecules and ions, often used in enzymes to fix the metal ion. When located inside of the protein, aspartate and glutamate are usually paired with arginine and lysine.',codons:'GAU, GAC',stats:'115.0886 Da | 5.3%',},
+							{name:'C',long:'Cysteine',short:'Cys , C',def:'The sulfur atom bonds readily to heavy metal ions. Under oxidizing conditions, two cysteines can join together in a disulfide bond to form the amino acid cystine. When cystines are part of a protein, insulin for example, the tertiary structure is stabilized, which makes the protein more resistant to denaturation; therefore, disulfide bonds are common in proteins that have to function in harsh environments including digestive enzymes (e.g., pepsin and chymotrypsin) and structural proteins (e.g., keratin). Disulfides are also found in peptides too small to hold a stable shape on their own (e.g. insulin).',codons:'UGU, UGC',stats:'103.1388 Da | 1.9%',},
+							{name:'Q',long:'Glutamine',short:'Gln , Q',def:'Similar to glutamic acid. Gln contains an amide group where Glu has a carboxyl. Used in proteins and as a storage for ammonia. The most abundant Amino Acid in the body.',codons:'CAA, CAG',stats:'128.1307 Da | 4.2%',},
+							{name:'E',long:'Glutamic acid',short:'Glu , E',def:'Behaves similarly to aspartic acid. Has longer, slightly more flexible side chain.',codons:'GAA, GAG',stats:'129.1155 Da | 6.3%',},
+							{name:'G',long:'Glycine',short:'Gly , G',def:'Because of the two hydrogen atoms at the α carbon, glycine is not optically active. It is the smallest amino acid, rotates easily, adds flexibility to the protein chain. It is able to fit into the tightest spaces, e.g., the triple helix of collagen. As too much flexibility is usually not desired, as a structural component it is less common than alanine.',codons:'GGU, GGC, GGA, GGG',stats:'57.0519 Da | 7.2%',},
+							{name:'H',long:'Histidine',short:'His , H',def:'In even slightly acidic conditions protonation of the nitrogen occurs, changing the properties of histidine and the polypeptide as a whole. It is used by many proteins as a regulatory mechanism, changing the conformation and behavior of the polypeptide in acidic regions such as the late endosome or lysosome, enforcing conformation change in enzymes. However only a few histidines are needed for this, so it is comparatively scarce.',codons:'CAU, CAC',stats:'137.1411 Da | 2.3%',},
+							{name:'I',long:'Isoleucine',short:'Ile , I',def:'Essential for humans. Isoleucine, leucine and valine have large aliphatic hydrophobic side chains. Their molecules are rigid, and their mutual hydrophobic interactions are important for the correct folding of proteins, as these chains tend to be located inside of the protein molecule.',codons:'AUU, AUC, AUA',stats:'113.1594 Da | 5.3%',},
+							{name:'L',long:'Leucine',short:'Leu , L',def:'Essential for humans. Behaves similar to isoleucine and valine. See isoleucine.',codons:'UUA, UUG, CUU, CUC, CUA, CUG',stats:'113.1594 Da | 9.1%',},
+							{name:'K',long:'Lysine',short:'Lys , K',def:'Essential for humans. Behaves similarly to arginine. Contains a long flexible side-chain with a positively-charged end. The flexibility of the chain makes lysine and arginine suitable for binding to molecules with many negative charges on their surfaces. E.g., DNA-binding proteins have their active regions rich with arginine and lysine. The strong charge makes these two amino acids prone to be located on the outer hydrophilic surfaces of the proteins; when they are found inside, they are usually paired with a corresponding negatively-charged amino acid, e.g., aspartate or glutamate.',codons:'AAA, AAG',stats:'128.1741 Da | 5.9%',},
+							{name:'M',long:'Methionine',short:'Met , M',def:'Essential for humans. Always the first amino acid to be incorporated into a protein; sometimes removed after translation. Like cysteine, contains sulfur, but with a methyl group instead of hydrogen. This methyl group can be activated, and is used in many reactions where a new carbon atom is being added to another molecule.',codons:'AUG',stats:'131.1986 Da | 2.3%',},
+							{name:'F',long:'Phenylalanine',short:'Phe , F',def:'Essential for humans. Phenylalanine, tyrosine, and tryptophan contain large rigid aromatic group on the side-chain. These are the biggest amino acids. Like isoleucine, leucine and valine, these are hydrophobic and tend to orient towards the interior of the folded protein molecule. Phenylalanine can be converted into Tyrosine.',codons:'UUU, UUC',stats:'147.1766 Da | 3.9%',},
+							{name:'P',long:'Proline',short:'Pro , P',def:'Contains an unusual ring to the N-end amine group, which forces the CO-NH amide sequence into a fixed conformation. Can disrupt protein folding structures like α helix or β sheet, forcing the desired kink in the protein chain. Common in collagen, where it often undergoes a posttranslational modification to hydroxyproline.',codons:'CCU, CCC, CCA, CCG',stats:'97.1167 Da | 5.2%',},
+							{name:'S',long:'Serine',short:'Ser , S',def:'Serine and threonine have a short group ended with a hydroxyl group. Its hydrogen is easy to remove, so serine and threonine often act as hydrogen donors in enzymes. Both are very hydrophilic, therefore the outer regions of soluble proteins tend to be rich with them.',codons:'UCU, UCC, UCA, UCG, AGU, AGC',stats:'87.0782 Da | 6.8%',},
+							{name:'T',long:'Threonine',short:'Thr , T',def:'Essential for humans. Behaves similarly to serine.',codons:'ACU, ACC, ACA, ACG',stats:'101.1051 Da | 5.9%',},
+							{name:'W',long:'Tryptophan',short:'Trp , W',def:'Essential for humans. Behaves similarly to phenylalanine and tyrosine (see phenylalanine). Precursor of serotonin. Naturally fluorescent.',codons:'UGG',stats:'186.2132 Da | 1.4%',},
+							{name:'Y',long:'Tyrosine',short:'Tyr , Y',def:'Behaves similarly to phenylalanine (precursor to Tyrosine) and tryptophan (see phenylalanine). Precursor of melanin, epinephrine, and thyroid hormones. Naturally fluorescent, although fluorescence is usually quenched by energy transfer to tryptophans.',codons:'UAU, UAC',stats:'163.176 Da | 3.2%',},
+							{name:'V',long:'Valine',short:'Val , V',def:'Essential for humans. Behaves similarly to isoleucine and leucine. See isoleucine.',codons:'GUU, GUC, GUA, GUG',stats:'99.1326 Da | 6.6%',},
+				];
+
+				console.log(d.id+i);
+				d3.select('div#aaLong').text(info[i].long);
+				d3.select('div#aaShorts').text(info[i].short);
+				d3.select('div#aaCodons').text(info[i].codons);
+				d3.select('div#aaMassAndOccurrence').text(info[i].stats);
+				d3.select('div#aaDefinition').text(info[i].def);
+				d3.select('img#aaImage').attr('src', "./"+info[i].name+".png");
+				if (info[i].name == "G"){
+					d3.select('img#aaImage').attr('height', 80);
+				}else{
+					d3.select('img#aaImage').attr('height', 100);
+				}
+
+
+			}
+
+
+			function updateNodeSizeRadioButton(){
+				var nodeSizeValues = ["Matrix score", "Hydropathy", "pI", "pK1", "pK2", "van der Waals", "Occurrence", "Mass(Da)"];
+				var form = d3.select("#nodeSizeRB").append("form");
+				var j = 0;
+
+				var labelEnter = form.selectAll("div")
+					.data(nodeSizeValues)
+					.enter().append("div");
+
+				labelEnter.append("input").on("click", nodeSize)
+					.attr({
+						type: "radio",
+						class: "radioButton1",
+						name: "ns",
+						id: function(d,i){return 'rb1_'+i;},
+						value: function(d, i) {return i;}
+					})
+					.property("checked", function(d, i) {
+						return (i===j);
+					});
+				labelEnter.append("label").on("mouseover", nodeSizeTooltip).attr('for', function(d,i){return 'rb1_'+i;}).text(function(d){return d;});
+
+			}
+
+
+			function updateNodeColorRadioButton(){
+				var nodeSizeValues = ["Chemical1", "Chemical2", "Polarity", "Charge", "Hydrophobicity", "Acid or Base", "Codon count", "Essentiality"];
+				var form = d3.select("#nodeColorRB").append("form");
+				var j = 0;
+
+				var labelEnter = form.selectAll("div")
+					.data(nodeSizeValues)
+					.enter().append("div");
+
+				labelEnter.append("input").on("click", nodeColor)
+					.attr({
+						type: "radio",
+						class: "radioButton2",
+						name: "nc",
+						id: function(d,i){return 'rb2_'+i;},
+						value: function(d, i) {return i;}
+					})
+					.property("checked", function(d, i) {
+						return (i===j);
+					});
+
+				labelEnter.append("label").on("mouseover", nodeColorTooltip).attr('for', function(d,i){return 'rb2_'+i;}).text(function(d){return d;});
+			}
+
+
+			function changeLimit(){
+				var limit = d3.select("#limit").property("value")
+				newMatrix(currFile, parseInt(limit));
+				console.log(currFile, limit);
+			}
+
+
+			function nodeSizeTooltip(d, i){
+				var tooltip = [	"Hydrophobic > Hydrophilic",
+								"Isoelectric point(pH)",
+								"a-COOH",
+								"a-NH3",
+								"van der Waals volume",
+								"% in human proteins ",
+								"without water",
+					];
+				console.log(tooltip[i]);
+
+			}
+
+			function nodeSize(d,i){
+				var aalist = ['A','R','N','D','C','E','Q','G','H','I','L','K','M','F','P','S','T','W','Y','V'];
+
+				sizeIndex = i;
+				//console.log(sizeIndex);
+
+				var curr = aa2size[sizeIndex];
+				var temp=[];
+				var dict = {};
+				for(var i=0;i<curr.length;i++){
+					temp.push(parseFloat(curr[i].value));
+					dict[curr[i].name] = curr[i].value;
+				}
+				var domainCurr = d3.extent(temp);
+				var sizeScale = d3.scale.linear().domain(domainCurr).range([15,40])
+				//console.log(dict);
+
+				var rValue;
+
+				if (sizeIndex == 0){
+					newMatrix(currFile, currLimit)
+				}else {
+					for(var k=0; k<aalist.length; k++){
+						rValue = sizeScale(parseFloat(dict[aalist[k]]));
+						//console.log(dict[aalist[k]]);
+						//console.log(rValue);
+						d3.selectAll("circle#Node_" + aalist[k]).transition().duration(500).ease("elastic")
+							.attr("r", rValue);
+						d3.selectAll("text#Node_" + aalist[k]).transition().duration(500).ease("elastic")
+							.attr("text-anchor", "middle")
+							.attr("font-size", rValue*2)
+							//.attr("dx", function(d){return rValue*1.2/3})
+							.attr("dy", function(d){return rValue*1.9/3});
+					}
+
+				}
+
+			}
+
+
+
+			function nodeColorTooltip(d, i){
+				var tooltip = [	"Chemical grouping 1",
+								"Chemical grouping, charge focused",
+								"Polarity of aa",
+								"Charge of aa",
+								"Hydrophobic or Hydrophilic",
+								"Acid or base",
+								"# of codons",
+								"Essential or not"
+					];
+				console.log(tooltip[i]);
+				//console.log(d+i);
+			}
+
+
+			function nodeColor(d, i){
+
+				//var gc = d3.select("div#groupColor");
+
+				var curr=coloring[i];
+				var curr2 = base2color[i];
+
+				for (var i=0; i<curr.length; i++){
+					//console.log(curr[i].name);
+					d3.select("rect#_"+i).attr('fill', curr[i].color);
+					d3.select("text#_t"+i).text(curr[i].name);
+				}
+
+				for (var i=0; i<curr2.length; i++){
+					d3.select("circle#Node_"+curr2[i].name).attr('fill', curr2[i].color);
+					//console.log(curr2[i].name + "\t" + curr2[i].color);
+
+				}
+
+
+
+
+
+				for (var i=curr.length; i<6; i++){
+					d3.select("rect#_"+i).attr('fill', 'snow');
+					d3.select("text#_t"+i).text(' ');
+				}
+
+
+				//console.log("temp");
+
+
+			}
+
+
+			function changePerc(){
+				var percentage = d3.select("#percentage").property("value")
+				value = percentage;
+				//console.log(percentage)
+				if(percentage>60 && percentage<64){
+					d3.select("#percentage").property("value", 62)
+					value = 62;
+				}else if(percentage>93 ){
+					d3.select("#percentage").property("value", 100)
+					value = 100;
+				}else{
+					var second = Math.floor(percentage/5);
+					var rem = percentage % 5;
+					if (rem>3){
+						d3.select("#percentage").property("value", 5*(second+1))
+						value = 5*(second+1);
+					}else{
+						d3.select("#percentage").property("value", 5*second)
+						value = 5*second;
+					}
+				}
+				newMatrix("BLOSUM"+value, parseInt(d3.select("#limit").property("value")));
+				console.log("BLOSUM"+value, d3.select("#limit").property("value"));
+
+			}
+
+
+		</script>
+	</head>
+	<body onload="initialize()" style="padding:20px; min-width:1010px;width:1010px">
+	<div style="float:right;margin-top:-10px;">
+	<div class="radioButton" id="nodeSize" style="float:right;padding-right:10px;width:175px">
+	<div style="font-size:2em;color:darkslategray">Node Size</div><div id="nodeSizeRB"></div></div>
+	<div class="radioButton" id="nodeColor" style="float:right;padding-right:10px;width:175px">
+	<div style="font-size:2em;color:darkslategray">Node Color</div><div id="nodeColorRB" style=";border-right:1px solid silver"></div></div>
+	<div class="groupColor" id="groupColor" style="opacity:0.95;clear:both;padding:20px;padding-bottom:0px;width:350px;"></div>
+	<div class="aaInfo" id="aaInfo" style="padding:20px;padding-top:10px;width:350px">
+		<div class="aaSection" id="aaLong" style="font-size:3em;padding-bottom:0px;margin-left:-2px;color:steelblue">Alanine</div>
+		<div style="position:relative;float:right;margin-top:-10px"><img id="aaImage" src="./A.png" height="90"></div>
+		<div class="aaSection" id="aaShorts" style="font-size:2em;color:lightsteelblue;margin-top:-10px;">Ala, A</div>
+		<div class="aaSection" id="aaMassAndOccurrence" style="font-size:1.4em;padding-left:2px;color:lightslategray;">71.0788 Da | 7.8%</div>
+		<div class="aaSection" id="aaCodons" style="font-size:0.9em;padding-left:2px;color:lightslategray;">GCU, GCC, GCA, GCG</div>
+		<div class="aaSection" id="aaDefinition" style="font-size:0.9em;padding:2px;text-align:justify;color:slategray">Very abundant, very versatile. More stiff than glycine, but small enough to pose only small steric limits for the protein conformation. It behaves fairly neutrally, and can be located in both hydrophilic regions on the protein outside and the hydrophobic areas inside.</div>
+	</div>
+	</div>
+	<div id="blosumSlider"></div>
+	<input class="slider" type="range" id="percentage" min="30" max="100" value="62" list="perc" onchange="changePerc()">
+		<datalist id="perc">
+		  <option value="30">
+		  <option value="35">
+		  <option value="40">
+		  <option value="45">
+		  <option value="50">
+		  <option value="55">
+		  <option value="60">
+		  <option value="62">
+		  <option value="65">
+		  <option value="70">
+		  <option value="75">
+		  <option value="80">
+		  <option value="85">
+		  <option value="90">
+		  <option value="100">
+		</datalist>
+	<input class="slider" type="range" name="limit" id="limit" min="-4" max="4" value="1" step="1" list="limitList" onchange="changeLimit()">
+		<datalist id="limitList">
+		  <option value="-4">
+		  <option value="-3">
+		  <option value="-2">
+		  <option value="-1">
+		  <option value="0">
+		  <option value="1">
+		  <option value="2">
+		  <option value="3">
+		  <option value="4">
+		</datalist>
+	<div id="graph" class="graph"></div>
+	<hr style="width:777px; align:center;">
+	<div id="bottom" style="width:600px;margin:0 auto">
+	<p style="font-size:1.4em;color:blue; text-align:center;">THE STORY BEHIND THIS INTERACTIVE GRAPH</p>
+	<p><a href="http://en.wikipedia.org/wiki/BLOSUM" target="_target">BLOSUM matrices</a> from NCBI and two Wikipedia articles ( <a href="http://en.wikipedia.org/wiki/Amino_acid" target="_blank">Amino Acid</a> and <a href="http://en.wikipedia.org/wiki/Proteinogenic_amino_acid" target="_blank">Proteinogenic Amino Acid</a> ) are used for the underlaying data. Main motivation of this visualization is to see the big picture of amino acid world: their properties and relationship in a network setting.</p>
+	<p>BLOSUM matrix is a substitution matrix. In other words, it shows you if an amino acid can be placed instead of an other one. If the link between two amino acids are thick, it means that those amino acids are favored for replacement compared to the remaining ones. If there is no link, their substitution is not favored. However, you can play with the substitution score threshold to see the interactions in different levels. Please consult the <a href="http://en.wikipedia.org/wiki/BLOSUM" target="_target">BLOSUM Wikipedia article</a> for further information.</p>
+	<p>Amino acid substitution can be different among distant (bird and mouse) or close (mouse and human) species. BLOSUM matrices are calculated for different levels of similarity between species and it is represented by percent identity. You can play with the BLOSUM % identity slider to see how substitution changes when the similarity between different species changes.</p>
+	<p>You can also change the color and size of each amino acid according to their properties, each time using a different methodology. Details of those properties and methodologies can be found in the Wikipedia articles mentioned above.</p>
+	<p>Some characteristic properties of amino acids are somewhat vague (like the hydrophobicity state of amino acids). I strongly recommend you to read about those properties from multiple resources to get a better understanding.</p>
+	<p>For any mistakes, suggestions, or appreciation please do contact me: ahmetrasit@gmail.com. </p>
+	<p>Implemented using the <a href="http://d3js.org/">D3 library</a>.</p>
+	<p><i>Ahmet Rasit Ozturk | <a href="http://bizdataviz.blogspot.com" target="_blank">bizdataviz.blogspot.com</a>(En) | <a href="http://biyoinformatiktr.blogspot.com" target="_blank">biyoinformatiktr.blogspot.com</a>(Tr)</i></p>
+	<br>
+	</div>
+	</body>
+
+
+<style>
+    body {position:relative;margin:0 auto;font-family:"Courier","sans-serif";background-color:powder}
+    div{border:0px solid;}
+    input.slider{margin:5px auto;width: 300px;font-size: 1em;}
+    .radioButton{ vertical-align: middle; margin-top: 1px;font-family:"Helvetica Neue","sans-serif";color:darkslategray}
+
+    .aaSection{font-family:"HelveticaNeue-Light","Helvetica Neue","Helvetica","sans-serif"}
+
+    p{font-family:"HelveticaNeue-Light","Helvetica Neue","Helvetica","sans-serif";
+        text-align:justify;
+        font-size:0.9em;
+        clear:both;
+        color:royalblue;}
+    .coloring{position:relative}
+    #groupColor{ position:relative}
+    rect {opacity:0.8; float:right; position:relative;z-index:2}
+    .node {fill:Beige; opacity:1;stroke:teal; stroke-opacity:0.3; stroke-width:1px;}
+    .cursor {fill:none;stroke:brown;pointer-events:none;}
+    .link {}
+    .text { opacity:0.3;}
+    .linklabel{fill:black; opacity:0.3;font-family:"Helvetica Neue","sans-serif";font-size:0.5em}
+    .sliderText{ font-family:"Helvetica Neue","sans-serif";}
+    .info {float:left; font-family:Helvetica; font-size:0.7em}
+    .groupText{font-family:"Helvetica Neue","sans-serif";font-size:1em}
+    .graph{padding-bottom:8px;}
+
+    #container{margin:0 auto;margin-top: 20px;min-width: 600px;max-width: 1208px;border:2px solid;border-color:turquoise;border-radius:15px;min-height: 704px;background-color:white}
+    #header{background-color:turquoise;border-color:turquoise;border-top-left-radius:10px;border-top-right-radius:10px;text-align:center;color:ivory;height:30px;font-size:1.5em;}
+    #graphs{clear:both;}
+    #networkWrap{float:left;width:600px;margin:0 auto;background-color:white}
+    #volcanoWrap{float:left;width:600px;margin:0 auto;background-color:white}
+    #bottom{clear:both;height:20px;border-bottom-right-radius:10px;border-bottom-left-radius:10px;text-align:center;background-color:white}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+var coloring = [
+        [
+            {name:'Acidic',color:'gold'},
+            {name:'Aliphatic',color:'coral'},
+            {name:'Aromatic',color:'aquamarine'},
+            {name:'Basic',color:'darkgray'},
+            {name:'Cyclic',color:'darkseagreen'},
+            {name:'Hydroxyl/Sulfur',color:'lavender'},
+        ],
+        [
+            {name:'Aliphatic',color:'coral'},
+            {name:'Positive ',color:'gold'},
+            {name:'Polar, neutral',color:'darkgray'},
+            {name:'Negative',color:'darkseagreen'},
+            {name:'Aromatic',color:'aquamarine'},
+        ],
+        [
+            {name:'Nonpolar',color:'lavender'},
+            {name:'Basic polar',color:'gold'},
+            {name:'Polar',color:'darkgray'},
+            {name:'Acidic polar',color:'darkseagreen'},
+        ],
+        [
+            {name:'Neutral',color:'lavender'},
+            {name:'Positive',color:'gold'},
+            {name:'Negative',color:'darkseagreen'},
+        ],
+        [
+            {name:'Hydrophobic',color:'darkgray'},
+            {name:'Hydrophilic',color:'darkseagreen'},
+        ],
+        [
+            {name:'Neutral',color:'lavender'},
+            {name:'Acidic',color:'darkseagreen'},
+            {name:'Weak basic',color:'LightGoldenRodYellow '},
+            {name:'Basic',color:'gold'},
+            {name:'Weak acidic',color:'palegreen'},
+        ],
+        [
+            {name:'1',color:'darkgray'},
+            {name:'2',color:'darkseagreen'},
+            {name:'3',color:'aquamarine'},
+            {name:'4',color:'lavender'},
+            {name:'6',color:'coral'},
+        ],
+        [
+            {name:'Yes',color:'gold'},
+            {name:'No',color:'darkgray'},
+            {name:'Conditionally',color:'lavender'},
+        ]
+
+    ];
+
+
+    var base2color = [
+        [
+            {name:'A', color:'coral'},
+            {name:'R', color:'darkgray'},
+            {name:'N', color:'gold'},
+            {name:'D', color:'gold'},
+            {name:'C', color:'lavender'},
+            {name:'E', color:'gold'},
+            {name:'Q', color:'gold'},
+            {name:'G', color:'coral'},
+            {name:'H', color:'darkgray'},
+            {name:'I', color:'coral'},
+            {name:'L', color:'coral'},
+            {name:'K', color:'darkgray'},
+            {name:'M', color:'lavender'},
+            {name:'F', color:'aquamarine'},
+            {name:'P', color:'darkseagreen'},
+            {name:'S', color:'lavender'},
+            {name:'T', color:'lavender'},
+            {name:'W', color:'aquamarine'},
+            {name:'Y', color:'aquamarine'},
+            {name:'V', color:'coral'}
+        ],
+        [
+            {name:'A', color:'coral'},
+            {name:'R', color:'gold'},
+            {name:'N', color:'darkgray'},
+            {name:'D', color:'darkseagreen'},
+            {name:'C', color:'darkseagreen'},
+            {name:'E', color:'darkseagreen'},
+            {name:'Q', color:'darkgray'},
+            {name:'G', color:'coral'},
+            {name:'H', color:'gold'},
+            {name:'I', color:'coral'},
+            {name:'L', color:'coral'},
+            {name:'K', color:'gold'},
+            {name:'M', color:'coral'},
+            {name:'F', color:'aquamarine'},
+            {name:'P', color:'coral'},
+            {name:'S', color:'darkgray'},
+            {name:'T', color:'darkgray'},
+            {name:'W', color:'aquamarine'},
+            {name:'Y', color:'darkseagreen'},
+            {name:'V', color:'coral'}
+        ],
+        [
+            {name:'A', color:'lavender'},
+            {name:'R', color:'gold'},
+            {name:'N', color:'darkgray'},
+            {name:'D', color:'darkseagreen'},
+            {name:'C', color:'lavender'},
+            {name:'E', color:'darkseagreen'},
+            {name:'Q', color:'darkgray'},
+            {name:'G', color:'lavender'},
+            {name:'H', color:'gold'},
+            {name:'I', color:'lavender'},
+            {name:'L', color:'lavender'},
+            {name:'K', color:'gold'},
+            {name:'M', color:'lavender'},
+            {name:'F', color:'lavender'},
+            {name:'P', color:'lavender'},
+            {name:'S', color:'darkgray'},
+            {name:'T', color:'darkgray'},
+            {name:'W', color:'lavender'},
+            {name:'Y', color:'darkgray'},
+            {name:'V', color:'lavender'}
+        ],
+        [
+            {name:'A', color:'lavender'},
+            {name:'R', color:'gold'},
+            {name:'N', color:'lavender'},
+            {name:'D', color:'darkseagreen'},
+            {name:'C', color:'lavender'},
+            {name:'E', color:'darkseagreen'},
+            {name:'Q', color:'lavender'},
+            {name:'G', color:'lavender'},
+            {name:'H', color:'lavender'},
+            {name:'I', color:'lavender'},
+            {name:'L', color:'lavender'},
+            {name:'K', color:'gold'},
+            {name:'M', color:'lavender'},
+            {name:'F', color:'lavender'},
+            {name:'P', color:'lavender'},
+            {name:'S', color:'lavender'},
+            {name:'T', color:'lavender'},
+            {name:'W', color:'lavender'},
+            {name:'Y', color:'lavender'},
+            {name:'V', color:'lavender'},
+        ],
+        [
+            {name:'A', color:'darkgray'},
+            {name:'R', color:'darkseagreen'},
+            {name:'N', color:'darkseagreen'},
+            {name:'D', color:'darkseagreen'},
+            {name:'C', color:'darkgray'},
+            {name:'E', color:'darkseagreen'},
+            {name:'Q', color:'darkseagreen'},
+            {name:'G', color:'darkgray'},
+            {name:'H', color:'darkseagreen'},
+            {name:'I', color:'darkgray'},
+            {name:'L', color:'darkgray'},
+            {name:'K', color:'darkseagreen'},
+            {name:'M', color:'darkgray'},
+            {name:'F', color:'darkgray'},
+            {name:'P', color:'darkgray'},
+            {name:'S', color:'darkseagreen'},
+            {name:'T', color:'darkseagreen'},
+            {name:'W', color:'darkseagreen'},
+            {name:'Y', color:'darkseagreen'},
+            {name:'V', color:'darkgray'},
+        ],
+        [
+            {name:'A', color:'lavender'},
+            {name:'R', color:'gold'},
+            {name:'N', color:'lavender'},
+            {name:'D', color:'darkseagreen'},
+            {name:'C', color:'darkseagreen'},
+            {name:'E', color:'darkseagreen'},
+            {name:'Q', color:'LightGoldenRodYellow '},
+            {name:'G', color:'lavender'},
+            {name:'H', color:'LightGoldenRodYellow '},
+            {name:'I', color:'lavender'},
+            {name:'L', color:'lavender'},
+            {name:'K', color:'gold'},
+            {name:'M', color:'lavender'},
+            {name:'F', color:'lavender'},
+            {name:'P', color:'lavender'},
+            {name:'S', color:'palegreen'},
+            {name:'T', color:'palegreen'},
+            {name:'W', color:'LightGoldenRodYellow '},
+            {name:'Y', color:'palegreen'},
+            {name:'V', color:'lavender'},
+        ],
+        [
+            {name:'A', color:'lavender'},
+            {name:'R', color:'coral'},
+            {name:'N', color:'darkseagreen'},
+            {name:'D', color:'darkseagreen'},
+            {name:'C', color:'darkseagreen'},
+            {name:'E', color:'darkseagreen'},
+            {name:'Q', color:'darkseagreen'},
+            {name:'G', color:'lavender'},
+            {name:'H', color:'darkseagreen'},
+            {name:'I', color:'aquamarine'},
+            {name:'L', color:'coral'},
+            {name:'K', color:'darkseagreen'},
+            {name:'M', color:'darkgray'},
+            {name:'F', color:'darkseagreen'},
+            {name:'P', color:'lavender'},
+            {name:'S', color:'coral'},
+            {name:'T', color:'lavender'},
+            {name:'W', color:'darkgray'},
+            {name:'Y', color:'darkseagreen'},
+            {name:'V', color:'lavender'},
+        ],
+        [
+            {name:'A', color:'darkgray'},
+            {name:'R', color:'lavender'},
+            {name:'N', color:'darkgray'},
+            {name:'D', color:'darkgray'},
+            {name:'C', color:'lavender'},
+            {name:'E', color:'lavender'},
+            {name:'Q', color:'darkgray'},
+            {name:'G', color:'lavender'},
+            {name:'H', color:'gold'},
+            {name:'I', color:'gold'},
+            {name:'L', color:'gold'},
+            {name:'K', color:'gold'},
+            {name:'M', color:'gold'},
+            {name:'F', color:'gold'},
+            {name:'P', color:'darkgray'},
+            {name:'S', color:'darkgray'},
+            {name:'T', color:'gold'},
+            {name:'W', color:'gold'},
+            {name:'Y', color:'lavender'},
+            {name:'V', color:'gold'},
+        ]
+
+    ];
+
+
+    var aa2size = [
+        [
+        //empty for substitution matrix
+        ],
+        [
+            {name:'A', value:'1.8'},
+            {name:'R', value:'-4.5'},
+            {name:'N', value:'-3.5'},
+            {name:'D', value:'-3.5'},
+            {name:'C', value:'2.5'},
+            {name:'E', value:'-3.5'},
+            {name:'Q', value:'-3.5'},
+            {name:'G', value:'-0.4'},
+            {name:'H', value:'-3.2'},
+            {name:'I', value:'4.5'},
+            {name:'L', value:'3.8'},
+            {name:'K', value:'-3.9'},
+            {name:'M', value:'1.9'},
+            {name:'F', value:'2.8'},
+            {name:'P', value:'-1.6'},
+            {name:'S', value:'-0.8'},
+            {name:'T', value:'-0.7'},
+            {name:'W', value:'-0.9'},
+            {name:'Y', value:'-1.3'},
+            {name:'V', value:'4.2'},
+        ],
+        [
+            {name:'A', value:'6.01'},
+            {name:'R', value:'10.76'},
+            {name:'N', value:'5.41'},
+            {name:'D', value:'2.85'},
+            {name:'C', value:'5.05'},
+            {name:'E', value:'3.15'},
+            {name:'Q', value:'5.65'},
+            {name:'G', value:'6.06'},
+            {name:'H', value:'7.6'},
+            {name:'I', value:'6.05'},
+            {name:'L', value:'6.01'},
+            {name:'K', value:'9.6'},
+            {name:'M', value:'5.74'},
+            {name:'F', value:'5.49'},
+            {name:'P', value:'6.3'},
+            {name:'S', value:'5.68'},
+            {name:'T', value:'5.6'},
+            {name:'W', value:'5.89'},
+            {name:'Y', value:'5.64'},
+            {name:'V', value:'6'},
+        ],
+        [
+            {name:'A', value:'2.35'},
+            {name:'R', value:'1.82'},
+            {name:'N', value:'2.14'},
+            {name:'D', value:'1.99'},
+            {name:'C', value:'1.92'},
+            {name:'E', value:'2.1'},
+            {name:'Q', value:'2.17'},
+            {name:'G', value:'2.35'},
+            {name:'H', value:'1.8'},
+            {name:'I', value:'2.32'},
+            {name:'L', value:'2.33'},
+            {name:'K', value:'2.16'},
+            {name:'M', value:'2.13'},
+            {name:'F', value:'2.2'},
+            {name:'P', value:'1.95'},
+            {name:'S', value:'2.19'},
+            {name:'T', value:'2.09'},
+            {name:'W', value:'2.46'},
+            {name:'Y', value:'2.2'},
+            {name:'V', value:'2.39'},
+        ],
+        [
+            {name:'A', value:'9.87'},
+            {name:'R', value:'8.99'},
+            {name:'N', value:'8.72'},
+            {name:'D', value:'9.9'},
+            {name:'C', value:'10.7'},
+            {name:'E', value:'9.47'},
+            {name:'Q', value:'9.13'},
+            {name:'G', value:'9.78'},
+            {name:'H', value:'9.33'},
+            {name:'I', value:'9.76'},
+            {name:'L', value:'9.74'},
+            {name:'K', value:'9.06'},
+            {name:'M', value:'9.28'},
+            {name:'F', value:'9.31'},
+            {name:'P', value:'10.64'},
+            {name:'S', value:'9.21'},
+            {name:'T', value:'9.1'},
+            {name:'W', value:'9.41'},
+            {name:'Y', value:'9.21'},
+            {name:'V', value:'9.74'},
+        ],
+        [
+            {name:'A', value:'67'},
+            {name:'R', value:'148'},
+            {name:'N', value:'96'},
+            {name:'D', value:'91'},
+            {name:'C', value:'86'},
+            {name:'E', value:'109'},
+            {name:'Q', value:'114'},
+            {name:'G', value:'48'},
+            {name:'H', value:'118'},
+            {name:'I', value:'124'},
+            {name:'L', value:'124'},
+            {name:'K', value:'135'},
+            {name:'M', value:'124'},
+            {name:'F', value:'135'},
+            {name:'P', value:'90'},
+            {name:'S', value:'73'},
+            {name:'T', value:'93'},
+            {name:'W', value:'163'},
+            {name:'Y', value:'141'},
+            {name:'V', value:'105'},
+        ],
+        [
+            {name:'A', value:'7.8'},
+            {name:'R', value:'5.1'},
+            {name:'N', value:'4.3'},
+            {name:'D', value:'5.3'},
+            {name:'C', value:'1.9'},
+            {name:'E', value:'6.3'},
+            {name:'Q', value:'4.2'},
+            {name:'G', value:'7.2'},
+            {name:'H', value:'2.3'},
+            {name:'I', value:'5.3'},
+            {name:'L', value:'9.1'},
+            {name:'K', value:'5.9'},
+            {name:'M', value:'2.3'},
+            {name:'F', value:'3.9'},
+            {name:'P', value:'5.2'},
+            {name:'S', value:'6.8'},
+            {name:'T', value:'5.9'},
+            {name:'W', value:'1.4'},
+            {name:'Y', value:'3.2'},
+            {name:'V', value:'6.6'},
+        ],
+        [
+            {name:'A', value:'71.0788'},
+            {name:'R', value:'156.1875'},
+            {name:'N', value:'114.1039'},
+            {name:'D', value:'115.0886'},
+            {name:'C', value:'103.1388'},
+            {name:'E', value:'129.1155'},
+            {name:'Q', value:'128.1307'},
+            {name:'G', value:'57.0519'},
+            {name:'H', value:'137.1411'},
+            {name:'I', value:'113.1594'},
+            {name:'L', value:'113.1594'},
+            {name:'K', value:'128.1741'},
+            {name:'M', value:'131.1986'},
+            {name:'F', value:'147.1766'},
+            {name:'P', value:'97.1167'},
+            {name:'S', value:'87.0782'},
+            {name:'T', value:'101.1051'},
+            {name:'W', value:'186.2132'},
+            {name:'Y', value:'163.176'},
+            {name:'V', value:'99.1326'},
+        ]
+    ];
+
+    var sizeIndex = 0;
+
+
+    var graph;
+    var currFile = "BLOSUM62";
+    var currLimit = 1;
+    var currLinks = [];
+    var currLinkValues = [];
+    var currAa = [];
+
+    function myGraph(el) {
+
+        // Add and remove elements on the graph object
+        this.addNode = function (id, r, c) {
+            nodes.push({"id":id, "r":r, "color":c});
+            update();
+        };
+
+        this.removeNode = function (id) {
+            var i = 0;
+            var n = findNode(id);
+            while (i < links.length) {
+                if ((links[i]["source"] == n)||(links[i]["target"] == n))
+                {
+                    links.splice(i,1);
+                }
+                else i++;
+            }
+            nodes.splice(findNodeIndex(id),1);
+            update();
+        };
+
+        this.removeLink = function (source,target){
+            for(var i=0;i<links.length;i++)
+            {
+                if(links[i].source.id == source && links[i].target.id == target)
+                {
+                    links.splice(i,1);
+                    break;
+                }
+            }
+            update();
+        };
+
+        this.removeallLinks = function(){
+            links.splice(0,links.length);
+            update();
+        };
+
+        this.removeAllNodes = function(){
+            nodes.splice(0,links.length);
+            update();
+        };
+
+        this.addLink = function (source, target, value) {
+            links.push({"source":findNode(source),"target":findNode(target),"value":value});
+            update();
+        };
+
+        var findNode = function(id) {
+            for (var i in nodes) {
+                if (nodes[i]["id"] === id) return nodes[i];};
+        };
+
+        var findNodeIndex = function(id) {
+            for (var i=0;i<nodes.length;i++) {
+                if (nodes[i].id==id){
+                    return i;
+                }
+            };
+        };
+
+        // set up the D3 visualisation in the specified element
+        var w = 600,
+            h = 600;
+        var vis = d3.select("#graph")
+            .append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .attr("id","svg")
+            .attr("pointer-events", "all")
+            //.attr("viewBox","0 0 "+w+" "+h)
+            .attr("perserveAspectRatio","xMinYMid")
+            .append("svg:g");
+
+        var force = d3.layout.force();
+
+        var nodes = force.nodes(),
+            links = force.links();
+
+        var update = function () {
+            var link = vis.selectAll("line")
+                .data(links, function(d) {
+                    return d.source.id + "-" + d.target.id;
+                    });
+
+            link.enter().append("line")
+                .attr("id",function(d){return d.source.id + "-" + d.target.id;})
+                .attr("opacity", 1)
+                .attr("stroke-width", 1)
+                .attr("stroke", "blue")
+                .transition().duration(500)
+                .attr("opacity", 0.3)
+                .attr("stroke-width", function(d){return (Math.abs(d.value)+1)*1.5})
+                .attr("stroke", function(d){
+                    if (d.value>0){return "teal"}else{return "pink"}})
+                .attr("class","link");
+            link.append("title")
+            .text(function(d){return d.value;});
+
+            link.exit().transition().delay(500).remove();
+
+
+
+
+
+            var node = vis.selectAll("g.node")
+                .data(nodes, function(d) {
+                    return d.id;}).on('mouseover', showAaInfo);
+
+            var nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .call(force.drag);
+
+            nodeEnter.append("svg:circle")
+            .attr("r", function(d){return d.r*3})
+            .attr("id",function(d) { return "Node_"+d.id;})
+            .attr("fill", function(d){return d.color})
+            .attr("class","nodeStrokeClass");
+
+            nodeEnter.append("svg:text")
+            .attr("text-anchor", "middle")
+            .attr("class","textClass")
+            .attr("id",function(d) { return "Node_"+d.id;})
+            .attr("fill", "black")
+            .attr("font-size", function(d){return d.r*6})
+            .attr("text-align", "center")
+            //.attr("dx", function(d){return -d.r*1.2})
+            .attr("dy", function(d){return d.r*1.9})
+            .text( function(d){return d.id;});
+
+            node.exit().remove();
+            force.friction(0.9);
+            force.on("tick", function() {
+
+
+
+                node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y         + ")"; });
+
+                link.attr("x1", function(d) { return d.source.x; })
+                  .attr("y1", function(d) { return d.source.y; })
+                  .attr("x2", function(d) { return d.target.x; })
+                  .attr("y2", function(d) { return d.target.y; });
+
+
+            });
+
+            // Restart the force layout.
+            force
+            .gravity(.2)
+            .friction(0.7)
+            .charge(-1200)
+            .distance(100)
+            .linkDistance(100)
+            .size([w, h])
+            .start();
+        };
+
+
+        // Make it all go
+        update();
+
+    }
+
+
+
+
+    function initialize(){
+        graph = new myGraph("#graph");
+        data = [];
+        skipList = ["*", "B", "Z", "X"];
+        //aaColor = ["Aquamarine", "Aquamarine", "Aquamarine", "DarkGray", "DarkGray", "DarkGray", "DarkSeaGreen", "DarkSeaGreen", "DarkSeaGreen", "coral", "coral", "coral", "coral", "Lavender", "Lavender", "Lavender", "Gold", "Gold", "Gold"]
+        d3.csv("BLOSUM62.csv", function(curr){
+            data = curr;
+            for(var i=0; i<data.length; i++){
+
+                currAa[i] = data[i][""];
+                if (skipList.indexOf(currAa[i]) > -1 ){continue;}
+                graph.addNode(data[i][""], data[i][currAa[i]], base2color[0][i].color);
+
+            }
+
+            for(var j=0; j<currAa.length; j++){
+                if (skipList.indexOf(currAa[j]) > -1 ){continue;}
+                for(var i=j; i<data.length; i++){
+                    if (skipList.indexOf(currAa[i]) > -1 ){continue;}
+                    if(data[i][currAa[j]] >= currLimit){
+                        pair = [currAa[i], currAa[j]];
+                        pair = pair.sort();
+                        graph.addLink(pair[0], pair[1], Math.abs((data[i][currAa[j]]+20))/50);
+                        currLinks.push(pair[0] + "-" + pair[1]);
+                        currLinkValues.push(data[i][currAa[j]]);
+                        //console.log(pair[0] + "-" + pair[1]);
+                    }
+                }
+            }
+            //console.log(aalist);
+        });
+
+
+        var sliderData = [	{"label":"30", "x":0, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"35", "x":23, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"40", "x":40, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"45", "x":64, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"50", "x":80, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"55", "x":104, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"60", "x":123, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"62", "x":130, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"65", "x":147, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"70", "x":162, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"75", "x":186, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"80", "x":203, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"85", "x":226, "y":10, "fs":"0.5em", "fc":"black"},
+                            {"label":"90", "x":244, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"100", "x":280, "y":20, "fs":"0.9em", "fc":"black"},
+                            {"label":"-4", "x":311, "y":15, "fs":"0.9em", "fc":"red"},
+                            {"label":"-3", "x":346, "y":15, "fs":"0.9em", "fc":"red"},
+                            {"label":"-2", "x":382, "y":15, "fs":"0.9em", "fc":"red"},
+                            {"label":"-1", "x":418, "y":15, "fs":"0.9em", "fc":"red"},
+                            {"label":"0", "x":454, "y":20, "fs":"1.4em", "fc":"red"},
+                            {"label":"1", "x":491, "y":15, "fs":"0.9em", "fc":"blue"},
+                            {"label":"2", "x":528, "y":15, "fs":"0.9em", "fc":"blue"},
+                            {"label":"3", "x":563, "y":15, "fs":"0.9em", "fc":"blue"},
+                            {"label":"4", "x":598, "y":15, "fs":"0.9em", "fc":"blue"},
+                            {"label":"BLOSUM % IDENTITY", "x":70, "y":-3, "fs":"1em", "fc":"gainsboro"},
+                            {"label":"SUBSTITION SCORE THRESHOLD", "x":335, "y":-3, "fs":"1em", "fc":"gainsboro"}
+            ];
+        var sl = d3.select("#blosumSlider").append("svg")
+                    .attr("height", 35)
+                    .attr("width", 620)
+                    .attr("color", "ligthgray");
+                sl.selectAll("text")
+                    .data(sliderData).enter().append("svg:text")
+                    .attr("class", "sliderText")
+                    .text(function(d){return d.label})
+                    .attr("x", function(d){return d.x} )
+                    .attr("y", function(d){return d.y+15})
+                    .attr("font-size", function(d){return d.fs})
+                    .attr("fill", function(d){return d.fc});
+
+        updateNodeSizeRadioButton();
+        updateNodeColorRadioButton();
+
+
+        var gc = d3.select("div#groupColor").append('svg')
+            .attr("width", 350)
+            .attr("height", 100);
+
+        var rect = gc.selectAll("rect").data([0,1,2,3,4,5]).enter();
+
+        rect.append("rect").attr("fill", "snow")
+            .attr('class', 'coloring')
+            .attr('id', function(d){return "_"+d;})
+            //.attr('top', function(d,i){return i*10})
+            //.attr('position', 'relative')
+            .attr("width", 110)
+            .attr("height", 40)
+            .attr('x', function(d,i){
+                if(i<3){return i*115}
+                else{return (i-3)*115}
+            })
+            .attr('y', function(d,i){
+                if(i<3){return 0}
+                else{return 45}
+            });
+        rect.append('text').text('empty')
+            .attr('class', 'groupText')
+            .attr('id', function(d){return "_t"+d;})
+            .attr('y', 20)
+            .attr('x', function(d,i){
+                if(i<3){return i*115+54}
+                else{return (i-3)*115+54}
+            })
+            .attr('y', function(d,i){
+                if(i<3){return 25}
+                else{return 70}
+            })
+            .attr('text-anchor', 'middle');
+
+        nodeColor(coloring[0],0);
+
+    }
+
+
+
+    function newMatrix(newFile, limit){
+        newAa = [];
+        skipList = ["*", "B", "Z", "X"];
+        //console.log("|"+newFile + "|");
+        //not valid for sizeIndex=0 since it is for substitution matrix
+        var curr = aa2size[sizeIndex];
+        var temp=[];
+        var dict = {};
+        for(var i=0;i<curr.length;i++){
+            temp.push(parseFloat(curr[i].value));
+            dict[curr[i].name] = curr[i].value;
+        }
+        var domainCurr = d3.extent(temp);
+        var sizeScale = d3.scale.linear().domain(domainCurr).range([15,40])
+        //console.log("domain:\t" + domainCurr);
+
+            d3.csv(newFile+".csv", function(newData){
+                for(var i=0; i<newData.length; i++){
+                    newAa[i] = newData[i][""];
+                    newAaIndex = currAa.indexOf(newAa[i]);
+                    if (newAa[i] != currAa[i]){
+                        console.log("the order of two files do not match!");
+                        console.log(newAa[i] + currAa[i]);
+                        }
+                    if (skipList.indexOf(newAa[i]) > -1 ){continue;}
+                    //console.log(newAa[i]);
+                    //console.log(newData[i][newAa[i]]);
+
+                    var rValue;
+
+                    if (sizeIndex == 0){
+                        rValue = newData[i][newAa[i]]*3;
+                    }else {
+                        rValue = sizeScale(parseFloat(dict[newAa[i]]));
+                        //console.log(newAa[i] + rValue + " " + dict[newAa[i]]);
+                    }
+
+
+                    d3.selectAll("circle#Node_" + newAa[i]).transition().duration(500).ease("elastic")
+                        .attr("r", rValue);
+                    d3.selectAll("text#Node_" + newAa[i]).transition().duration(500).ease("elastic")
+                        .attr("text-anchor", "middle")
+                        .attr("font-size", rValue*2)
+                        //.attr("dx", function(d){return rValue*1.2/3})
+                        .attr("dy", function(d){return rValue*1.9/3});
+                }
+
+
+
+
+                for(var i=0; i<newAa.length; i++){
+                    if (skipList.indexOf(newAa[i]) > -1 ){continue;}
+                    for(var j=i; j<newAa.length; j++){
+                        if (skipList.indexOf(newAa[j]) > -1 ){continue;}
+
+                        pair = [newAa[i], newAa[j]];
+                        pair = pair.sort();
+
+                        var linkIndex = currLinks.indexOf(pair[0] + "-" + pair[1]);
+
+                        if (linkIndex>-1){
+                            if (newData[i][newAa[j]] >= limit){
+                                if (currLinkValues[linkIndex] == newData[i][newAa[j]]){
+                                    //do nothing, no change
+                                }else {	//strength of the link changes
+                                    //graph.removeLink(pair[0], pair[1]);
+                                    //graph.addLink(pair[0], pair[1], newData[i][newAa[j]]);
+                                    d3.select("line#"+ pair[0] + "-" + pair[1])
+                                        .attr("opacity", 1)
+                                        .attr("stroke", "gray")
+                                        .transition().duration(500).ease("elastic")
+                                        .attr("opacity", 0.3)
+                                        .attr("stroke-width", function(d){return d.value*1.5})
+                                        .attr("stroke", "teal");
+                                    currLinkValues[linkIndex] = newData[i][newAa[j]];
+                                    //console.log("SC>\t" + pair + currLinkValues[linkIndex] +"-"+ newData[i][newAa[j]]);
+                                }
+                            }else {
+                                d3.select("line#"+ pair[0] + "-" + pair[1])
+                                        .attr("opacity", 1)
+                                        .attr("stroke", "red")
+                                        .transition().duration(500).ease("elastic")
+                                        .attr("opacity", 0);
+                                graph.removeLink(pair[0], pair[1]);
+                                currLinks.splice(linkIndex,1);
+                                currLinkValues.splice(linkIndex,1);
+                                //console.log("RM>\t"+ pair + "-" + data[i][currAa[j]]);
+                            }
+                        }else {
+                            if (newData[i][newAa[j]]>=limit){
+                                //console.log(newData[i][newAa[j]]>limit);
+                                //console.log(newData[i][newAa[j]] + " > " + limit);
+                                //console.log(typeof(newData[i][newAa[j]]) + "   " + typeof(limit));
+                                graph.addLink(pair[0], pair[1], newData[i][newAa[j]]);
+                                currLinks.push(pair[0] + "-" + pair[1]);
+                                currLinkValues.push(data[i][currAa[j]]);
+                                //console.log("NP>\t" + limit + "\t" + pair + "-" + data[i][currAa[j]])
+
+                            }else {
+                                //do nothing, no change
+                            }
+                        }
+
+                    }
+                }
+
+            //console.log(aalist);
+        });
+        currFile = newFile;
+        currLimit = limit;
+    }
+
+
+    function showAaInfo(d,i){
+        var info = [
+                    {name:'A',long:'Alanine',short:'Ala , A',def:'Very abundant, very versatile. More stiff than glycine, but small enough to pose only small steric limits for the protein conformation. It behaves fairly neutrally, and can be located in both hydrophilic regions on the protein outside and the hydrophobic areas inside.',codons:'GCU, GCC, GCA, GCG',stats:'71.0788 Da | 7.8%',},
+                    {name:'R',long:'Arginine',short:'Arg , R',def:'Functionally similar to lysine.',codons:'CGU, CGC, CGA, CGG, AGA, AGG',stats:'156.1875 Da | 5.1%',},
+                    {name:'N',long:'Asparagine',short:'Asn , N',def:'Similar to aspartic acid. Asn contains an amide group where Asp has a carboxyl.',codons:'AAU, AAC',stats:'114.1039 Da | 4.3%',},
+                    {name:'D',long:'Aspartic acid',short:'Asp , D',def:'Behaves similarly to glutamic acid. Carries a hydrophilic acidic group with strong negative charge. Usually is located on the outer surface of the protein, making it water-soluble. Binds to positively-charged molecules and ions, often used in enzymes to fix the metal ion. When located inside of the protein, aspartate and glutamate are usually paired with arginine and lysine.',codons:'GAU, GAC',stats:'115.0886 Da | 5.3%',},
+                    {name:'C',long:'Cysteine',short:'Cys , C',def:'The sulfur atom bonds readily to heavy metal ions. Under oxidizing conditions, two cysteines can join together in a disulfide bond to form the amino acid cystine. When cystines are part of a protein, insulin for example, the tertiary structure is stabilized, which makes the protein more resistant to denaturation; therefore, disulfide bonds are common in proteins that have to function in harsh environments including digestive enzymes (e.g., pepsin and chymotrypsin) and structural proteins (e.g., keratin). Disulfides are also found in peptides too small to hold a stable shape on their own (e.g. insulin).',codons:'UGU, UGC',stats:'103.1388 Da | 1.9%',},
+                    {name:'Q',long:'Glutamine',short:'Gln , Q',def:'Similar to glutamic acid. Gln contains an amide group where Glu has a carboxyl. Used in proteins and as a storage for ammonia. The most abundant Amino Acid in the body.',codons:'CAA, CAG',stats:'128.1307 Da | 4.2%',},
+                    {name:'E',long:'Glutamic acid',short:'Glu , E',def:'Behaves similarly to aspartic acid. Has longer, slightly more flexible side chain.',codons:'GAA, GAG',stats:'129.1155 Da | 6.3%',},
+                    {name:'G',long:'Glycine',short:'Gly , G',def:'Because of the two hydrogen atoms at the α carbon, glycine is not optically active. It is the smallest amino acid, rotates easily, adds flexibility to the protein chain. It is able to fit into the tightest spaces, e.g., the triple helix of collagen. As too much flexibility is usually not desired, as a structural component it is less common than alanine.',codons:'GGU, GGC, GGA, GGG',stats:'57.0519 Da | 7.2%',},
+                    {name:'H',long:'Histidine',short:'His , H',def:'In even slightly acidic conditions protonation of the nitrogen occurs, changing the properties of histidine and the polypeptide as a whole. It is used by many proteins as a regulatory mechanism, changing the conformation and behavior of the polypeptide in acidic regions such as the late endosome or lysosome, enforcing conformation change in enzymes. However only a few histidines are needed for this, so it is comparatively scarce.',codons:'CAU, CAC',stats:'137.1411 Da | 2.3%',},
+                    {name:'I',long:'Isoleucine',short:'Ile , I',def:'Essential for humans. Isoleucine, leucine and valine have large aliphatic hydrophobic side chains. Their molecules are rigid, and their mutual hydrophobic interactions are important for the correct folding of proteins, as these chains tend to be located inside of the protein molecule.',codons:'AUU, AUC, AUA',stats:'113.1594 Da | 5.3%',},
+                    {name:'L',long:'Leucine',short:'Leu , L',def:'Essential for humans. Behaves similar to isoleucine and valine. See isoleucine.',codons:'UUA, UUG, CUU, CUC, CUA, CUG',stats:'113.1594 Da | 9.1%',},
+                    {name:'K',long:'Lysine',short:'Lys , K',def:'Essential for humans. Behaves similarly to arginine. Contains a long flexible side-chain with a positively-charged end. The flexibility of the chain makes lysine and arginine suitable for binding to molecules with many negative charges on their surfaces. E.g., DNA-binding proteins have their active regions rich with arginine and lysine. The strong charge makes these two amino acids prone to be located on the outer hydrophilic surfaces of the proteins; when they are found inside, they are usually paired with a corresponding negatively-charged amino acid, e.g., aspartate or glutamate.',codons:'AAA, AAG',stats:'128.1741 Da | 5.9%',},
+                    {name:'M',long:'Methionine',short:'Met , M',def:'Essential for humans. Always the first amino acid to be incorporated into a protein; sometimes removed after translation. Like cysteine, contains sulfur, but with a methyl group instead of hydrogen. This methyl group can be activated, and is used in many reactions where a new carbon atom is being added to another molecule.',codons:'AUG',stats:'131.1986 Da | 2.3%',},
+                    {name:'F',long:'Phenylalanine',short:'Phe , F',def:'Essential for humans. Phenylalanine, tyrosine, and tryptophan contain large rigid aromatic group on the side-chain. These are the biggest amino acids. Like isoleucine, leucine and valine, these are hydrophobic and tend to orient towards the interior of the folded protein molecule. Phenylalanine can be converted into Tyrosine.',codons:'UUU, UUC',stats:'147.1766 Da | 3.9%',},
+                    {name:'P',long:'Proline',short:'Pro , P',def:'Contains an unusual ring to the N-end amine group, which forces the CO-NH amide sequence into a fixed conformation. Can disrupt protein folding structures like α helix or β sheet, forcing the desired kink in the protein chain. Common in collagen, where it often undergoes a posttranslational modification to hydroxyproline.',codons:'CCU, CCC, CCA, CCG',stats:'97.1167 Da | 5.2%',},
+                    {name:'S',long:'Serine',short:'Ser , S',def:'Serine and threonine have a short group ended with a hydroxyl group. Its hydrogen is easy to remove, so serine and threonine often act as hydrogen donors in enzymes. Both are very hydrophilic, therefore the outer regions of soluble proteins tend to be rich with them.',codons:'UCU, UCC, UCA, UCG, AGU, AGC',stats:'87.0782 Da | 6.8%',},
+                    {name:'T',long:'Threonine',short:'Thr , T',def:'Essential for humans. Behaves similarly to serine.',codons:'ACU, ACC, ACA, ACG',stats:'101.1051 Da | 5.9%',},
+                    {name:'W',long:'Tryptophan',short:'Trp , W',def:'Essential for humans. Behaves similarly to phenylalanine and tyrosine (see phenylalanine). Precursor of serotonin. Naturally fluorescent.',codons:'UGG',stats:'186.2132 Da | 1.4%',},
+                    {name:'Y',long:'Tyrosine',short:'Tyr , Y',def:'Behaves similarly to phenylalanine (precursor to Tyrosine) and tryptophan (see phenylalanine). Precursor of melanin, epinephrine, and thyroid hormones. Naturally fluorescent, although fluorescence is usually quenched by energy transfer to tryptophans.',codons:'UAU, UAC',stats:'163.176 Da | 3.2%',},
+                    {name:'V',long:'Valine',short:'Val , V',def:'Essential for humans. Behaves similarly to isoleucine and leucine. See isoleucine.',codons:'GUU, GUC, GUA, GUG',stats:'99.1326 Da | 6.6%',},
+        ];
+
+        console.log(d.id+i);
+        d3.select('div#aaLong').text(info[i].long);
+        d3.select('div#aaShorts').text(info[i].short);
+        d3.select('div#aaCodons').text(info[i].codons);
+        d3.select('div#aaMassAndOccurrence').text(info[i].stats);
+        d3.select('div#aaDefinition').text(info[i].def);
+        d3.select('img#aaImage').attr('src', "./"+info[i].name+".png");
+        if (info[i].name == "G"){
+            d3.select('img#aaImage').attr('height', 80);
+        }else{
+            d3.select('img#aaImage').attr('height', 100);
+        }
+
+
+    }
+
+
+    function updateNodeSizeRadioButton(){
+        var nodeSizeValues = ["Matrix score", "Hydropathy", "pI", "pK1", "pK2", "van der Waals", "Occurrence", "Mass(Da)"];
+        var form = d3.select("#nodeSizeRB").append("form");
+        var j = 0;
+
+        var labelEnter = form.selectAll("div")
+            .data(nodeSizeValues)
+            .enter().append("div");
+
+        labelEnter.append("input").on("click", nodeSize)
+            .attr({
+                type: "radio",
+                class: "radioButton1",
+                name: "ns",
+                id: function(d,i){return 'rb1_'+i;},
+                value: function(d, i) {return i;}
+            })
+            .property("checked", function(d, i) {
+                return (i===j);
+            });
+        labelEnter.append("label").on("mouseover", nodeSizeTooltip).attr('for', function(d,i){return 'rb1_'+i;}).text(function(d){return d;});
+
+    }
+
+
+    function updateNodeColorRadioButton(){
+        var nodeSizeValues = ["Chemical1", "Chemical2", "Polarity", "Charge", "Hydrophobicity", "Acid or Base", "Codon count", "Essentiality"];
+        var form = d3.select("#nodeColorRB").append("form");
+        var j = 0;
+
+        var labelEnter = form.selectAll("div")
+            .data(nodeSizeValues)
+            .enter().append("div");
+
+        labelEnter.append("input").on("click", nodeColor)
+            .attr({
+                type: "radio",
+                class: "radioButton2",
+                name: "nc",
+                id: function(d,i){return 'rb2_'+i;},
+                value: function(d, i) {return i;}
+            })
+            .property("checked", function(d, i) {
+                return (i===j);
+            });
+
+        labelEnter.append("label").on("mouseover", nodeColorTooltip).attr('for', function(d,i){return 'rb2_'+i;}).text(function(d){return d;});
+    }
+
+
+    function changeLimit(){
+        var limit = d3.select("#limit").property("value")
+        newMatrix(currFile, parseInt(limit));
+        console.log(currFile, limit);
+    }
+
+
+    function nodeSizeTooltip(d, i){
+        var tooltip = [	"Hydrophobic > Hydrophilic",
+                        "Isoelectric point(pH)",
+                        "a-COOH",
+                        "a-NH3",
+                        "van der Waals volume",
+                        "% in human proteins ",
+                        "without water",
+            ];
+        console.log(tooltip[i]);
+
+    }
+
+    function nodeSize(d,i){
+        var aalist = ['A','R','N','D','C','E','Q','G','H','I','L','K','M','F','P','S','T','W','Y','V'];
+
+        sizeIndex = i;
+        //console.log(sizeIndex);
+
+        var curr = aa2size[sizeIndex];
+        var temp=[];
+        var dict = {};
+        for(var i=0;i<curr.length;i++){
+            temp.push(parseFloat(curr[i].value));
+            dict[curr[i].name] = curr[i].value;
+        }
+        var domainCurr = d3.extent(temp);
+        var sizeScale = d3.scale.linear().domain(domainCurr).range([15,40])
+        //console.log(dict);
+
+        var rValue;
+
+        if (sizeIndex == 0){
+            newMatrix(currFile, currLimit)
+        }else {
+            for(var k=0; k<aalist.length; k++){
+                rValue = sizeScale(parseFloat(dict[aalist[k]]));
+                //console.log(dict[aalist[k]]);
+                //console.log(rValue);
+                d3.selectAll("circle#Node_" + aalist[k]).transition().duration(500).ease("elastic")
+                    .attr("r", rValue);
+                d3.selectAll("text#Node_" + aalist[k]).transition().duration(500).ease("elastic")
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", rValue*2)
+                    //.attr("dx", function(d){return rValue*1.2/3})
+                    .attr("dy", function(d){return rValue*1.9/3});
+            }
+
+        }
+
+    }
+
+
+
+    function nodeColorTooltip(d, i){
+        var tooltip = [	"Chemical grouping 1",
+                        "Chemical grouping, charge focused",
+                        "Polarity of aa",
+                        "Charge of aa",
+                        "Hydrophobic or Hydrophilic",
+                        "Acid or base",
+                        "# of codons",
+                        "Essential or not"
+            ];
+        console.log(tooltip[i]);
+        //console.log(d+i);
+    }
+
+
+    function nodeColor(d, i){
+
+        //var gc = d3.select("div#groupColor");
+
+        var curr=coloring[i];
+        var curr2 = base2color[i];
+
+        for (var i=0; i<curr.length; i++){
+            //console.log(curr[i].name);
+            d3.select("rect#_"+i).attr('fill', curr[i].color);
+            d3.select("text#_t"+i).text(curr[i].name);
+        }
+
+        for (var i=0; i<curr2.length; i++){
+            d3.select("circle#Node_"+curr2[i].name).attr('fill', curr2[i].color);
+            //console.log(curr2[i].name + "\t" + curr2[i].color);
+
+        }
+
+
+
+
+
+        for (var i=curr.length; i<6; i++){
+            d3.select("rect#_"+i).attr('fill', 'snow');
+            d3.select("text#_t"+i).text(' ');
+        }
+
+
+        //console.log("temp");
+
+
+    }
+
+
+    function changePerc(){
+        var percentage = d3.select("#percentage").property("value")
+        value = percentage;
+        //console.log(percentage)
+        if(percentage>60 && percentage<64){
+            d3.select("#percentage").property("value", 62)
+            value = 62;
+        }else if(percentage>93 ){
+            d3.select("#percentage").property("value", 100)
+            value = 100;
+        }else{
+            var second = Math.floor(percentage/5);
+            var rem = percentage % 5;
+            if (rem>3){
+                d3.select("#percentage").property("value", 5*(second+1))
+                value = 5*(second+1);
+            }else{
+                d3.select("#percentage").property("value", 5*second)
+                value = 5*second;
+            }
+        }
+        newMatrix("BLOSUM"+value, parseInt(d3.select("#limit").property("value")));
+        console.log("BLOSUM"+value, d3.select("#limit").property("value"));
+
+    }
+
+</script>
+
+
+

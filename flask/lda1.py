@@ -3,31 +3,51 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import re, time
 from multi_preprocess import *
-from nltk import ngrams
-from collections import defaultdict
-
-# def get_data_and_ner(pmid):
-# 	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
-# 	data_samples, neslist = loadBioDoc(biodocs)
-# 	return data_samples, neslist
-#
-#
-# def makeNgrams(data_samples, n):
-#   t1 = time.time()
-#   #ngramDict = defaultdict(lambda:0)
-#   ngram_list = []
-#   for sentence in data_samples:
-#     sentence = sentence.split()
-#     grams = [sentence[i:i+n] for i in range(int(len(sentence)-n))]
-#     for g in grams:
-#       space = ' '
-#       ngram = str(space.join(g))
-#       ngram_list.append(ngram)
-#   print("Execute everything: done in %0.3fs." % (time.time() - t1))
-#   return ngram_list
+from collections import defaultdict, Counter
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+
+# def get_data_and_ner(pmid):
+#     biodocs = retrieveBioDocs(str(pmid))
+#     data_samples, neslist, total_sentences, sum_tokens = loadBioDoc(biodocs)
+#     return data_samples
+#
+# def buildDict(data_samples):
+#     wordsDict = defaultdict(lambda: 0)
+#     for doc in data_samples:
+#       words = doc.split(" ")
+#       for w in words:
+#         wordsDict[w] += 1
+#     return wordsDict
+#
+# # filter out dates and websites
+# def filter_data(data_samples, wordsDict):
+#   total_words = len(wordsDict.keys())
+#   top_percent = total_words * .05 #filter top 3& occuring words
+#   bottom_percent = total_words * .90 #filter lowest 20% occuring words
+#   ordered_dict = Counter(wordsDict)
+#   top_words = ordered_dict.most_common(int(top_percent))
+#   bottom_words = ordered_dict.most_common()[ int(bottom_percent):  ]
+#
+#   exclude_top = [ t[0] for t in top_words]
+#   exclude_bottom = [b[0] for b in bottom_words]
+#   exclude_words = ['http', 'www']
+#   all_exclude = exclude_top + exclude_bottom + exclude_words
+#
+#   filter_data_samples = []
+#   for doc in data_samples:
+#     temp_doc = []
+#     doc_words = doc.split(" ")
+#     for word in doc_words:
+#       if word not in all_exclude:
+#         temp_doc.append(word)
+#
+#     filter_data_samples.append( " ".join(temp_doc)  )
+#   return filter_data_samples
+
+
 
 
 def get_tfidf(data): #data should be a list of strings for the documents
@@ -41,7 +61,7 @@ def get_tfidf(data): #data should be a list of strings for the documents
 
 def fit_lda(tfidf, num_topics):
   logging.info("* Initializing Latent Dirichlet Allocation ... ")
-  lda = LatentDirichletAllocation(n_topics=num_topics, max_iter=25, learning_method='online', learning_offset=50., random_state=1)
+  lda = LatentDirichletAllocation(n_topics=num_topics, max_iter=10, learning_method='online', learning_offset=50., random_state=3)
   lda.fit(tfidf)
   logging.info("* Successfully fit data to the model!!! ")
   return lda
@@ -57,7 +77,7 @@ def print_top_words(model, feature_names, n_top_words):
     #print(", ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
     topic_list = ([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
     for term in topic_list:
-      #print(term)
+      # print(term)
       # if term in ngram_list:
       #   print("TERM IS IN NGRAM_LIST")
       #   for ngram in ngram_list:
@@ -83,11 +103,11 @@ def topics_lda(tf_vectorizer, lda, n_top_words):
   return jsonLDA
 
 
-# data_samples, nes_list = get_data_and_ner(18269575)
-# ngram_list = makeFreqDict(data_samples, 2)
-# tfidf, tfidf_vectorizer = get_tfidf(data_samples)
-# num_topics = 5
+# data_samples = get_data_and_ner("9108111")
+# wordsDict = buildDict(data_samples)
+# filter_data_samples = filter_data(data_samples, wordsDict)
+# tfidf, tfidf_vectorizer = get_tfidf(filter_data_samples)
+# num_topics = 10
 # lda = fit_lda(tfidf, num_topics)
-# n_top_words = 5
+# n_top_words = 15
 # jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
-# print(jsonLDA)

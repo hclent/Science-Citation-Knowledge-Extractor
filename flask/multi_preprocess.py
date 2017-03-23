@@ -27,7 +27,7 @@ logging.info('Stopword settings set')
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
   path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx36G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx100G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   logging.info('Annotated something random to initialize bioNLP Processor')
@@ -61,7 +61,7 @@ def retrieveDocs(pmid):
 #Prints to JSON
 def multiprocess(docs):
   t1 = time.time()
-  pool = Pool(20)
+  pool = Pool(75)
   logging.debug('created worker pools')
   results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt', ...]
   logging.debug('initialized map_async to loadDocs function with docs')
