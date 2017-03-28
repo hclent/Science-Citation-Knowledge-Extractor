@@ -2,11 +2,6 @@
 {% extends "header.html" %}
 
 {% block body %}
-<style>
-.list-group {
-    list-style: decimal inside !important
-}
-</style>
 
 
 <!-- Pubmed ID Submit form button -->
@@ -121,7 +116,8 @@
 
         <iframe  id="clustermap" style="display:none"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogeclustermap/" width="850" height="1200" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
-		</div> 
+		</div>
+<!--this /div responds to the first tab div, which doesnt make sense to me, but moving it breaks things-->
 
 
 
@@ -141,9 +137,12 @@
               </button>
               <ul class="dropdown-menu">
                   <!-- TO DO: form should return which topic model has been selected -->
-                <li><a href="#lsa" id="lsa" onclick="toggle('cogelsa', 'cogelda')">LSA</a></li> <!-- I want this button to include coge_lsa.html -->
+                <li><a href="#embedding" id="embedding" onclick="toggle3('cogeembedding', 'cogelda', 'cogelsa')">Embeddings</a></li> <!--the force directed graph will go here -->
 
-                <li><a href="#lda" id="lda" onclick="toggle('cogelda', 'cogelsa')">LDA</a></li> <!-- and this button to include coge_lda.html -->
+                  <li><a href="#lsa" id="lsa" onclick="toggle3('cogelsa', 'cogelda', 'cogeembedding')">LSA</a></li> <!-- I want this button to include coge_lsa.html -->
+
+                <li><a href="#lda" id="lda" onclick="toggle3('cogelda', 'cogelsa', 'cogeembedding')">LDA</a></li> <!-- and this button to include coge_lda.html -->
+
 
               </ul>
             </div>
@@ -156,6 +155,8 @@
             </ul>
 
             <br></br>
+            <iframe  id="cogeembedding" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogembeddings/" width="1000" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
 
             <iframe  id="cogelsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/cogelsa/" width="1000" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
@@ -175,23 +176,22 @@
 	<!--  Citations -->
 		<div role="tabpanel" class="tab-pane fade" id="citations">
             <h4> 165 publications have cited PMIDs: 18952863, 18269575</h4>
-            <ul class="list-group">
-		  	<!--results of MainCrawler.py pmc_spider-->
-		  	{% for result in citations_with_links %}
-		  		<!--<li>{{result}}</li>-->
-             <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
+            <ul class="list-group" id="citeurls">
 
+		  	{% for result in citations_with_links %}
+             <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
 		  	{% endfor %}
 
             </ul>
-
 		</div>
+
+
 
 <!-- Stats -->
 <div role="tabpanel" class="tab-pane fade" id="statistics">
     <iframe  id="cogestats"  src="https://geco.iplantcollaborative.org/hclent/bionlp/coge_stats/" width="1000" height="1500" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
-
 		</div>
+
 
 <!--  Scifi -->
 		<div role="tabpanel" class="tab-pane fade" id="scifi">
@@ -203,12 +203,7 @@
 
 
 
-
-
-
-</ul>
-</div>
-
+</ul> <!--responds to tab ul -->
 
 
  <script>

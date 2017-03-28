@@ -342,6 +342,10 @@ class corpusOptions(Form):
 											('paper2', 'paper2'),('paper3', 'paper3'), ('paper4', 'paper4'), ('paper5', 'paper5')])
 
 ################ Default CoGe Data #############################
+@app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
+def cogeembeddings():
+	return render_template('coge_embeddings.html')
+
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions(secret_key='super secret key')

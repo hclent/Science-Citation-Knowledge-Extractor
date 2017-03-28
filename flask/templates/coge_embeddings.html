@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Word Cluster Force Directed Graph</title>
+    <style>
+        body {position:relative;margin:0 auto;font-family:"Courier","sans-serif";background-color:powder}
+        div{border:0px solid;}
+        input.slider{margin:5px auto;width: 300px;font-size: 1em;}
+    </style>
+
+    <!--D3-->
+<script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
+    <!--JS for this vis -->
+
+    <script src="{{ url_for('static', filename='embedding.js') }}"></script>
+
+
+</head>
+
+<body onload="initialize()" style="padding:20px; min-width:1010px;width:1010px">
+    <div id="sliderInfo"></div>
+    <input class="slider" type="range" name="limit" id="limit" min="0" max="100" value="100" step="1" onchange="changeLimit()">
+    <div id="graph" class="graph"></div>
+</body>
+</html>
