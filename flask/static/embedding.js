@@ -184,6 +184,7 @@ function initialize() {
 	d3.csv("embedtest.csv", function(curr){
         // Save data from CSV.
         data = curr;
+        console.log(data)
 
         // Add Nodes.
         for(var i=0; i<data.length; i++) {

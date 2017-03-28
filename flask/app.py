@@ -344,6 +344,7 @@ class corpusOptions(Form):
 ################ Default CoGe Data #############################
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
+	# testfile = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/embedtest.csv"
 	return render_template('coge_embeddings.html')
 
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
