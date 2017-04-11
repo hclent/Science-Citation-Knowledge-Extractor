@@ -578,6 +578,15 @@ def resjournals(query, range_years):
 	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year)
 
 
+@app.route('/resembeddings/<query>', methods=["GET","POST"]) #user embeddings for iframe
+def resembeddings(query):
+	if request.method == 'POST':
+		pass
+	if request.method == 'GET':
+		logging.info("tried to GET resembeddings lelz")
+		message = "embeddings SHOULD go here, y'know"
+		return render_template('results_embeddings.html', message=message)
+
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):
 	form = visOptions(secret_key='super secret key')
@@ -643,7 +652,7 @@ def reslda(query):
 		logging.info("last entry's LDA is named: " + str(file_name))
 		savePath = "/home/hclent/data/topics/lda" #saved in folder of topics/lda
 		completeName = os.path.join(savePath, file_name)
-		logging.info("complete file: " + str(completeName))
+		#logging.info("complete file: " + str(completeName))
 		with open(completeName) as load_data:
 			jsonLDA = json.load(load_data)
 		logging.info(jsonLDA)

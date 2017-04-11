@@ -107,9 +107,12 @@
                       </button>
                       <ul class="dropdown-menu">
                           <!-- TO DO: ajax req it and then append html in  div -->
-                        <li><a href="#lsa" id="lsa" onclick="toggle('reslsa', 'reslda')">LSA</a></li> <!-- I want this button to include results_lsa.html -->
 
-                        <li><a href="#lda" id="lda" onclick="toggle('reslda', 'reslsa')">LDA</a></li> <!-- and this button to include results_lda.html -->
+                          <li><a href="#embedding" id="embedding" onclick="toggle3('resembedding', 'cogelda', 'cogelsa')">Embeddings</a></li> <!--the force directed graph will go here -->
+
+                        <li><a href="#lsa" id="lsa" onclick="toggle3('reslsa', 'reslda', 'resembedding')">LSA</a></li> <!-- I want this button to include results_lsa.html -->
+
+                        <li><a href="#lda" id="lda" onclick="toggle3('reslda', 'reslsa', 'resembedding')">LDA</a></li> <!-- and this button to include results_lda.html -->
 
                       </ul>
                     </div>
@@ -118,6 +121,9 @@
 
             <br></br>
                 <!--template var at end of link -->
+
+            <iframe  id="resembedding" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/resembeddings/{{query}}" width="1000" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
            <iframe  id="reslsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslsa/{{query}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
           <iframe  id="reslda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslda/{{query}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
