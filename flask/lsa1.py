@@ -68,7 +68,7 @@ def do_LSA(X, vectorizer, k):
   jDict = {"name": "flare", "children": []} #initialize dict for json
   for i, comp in enumerate(lsa.components_):
     termsInComp = zip(terms, comp)
-    sortedTerms = sorted(termsInComp, key=lambda x: x[1], reverse=True)[:15]
+    sortedTerms = sorted(termsInComp, key=lambda x: x[1], reverse=True)[:7] #[: number of words desired]
     running_name = 'concept'+str(i)
     concept_Dict = {"name": running_name, "children": []}
     jDict["children"].append(concept_Dict)

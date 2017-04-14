@@ -1,4 +1,3 @@
-#### Playspace for clustering on fasttext embeddings
 from database_management import retrieveAllPmids
 from multi_preprocess import retrieveBioDocs
 from processors import *
@@ -9,7 +8,7 @@ import gensim, os, codecs
 from gensim.models import Word2Vec
 from sklearn.cluster import KMeans
 import math, random
-
+from kmeans1 import do_kemeans, get_hashing
 
 
 '''
@@ -26,10 +25,8 @@ Step 3:
 Step 4:
     Try these:
     Get the top X% NPs,
-    Rank NPs with TF-IDF,
+    Rank NPs with TF-IDF, Or just get the top x NPs
 Step 5:
-    concatenate word embeddings to make doc embeddings for each doc
-Step 6:
     cluster
 '''
 
@@ -37,14 +34,14 @@ Step 6:
 def flatten(listOfLists):
     return list(chain.from_iterable(listOfLists))
 
+#Input: biodoc
+#Output, list of words, and corresponding list of tags
 def get_words_tags(pmid_list):
     words = []
     tags = []
-
     for pmid in pmid_list:
         biodocs = retrieveBioDocs(pmid)
-        print(len(biodocs))
-
+        #print(len(biodocs))
         for doc in biodocs:
             doc_words = []
             doc_tags = []
@@ -61,12 +58,12 @@ def get_words_tags(pmid_list):
             doc_tags = flatten(doc_tags)
             words.append(doc_words)
             tags.append(doc_tags)
+    flat_words = flatten(words)
+    flat_tags = flatten(tags)
+    return flat_words, flat_tags
 
-    #words = flatten(words)
-    #tags = flatten(tags)
-    return words, tags
-
-
+#Input: list of words and corresponding list of tags
+#Output: list of noun phrases joined as a string
 def transform_text(words, tags):
     transformed_tokens = []
     np_stack = []
@@ -84,7 +81,7 @@ def transform_text(words, tags):
             transformed_tokens.append(w)
     return transformed_tokens
 
-
+#make dict of NPs with their frequency counts
 def chooseTopNPs(transformed_tokens):
     npDict = Counter(defaultdict(lambda: 0))
     for t in transformed_tokens:
@@ -93,16 +90,13 @@ def chooseTopNPs(transformed_tokens):
     return npDict
 
 
-
-
+#Load fasttext model
 def load_model(file):
-    print("* loading the model ... ")
     if ".vec" not in file:
         model = Word2Vec.load(str(file))
     if ".vec" in file:
         model = Word2Vec.load_word2vec_format(file, binary=False)  # C binary format
     model.init_sims(replace=True)
-    print("* successfully loaded the model !!!")
     return model
 
 
@@ -112,7 +106,7 @@ def getNPvecs(top_nps, model):
     for nps in top_nps:
         try:
             nouns = nps[0].split(' ')
-            print(nouns)
+            #print(nouns)
             denomintor = len(nouns)
             zeroes = [0.0] * 100
             sum = np.asarray(zeroes).T #init empty column vector (100,)
@@ -122,15 +116,15 @@ def getNPvecs(top_nps, model):
                     sum += np.add(sum, np_vec)
 
                 except Exception as oov:
-                    print(oov)
-
+                    pass
+            # Average over the embeddings (e.g.  sum 2 NP embeddings and divide by 2)
             ### Problem: if one word is oov in the noun phrase, it will still average the embeddings :/
             avg_vec = np.divide(sum, denomintor)
             vec = avg_vec.tolist()
             all_vecs.append(vec)
             #print('-----------------------')
         except Exception as e:
-             print(e)
+             pass
     matrix = np.array(all_vecs)
     return matrix
 
@@ -140,116 +134,80 @@ def getNPvecs(top_nps, model):
 
 
 #pmid_list = retrieveAllPmids()
-#pmid_list = ['18952863','18269575']
-pmid_list = ['9108111', '10467567',  '23226128']
-words, tags = get_words_tags(pmid_list) #list of words/tags per doc
-flat_words = flatten(words)
-flat_tags = flatten(tags)
-transformed_sentence = transform_text(flat_words, flat_tags)
-npDict = chooseTopNPs(transformed_sentence)
-print(npDict)
-top_nps= list(npDict.most_common(100))
-# top_nps200 = list(npDict.most_common(150))
-# top_nps = [item for item in top_nps200  if item not in top_nps100]
-# print(top_nps)
-#top_nps = [('gene_expression', 3448), ('t_\\_t', 3421), ('c._jejunus', 2433), ('amino_acid', 2247), ('climate_change', 2101), ('expression_level', 2021), ('cell_cycle', 2006), ('stem_cell', 1973), ('scale_bar', 1943), ('transcription_factor', 1912), ('cell_line', 1789), ('cell_death', 1784), ('\\_t', 1703), ('b._napus', 1680), ('gene_family', 1680), ('t_cell', 1612), ('cell_type', 1581), ('time_point', 1545), ('a._thaliana', 1494), ('plant_species', 1454), ('breast_cancer', 1417), ('dna_methylation', 1374), ('cancer_cell', 1335), ('land_plant', 1326), ('error_bar', 1321), ('expression_pattern', 1305), ('dna_damage', 1290), ('signaling_pathway', 1271), ('room_temperature', 1226), ('cell_proliferation', 1191), ('table_s1', 1168), ('candidate_gene', 1121), ('target_gene', 1097), ('_', 1067), ('animal_model', 1042), ('western_blot', 1016), ('motor_neuron', 1007), ('mouse_model', 988), ('tumor_cell', 987), ('genome_sequence', 968), ('datum_set', 940), ('cell_division', 935), ('plant_genome', 928), ('protein_level', 923), ('gene_duplication', 888), ('growth_factor', 885), ('arabidopsis_thaliana', 874), ('b_cell', 865), ('s_phase', 857), ('bone_marrow', 844), ('\\_usepackage', 840), ('stress_granule', 836), ('cell_wall', 830), ('dna_replication', 801), ('plasma_membrane', 801), ('b._rapa', 787), ('zebra_finch', 766), ('western_blotting', 747), ('table_s2', 736), ('gene_tree', 735), ('western_blot_analysis', 710), ('protein_sequence', 706), ('progenitor_cell', 703), ('material_online', 702), ('risk_factor', 691), ('cell_growth', 681), ('amino_acid_sequence', 659), ('%_ci', 658), ('stress_response', 645), ('pcr_product', 642), ('control_group', 639), ('flowering_plant', 639), ('expression_profile', 631), ('flow_cytometry', 631), ('cell_cycle_progression', 609), ('gene_pair', 604), ('genome_duplication', 599), ('hh_signaling', 594), ('p._patens', 587), ('sequence_alignment', 586), ('brain_region', 577), ('reference_genome', 574), ('sequence_similarity', 570), ('duplication_event', 558), ('figure_supplement', 554), ('\\_u2009', 554), ('protein_kinase', 534), ('genome_size', 532), ('p_value', 531), ('mm_nacl', 530), ('protein_expression', 525), ('table_s3', 521), ('species_tree', 514), ('mrna_level', 512), ('rna_binding_protein', 500), ('crystal_structure', 500), ('linkage_group', 499), ('binding_site', 499), ('copy_number', 488), ('seed_plant', 485)]
-
-
-# create_model('/home/hclent/data/nns/5k', '5210_nns')
-def get_hashing(data):
-  t0 = time.time()
-  hasher = HashingVectorizer() #l2 projected on the euclidean unit sphere
-  hX = hasher.fit_transform(data)
-  return hX, hasher
-
-
-#Input: High dimensional (sparse) matrix
-#Output: Clusters
-# labels = km.labels_
-# centroids = km.cluster_centers_
-def do_kemeans(sparse_matrix, k_clusters):
-    t0 = time.time()
-    num_clusters = int(k_clusters)
-    km = KMeans(init='k-means++', n_clusters=num_clusters)
-    km.fit(sparse_matrix)
-    clusters = km.labels_.tolist()
-    return clusters
-
-
-model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
-print(model.syn0.shape)
-matrix = getNPvecs(top_nps, model)
-kmeans = KMeans(n_clusters=10, random_state=2).fit(matrix)
-
-
-res = list(zip(kmeans.labels_, top_nps))
-
-t1 = []
-t2 = []
-t3 = []
-t4 = []
-t5 = []
-t6 = []
-t7 = []
-t8 = []
-t9 = []
-t10 = []
-for t in res:
-    if t[0] == 0:
-        t1.append(t[1])
-    if t[0] == 1:
-        t2.append(t[1])
-    if t[0] == 2:
-        t3.append(t[1])
-    if t[0] == 3:
-        t4.append(t[1])
-    if t[0] == 4:
-        t5.append(t[1])
-    if t[0] == 5:
-        t6.append(t[1])
-    if t[0] == 6:
-        t7.append(t[1])
-    if t[0] == 7:
-        t8.append(t[1])
-    if t[0] == 8:
-        t9.append(t[1])
-    if t[0] == 9:
-        t10.append(t[1])
-print("t1: ")
-print(t1)
-print("t2: ")
-print(t2)
-print("t3: ")
-print(t3)
-print("t4: ")
-print(t4)
-print("t5: ")
-print(t5)
-print("t6: ")
-print(t6)
-print("t7: ")
-print(t7)
-print("t8: ")
-print(t8)
-print("t9: ")
-print(t9)
-print("t10: ")
-print(t10)
+# pmid_list = ['18952863','18269575']
+# words, tags = get_words_tags(pmid_list) #list of words/tags per doc
+# transformed_sentence = transform_text(words, tags)
+# npDict = chooseTopNPs(transformed_sentence)
+# top_nps= list(npDict.most_common(100))
+# # ### top_nps200 = list(npDict.most_common(150))
+# # ### top_nps = [item for item in top_nps200  if item not in top_nps100]
+# # print(top_nps)
+# #
+# model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
+# print(model.syn0.shape)
+# matrix = getNPvecs(top_nps, model)
+# kmeans = KMeans(n_clusters=10, random_state=2).fit(matrix)
+# #
+# #
+# res = list(zip(kmeans.labels_, top_nps))
+# print(res)
+# #
+# t1 = []
+# t2 = []
+# t3 = []
+# t4 = []
+# t5 = []
+# t6 = []
+# t7 = []
+# t8 = []
+# t9 = []
+# t10 = []
+# for t in res:
+#     if t[0] == 0:
+#         t1.append(t[1])
+#     if t[0] == 1:
+#         t2.append(t[1])
+#     if t[0] == 2:
+#         t3.append(t[1])
+#     if t[0] == 3:
+#         t4.append(t[1])
+#     if t[0] == 4:
+#         t5.append(t[1])
+#     if t[0] == 5:
+#         t6.append(t[1])
+#     if t[0] == 6:
+#         t7.append(t[1])
+#     if t[0] == 7:
+#         t8.append(t[1])
+#     if t[0] == 8:
+#         t9.append(t[1])
+#     if t[0] == 9:
+#         t10.append(t[1])
+# print("t1: ")
+# print(t1)
+# print("t2: ")
+# print(t2)
+# print("t3: ")
+# print(t3)
+# print("t4: ")
+# print(t4)
+# print("t5: ")
+# print(t5)
+# print("t6: ")
+# print(t6)
+# print("t7: ")
+# print(t7)
+# print("t8: ")
+# print(t8)
+# print("t9: ")
+# print(t9)
+# print("t10: ")
+# print(t10)
 # print("results: ")
 # results = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10]
 # print(results)
 
 
-
-# fv = makeFeatures(words, tags, top_nps, model)
-# print(fv)
-#
-#
-# hX, hasher = get_hashing(fv) #returns hX and hasher
-# clusters = do_kemeans(hX, 10) #returns clusters
-#
-# rank = zip(list(top_nps, clusters))
-# println(rank)
 
 
 
@@ -288,6 +246,16 @@ print(t10)
 #     print(len(feature_vecs[0]))
 #     return feature_vecs
 
+
+# fv = makeFeatures(words, tags, top_nps, model)
+# print(fv)
+#
+#
+# hX, hasher = get_hashing(fv) #returns hX and hasher
+# clusters = do_kemeans(hX, 10) #returns clusters
+#
+# rank = zip(list(top_nps, clusters))
+# println(rank)
 
 #### For alternative tokenization  #### noun_phrase_words
 #

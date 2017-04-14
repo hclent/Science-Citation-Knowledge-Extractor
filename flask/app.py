@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, flash, url_for, redirect, ses
 from flask_wtf import Form
 from wtforms import TextField, SelectField
 import sqlite3, gc, time, datetime, pickle, os.path
-import sys
+import sys, csv
 from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
 from database_management import connection #mine
@@ -323,15 +323,18 @@ def results():
 
 
 ################ Forms for visualization toggle ################
+#Form for Topic Models
 class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7') ])
 
 
+#Form for NEs tab
 class nesOptions(Form):
 	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'),
 											  (300, '300')])
 
+#Form for TextCompare tab
 class corpusOptions(Form):
 	corpus = SelectField('corpus', choices=[('startrek', 'startrek'),('frankenstein', 'frankenstein'),('youth', 'youth'),
 											('darwin', 'darwin'), ('austen', 'austen'),
@@ -344,8 +347,11 @@ class corpusOptions(Form):
 ################ Default CoGe Data #############################
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
-	# testfile = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/embedtest.csv"
-	return render_template('coge_embeddings.html')
+	filepath = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_embed.csv'
+	with open(filepath, 'rb') as f:
+		csvdata = csv.reader(f)
+		data = list(csvdata)
+	return render_template('coge_embeddings.html', data=data)
 
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
@@ -584,8 +590,11 @@ def resembeddings(query):
 		pass
 	if request.method == 'GET':
 		logging.info("tried to GET resembeddings lelz")
-		message = "embeddings SHOULD go here, y'know"
-		return render_template('results_embeddings.html', message=message)
+		run_embeddings(query, 50, 6) #50 words in 6 clusters
+		logging.info("finished printing embeddings to CSV probably?")
+		filepath = 'csvgraphs/fgraph_'+str(query)+'.csv'
+		logging.info(filepath)
+		return render_template('results_embeddings.html', filepath=filepath)
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):

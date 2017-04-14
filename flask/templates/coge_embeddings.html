@@ -219,9 +219,11 @@ function initialize() {
     graph = new make_graph("#graph");
     data = [];
 	d3.csv("{{ url_for('static', filename='coge_embed.csv') }}", function(curr){
-        // Save data from CSV.
+         //   // Save data from CSV.
         data = curr;
-        //console.log(data);
+        console.log(data);
+//    var data = {{reader}};
+
 
         // Set up scales.
         // For each word, get it's count and group number.

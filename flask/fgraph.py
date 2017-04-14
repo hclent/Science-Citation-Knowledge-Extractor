@@ -1,120 +1,107 @@
+import re, os.path, sys
+from scipy import spatial
+import numpy as np
 from gensim.models import Word2Vec
-import time
-import re
-
-t1 = [('gene_expression', 3448), ('expression_level', 2021), ('cell_line', 1789), ('time_point', 1545), ('expression_pattern', 1305), ('western_blot', 1016), ('protein_level', 923), ('western_blotting', 747), ('western_blot_analysis', 710), ('pcr_product', 642), ('expression_profile', 631), ('protein_expression', 525), ('mrna_level', 512)]
-t2 = [('transcription_factor', 1912), ('signaling_pathway', 1271), ('target_gene', 1097), ('growth_factor', 885), ('stress_response', 645), ('protein_kinase', 534), ('rna_binding_protein', 500)]
-t3 = [('climate_change', 2101), ('gene_family', 1680), ('genome_sequence', 968), ('datum_set', 940), ('plant_genome', 928), ('gene_duplication', 888), ('gene_tree', 735), ('protein_sequence', 706), ('material_online', 702), ('gene_pair', 604), ('genome_duplication', 599), ('reference_genome', 574), ('sequence_similarity', 570), ('duplication_event', 558), ('genome_size', 532), ('species_tree', 514), ('copy_number', 488)]
-t4 = [('c._jejunus', 2433), ('cell_cycle', 2006), ('cell_death', 1784), ('dna_damage', 1290), ('room_temperature', 1226), ('cell_proliferation', 1191), ('cell_division', 935), ('s_phase', 857), ('stress_granule', 836), ('dna_replication', 801), ('cell_growth', 681), ('flow_cytometry', 631), ('cell_cycle_progression', 609)]
-t5 = [('t_\\_t', 3421), ('scale_bar', 1943), ('\\_t', 1703), ('error_bar', 1321), ('_', 1067), ('\\_usepackage', 840), ('%_ci', 658), ('\\_u2009', 554), ('p_value', 531), ('mm_nacl', 530)]
-t6 = [('stem_cell', 1973), ('t_cell', 1612), ('cell_type', 1581), ('breast_cancer', 1417), ('dna_methylation', 1374), ('cancer_cell', 1335), ('tumor_cell', 987), ('b_cell', 865), ('bone_marrow', 844), ('progenitor_cell', 703), ('control_group', 639), ('hh_signaling', 594)]
-t7 = [('amino_acid', 2247), ('plasma_membrane', 801), ('amino_acid_sequence', 659), ('sequence_alignment', 586), ('figure_supplement', 554), ('crystal_structure', 500), ('binding_site', 499)]
-t8 = [('b._napus', 1680), ('table_s1', 1168), ('candidate_gene', 1121), ('b._rapa', 787), ('table_s2', 736), ('table_s3', 521), ('linkage_group', 499)]
-t9 = [('animal_model', 1042), ('motor_neuron', 1007), ('mouse_model', 988), ('zebra_finch', 766), ('risk_factor', 691), ('brain_region', 577)]
-t10 =[('a._thaliana', 1494), ('plant_species', 1454), ('land_plant', 1326), ('arabidopsis_thaliana', 874), ('cell_wall', 830), ('flowering_plant', 639), ('p._patens', 587), ('seed_plant', 485)]
-
-
-def make_lut(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10):
-    groupDict = {}
-    for word_count in t1:
-        groupDict[word_count[0]] = '1'
-    for word_count in t2:
-        groupDict[word_count[0]] = '2'
-    for word_count in t3:
-        groupDict[word_count[0]] = '3'
-    for word_count in t4:
-        groupDict[word_count[0]] = '4'
-    for word_count in t5:
-        groupDict[word_count[0]] = '5'
-    for word_count in t6:
-        groupDict[word_count[0]] = '6'
-    for word_count in t7:
-        groupDict[word_count[0]] = '7'
-    for word_count in t8:
-        groupDict[word_count[0]] = '8'
-    for word_count in t9:
-        groupDict[word_count[0]] = '9'
-    for word_count in t10:
-        groupDict[word_count[0]] = '10'
-    return groupDict
-
-
-#load fasttext file
-def load_model(file):
-    print("* loading the model ... ")
-    t0 = time.time()
-    if ".vec" not in file:
-        model = Word2Vec.load(str(file))
-    if ".vec" in file:
-        model = Word2Vec.load_word2vec_format(file, binary=False)  # C binary format
-    model.init_sims(replace=True)
-    print("* successfully loaded the model: done in %0.3fs." % (time.time() - t0))
-    print(model.syn0.shape)
-    return model
-
+from fasttext import load_model
 
 #make similarity matrix to decide what is/isn't connected in force dir graph
-#words in same topic are connected (1)
+#words in same topic are connected (1.0)
 #words in different topics are connected if cos(w1,w2) > some x
 #words are assigned a group id for the topic they fall in
-def make_matrix(topics, model, groupDict, words_list):
+#Sorry this is really ugly :'(
+def make_matrix(results, model):
     val_matrix = []
 
-    for t in topics:
+    for tup1 in results:
+        topic1 = tup1[0]
+        word1 = tup1[1][0]
+        word1count = tup1[1][1]
 
-        for word in t:
-            temp_row = []
-            for i in topics:
-                if t == i :
-                    for word2 in i:
-                        if word == word2:
-                            temp_row.append(word[1])
-                        if word != word2:
-                            temp_row.append(1.0)
-                if t != i:
-                    for word2 in i:
-                        #print("cos(" + str(word[0]) + ", " + str(word2[0]) + ")")
-                        np_float = model.similarity(word[0], word2[0])
-                        w_score = np_float.item()
-                        temp_row.append(w_score)
-            val_matrix.append(temp_row)
+        temp_row = []
+        for tup2 in results:
+            topic2 = tup2[0]
+            word2 = tup2[1][0]
 
-            #group val is last val on each row
-            group_num = int(groupDict.get(word[0]))
-            temp_row.append(group_num)
+            if topic1 == topic2: #if topic number = topic number
+               # print(str(word1) + " == " + str(word2))
+                if word1 == word2: # if word = word
+                    temp_row.append(word1count) #append word count
+                if word1 != word2: #if they are not the same word, but in the same group
+                    temp_row.append(1.0) #just append 1.0
+
+            if topic1 != topic2: #if the topic numbers are different
+                #print("cos(" + str(word1) + ", " + str(word2) + ")")
+                #PROBLEM: Need the average embedding for the noun phrase.
+                words_one = word1.split(' ') #list of words in word1
+                num_words_one = len(words_one) #number of words in word1
+                words_two = word2.split(' ') #list of words in word2
+                num_words_two = len(words_two) #number of words in word2
+
+                zeroes = [0.0] * 100
+                sum1 = np.asarray(zeroes).T  # init empty column vector (100,)
+                sum2 = np.asarray(zeroes).T  # init empty column vector (100,)
+                for w1s in words_one:
+                    try:
+                        np_vec = model[w1s]
+                        sum1 += np.add(sum1, np_vec)
+                    except Exception as e1:
+                        pass
+                for w2s in words_two:
+                    try:
+                        np_vec = model[w2s]
+                        sum2 += np.add(sum2, np_vec)
+                    except Exception as e2:
+                        pass
+                #get the average embedding for the noun phrase
+                avg_w1_vec = np.divide(sum1, num_words_one).T.tolist() #make a row vector, then make it a list
+                avg_w2_vec = np.divide(sum2, num_words_two).T.tolist()
+                #take the cosine
+                cos_sim = 1 - spatial.distance.cosine(avg_w1_vec, avg_w2_vec)
+                if cos_sim == 'nan':
+                    #print("NANANANANNANA :( ")
+                    pass
+                temp_row.append(cos_sim)
+
+        #group val is last val on each row
+        group_num = int(topic1)
+        temp_row.append(group_num)
+
+        #print(temp_row)
+        val_matrix.append(temp_row)
 
     #add final rows column
-    last_row_vals = [ int(groupDict.get(word)) for word in words_list ]
+    last_row_vals = [ int(tup[0] ) for tup in results ] #this is the topic ids
+    #print(last_row_vals)
     val_matrix.append(last_row_vals)
 
     return val_matrix
 
 
-model = load_model('/home/hclent/tmp/fastText/ftmodel.vec')
-topics = [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10]
-groupDict = make_lut(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10)
-words_list = []
-for t in topics:
-    for words in t:
-        #print(words[0])
-        words_list.append(words[0])
+def make_csv(val_matrix, results, query):
+    words_list = [words[1][0] for words in results]
+    formatted_words_list = [ re.sub("\s", "_", w) for w in words_list]
 
+    top_row = str(str(",")+(",".join(formatted_words_list)) + str(",group"))
 
-val_matrix = make_matrix(topics, model, groupDict, words_list)
+    save_path = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/csvgraphs/'  # in the folder of the last pmid
+    completeName = os.path.join(save_path, ('fgraph_' + (str(query)) + '.csv'))  # with the query for a name
+    sys.stdout = open(completeName, "w")
 
-
-def make_csv(val_matrix, words_list):
-    top_row = str(str(",")+(",".join(words_list)) + str(",group"))
     print(top_row)
     i = 0
-    rows = words_list + ["group"]
+    rows = formatted_words_list + ["group"]
     for label in rows: #label is str
         values = val_matrix[i] #list
         line = str( label + "," + str(values))
         line = re.sub( "\s+" , "", line)
         line = re.sub("\]|\[", "", line)
+        line = re.sub(',nan', ',0.00001', line) #with scipy some items are nans
         print(line)
         i+=1
 
 
-make_csv(val_matrix, words_list)
+# results = [(2, ('gene family', 525)), (5, ('a. thaliana', 409)), (6, ('genome duplication', 282)), (2, ('gene duplication', 267)), (2, ('gene pair', 245)), (3, ('arabidopsis thaliana', 227)), (8, ('plant species', 224)), (2, ('gene loss', 203)), (9, ('expression pattern', 203)), (6, ('duplication event', 194)), (6, ('genome sequence', 180)), (1, ('protein sequence', 168)), (3, ('synteny block', 163)), (8, ('plant genome', 153)), (9, ('expression level', 152)), (0, ('wgd event', 147)), (2, ('gene expression', 143)), (5, ('b. rapa', 140)), (9, ('expression profile', 138)), (0, ('linkage group', 135)), (1, ('sequence similarity', 135)), (0, ('bac clone', 131)), (7, ('amino acid', 124)), (2, ('gene order', 119)), (6, ('reference genome', 116)), (4, ('m. truncatulum', 116)), (2, ('gene model', 111)), (0, ('mhc class', 107)), (6, ('genome assembly', 107)), (4, ('g. max', 106)), (4, ('\\ u2003', 106)), (3, ('synteny analysis', 100)), (9, ('transcription factor', 99)), (0, ('datum set', 99)), (0, ('mam gene', 98)), (1, ('sequence alignment', 98)), (2, ('gene cluster', 98)), (4, ('t \\ t', 96)), (2, ('protein coding gene', 92)), (5, ('c. arabica', 92)), (0, ('table s1', 89)), (8, ('land plant', 82)), (4, ('k value', 82)), (2, ('gene annotation', 80)), (2, ('gene copy', 79)), (2, ('target gene', 79)), (0, ('arabidopsis lyra', 79)), (8, ('flowering plant', 78)), (5, ('b cell', 78)), (4, ('l. angustifolius', 77)), (0, ('fad3 gene', 76)), (0, ('qtl region', 69)), (0, ('pcr product', 69)), (6, ('genome size', 66)), (2, ('candidate gene', 66)), (0, ('divergence time', 65)), (0, ('prr gene', 65)), (5, ('c. canephora', 65)), (4, ('a. lyra', 64)), (4, ('l. japonicus', 64)), (9, ('stress response', 62)), (0, ('dna sequence', 61)), (0, ('brassica rapa', 61)), (4, ('p. vulgari', 61)), (0, ('default parameter', 61)), (2, ('gene content', 61)), (8, ('flowering time', 60)), (3, ('maize genome', 59)), (0, ('iaa gene', 58)), (0, ('branch length', 58)), (0, ('dart marker', 58)), (8, ('model plant', 58)), (7, ('amino acid sequence', 57)), (3, ('arabidopsis genome', 57)), (0, ('ssr marker', 57)), (9, ('transcript abundance', 55)), (6, ('genome annotation', 55)), (6, ('genome evolution', 55)), (2, ('copy number', 55)), (2, ('gene tree', 54)), (2, ('gene function', 54)), (3, ('grape genome', 54)), (3, ('blast search', 53)), (9, ('transcript level', 53)), (4, ('m. itineran', 53)), (0, ('core eudicot', 53)), (0, ('hormone treatment', 52)), (0, ('acid qtl', 52)), (2, ('gene sequence', 52)), (8, ('plant lineage', 52)), (5, ('b. distachyon', 51)), (8, ('legume species', 51)), (3, ('grape ap gene', 51)), (0, ('ap gene', 51)), (0, ('table s2', 51)), (6, ('tef genome', 50)), (2, ('gene set', 50)), (0, ('reading frame', 50)), (6, ('genome duplication event', 50)), (2, ('gene structure', 50))]
+# model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
+# print("model loaded!")
+# val_matrix = make_matrix(results, model)
+# make_csv(val_matrix, results)

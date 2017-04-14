@@ -1,15 +1,17 @@
 from processors import * #pyProcessors
 import os.path, time, re, logging, pickle, json
-
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
 from lsa1 import * #mine
 from lda1 import * #mine
+from fasttext import * #mine
+from fgraph import *
 from journalvis import * #mine
 from nes import * #mine
 from kmeans1 import * #mine
 from naive_cosineSim import * #mine
+
 
 
 ## Supporting functions for app.py
@@ -334,6 +336,20 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 	jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 	return jsonLDA
 
+def run_embeddings(query, top_n, k_clusters):
+	pmid_list = query.split('+')  # list of string pmids
+	words, tags = get_words_tags(pmid_list) #list of words/tags per doc
+	transformed_sentence = transform_text(words, tags)
+	npDict = chooseTopNPs(transformed_sentence)
+	top_nps= list(npDict.most_common(top_n))
+	# ### top_nps200 = list(npDict.most_common(150))
+	# ### top_nps = [item for item in top_nps200  if item not in top_nps100]
+	model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
+	matrix = getNPvecs(top_nps, model)
+	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
+	results = list(zip(kmeans.labels_, top_nps))
+	val_matrix = make_matrix(results, model)
+	make_csv(val_matrix, results, query)
 
 
 
