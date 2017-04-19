@@ -337,17 +337,41 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 	return jsonLDA
 
 def run_embeddings(query, top_n, k_clusters):
+	logging.info("in run_embeddings function")#
 	pmid_list = query.split('+')  # list of string pmids
 	words, tags = get_words_tags(pmid_list) #list of words/tags per doc
 	transformed_sentence = transform_text(words, tags)
 	npDict = chooseTopNPs(transformed_sentence)
-	top_nps= list(npDict.most_common(top_n))
-	# ### top_nps200 = list(npDict.most_common(150))
-	# ### top_nps = [item for item in top_nps200  if item not in top_nps100]
+	logging.info("done with npDict")
+	logging.info(type(top_n))
+	logging.info(type(k_clusters))
+	if top_n == 100:
+		logging.info("w=1-100")
+		top = list(npDict.most_common(top_n))
+	elif top_n == 200:
+		logging.info("w=101-200")
+		top_nps100 = list(npDict.most_common(100))
+		top_nps200 = list(npDict.most_common(200))
+		top = [item for item in top_nps200  if item not in top_nps100]
+	elif top_n == 300:
+		logging.info("w=201-300")
+		top_nps200 = list(npDict.most_common(200))
+		top_nps300 = list(npDict.most_common(300))
+		top = [item for item in top_nps300  if item not in top_nps200]
+	elif top_n == 400:
+		logging.info("w=301-400")
+		top_nps300 = list(npDict.most_common(300))
+		top_nps400 = list(npDict.most_common(400))
+		top = [item for item in top_nps400  if item not in top_nps300]
+	else:
+		top = list(npDict.most_common(top_n))
+	logging.info("done with top NPs")
 	model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
-	matrix = getNPvecs(top_nps, model)
+	logging.info("loaded model all the way!")
+	matrix = getNPvecs(top, model)
+	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
-	results = list(zip(kmeans.labels_, top_nps))
+	results = list(zip(kmeans.labels_, top))
 	val_matrix = make_matrix(results, model)
 	make_csv(val_matrix, results, query)
 

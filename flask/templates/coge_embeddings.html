@@ -13,6 +13,13 @@
     <!--D3-->
 <script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
 
+    <!--Bootstrap -->
+	<link href= "{{ url_for('static',
+	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
+	</script>
+
     <!--JS for this vis -->
     <script>
 var graph;
@@ -218,7 +225,7 @@ function initialize() {
     // Build graph.
     graph = new make_graph("#graph");
     data = [];
-	d3.csv("{{ url_for('static', filename='coge_embed.csv') }}", function(curr){
+	d3.csv("{{ url_for('static', filename=filepath) }}", function(curr){
          //   // Save data from CSV.
         data = curr;
         console.log(data);
@@ -336,7 +343,63 @@ function changeLimit(){
 
 
 
+
 <body onload="initialize()" style="padding:20px; min-width:1010px;width:1010px">
+
+
+ <h2> Word Embeddings </h2> <!--title goes here-->
+
+<form class="form-inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogembeddings/" method="post">
+<div class="form-group">
+    <label for="k_val"> k topics</label>
+    <select class="form-control form-control-sm" id="k_val" name="k_val">
+      <option value="5">k=5</option>
+      <option value="6">k=6</option>
+      <option value="7">k=7</option>
+      <option value="8">k=8</option>
+    </select>
+    </div>
+      <div class="form-group">
+      <label for="w_words">of the w top word windows</label>
+      <select class="form-control form-control-sm" id="w_words" name="w_words">
+        <option value="100">w=1-100</option>
+        <option value="200">w=101-200</option>
+        <option value="300">w=201-300</option>
+        <option value="400">w=301-400</option>
+      </select>
+    </div>
+  <button type="submit" id="embedbutton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Update</button>
+</form>
+
+<!-- Progress modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Loading</h4>
+      </div>
+      <div class="modal-body">
+
+				<!-- Progress bar that doesn't actually move -->
+				<div class="progress">
+				  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+				    <span class="sr-only">45% Complete</span>
+				  </div>
+				</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
     <div id="sliderInfo"></div>
     <input class="slider" type="range" name="limit" id="limit" min="0" max="100" value="100" step="1" onchange="changeLimit()">
     <div id="graph" class="graph"></div>
