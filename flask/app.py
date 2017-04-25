@@ -600,16 +600,8 @@ def resjournals(query, range_years):
 
 
 @app.route('/resembeddings/<query>', methods=["GET","POST"]) #user embeddings for iframe
-def resembeddings(query):
-	if request.method == 'POST':
-		pass
-	if request.method == 'GET':
-		logging.info("tried to GET resembeddings lelz")
-		run_embeddings(query, 50, 6) #50 words in 6 clusters
-		logging.info("finished printing embeddings to CSV probably?")
-		filepath = 'csvgraphs/fgraph_'+str(query)+'.csv'
-		logging.info(filepath)
-		return render_template('results_embeddings.html', filepath=filepath)
+def resembeddings():
+	return render_template('results_embeddings.html')
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):

@@ -13,7 +13,9 @@
 }
 
 </style>
-<svg width="960" height="600"></svg>
+<svg width="960" height="600">
+
+</svg>
 
 
 <script src="https://d3js.org/d3.v4.min.js"></script>
@@ -53,6 +55,14 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
           .on("drag", dragged)
           .on("end", dragended)
       );
+
+
+
+    var title = svg.selectAll("title")
+        .data(graph.nodes)
+        .enter()
+      .append("title");
+
 
   node.append("title")
       .text(function(d) { return d.id; });
