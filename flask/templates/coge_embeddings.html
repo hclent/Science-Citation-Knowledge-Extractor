@@ -226,10 +226,9 @@ function initialize() {
     graph = new make_graph("#graph");
     data = [];
 	d3.csv("{{ url_for('static', filename=filepath) }}", function(curr){
-         //   // Save data from CSV.
+         //Saved data from CSV.
         data = curr;
-        console.log(data);
-//    var data = {{reader}};
+        //console.log(data);
 
 
         // Set up scales.
@@ -280,7 +279,7 @@ function initialize() {
         }
     });
 
-    // Set up slider.
+     //Set up slider.
     var sliderText = [
         {"label":"SIMILARITY SCORE", "x":75, "y":-3, "fs":"1em", "fc":"gainsboro"},
         {"label":"0", "x":0, "y":20, "fs":"0.9em", "fc":"black"},
@@ -353,10 +352,10 @@ function changeLimit(){
 <div class="form-group">
     <label for="k_val"> k topics</label>
     <select class="form-control form-control-sm" id="k_val" name="k_val">
-      <option value="5">k=5</option>
-      <option value="6">k=6</option>
-      <option value="7">k=7</option>
-      <option value="8">k=8</option>
+      <option value="10">k=10</option>
+      <option value="11">k=11</option>
+      <option value="12">k=12</option>
+      <option value="13">k=13</option>
     </select>
     </div>
       <div class="form-group">
@@ -400,8 +399,8 @@ function changeLimit(){
 
 
 
-    <div id="sliderInfo"></div>
-    <input class="slider" type="range" name="limit" id="limit" min="0" max="100" value="100" step="1" onchange="changeLimit()">
+    <!--<div id="sliderInfo"></div>-->
+    <!--<input class="slider" type="range" name="limit" id="limit" min="0" max="100" value="100" step="1" onchange="changeLimit()">-->
     <div id="graph" class="graph"></div>
 </body>
 </html>

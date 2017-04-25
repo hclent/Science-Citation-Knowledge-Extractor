@@ -326,7 +326,8 @@ def results():
 #Form for Topic Models
 class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5'),(6, 'k=6'),
-										  (7, 'k=7'),(8, 'k=8'),(9, 'k=9'),(10,'k=10')])
+										  (7, 'k=7'),(8, 'k=8'),(9, 'k=9'),(10,'k=10'),
+										  (11, 'k=11'),(12, 'k=12'),(13, 'k=13')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7'),
 											  (100, 'w=1-100'),(200, 'w=101-200'),(300, 'w=201-300'),(400, 'w=301-400')])
 
@@ -349,22 +350,23 @@ class corpusOptions(Form):
 ################ Default CoGe Data #############################
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
-	form = visOptions(secret_key='super secret key')
-	if request.method =='POST':
-		logging.info("posted something to cogembeddings")
-		query = '18952863+18269575'
-		window = int(form.w_words.data)
-		logging.info(window)
-		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
-		logging.info(k_clusters)
-		run_embeddings(query, window, k_clusters)  # 50 words in 6 clusters
-		logging.info("finished printing embeddings to CSV probably?")
-		filepath = 'csvgraphs/fgraph_' + str(query) + '.csv'
-		logging.info(filepath)
-		return render_template('coge_embeddings.html', filepath=filepath)
-	else:
-		filepath = 'coge_embed.csv'
-		return render_template('coge_embeddings.html', filepath=filepath)
+# 	form = visOptions(secret_key='super secret key')
+# 	if request.method =='POST':
+# 		logging.info("posted something to cogembeddings")
+# 		query = '18952863+18269575'
+# 		window = int(form.w_words.data)
+# 		logging.info(window)
+# 		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
+# 		logging.info(k_clusters)
+# 		run_embeddings(query, window, k_clusters)  # 50 words in 6 clusters
+# 		logging.info("finished printing embeddings to CSV probably?")
+# 		filepath = 'csvgraphs/fgraph_' + str(query) + '.csv'
+# 		logging.info(filepath)
+# 		return render_template('coge_embeddings.html', filepath=filepath)
+# 	else:
+# 		filepath = 'coge_embed.csv'
+# 		return render_template('coge_embeddings.html', filepath=filepath)
+	return render_template('test.html')
 
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
