@@ -58,14 +58,19 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
 
 
 
-    var title = svg.selectAll("title")
+    var label = svg.selectAll("title")
         .data(graph.nodes)
         .enter()
-      .append("title");
+        .append("text")
+            .text(function (d) { return d.id; })
+            .style("text-anchor", "middle")
+            .style("fill", "#555")
+            .style("font-family", "Arial")
+            .style("font-size", 12);;
 
 
-  node.append("title")
-      .text(function(d) { return d.id; });
+//  node.append("title")
+//      .text(function(d) { return d.id; });
 
   simulation
       .nodes(graph.nodes)
@@ -84,6 +89,10 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
     node
         .attr("cx", function(d) { return d.x = Math.max(max_radius, Math.min(width - max_radius, d.x)); })  //{ return d.x; }
         .attr("cy", function(d) { return d.y = Math.max(max_radius, Math.min(height - max_radius, d.y)); }); // { return d.y; }
+
+    label
+        .attr("x", function(d){ return d.x; })
+        .attr("y", function (d) {return d.y - 10; });
   }
 });
 
