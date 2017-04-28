@@ -920,7 +920,12 @@ def results_scifi(query):
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
 def testingshit():
-	return render_template('test.html')
+	topics = [('group1', ['blah', 'blah', 'blah']),
+			  ('group2', ['blih', 'blih', 'blih']),
+			  ('group3', ['bleh', 'bleh', 'bleh']),
+			  ('group4', ['bluh', 'bluh', 'blhh']),
+			  ('group5', ['bloh', 'bloh', 'bloh'])]
+	return render_template('test.html', topics=topics)
 
 
 #Handles 404 errors

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
 .links line {
   stroke: #999;
   stroke-opacity: 0.6;
@@ -12,41 +11,40 @@
   stroke-width: 1.5px;
 }
 
-/*.node text {*/
-  /*display: none;*/
-  /*font: 10px sans-serif;*/
-/*}*/
-
-/*.node:hover text {*/
-  /*display: inline;*/
-/*}*/
-
-#c1{
+#fgraph{
    float:left;
 }
 
-#c2{
-    background:lightpink;
+#titlelist{
     position: absolute;
     float:right;
     right: 0px;
 }​
-
 </style>
-<div id="c1">
+
+
+<div id="fgraph">
 <svg width="960" height="600"></svg>
 </div>
 
-<div id="c2">
-    <li>blah blah blah, a list would go here,</li>
-    <li>blah blah blah, thing thing thing, topic barf barf</li>
-     <li>does this ever loop around or will it just stay on the top 4ever :/</li>
-     <li>blah blah blah JS is stupid</li>
+<div id="titlelist">
+
+    	{% for t in topics %}
+             <div id="{{t[0]}}">"{{t[1]}}"</div>
+		  	{% endfor %}
 </div>
 
 
 
+<div id="buttonsAndStuff">
+
+	<input id="slider" type="range" min="0" max="1" value="1" step=".1" />
+
+</div>
+
 <script src="https://d3js.org/d3.v4.min.js"></script>
+
+
 <script>
 
 var svg = d3.select("svg"),
@@ -72,15 +70,14 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
       .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
 
   var node = svg.append("g")
-          .on("mouseover", onHover)
       .attr("class", "nodes")
       .selectAll("circle")
       .data(graph.nodes)
       .enter().append("circle")
       .attr("r", max_radius)
       .attr("fill", function(d) { return color(d.group); })
-      .on("mouseover", function(d) { d3.select("#" + d.id).style("display", "initial"); }) //so actually hide the label
-      .on("mouseout", function(d) { d3.select("#" + d.id).style("display", "none"); }) //so actually hide the label
+      .on("mouseover", function(d) { d3.select("#" + d.id).style("display", "initial"); }) //show label on hover
+      .on("mouseout", function(d) { d3.select("#" + d.id).style("display", "none"); }) //hide again off label
       .call(d3.drag()
           .on("start", dragstarted)
           .on("drag", dragged)
@@ -99,7 +96,7 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
             .style("fill", "#555")
             .style("font-family", "Arial")
             .style("font-size", 12)
-            .style("display", "none"); //so actually hide the label
+            .style("display", "none"); //hide the label by default
 
 
   simulation
@@ -127,12 +124,7 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
         .attr("y", function (d) {return d.y - 10; });
 
   }
-
-
-  function onHover(d) {
-
-
-  }
+	
 
 });
 
@@ -152,6 +144,17 @@ function dragended(d) {
   d.fx = null;
   d.fy = null;
 }
+
+</script>
+
+<script>
+	var divdiv = document.createElement('div'); //creation
+	document.body.appendChild(divdiv); //addition
+	divdiv.style.left = '32px'; //style manipulation
+	divdiv.style.top = '-16px';
+	divdiv.className = 'ui-modal'; //classes
+	divdiv.id = 'test'; //modification
+	divdiv.textContent = 'Hello hello'
 
 
 </script>
