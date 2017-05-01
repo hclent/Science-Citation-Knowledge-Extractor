@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <title>Force Directed Graph</title>
 
+    <!--D3.v4-->
     <script src="{{ url_for('static', filename='js/third-party/d3.v4/d3.v4.min.js') }}"></script>
+
+     <!--Bootstrap -->
+	<link href= "{{ url_for('static',
+	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
+	</script>
+
 
     <style>
         html, body {
@@ -78,7 +87,12 @@
         .infotext {
             font-size: 20px;
         }
+
+        #useroptions {
+            position: relative;
+        }
     </style>
+
 </head>
 
 <body>
@@ -87,13 +101,68 @@
 
 <div style="clear:both;"></div>
 
+<!--BUTTONS-->
+
+<div id="useroptions">
+ <h2> Word Embeddings </h2> <!--title goes here-->
+
+<form class="form-inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogembeddings/" method="post">
+<div class="form-group">
+    <label for="k_val"> k topics</label>
+    <select class="form-control form-control-sm" id="k_val" name="k_val">
+      <option value="10">k=10</option>
+      <option value="11">k=11</option>
+      <option value="12">k=12</option>
+      <option value="13">k=13</option>
+    </select>
+    </div>
+      <div class="form-group">
+      <label for="w_words">of the w top word windows</label>
+      <select class="form-control form-control-sm" id="w_words" name="w_words">
+        <option value="100">w=1-100</option>
+        <option value="200">w=101-200</option>
+        <option value="300">w=201-300</option>
+        <option value="400">w=301-400</option>
+      </select>
+    </div>
+  <button type="submit" id="embedbutton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Update</button>
+</form>
+
+</div>
+<!--end of useroptions div    -->
+
+<!-- Progress modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Loading</h4>
+      </div>
+      <div class="modal-body">
+
+				<!-- Progress bar that doesn't actually move -->
+				<div class="progress">
+				  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+				    <span class="sr-only">45% Complete</span>
+				  </div>
+				</div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--END OF BUTTONS-->
 
 
 
-
-
-
-<script src="https://d3js.org/d3.v4.min.js"></script>
 
 
 <script>
@@ -110,7 +179,7 @@ var simulation = d3.forceSimulation()
     .force("charge", d3.forceManyBody().strength(-5))
     .force("center", d3.forceCenter(width / 1.5, height / 1.5));
 
-d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) {
+d3.json("{{ url_for('static', filename=filepath) }}", function(error, graph) {
  if (error) throw error;
 
     // Create the Force Directed Graph
@@ -133,10 +202,10 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
             return color(d.group);
         })
         .on("mouseover", function (d) {
-            d3.select("#" + d.id).style("display", "initial");
+            d3.select("#" + d.id.replace(".","")).style("display", "initial"); // replace "." with ""
         }) //show label on hover
         .on("mouseout", function (d) {
-            d3.select("#" + d.id).style("display", "none");
+            d3.select("#" + d.id.replace(".","")).style("display", "none"); // replace "." with ""
         }) //hide again off label
         .call(d3.drag()
             .on("start", dragstarted)
@@ -149,10 +218,10 @@ d3.json("{{ url_for('static', filename='test.json') }}", function(error, graph) 
         .enter()
         .append("text")
         .attr("id", function (d) {
-            return d.id;
+            return d.id.replace(".","");  // replace "." with ""
         })
-        .text(function (d) {
-            return d.id;
+        .text(function (d) { //replace "." with ""
+            return d.id.replace(".","");
         }) //TODO: add if statement for count
         .style("text-anchor", "middle")
         .style("fill", "#555")

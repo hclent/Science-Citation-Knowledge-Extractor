@@ -11,6 +11,7 @@ from journalvis import * #mine
 from nes import * #mine
 from kmeans1 import * #mine
 from naive_cosineSim import * #mine
+from fgraph2json import embedding_json
 
 
 
@@ -336,6 +337,9 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 	jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 	return jsonLDA
 
+
+#Input: query, top N desired bin, k clusters
+#Output: prints csv for force directed graph
 def run_embeddings(query, top_n, k_clusters):
 	logging.info("in run_embeddings function")#
 	pmid_list = query.split('+')  # list of string pmids
@@ -372,8 +376,11 @@ def run_embeddings(query, top_n, k_clusters):
 	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
 	results = list(zip(kmeans.labels_, top))
-	val_matrix = make_matrix(results, model)
-	make_csv(val_matrix, results, query)
+	embedding_json(results, query)
+	logging.info("made json for embedding topic model")
+	'''depreciated CSV'''
+	#val_matrix = make_matrix(results, model)
+	#make_csv(val_matrix, results, query)
 
 
 

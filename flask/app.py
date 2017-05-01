@@ -350,23 +350,21 @@ class corpusOptions(Form):
 ################ Default CoGe Data #############################
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
-# 	form = visOptions(secret_key='super secret key')
-# 	if request.method =='POST':
-# 		logging.info("posted something to cogembeddings")
-# 		query = '18952863+18269575'
-# 		window = int(form.w_words.data)
-# 		logging.info(window)
-# 		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
-# 		logging.info(k_clusters)
-# 		run_embeddings(query, window, k_clusters)  # 50 words in 6 clusters
-# 		logging.info("finished printing embeddings to CSV probably?")
-# 		filepath = 'csvgraphs/fgraph_' + str(query) + '.csv'
-# 		logging.info(filepath)
-# 		return render_template('coge_embeddings.html', filepath=filepath)
-# 	else:
-# 		filepath = 'coge_embed.csv'
-# 		return render_template('coge_embeddings.html', filepath=filepath)
-	return render_template('test.html')
+	form = visOptions(secret_key='super secret key')
+	if request.method =='POST':
+		logging.info("posted something to cogembeddings")
+		query = '18952863+18269575'
+		window = int(form.w_words.data)
+		logging.info(window)
+		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
+		logging.info(k_clusters)
+		run_embeddings(query, window, k_clusters)  # 50 words in 6 clusters
+		filepath = 'fgraphs/fgraph_' + str(query) + '.json'
+		logging.info(filepath)
+		return render_template('coge_embeddings.html', filepath=filepath)
+	else:
+		filepath = 'test.json'
+		return render_template('coge_embeddings.html', filepath=filepath)
 
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
@@ -601,7 +599,7 @@ def resjournals(query, range_years):
 
 @app.route('/resembeddings/<query>', methods=["GET","POST"]) #user embeddings for iframe
 def resembeddings():
-	return render_template('results_embeddings.html')
+	return render_template('graveyard_results_embeddings.html')
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):
@@ -920,12 +918,8 @@ def results_scifi(query):
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
 def testingshit():
-	topics = [('group1', ['blah', 'blah', 'blah']),
-			  ('group2', ['blih', 'blih', 'blih']),
-			  ('group3', ['bleh', 'bleh', 'bleh']),
-			  ('group4', ['bluh', 'bluh', 'blhh']),
-			  ('group5', ['bloh', 'bloh', 'bloh'])]
-	return render_template('test.html', topics=topics)
+	filepath = 'test.json'
+	return render_template('test.html', filepath=filepath)
 
 
 #Handles 404 errors
