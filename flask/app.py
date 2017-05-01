@@ -363,7 +363,7 @@ def cogeembeddings():
 		logging.info(filepath)
 		return render_template('coge_embeddings.html', filepath=filepath)
 	else:
-		filepath = 'test.json'
+		filepath = 'coge_embed.json'
 		return render_template('coge_embeddings.html', filepath=filepath)
 
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
@@ -918,8 +918,7 @@ def results_scifi(query):
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
 def testingshit():
-	filepath = 'test.json'
-	return render_template('test.html', filepath=filepath)
+	return render_template('test.html')
 
 
 #Handles 404 errors
