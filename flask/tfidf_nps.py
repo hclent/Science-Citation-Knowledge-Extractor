@@ -50,23 +50,23 @@ def transform_text(words, tags):
     return transformed_tokens
 
 
-# pmid_list = ['18952863', '18269575']
+pmid_list = ['18952863', '18269575']
 # #pmid_list = ['9108111', '10467567',  '23226128', '22073781']
-# words, tags = doc_words_tags(pmid_list)
-# corpus = []
-# for i in range(0, len(words)):
-#     flat_words = words[i]
-#     flat_tags = tags[i]
-#     transformed = transform_text(flat_words,flat_tags) #list
-#     doc = [t for t in  transformed if len(t.split(' ')) > 1 ]
-#     doc2string = str((' ').join(doc))
-#     corpus.append(doc2string)
-# vec = TfidfVectorizer(min_df=5, ngram_range=(2,3))
-# counts = vec.fit_transform(corpus)
-# counts.todense()
-# tfidf = vec.vocabulary_
-# top = Counter(tfidf)#.most_common(1000)
-# print(top)
+words, tags = doc_words_tags(pmid_list)
+corpus = []
+for i in range(0, len(words)):
+    flat_words = words[i]
+    flat_tags = tags[i]
+    transformed = transform_text(flat_words,flat_tags) #list
+    doc = [t for t in  transformed if len(t.split(' ')) > 1 ]
+    doc2string = str((' ').join(doc))
+    corpus.append(doc2string)
+vec = TfidfVectorizer(min_df=5, ngram_range=(2,3))
+counts = vec.fit_transform(corpus)
+counts.todense()
+tfidf = vec.vocabulary_
+top = Counter(tfidf)#.most_common(1000)
+print(top)
 
 
 # these need to be clustered somehow, not with kmeans

@@ -160,12 +160,13 @@
 </div>
 <!--END OF BUTTONS-->
 
+<!--script for force directed graph-->
 <script>
 // this is the script for the force directed graph
 var svg = d3.select(".fdg"),
     width = +svg.attr("width"),
     height = +svg.attr("height"),
-    max_radius = 5;
+    max_radius = 7;
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -377,6 +378,7 @@ function dragended(d) {
 // this is the end of the script for the force directed graph
 </script>
 
+<!--script for side list-->
 <script>
     //this is the script for the virtual controller
 	// Rebind: AKB added due to lacking in D3.v4
