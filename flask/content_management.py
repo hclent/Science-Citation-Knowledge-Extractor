@@ -36,6 +36,8 @@ def connect_to_Processors(port_num):
   return api
 
 
+#TODO: Possibly load FastText model as global variable? 
+
 ################### INPUT #########################################################
 
 #User can enter in as many pubmed ids as they want into text box
@@ -67,7 +69,8 @@ def annotation_check(user_input):
 	return a_check
 
 
-
+#TODO: Function to check for new papers
+#TODO: Don't re-scrape or re-annotate papers already in db. (But do add to citations db for that PMID)
 #If pmid (user input) in the inputPapers database,
 #get self_info for inputPapers table and
 #main_info from citations table
@@ -181,6 +184,7 @@ def stats_barchart(query):
 
 ############ DATA VISUALIZATIONS #################################################
 
+#TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
 def print_journalvis(journals, dates, user_input, query):
 	#first, get range:
 	years_range = get_years_range(query) #need range for ALL journals, not just last one
@@ -220,7 +224,7 @@ def vis_heatmapTitles(query):
 			titles.append(t)
 	return titles
 
-
+#TODO: fix papers axis
 def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
 	logging.info("starting clustermap")
 	x, y, z = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
@@ -279,6 +283,7 @@ def inputEligible(query):
 
 
 #visualization for scifi div
+# TODO: make hyperlinks https
 def vis_scifi(corpus, query, eligible_papers):
 	corpus_vec, color = load_corpus(corpus, eligible_papers)
 	eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)
