@@ -1,6 +1,9 @@
 *.log
 *.pyc
 *.png
+*.bak
+*.dat
+*.dir
 bower_components
 csvgraphs/
 fgraphs/
