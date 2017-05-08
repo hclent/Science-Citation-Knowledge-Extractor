@@ -932,6 +932,8 @@ if __name__ == '__main__':
 	run_simple('0.0.0.0', 5000, app, use_reloader=True)
 	#app.run(host='0.0.0.0') #dont want app.run() for uwsgi
 
+
+#TODO: Add unit tests and such for Git & Travis UI
 ########### GRAVEYARD ##########################################################
 
 

@@ -36,7 +36,7 @@ def connect_to_Processors(port_num):
   return api
 
 
-#TODO: Possibly load FastText model as global variable? 
+#TODO: Possibly load FastText model as global variable?
 
 ################### INPUT #########################################################
 
@@ -208,13 +208,14 @@ def vis_wordcloud(neslist, nes_categories, w_number):
 	#print(wcl)
 	return wcl
 
-
+#TODO: word counts for documents seem to have some mistakes. Look into this!!!
 def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
 	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, data_samples)
 	return x_docs, y_words, z_counts
 
 #for getting heatmap titles
+#TODO: word counts for documents seem to have some mistakes. Look into this!!!
 def vis_heatmapTitles(query):
 	titles = []  # want citations instead of titles
 	pmid_list = query.split('+')  # list of string pmids
@@ -224,7 +225,7 @@ def vis_heatmapTitles(query):
 			titles.append(t)
 	return titles
 
-#TODO: fix papers axis
+#TODO: fix papers axis so its not smooshed together and ugly
 def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
 	logging.info("starting clustermap")
 	x, y, z = vis_heatmap(data_samples, nes_list, nes_categories, w_number)

@@ -163,6 +163,32 @@ def retrieveAllPmids():
 	pmid_list = [pmid[0] for pmid in c]
 	return pmid_list
 
+
+
+#this function will tell if a pmcid already exists in 'citations' so that it
+#doesn't need to be downloaded, scraped, & annotated in Entrez_IR.py and multipreprocessing.py
+#input: pmcid
+#output: if the pmcid exists in the db, get the entry to copy for the new citing document
+def checkForPMCID(citation):
+	try:
+		c.execute('''SELECT pmcid, title, author, journal, pubdate, url, abstract, whole_article,
+ 					sents, tokens, annotated FROM citations WHERE pmcid=?''',(citation,))
+		exist = c.fetchone()
+		#if the row does NOT exist
+		if exist is None:
+			record = 'empty'
+		#if the row does exist
+		else:
+			record = exist
+	except Exception as e:
+		record = 'empty'
+		print(record)
+	return record
+
+
+result = checkForPMCID('1111111')
+print(result)
+
 #Create table for inputPapers
 # def create_table_input():
 # 	c.execute('''CREATE TABLE IF NOT EXISTS inputPapers
