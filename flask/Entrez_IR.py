@@ -1,11 +1,10 @@
 from __future__ import print_function
 from Bio import Entrez
-import time, sys, pickle
+import time, sys, pickle, datetime
 from time import sleep
-import datetime
 import os.path, logging, json, re
 import xml.etree.ElementTree as ET
-import pprint
+from database_management import checkForPMCID
 
 
 
@@ -107,66 +106,65 @@ def connectToNCBI(citation):
 
 
 #Input: Citing pmcids
-#Output: Basic info about these pmcids
-def getCitedInfo(pmcid_list): 
+#Output: Basic info about these pmcids -- list of dictionaries
+#Update: Change from list of lists to dictionary so that the code doesn't rely on indexing
+def getCitedInfo(pmcid_list, pmid):
 	t0 = time.time()
-	pmc_titles = []
-	pmc_authors = []
-	pmc_journals = []
-	pmc_dates = []
-	pmc_urls = []
 	i = 1
+	allCitations = []
 	for citation in pmcid_list:
+		citationsDict = {'citesPmid': pmid, "pmcid": citation, "pmc_titles": [], "pmc_authors": [], "pmc_journals": [],
+						 "pmc_dates": [], "pmc_urls": []}
 		logging.info("citation no. " + str(i) + " ...")
 		#sometimes the connection fails: Need to re-try
 		#
 		#Need to re-try if this happens:
 		try:
 			t, a, j, d, u = connectToNCBI(citation)
-			pmc_titles.append(t)
-			pmc_authors.append(a)
-			pmc_journals.append(j)
-			pmc_dates.append(d)
-			pmc_urls.append(u)
+			citationsDict["pmc_titles"].append(t)
+			citationsDict["pmc_authors"].append(a)
+			citationsDict["pmc_journals"].append(j)
+			citationsDict["pmc_dates"].append(d)
+			citationsDict["pmc_urls"].append(u)
 		except Exception as e:
 			logging.info(str(e))
 			logging.info("Failed to connect to NCBI. Lets try again in 3 seconds... Retry 1/3")
 			time.sleep(3)
 			t, a, j, d, u = connectToNCBI(citation)
-			pmc_titles.append(t)
-			pmc_authors.append(a)
-			pmc_journals.append(j)
-			pmc_dates.append(d)
-			pmc_urls.append(u)
+			citationsDict["pmc_titles"].append(t)
+			citationsDict["pmc_authors"].append(a)
+			citationsDict["pmc_journals"].append(j)
+			citationsDict["pmc_dates"].append(d)
+			citationsDict["pmc_urls"].append(u)
 		except Exception as e2:
 			logging.info(str(e2))
 			logging.info("Failed to connect to NCBI again. Let's try again in 5 seconds ... Retry 2/3")
 			time.sleep(5)
 			t, a, j, d, u = connectToNCBI(citation)
-			pmc_titles.append(t)
-			pmc_authors.append(a)
-			pmc_journals.append(j)
-			pmc_dates.append(d)
-			pmc_urls.append(u)
+			citationsDict["pmc_titles"].append(t)
+			citationsDict["pmc_authors"].append(a)
+			citationsDict["pmc_journals"].append(j)
+			citationsDict["pmc_dates"].append(d)
+			citationsDict["pmc_urls"].append(u)
 		except Exception as e3:
 			logging.info(str(e3))
 			logging.info("Failed to connect to NCBI a third time. Try once more in 8 seconds before giving up ... Retry 3/3")
-			time.sleep(8)
+			time.sleep(5)
 			t, a, j, d, u = connectToNCBI(citation)
-			pmc_titles.append(t)
-			pmc_authors.append(a)
-			pmc_journals.append(j)
-			pmc_dates.append(d)
-			pmc_urls.append(u)
+			citationsDict["pmc_titles"].append(t)
+			citationsDict["pmc_authors"].append(a)
+			citationsDict["pmc_journals"].append(j)
+			citationsDict["pmc_dates"].append(d)
+			citationsDict["pmc_urls"].append(u)
 		except Exception as e4:
 			logging.info(str(e4))
 			logging.info("Failed to connect to NCBI 4 times. Let's skip this entry :( ")
 			pass
+		allCitations.append(citationsDict)
 		time.sleep(3)
 		i += 1
-	#main_info = (list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_urls)))
 	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
-	return pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls
+	return allCitations
 
 
 #Input: XML string of PMC entry generated with getContentPMC
@@ -222,53 +220,82 @@ def parsePMC(xml_string):
 #Input: the list of pmcids citing some pmid
 #For each citing pmc_id, this function gest the xml, which is then parsed by parsePMC()
 #Output: Journal texts for each pmcid saved as pmcid.txt to the folder pmcid[:3]/pmicd[3:6] for better organization
-def getContentPMC(pmcids_list):
+def getContentPMC(pmcids_list, pmid):
 	t0 = time.time()
 	i = 1
 
-	all_abstract_check = []
-	all_article_check = []
+	contentDictList = []
 
 	for citation in pmcids_list:
 
-		prefix = '/home/hclent/data/pmcids/' + str(citation[0:3]) #folder for first 3 digits of pmcid
-		suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
+		# a record that this pmc is cited by the new input paper
+		#
+		row = checkForPMCID(citation)
 
-		try:
-			os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
-		except OSError:
-			if os.path.isdir(prefix):
+		if row != 'empty':
+			other_citesPmid = row[5] #pmid
+			abstract_check = row[7] #None or yes/no
+			article_check = row[8] #None or yes/no
+			sents = row[9] #None or number
+			tokens = row[10] #None or number
+			annotated = row[11] #None or yes/no
+			if other_citesPmid != pmid:
+				print("this pmcid cites a different pmid!")
+				logging.info("the pmcid already exists in db, citing a different pmid. don't re-scrape or re-annotate")
+				#TODO: update db for this pmcid with same info as others, except citesPmid
 				pass
-			else:
-				raise
 
-		try:
-			os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
-		except OSError:
-			if os.path.isdir(suffix):
-				pass
-			else:
-				raise
+			# if the pmcid in the database has no abstract check and article check,
+			# get the XML record, parse the xml, and do the abstract and main text checks
+			if other_citesPmid == pmid and abstract_check is None and article_check is None:
+				contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
+				logging.info("pmcid never seen before. needs to be scraped + annotated ")
 
-		logging.info(str(i)+" paper")
-		logging.info("CITATION: " +str(citation))
-		handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
-		xml_record = handle.read() #xml str
-		#print(xml_record)
-		logging.info("* got xml record")
-		main_text, abstract_check, whole_article_check = parsePMC(xml_record)
-		for yn in abstract_check:
-			all_abstract_check.append(yn)
-		for yn in whole_article_check:
-			all_article_check.append(yn)
-		logging.info("* ready to print it")
-		completeName = os.path.join(suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
-		sys.stdout = open(completeName, "w")
-		print(main_text)
-		i += 1
-		time.sleep(3)
+				prefix = '/home/hclent/data/pmcids/' + str(citation[0:3]) #folder for first 3 digits of pmcid
+				suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+
+				try:
+					os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
+				except OSError:
+					if os.path.isdir(prefix):
+						pass
+					else:
+						raise
+
+				try:
+					os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
+				except OSError:
+					if os.path.isdir(suffix):
+						pass
+					else:
+						raise
+
+				logging.info(str(i)+" paper")
+				logging.info("CITATION: " +str(citation))
+				handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
+				xml_record = handle.read() #xml str
+				#print(xml_record)
+				logging.info("* got xml record")
+				main_text, abstract_check, whole_article_check = parsePMC(xml_record)
+				for yn in abstract_check: #'yn' = 'yes no'
+					contentDict["all_abstract_check"].append(yn)
+				for yn in whole_article_check:
+					contentDict["all_article_check"].append(yn)
+				#append yes/no content dicts to list
+				contentDictList.append(contentDict)
+				#print
+				logging.info("* ready to print it")
+				completeName = os.path.join(suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
+				sys.stdout = open(completeName, "w")
+				print(main_text)
+				i += 1
+				time.sleep(3)
+	else:
+		pass
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
-	return all_abstract_check, all_article_check
+	return contentDictList
+
 
 
 #retrieve the txt for input papers as well

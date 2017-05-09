@@ -171,7 +171,7 @@ def retrieveAllPmids():
 #output: if the pmcid exists in the db, get the entry to copy for the new citing document
 def checkForPMCID(citation):
 	try:
-		c.execute('''SELECT pmcid, title, author, journal, pubdate, url, abstract, whole_article,
+		c.execute('''SELECT pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article,
  					sents, tokens, annotated FROM citations WHERE pmcid=?''',(citation,))
 		exist = c.fetchone()
 		#if the row does NOT exist
@@ -186,8 +186,6 @@ def checkForPMCID(citation):
 	return record
 
 
-result = checkForPMCID('1111111')
-print(result)
 
 #Create table for inputPapers
 # def create_table_input():

@@ -82,27 +82,66 @@ def run_IR_in_db(user_input):
 
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
-#self_info, main_info, are written to db in app.py
+#Write self_info to inputPmids db
+#Write allCitationsInfo to citations db
+#Upddate
 #target_journals and target_dates are used for data vis
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the database')
 	self_info = getMainInfo(user_input) #self_info is written to the database in app.py
-
 	pmc_ids = getCitationIDs(user_input)
 	num_citations = len(pmc_ids)
 	logging.info(num_citations)
+	logging.info("Writing self_info to inputPapers db")
+	write self_info to "inputPapers" db
+	for tup in self_info:
+		title = tup[0]
+		s = ', '
+		author = str(s.join(tup[1]))
+		journal = tup[2]
+		pubdate = tup[3]
+		url = tup[4]
+		unix = time.time()
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+		conn, c = connection()
+		c.execute(
+			"INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+			(date, user_input, title, author, journal, pubdate, url, num_citations))  # put user pmid into db
+		conn.commit()
 
-	target_title, target_authors, target_journals, target_dates, target_urls = getCitedInfo(pmc_ids)
-	#Get content
+	logging.info("Get basic info about the citations")
+	allCitationsInfo = getCitedInfo(pmc_ids, user_input)
+	logging.info("Write basic citation info to citations db")
+	for citation in allCitationsInfo:
+		unix = time.time()
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+		pmcid = str(citation["pmcid"])
+		title = str(citation["pmc_titles"][0])
+		authorlist = citation["pmc_authors"][0]
+		s = ', '
+		author = str(s.join(authorlist))
+		journal = str(citation["pmc_journals"][0])
+		pubdate = str(citation["pmc_dates"][0])
+		citesPmid = str(citation["citesPmid"])
+		url = str(citation["pmc_urls"][0])
+		conn, c = connection()
+		c.execute(
+			"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
+			(date, pmcid, title, author, journal, pubdate, citesPmid, url))
+		conn.commit()
 
-	all_abstract_check, all_article_check = getContentPMC(pmc_ids)
-	#main_info is written to the database in app.py
+	#Get content and update citations db
+	contentDictList = getContentPMC(pmc_ids, user_input)
+	for citation in contentDictList:
+		pmcid = str(citation["pmcid"])
+		citesPmid = str(citation["citesPmid"])
+		abstract = str(citation["all_abstract_check"][0])
+		whole_article = str(citation["all_article_check"][0])
+		conn, c = connection()
+		c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?", (abstract, whole_article, pmcid, citesPmid))
+		conn.commit()
+	return num_citations
 
-	#check if the document was properly annotated or not
-
-	new_info = list(zip(pmc_ids, target_title, target_authors,target_journals, target_dates, target_urls, all_abstract_check, all_article_check))
-
-	return self_info, new_info, target_journals, target_dates, num_citations
 
 #If the pmid is NOT in the db, we also need to getSelfText and write that info to db
 def scrape_and_write_Input(user_input):
