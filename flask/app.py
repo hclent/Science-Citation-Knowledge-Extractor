@@ -64,10 +64,14 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
-			main_info = [] #main_info are formatted citations from citations table in db
+			main_info = [] #main_info and target_urls for "citaitons" page
+			target_urls = []
+
+			#target_journals and target_dates for journals vis
 			target_journals = []
 			target_dates = []
-			target_urls = []
+
+			#need to re-factor how i do data_samples and ners as DICTS with pmcid keys
 			data_samples = []
 			ners = []
 
@@ -88,112 +92,27 @@ def results():
 
 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
 				if check1 is None:
-					flash('new pubmedid lol')
-					#Using user_input for Information Retireval of "main info"
+					flash('new pubmedid!')
+					#Using user_input for Information Retireval of citing pmcids and info about them
 					#This function needs to have a check to not SCRAPE OR ANNOTATE currently existing docs
 					#But still want them in db
-					self_info, new_info, journals, dates, num_citations = run_IR_not_db(user_input)
-
-					'''
-					'main' renamed to 'new_info'
-					need 'new_info' written to the database
-					but need this information formatted to citation form before printing it as `main`
-					so appending to 'main' will be moved to after new_info is put into db
-
-
-
-					# for mi in main:
-					# 	main_info.append(mi)
-					# logging.info("done with main info list")
-					'''
-					for j in journals:
-						target_journals.append(j)
-					logging.info("done with journal list")
-					lenjournals = (len(target_journals))
-					logging.info("there are "+str(lenjournals)+" publications")
-					for d in dates:
-						target_dates.append(d)
-					logging.info("done with dates list")
-
-					# add main/new to citations database table
-					# need these added to the db in order to annotate the papers
-
-					for tup in new_info:
-						logging.info("TUP IN MAIN: ")
-						logging.info(tup)
-						pmcid = tup[0]
-						title = tup[1]
-						s = ', '
-						author = str(s.join(tup[2]))
-						journal = tup[3]
-						pubdate = tup[4]
-						url = tup[5]
-						abstract = tup[6]
-						whole = tup[7]
-
-						#can no longer write sents and tokens here because new_info must be added to db before annotation
-						#sents = total_sentences[i]
-						#tokens = sum_tokens[i]
-
-						unix = time.time()
-						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-						conn, c = connection()
-						c.execute(
-							"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-							(date, pmcid, title, author, journal, pubdate, user_input, url, abstract, whole))  # put user pmid into db
-						conn.commit()
-
-					logging.info("Writing citing new_info to citations db")
-
+					num_citations = run_IR_not_db(user_input)
 					logging.info("beginning multi-preprocessing")
 					data, named_entities, total_sentences, sum_tokens = do_ALL_multi_preprocessing(user_input)
 					a_check = annotation_check(user_input)
 
-					#put total_sents and sum_tokens info and annotation check into db
-					i = 0
-					for tup in new_info:
-						logging.info(tup)
-						pmcid = tup[0]
-						a_ch = a_check[i]
-						logging.info(pmcid)
-						sents = total_sentences[i]
-						logging.info(sents)
-						tokens = sum_tokens[i]
-						logging.info(tokens)
-						conn, c = connection()
-						c.execute("UPDATE citations SET sents=?, tokens=?, annotated=? WHERE pmcid=?", (sents, tokens, a_ch, pmcid))
-						conn.commit()
-						i += 1
-					logging.info("updated the db")
-
+					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
 					for d in data:
 						data_samples.append(d)
+					# TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
 					for n in named_entities:
 						ners.append(n)
-
-
-					## Once all the data has been acquired, (no topic modeling yet)
-					## Only want to save final topic model (not running topic models)
-
-					for tup in self_info:
-						title = tup[0]
-						s = ', '
-						author = str(s.join(tup[1]))
-						journal = tup[2]
-						pubdate = tup[3]
-						url = tup[4]
-						#needs "num_citations"
-						unix = time.time()
-						date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-						conn, c = connection()
-						c.execute("INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (date, user_input, title, author, journal, pubdate, url, num_citations)) #put user pmid into db
-						conn.commit()
-					logging.info("Writing self_info to inputPapers db")
 
 					# If its NOT in the db, we also need to try scraping it and writing that info to db
 					scrape_and_write_Input(user_input)
 
-
+					## Once all the data has been acquired, (no topic modeling yet)
+					## Only want to save final topic model (not running topic models)
 					if user_input == pmid_list[-1]: #if its the last pmid
 
 						#Do Latent Semantic Analysis and return jsonDict for data vis
@@ -597,9 +516,12 @@ def resjournals(query, range_years):
 	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year)
 
 
+
 @app.route('/resembeddings/<query>', methods=["GET","POST"]) #user embeddings for iframe
 def resembeddings():
 	return render_template('graveyard_results_embeddings.html')
+
+
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):

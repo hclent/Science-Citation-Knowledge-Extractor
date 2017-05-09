@@ -70,7 +70,6 @@ def annotation_check(user_input):
 
 
 #TODO: Function to check for new papers
-#TODO: Don't re-scrape or re-annotate papers already in db. (But do add to citations db for that PMID)
 #If pmid (user input) in the inputPapers database,
 #get self_info for inputPapers table and
 #main_info from citations table
@@ -84,8 +83,9 @@ def run_IR_in_db(user_input):
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 #Write self_info to inputPmids db
 #Write allCitationsInfo to citations db
-#Upddate
-#target_journals and target_dates are used for data vis
+#Update citations db with abstract_check and whole_article_check
+#TODO: Don't re-scrape or re-annotate papers already in db. -->(But do add to citations db for that PMID)
+#TODO: will need to return some information so that journals vis and citations tab still work
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the database')
 	self_info = getMainInfo(user_input) #self_info is written to the database in app.py
@@ -343,6 +343,8 @@ def vis_scifi(corpus, query, eligible_papers):
 ############ PROCESSING BIODOCS ############################################
 #Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
 #This method is for user_input NOT already in DB, need to make json, for in DB, no need to make JSON
+#TODO: Update db with sents, tokens, annotated fields
+#TODO: Don't re-annotate
 def do_ALL_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW docs')
 	t1 = time.time()
