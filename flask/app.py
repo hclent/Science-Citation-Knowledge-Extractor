@@ -84,19 +84,14 @@ def results():
 				#Connect to database
 				conn, c = connection()
 				#Check database for pmid #Does the entry exists in the db already?
-				#Check inputPapers instead of cogeCrawled
 				c.execute("SELECT * FROM inputPapers WHERE pmid = (?)", (user_input, ))
-
 				check1 = c.fetchone()
-
 
 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
 				if check1 is None:
 					flash('new pubmedid!')
 					#Using user_input for Information Retireval of citing pmcids and info about them
-					#This function needs to have a check to not SCRAPE OR ANNOTATE currently existing docs
-					#But still want them in db
-					num_citations = run_IR_not_db(user_input)
+					num_citations = run_IR_not_db(user_input) #TODO: See this function's TODO
 					logging.info("beginning multi-preprocessing")
 					data, named_entities, total_sentences, sum_tokens = do_ALL_multi_preprocessing(user_input)
 					a_check = annotation_check(user_input)

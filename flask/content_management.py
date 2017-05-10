@@ -84,16 +84,16 @@ def run_IR_in_db(user_input):
 #Write self_info to inputPmids db
 #Write allCitationsInfo to citations db
 #Update citations db with abstract_check and whole_article_check
-#TODO: Don't re-scrape or re-annotate papers already in db. -->(But do add to citations db for that PMID)
+#TODO: Don't re-scrape or re-annotate papers already in db.
 #TODO: will need to return some information so that journals vis and citations tab still work
 def run_IR_not_db(user_input):
-	logging.info('PMID is NOT in the database')
-	self_info = getMainInfo(user_input) #self_info is written to the database in app.py
+	logging.info('PMID is NOT in the inputPapers database')
+	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
 	num_citations = len(pmc_ids)
 	logging.info(num_citations)
 	logging.info("Writing self_info to inputPapers db")
-	write self_info to "inputPapers" db
+	#write self_info to "inputPapers" db
 	for tup in self_info:
 		title = tup[0]
 		s = ', '
@@ -108,9 +108,11 @@ def run_IR_not_db(user_input):
 			"INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 			(date, user_input, title, author, journal, pubdate, url, num_citations))  # put user pmid into db
 		conn.commit()
-
+	#Now retrieve citations
 	logging.info("Get basic info about the citations")
-	allCitationsInfo = getCitedInfo(pmc_ids, user_input)
+	# Previously unseen pmcids only in allCitationsInfo.
+	# Previously seen pmcids are copied to db for new pmid in getCitedInfo
+	allCitationsInfo = getCitedInfo(pmc_ids, user_input) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
 	logging.info("Write basic citation info to citations db")
 	for citation in allCitationsInfo:
 		unix = time.time()
@@ -141,6 +143,7 @@ def run_IR_not_db(user_input):
 		c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?", (abstract, whole_article, pmcid, citesPmid))
 		conn.commit()
 	return num_citations
+
 
 
 #If the pmid is NOT in the db, we also need to getSelfText and write that info to db

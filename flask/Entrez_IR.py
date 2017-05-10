@@ -1,11 +1,9 @@
 from __future__ import print_function
-from Bio import Entrez
-import time, sys, pickle, datetime
-from time import sleep
-import os.path, logging, json, re
+import time, sys, pickle, datetime, os.path, logging, json, re
 import xml.etree.ElementTree as ET
-from database_management import checkForPMCID
-
+from time import sleep
+from database_management import conn, c, checkForPMCID
+from Bio import Entrez
 
 
 #Entrez Information Retrieval
@@ -107,65 +105,95 @@ def connectToNCBI(citation):
 
 #Input: Citing pmcids
 #Output: Basic info about these pmcids -- list of dictionaries
-#Update: Change from list of lists to dictionary so that the code doesn't rely on indexing
+#Update: Changed from list of lists to dictionary so that the code doesn't rely on indexing
 def getCitedInfo(pmcid_list, pmid):
 	t0 = time.time()
 	i = 1
 	allCitations = []
 	for citation in pmcid_list:
-		citationsDict = {'citesPmid': pmid, "pmcid": citation, "pmc_titles": [], "pmc_authors": [], "pmc_journals": [],
-						 "pmc_dates": [], "pmc_urls": []}
 		logging.info("citation no. " + str(i) + " ...")
-		#sometimes the connection fails: Need to re-try
-		#
-		#Need to re-try if this happens:
-		try:
-			t, a, j, d, u = connectToNCBI(citation)
-			citationsDict["pmc_titles"].append(t)
-			citationsDict["pmc_authors"].append(a)
-			citationsDict["pmc_journals"].append(j)
-			citationsDict["pmc_dates"].append(d)
-			citationsDict["pmc_urls"].append(u)
-		except Exception as e:
-			logging.info(str(e))
-			logging.info("Failed to connect to NCBI. Lets try again in 3 seconds... Retry 1/3")
+		#first check the db to see if this citation already exists
+		row = checkForPMCID(citation)
+		#if the row exists (if its not empty), we don't need to re-retrieve the information from Entrez
+		if row != 'empty':
+			logging.info("the pmcid already exists in db")
+			pmcid = citation
+			title = row[1]
+			author = row[2]
+			journal = row[3]
+			date = row[4]
+			citesPmid = pmid #the input pmid
+			other_citesPmid = row[5] #the pmid from citesPmid may or may not be the same as the input parameter pmid
+			url = row[6]
+			abstract_check = row[7] #None or yes/no
+			article_check = row[8] #None or yes/no
+			sents = row[9] #None or number
+			tokens = row[10] #None or number
+			annotated = row[11] #None or yes/no
+
+			#If the input pmid is NOT the same as the citesPmid in the db, copy the entry and update for the input pmid
+			if other_citesPmid != pmid:
+				unix = time.time()
+				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+				logging.info("the pmcid already exists in db, citing a different input pmid. don't re-scrape or re-annotate, just re-write to db")
+				conn, c = connection()
+				c.execute(
+					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_aricle, sents, tokens, annotated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					                       (datestamp, pmcid, title, author, journal, date, citesPmid, url, abstract_check, article_check, sents, tokens, annotated))  # put user pmid into db
+				conn.commit()
+
+		#else, if the pmcid citation has never been seen before by the db, retrieve info
+		else:
+			logging.info("the pmcid has never been seen by the db before")
+			citationsDict = {'citesPmid': pmid, "pmcid": citation, "pmc_titles": [], "pmc_authors": [], "pmc_journals": [],
+							 "pmc_dates": [], "pmc_urls": []}
+			#sometimes the connection fails: Need to re-try if this happens
+			try:
+				t, a, j, d, u = connectToNCBI(citation)
+				citationsDict["pmc_titles"].append(t)
+				citationsDict["pmc_authors"].append(a)
+				citationsDict["pmc_journals"].append(j)
+				citationsDict["pmc_dates"].append(d)
+				citationsDict["pmc_urls"].append(u)
+			except Exception as e:
+				logging.info(str(e))
+				logging.info("Failed to connect to NCBI. Lets try again in 3 seconds... Retry 1/3")
+				time.sleep(3)
+				t, a, j, d, u = connectToNCBI(citation)
+				citationsDict["pmc_titles"].append(t)
+				citationsDict["pmc_authors"].append(a)
+				citationsDict["pmc_journals"].append(j)
+				citationsDict["pmc_dates"].append(d)
+				citationsDict["pmc_urls"].append(u)
+			except Exception as e2:
+				logging.info(str(e2))
+				logging.info("Failed to connect to NCBI again. Let's try again in 5 seconds ... Retry 2/3")
+				time.sleep(5)
+				t, a, j, d, u = connectToNCBI(citation)
+				citationsDict["pmc_titles"].append(t)
+				citationsDict["pmc_authors"].append(a)
+				citationsDict["pmc_journals"].append(j)
+				citationsDict["pmc_dates"].append(d)
+				citationsDict["pmc_urls"].append(u)
+			except Exception as e3:
+				logging.info(str(e3))
+				logging.info("Failed to connect to NCBI a third time. Try once more in 8 seconds before giving up ... Retry 3/3")
+				time.sleep(5)
+				t, a, j, d, u = connectToNCBI(citation)
+				citationsDict["pmc_titles"].append(t)
+				citationsDict["pmc_authors"].append(a)
+				citationsDict["pmc_journals"].append(j)
+				citationsDict["pmc_dates"].append(d)
+				citationsDict["pmc_urls"].append(u)
+			except Exception as e4:
+				logging.info(str(e4))
+				logging.info("Failed to connect to NCBI 4 times. Let's skip this entry :( ")
+				pass
+			allCitations.append(citationsDict)
 			time.sleep(3)
-			t, a, j, d, u = connectToNCBI(citation)
-			citationsDict["pmc_titles"].append(t)
-			citationsDict["pmc_authors"].append(a)
-			citationsDict["pmc_journals"].append(j)
-			citationsDict["pmc_dates"].append(d)
-			citationsDict["pmc_urls"].append(u)
-		except Exception as e2:
-			logging.info(str(e2))
-			logging.info("Failed to connect to NCBI again. Let's try again in 5 seconds ... Retry 2/3")
-			time.sleep(5)
-			t, a, j, d, u = connectToNCBI(citation)
-			citationsDict["pmc_titles"].append(t)
-			citationsDict["pmc_authors"].append(a)
-			citationsDict["pmc_journals"].append(j)
-			citationsDict["pmc_dates"].append(d)
-			citationsDict["pmc_urls"].append(u)
-		except Exception as e3:
-			logging.info(str(e3))
-			logging.info("Failed to connect to NCBI a third time. Try once more in 8 seconds before giving up ... Retry 3/3")
-			time.sleep(5)
-			t, a, j, d, u = connectToNCBI(citation)
-			citationsDict["pmc_titles"].append(t)
-			citationsDict["pmc_authors"].append(a)
-			citationsDict["pmc_journals"].append(j)
-			citationsDict["pmc_dates"].append(d)
-			citationsDict["pmc_urls"].append(u)
-		except Exception as e4:
-			logging.info(str(e4))
-			logging.info("Failed to connect to NCBI 4 times. Let's skip this entry :( ")
-			pass
-		allCitations.append(citationsDict)
-		time.sleep(3)
 		i += 1
 	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
 	return allCitations
-
 
 #Input: XML string of PMC entry generated with getContentPMC
 #Output: Abstract and journal text
@@ -230,23 +258,18 @@ def getContentPMC(pmcids_list, pmid):
 
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
 		# a record that this pmc is cited by the new input paper
-		#
 		row = checkForPMCID(citation)
 
 		if row != 'empty':
-			other_citesPmid = row[5] #pmid
+			logging.info("pmcid exists in citations db")
+			other_citesPmid = row[5] #the pmid from citesPmid may or may not be the same as the input parameter pmid
 			abstract_check = row[7] #None or yes/no
 			article_check = row[8] #None or yes/no
-			sents = row[9] #None or number
-			tokens = row[10] #None or number
-			annotated = row[11] #None or yes/no
-			if other_citesPmid != pmid:
-				print("this pmcid cites a different pmid!")
-				logging.info("the pmcid already exists in db, citing a different pmid. don't re-scrape or re-annotate")
-				#TODO: update db for this pmcid with same info as others, except citesPmid
+			if other_citesPmid != pmid: #if the input pmid is NOT the same as the citesPmid in the databse
+				logging.info("the pmcid already exists in db, citing a different input pmid. don't re-scrape. ignore.")
 				pass
 
-			# if the pmcid in the database has no abstract check and article check,
+			# if the pmcid in the database has our query pmid AND has no abstract check and article check,
 			# get the XML record, parse the xml, and do the abstract and main text checks
 			if other_citesPmid == pmid and abstract_check is None and article_check is None:
 				contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
@@ -315,6 +338,7 @@ def getSelfText(pmid):
 		abstract = self_abstract_check[0] #str
 		article = self_article_check[0] #str
 		return self_pmcid, abstract, article
+
 
 # self_pmcid, self_abstract_check, self_article_check = getSelfText("18952863")
 # logging.info(self_pmcid)
