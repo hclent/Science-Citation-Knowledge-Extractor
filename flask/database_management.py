@@ -186,6 +186,27 @@ def checkForPMCID(citation):
 	return record
 
 
+#Check if a pmcid has been annotated before
+def pmcidAnnotated(pmcid):
+	try:
+		c.execute('''SELECT annotated FROM citations WHERE pmcid=?''', (pmcid,))
+		exist = c.fetchone()
+		# if the row does NOT exist
+		if exist is None:
+			record = 'empty'
+		# if the row does exist
+		else:
+			answer = exist[0]
+			if answer == 'yes':
+				record = 'yes'
+			elif answer == 'no':
+				record = 'no'
+			else:
+				record = 'empty'
+	except Exception as e:
+		record = 'empty'
+	return record
+
 
 #Create table for inputPapers
 # def create_table_input():
