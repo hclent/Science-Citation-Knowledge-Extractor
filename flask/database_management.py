@@ -205,6 +205,7 @@ def pmcidAnnotated(pmcid):
 				record = 'empty'
 	except Exception as e:
 		record = 'empty'
+		print(record)
 	return record
 
 
