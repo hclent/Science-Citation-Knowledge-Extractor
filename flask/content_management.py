@@ -53,19 +53,25 @@ def multiple_pmid_input(user_input):
 apa_citations will be rendered as 'main' in app.py!!!!
 '''
 
+#input: user_input pmid
+#output: list of dicts with annotation checks [{"pmcid": 123, "annotated": yes}]
 def annotation_check(user_input):
-	a_check = [] #yes or no
+	a_check = []
 	pmc_ids = getCitationIDs(user_input)
 	for citation in pmc_ids:
+		annotationDict = {"pmcid": citation, "annotated": []}
+
 		prefix = '/home/hclent/data/pmcids/' + str(citation[0:3])  # folder for first 3 digits of pmcid
 		suffix = prefix + '/' + str(citation[3:6])  # folder for second 3 digits of pmcid nested in prefix
 		filename = suffix + '/' + str(citation) + '.json'
 		with open(filename) as data_file:
 			data = json.load(data_file)
 			if "error annotating document" in data["text"][:25]:
-				a_check.append("no")
+				annotationDict["annotated"].append("no")
 			else:
-				a_check.append("yes")
+				annotationDict["annotated"].append("yes")
+
+		a_check.append(annotationDict)
 	return a_check
 
 
@@ -84,7 +90,7 @@ def run_IR_in_db(user_input):
 #Write self_info to inputPmids db
 #Write allCitationsInfo to citations db
 #Update citations db with abstract_check and whole_article_check
-#TODO: Don't re-scrape or re-annotate papers already in db.
+#Doesn't re-retrieve information for citations previously scraped (does update db if necessary)
 #TODO: will need to return some information so that journals vis and citations tab still work
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the inputPapers database')
@@ -349,15 +355,26 @@ def vis_scifi(corpus, query, eligible_papers):
 #TODO: Update db with sents, tokens, annotated fields
 #TODO: Don't re-annotate
 def do_ALL_multi_preprocessing(user_input):
-	logging.info('Beginning multiprocessing for NEW docs')
+	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
-	logging.info(docs)
 	multiprocess(docs)
-	biodocs = retrieveBioDocs(user_input)
-	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return data_samples, nes_list, total_sentences, sum_tokens
+
+	#Now update annotated_check
+	a_check = annotation_check(user_input)
+	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
+		pmcid = str(a["pmcid"])
+		annotated = a["annotated"][0]
+		conn, c = connection()
+		c.execute("UPDATE citations SET annotated=? WHERE pmcid=? AND citesPmid=?", (annotated, pmcid, user_input))
+		conn.commit()
+
+
+
+	# biodocs = retrieveBioDocs(user_input)
+	# data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
+	# logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	#return data_samples, nes_list, total_sentences, sum_tokens
 
 
 #Take annotated docs and return data and nes

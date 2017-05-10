@@ -6,7 +6,7 @@ from nltk.corpus import stopwords
 import os.path
 from multiprocessing import Pool
 import logging
-from database_management import db_citation_pmc_ids, pmcidAnnotated #mine
+from database_management import db_citation_pmc_ids, pmcidAnnotated, conn, c #mine
 
 # source activate py34 #my conda python environment for this
 
@@ -94,6 +94,7 @@ def multiprocess(docs):
       with open(completeName, 'w') as out:
         out.write(biodoc.to_JSON())
         logging.debug('printed to json')
+
     logging.info("All biodoc creations: done in %0.3fs." % (time.time() - t1))
     logging.info('Finished')
 
@@ -163,11 +164,6 @@ def loadDocuments(doc):
   return biodoc, pmcid
 
 
-docs = retrieveDocs('23085358')
-print(docs)
-multiprocess(docs)
-print("done!")
-
 ###################################################
 #BIODOC HANDLING
 
@@ -209,66 +205,47 @@ def grab_nes(biodoc):
   return ners_list
 
 #Input: Processors annotated biodocs (from JSON)
-#Output: data_samples, nes_list, and counts
+#Output: list of dicts containing {pmcid, lemmas, nes, num_sentences, num_tokens}
 # TODO: Make loading/saving biodocs scalable!!!!!
-  
-# def loadBioDoc(biodocs):
-#   t1 = time.time()
-#   data_samples = []
-#   nes_list = []
-#
-#   total_sentences = []
-#
-#   total_tokens = []
-#   sum_tokens = []
-#
-#   for doc in biodocs:
-#     pmcid = doc["pmcid"]
-#     jsonpath = doc["jsonpath"]
-#
-#     biodict = {"pmcid": pmcid, "tokens": [], "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
-#
-#     token_count_list = []
-#
-#     with open(jsonpath) as jf:
-#       data = Document.load_from_JSON(json.load(jf))
-#       #print(type(data)) is <class 'processors.ds.Document'>
-#       num_sentences = data.size
-#       biodict["num_sentences"].append(num_sentences)
-#       for i in range(0, num_sentences):
-#         s = data.sentences[i]
-#         num_tokens = s.length
-#         token_count_list.append(num_tokens)
-#
-#       token_sum = 0
-#       for sents in token_count_list:
-#
-#
-#       lemmas = grab_lemmas(data)
-#       biodict["data_samples"].append(lemmas)
-#       nes = grab_nes(data)
-#       biodict["nes"].append(nes)
-#       total_tokens.append(doc_tokens)
-#   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
-#
-#   #add up tokens
-#   for sents in total_tokens:
-#     sum = 0
-#     for tokens in sents:
-#       sum += tokens
-#     sum_tokens.append(sum)
-#
-#   logging.info("Done assembling sent counts and token counts")
-#   return data_samples, nes_list, total_sentences, sum_tokens
 
-# docs = retrieveDocs("21187923")
-# print(docs)
-# multiprocess(docs)
-# biodocs = retrieveBioDocs("21106768")
-# print(biodocs)
-# data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-# print(total_sentences)
-# print(sum_tokens)
+def loadBioDoc(biodocs):
+  t1 = time.time()
+
+  loadedBioDocs = []
+
+  for doc in biodocs:
+    pmcid = doc["pmcid"]
+    jsonpath = doc["jsonpath"]
+
+    #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
+    biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
+
+    token_count_list = []
+
+    with open(jsonpath) as jf:
+      data = Document.load_from_JSON(json.load(jf))
+      #print(type(data)) is <class 'processors.ds.Document'>
+      num_sentences = data.size
+      biodict["num_sentences"].append(num_sentences)
+      for i in range(0, num_sentences):
+        s = data.sentences[i]
+        num_tokens = s.length
+        token_count_list.append(num_tokens)
+
+      num_tokens = sum(token_count_list)
+      biodict["num_tokens"].append(num_tokens)
+
+      lemmas = grab_lemmas(data)
+      biodict["lemmas"].append(lemmas)
+      nes = grab_nes(data)
+      biodict["nes"].append(nes)
+
+      loadedBioDocs.append(biodict)
+
+  logging.info("Done assembling lemmas, nes, token counts: done in %0.3fs." % (time.time() - t1))
+  logging.info("Done assembling sent counts and token counts")
+
+  return loadedBioDocs
 
 
 
