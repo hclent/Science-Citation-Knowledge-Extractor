@@ -229,22 +229,28 @@ def stats_barchart(query):
 
 
 ############ DATA VISUALIZATIONS #################################################
-
+#TODO: make it not take journals and dates lists as prameters
 #TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
-def print_journalvis(journals, dates, user_input, query):
-	#first, get range:
+def print_journalvis(query):
 	years_range = get_years_range(query) #need range for ALL journals, not just last one
-
-	#num_journals = len(journals)
-	#print("there are "+str(num_journals)+" journals in total")
-	publication_data, range_info = journals_vis(journals, dates, years_range, query)
+	publication_data, range_info = journals_vis(years_range, query) #journalvis.py #range info = [('2008', '2016'), 165, 48]
+	journal_years = range_info[0]
+	start_year = journal_years[0]
+	end_year = journal_years[1]
+	q = '+'
+	range_years = str(q.join(journal_years))
+	logging.info("range years: "+range_years)
+	unique_publications = range_info[1]
+	unique_journals = range_info[2]
 	logging.info(range_info)
 	logging.info('Printing JOURNALS to JSON')
 	save_path = '/home/hclent/data/journals/' #save in journals folder
 	completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
 	with open(completeName, 'w') as outfile:
 		json.dump(publication_data, outfile)
-	return range_info
+	return range_years,start_year, end_year, unique_publications, unique_journals
+
+
 
 
 def vis_wordcloud(neslist, nes_categories, w_number):

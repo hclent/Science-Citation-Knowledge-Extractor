@@ -1,7 +1,37 @@
-import re, operator
+import re, operator, collections
+from itertools import chain
 from collections import defaultdict
-from database_management import db_citations_retrieval
+from database_management import db_citations_retrieval, db_journals_and_dates
 
+
+def flatten(listOfLists):
+    return list(chain.from_iterable(listOfLists))
+
+#gets journals and dates from the citations, and filters out repeat citaitons
+def get_journals_and_dates(query):
+	pmcids = []
+	journals = []
+	dates = []
+	pmid_list = query.split('+')  # list of string pmids
+	for pmid in pmid_list:
+		pmcid, js, ds = db_journals_and_dates(pmid)
+		pmcids.append(pmcid)
+		journals.append(js)
+		dates.append(ds)
+	#flatten lists for usability
+	all_pmcids = flatten(pmcids)
+	all_journals = flatten(journals)
+	all_dates = flatten(dates)
+	# need to sift out duplicates!!!!
+	combos = collections.OrderedDict.fromkeys(zip(all_pmcids, all_journals, all_dates))
+	keep_journals = [ c[1] for c in combos]
+	keep_dates = [c[2] for c in combos]
+	return keep_journals, keep_dates
+
+
+
+#this gets journal info for the bar chart in "statistics"
+#TODO: make stacked barchart for each paper in query
 def paper_dates_barchart(journals, dates, query):
 	x_vals = []
 	y_vals = []
@@ -31,7 +61,7 @@ def paper_dates_barchart(journals, dates, query):
 
 	return x_vals, y_vals
 
-
+#Years range looks like (2008, 2017)
 def get_years_range(query):
 	years_list = []
 	pmid_list = query.split('+') #list of string pmids
@@ -56,9 +86,12 @@ def get_years_range(query):
 	return years_range
 
 
-def journals_vis(journals, dates, years_range, query):
+def journals_vis(years_range, query):
+	journals, dates = get_journals_and_dates(query)
+
+
 	#print("JOURNALS VISUALIZATION")
-	num_publications = len(journals)
+	num_publications = len(journals) #UNIQUE publications only since duplicates have been flitered out
 	#print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
 
 	years_list = []
@@ -144,7 +177,7 @@ def journals_vis(journals, dates, years_range, query):
 	publication_data = [top_row] + publication_data
 
 	#print("RANGE INFO: ")
-	#print(range_info)
+	#Example range info: [('2008', '2016'), 165, 48] means years 2008-2016, 165 publications, 48 unique journals
 	#Get some info about the publication before changing it to a string for the json
 	#Year range, number of publications, number of unique journals
 	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
@@ -152,14 +185,11 @@ def journals_vis(journals, dates, years_range, query):
 	return (publication_data, range_info)
 
 
-# apa_citations1, db_journals1, db_dates1, db_urls1 = db_citations_retrieval("18952863")
-# apa_citations2, db_journals2, db_dates2, db_urls2 = db_citations_retrieval("18269575")
-# journals = db_journals1 + db_journals2
-# dates = db_dates1 + db_dates2
+#
 # years_range = get_years_range("18952863+18269575")
-# publication_data, range_info = journals_vis(journals, dates, years_range, "18952863+18269575")
+# publication_data, range_info = journals_vis(years_range, "18952863+18269575") #[('2008', '2016'), 165, 48]
 # print(publication_data)
-
-
+# print(range_info)
+#
 
 

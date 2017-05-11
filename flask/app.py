@@ -65,6 +65,7 @@ def results():
 			logging.info("query: " + str(query))
 
 			main_info = [] #main_info and target_urls for "citaitons" page
+			db_urls = [] #
 			target_urls = []
 
 			#target_journals and target_dates for journals vis
@@ -97,43 +98,30 @@ def results():
 					logging.info("done with new document multi_preprocessing")
 
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
-					for d in data:
-						data_samples.append(d)
 					# TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
-					for n in named_entities:
-						ners.append(n)
 
-				
 
-					## Once all the data has been acquired, (no topic modeling yet)
-					## Only want to save final topic model (not running topic models)
+					#After all citations have been processed, now we can do the analyses:
 					if user_input == pmid_list[-1]: #if its the last pmid
 
-						#Do Latent Semantic Analysis and return jsonDict for data vis
-						jsonDict = run_lsa1(data_samples, 2)
 
-						#Do Latent Dirichlet Allocation
-						jsonLDA = run_lda1(data_samples, 3, 5)
+						#JOURNALS VIS STUFF HERE
+						# logging.info(user_input+" is the last one (JOURNALS)")
+						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)
 
-						logging.info(user_input+" is the last one (JOURNALS)")
-						range_info = print_journalvis(target_journals, target_dates, user_input, query) #e.g. [(2008, 2009), 10, 7]
-						journal_years = range_info[0]
-						start_year = journal_years[0]
-						end_year = journal_years[1]
-						range_years = str(q.join(journal_years))
-						logging.info("range years: "+range_years)
+						#TOPIC MODELING HERE
+						# logging.info(user_input+" is the last one (LSA)")
+						# Do Latent Semantic Analysis and return jsonDict for data vis
+						# jsonDict = run_lsa1(data_samples, 2)
+						# print_lsa(query, user_input, jsonDict) #print lsa topic model to json
 
-
-						unique_publications = range_info[1]
-						unique_journals = range_info[2]
-
-						logging.info(user_input+" is the last one (LSA)")
-						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-						logging.info(user_input+" is the last one (LDA)")
-						print_lda(query, user_input, jsonLDA) #print lda topic model to json
+						#logging.info(user_input+" is the last one (LDA)")
+						# jsonLDA = run_lda1(data_samples, 3, 5)
+						#print_lda(query, user_input, jsonLDA) #print lda topic model to json
 
 
-						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+						## FUNCTION THAT CACHES DATA_SAMPLES AND NES HERE:
+						#print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 
 					#after info written to db, now can access db and get formated main_info (main)
@@ -149,65 +137,65 @@ def results():
 
 
 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
-				if check1 is not None:
-					flash("alreay exists in database :) ")
-					#Using user_input for Information Retireval of "main info"
-					self_info, main, journals, dates, db_urls = run_IR_in_db(user_input)
-
-					for mi in main:
-						main_info.append(mi)
-					logging.info("done with main info list")
-					for j in journals:
-						target_journals.append(j)
-					logging.info("done with journals list")
-					lenjournals = (len(target_journals))
-					logging.info("there are "+str(lenjournals)+" publications")
-					for d in dates:
-						target_dates.append(d)
-					logging.info("done with dates list")
-					for url in db_urls:
-						target_urls.append(url)
-					logging.info("done with url list")
-
-
-					data, named_entities, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
-					for d in data:
-						data_samples.append(d)
-					for n in named_entities:
-						ners.append(n)
-
-
-					#### errr, if its in the Db, its probably already been topic modeled. so instead should try to load the data,
-					## and if can't load the data, do the analysis
-
-					## Now that we have all the data, do the topic model
-					## Only want to save final topic model (not running topic model)
-					if user_input == pmid_list[-1]:
-
-						# #Do visualization and Topic Modeling
-						jsonDict = run_lsa1(data_samples, 2) #default = 2 "topics" for right now
-
-						#latent dirichlet allocation
-						jsonLDA = run_lda1(data_samples, 3, 5)
-
-						logging.info(user_input+" is the last one (JOURNALS)")
-						range_info = print_journalvis(target_journals, target_dates, user_input, query)
-						logging.info(range_info)
-						journal_years = range_info[0]
-						start_year = journal_years[0]
-						end_year = journal_years[1]
-						range_years = str(q.join(journal_years)) #2009+2016
-						logging.info("range years: "+range_years)
-
-						unique_publications = range_info[1]
-						unique_journals = range_info[2]
-
-						logging.info(user_input+" is the last one (LSA)")
-						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-						logging.info(user_input+" is the last one (LDA)")
-						print_lda(query, user_input, jsonLDA) #print lda topic model to json
-
-						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+				# if check1 is not None:
+				# 	flash("alreay exists in database :) ")
+				# 	#Using user_input for Information Retireval of "main info"
+				# 	self_info, main, journals, dates, db_urls = run_IR_in_db(user_input)
+                #
+				# 	for mi in main:
+				# 		main_info.append(mi)
+				# 	logging.info("done with main info list")
+				# 	for j in journals:
+				# 		target_journals.append(j)
+				# 	logging.info("done with journals list")
+				# 	lenjournals = (len(target_journals))
+				# 	logging.info("there are "+str(lenjournals)+" publications")
+				# 	for d in dates:
+				# 		target_dates.append(d)
+				# 	logging.info("done with dates list")
+				# 	for url in db_urls:
+				# 		target_urls.append(url)
+				# 	logging.info("done with url list")
+                #
+                #
+				# 	data, named_entities, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
+				# 	for d in data:
+				# 		data_samples.append(d)
+				# 	for n in named_entities:
+				# 		ners.append(n)
+                #
+                #
+				# 	#### errr, if its in the Db, its probably already been topic modeled. so instead should try to load the data,
+				# 	## and if can't load the data, do the analysis
+                #
+				# 	## Now that we have all the data, do the topic model
+				# 	## Only want to save final topic model (not running topic model)
+				# 	if user_input == pmid_list[-1]:
+                #
+				# 		# #Do visualization and Topic Modeling
+				# 		jsonDict = run_lsa1(data_samples, 2) #default = 2 "topics" for right now
+                #
+				# 		#latent dirichlet allocation
+				# 		jsonLDA = run_lda1(data_samples, 3, 5)
+                #
+				# 		logging.info(user_input+" is the last one (JOURNALS)")
+				# 		range_info = print_journalvis(target_journals, target_dates, user_input, query)
+				# 		logging.info(range_info)
+				# 		journal_years = range_info[0]
+				# 		start_year = journal_years[0]
+				# 		end_year = journal_years[1]
+				# 		range_years = str(q.join(journal_years)) #2009+2016
+				# 		logging.info("range years: "+range_years)
+                #
+				# 		unique_publications = range_info[1]
+				# 		unique_journals = range_info[2]
+                #
+				# 		logging.info(user_input+" is the last one (LSA)")
+				# 		print_lsa(query, user_input, jsonDict) #print lsa topic model to json
+				# 		logging.info(user_input+" is the last one (LDA)")
+				# 		print_lda(query, user_input, jsonLDA) #print lda topic model to json
+                #
+				# 		print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 
 				#End cursor and connection to database

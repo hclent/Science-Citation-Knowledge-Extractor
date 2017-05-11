@@ -106,6 +106,22 @@ def db_citation_pmc_ids(user_input):
 
 
 
+#Input: pmid that is cited
+#Output: journals and dates of all citing pmcids
+def db_journals_and_dates(pmid):
+	journals = []
+	dates = []
+	pmcids = []
+	c.execute('''SELECT pmcid, journal, pubdate FROM citations WHERE citesPmid=?''', (pmid,))
+	for row in c:
+		pmc = row[0]
+		pmcids.append(pmc)
+		j = row[1]
+		journals.append(j)
+		d = row[2]
+		dates.append(d)
+	return pmcids, journals, dates
+
 
 
 #Input: pmid that is cited
