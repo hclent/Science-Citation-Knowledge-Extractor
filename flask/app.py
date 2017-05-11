@@ -93,8 +93,8 @@ def results():
 					#Using user_input for Information Retireval of citing pmcids and info about them
 					num_citations = run_IR_not_db(user_input) #TODO: See this function's TODO
 					logging.info("beginning multi-preprocessing")
-					data, named_entities, total_sentences, sum_tokens = do_ALL_multi_preprocessing(user_input)
-					a_check = annotation_check(user_input)
+					biodoc_data = do_ALL_multi_preprocessing(user_input)
+					logging.info("done with new document multi_preprocessing")
 
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
 					for d in data:
@@ -103,8 +103,7 @@ def results():
 					for n in named_entities:
 						ners.append(n)
 
-					# If its NOT in the db, we also need to try scraping it and writing that info to db
-					scrape_and_write_Input(user_input)
+				
 
 					## Once all the data has been acquired, (no topic modeling yet)
 					## Only want to save final topic model (not running topic models)

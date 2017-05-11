@@ -49,9 +49,13 @@ def multiple_pmid_input(user_input):
 	return ids
 
 ################### DATABASE #####################################################
-'''
-apa_citations will be rendered as 'main' in app.py!!!!
-'''
+#If the pmid is NOT in the db, we also need to getSelfText and write that info to db
+def scrape_and_write_Input(user_input):
+	logging.info('retrieve Self text, and write to db')
+	self_pmcid, self_abstract_check, self_article_check = getSelfText(user_input) #Entrez_IR function
+	logging.info("PMICD: ")
+	logging.info(self_pmcid)
+	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check)  # put getSelfText into database
 
 #input: user_input pmid
 #output: list of dicts with annotation checks [{"pmcid": 123, "annotated": yes}]
@@ -114,6 +118,10 @@ def run_IR_not_db(user_input):
 			"INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 			(date, user_input, title, author, journal, pubdate, url, num_citations))  # put user pmid into db
 		conn.commit()
+
+	#Retrieve the input paper if avaliable and update db
+	scrape_and_write_Input(user_input)
+
 	#Now retrieve citations
 	logging.info("Get basic info about the citations")
 	# Previously unseen pmcids only in allCitationsInfo.
@@ -149,16 +157,6 @@ def run_IR_not_db(user_input):
 		c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?", (abstract, whole_article, pmcid, citesPmid))
 		conn.commit()
 	return num_citations
-
-
-
-#If the pmid is NOT in the db, we also need to getSelfText and write that info to db
-def scrape_and_write_Input(user_input):
-	logging.info('retrieve Self text, and write to db')
-	self_pmcid, self_abstract_check, self_article_check = getSelfText(user_input)
-	logging.info("PMICD: ")
-	logging.info(self_pmcid)
-	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check)  # put getSelfText into database
 
 
 def new_citations_from_db(user_input):
