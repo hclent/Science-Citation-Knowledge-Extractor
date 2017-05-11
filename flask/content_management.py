@@ -121,9 +121,7 @@ def run_IR_not_db(user_input):
 			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 			pmcid = str(citation["pmcid"])
 			title = str(citation["pmc_titles"][0])
-			authorlist = citation["pmc_authors"][0]
-			s = ', '
-			author = str(s.join(authorlist))
+			author = citation["pmc_authors"][0] #doest need formatting
 			journal = str(citation["pmc_journals"][0])
 			pubdate = str(citation["pmc_dates"][0])
 			citesPmid = str(citation["citesPmid"])
@@ -149,7 +147,7 @@ def run_IR_not_db(user_input):
 			title = str(citation["pmc_titles"][0])
 			authorlist = citation["pmc_authors"][0]
 			s = ', '
-			author = str(s.join(authorlist))
+			author = str(s.join(authorlist)) #needs formatting
 			journal = str(citation["pmc_journals"][0])
 			pubdate = str(citation["pmc_dates"][0])
 			citesPmid = str(citation["citesPmid"])
@@ -172,8 +170,7 @@ def run_IR_not_db(user_input):
 		conn.commit()
 
 
-# TODO: Function to check for new papers
-# TODO: not sure you need this function otherwise?
+
 # If pmid (user input) in the inputPapers database, check for new papers
 # If ther are new citing papers, get those and update the db appropriately
 # Else if there are no new papers, don't need to do anything.
@@ -184,29 +181,27 @@ def run_IR_in_db(user_input):
 	pmc_ids = getCitationIDs(user_input)
 	num_current = len(pmc_ids)
 	#If there are new papers,
-	if num_current == num_in_db:
+	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
 		print("there are new citations!", (num_current, num_in_db))
 		#update number of citations in inputPaper db
 		conn, c = connection()
 		c.execute("UPDATE inputPapers SET num_citations=?WHERE pmid=?", (num_current, user_input))
 		conn.commit()
-		c.close()
-		conn.close()
 
 		#now get the new citation info
 		allCitationsInfo = getCitedInfo(pmc_ids, user_input)  # output: list of dictionaries [{pmid: 1234, author: human, ...}] #skips duplicates
 		logging.info("Write basic citation info to citations db for new papers")
 		for citation in allCitationsInfo:
 			#if its a duplicate entry, just being updated with the new pmcid (i.e. its annotated)
+			#TODO: make the annotated in/not in part a function since its called twice
 			if "annotated" in citation:
 				logging.info("this entry has already been annotated before. just copy.")
 				unix = time.time()
 				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 				pmcid = str(citation["pmcid"])
 				title = str(citation["pmc_titles"][0])
-				authorlist = citation["pmc_authors"][0]
+				author = citation["pmc_authors"][0] #for some reason you don't need to change this
 				s = ', '
-				author = str(s.join(authorlist))
 				journal = str(citation["pmc_journals"][0])
 				pubdate = str(citation["pmc_dates"][0])
 				citesPmid = str(citation["citesPmid"])
@@ -231,7 +226,7 @@ def run_IR_in_db(user_input):
 				title = str(citation["pmc_titles"][0])
 				authorlist = citation["pmc_authors"][0]
 				s = ', '
-				author = str(s.join(authorlist))
+				author = str(s.join(authorlist)) #authors need some formatting
 				journal = str(citation["pmc_journals"][0])
 				pubdate = str(citation["pmc_dates"][0])
 				citesPmid = str(citation["citesPmid"])
@@ -243,9 +238,13 @@ def run_IR_in_db(user_input):
 				conn.commit()
 
 
-		# Get content and update citations db
+		#Get content and update citations db
+		print("now get the content for the new stuff")
+		#TODO: sometimes its not getting the new ones??
 		contentDictList = getContentPMC(pmc_ids, user_input)
+		print(contentDictList)
 		for citation in contentDictList:
+			print(citation)
 			pmcid = str(citation["pmcid"])
 			citesPmid = str(citation["citesPmid"])
 			abstract = str(citation["all_abstract_check"][0])
@@ -260,7 +259,6 @@ def run_IR_in_db(user_input):
 		pass
 
 
-run_IR_in_db("18952863")
 
 def new_citations_from_db(user_input):
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)

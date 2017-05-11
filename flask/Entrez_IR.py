@@ -2,7 +2,7 @@ from __future__ import print_function
 import time, sys, pickle, datetime, os.path, logging, json, re
 import xml.etree.ElementTree as ET
 from time import sleep
-from database_management import conn, c, connection, checkForPMCID
+from database_management import conn, c, connection, checkForPMCID, checkIfScraped
 from Bio import Entrez
 
 
@@ -113,27 +113,32 @@ def getCitedInfo(pmcid_list, pmid):
 	for citation in pmcid_list:
 		logging.info("citation no. " + str(i) + " ...")
 		#first check the db to see if this citation already exists
-		row = checkForPMCID(citation)
-		#if the row exists (if its not empty), we don't need to re-retrieve the information from Entrez
-		if row != 'empty':
+		rows = checkForPMCID(citation) #Now returns all rows with that pmcid (if any)
+		if rows != 'empty':
 			logging.info("the pmcid already exists in db")
-			pmcid = citation
-			title = row[1]
-			author = row[2]
-			journal = row[3]
-			date = row[4]
-			citesPmid = pmid #the input pmid
-			other_citesPmid = row[5] #the pmid from citesPmid may or may not be the same as the input parameter pmid
-			url = row[6]
-			abstract_check = row[7] #None or yes/no
-			article_check = row[8] #None or yes/no
-			sents = row[9] #None or number
-			tokens = row[10] #None or number
-			annotated = row[11] #None or yes/no
+			# if row(s) exists, need to check what pmids they are citing
+			cited_pmids_in_db = [r[5] for r in rows]
+			if pmid in cited_pmids_in_db:
+				#if our pmid is in there, we don't need to copy the entry
+				logging.info("doesnt need to be coppied again")
+			#if our pmid isn't in there, we do need to copy it
+			if pmid not in cited_pmids_in_db:
+				logging.info("pmcid needs to be coppied")
+				row = rows[0] #just grab the first one
+				pmcid = citation
+				title = row[1]
+				author = row[2]
+				journal = row[3]
+				date = row[4]
+				citesPmid = pmid #the input pmid
+				other_citesPmid = row[5] #the pmid from citesPmid may or may not be the same as the input parameter pmid
+				url = row[6]
+				abstract_check = row[7] #None or yes/no
+				article_check = row[8] #None or yes/no
+				sents = row[9] #None or number
+				tokens = row[10] #None or number
+				annotated = row[11] #None or yes/no
 
-			#If the input pmid is NOT the same as the citesPmid in the db, copy the entry and update for the input pmid
-			if other_citesPmid != pmid:
-				logging.info("the pmcid already exists in db, citing a different input pmid. don't re-scrape or re-annotate, just re-write to db")
 				#Cannot write to DB in this function because the db will be locked, as it is simultaneously reading/writing.
 				#return a more-complete citationsDict to content_management to be written to the db there
 				citationsDict = {'citesPmid': pmid, "pmcid": citation, "pmc_titles": [], "pmc_authors": [],
@@ -150,7 +155,6 @@ def getCitedInfo(pmcid_list, pmid):
 				citationsDict["tokens"].append(tokens)
 				citationsDict["annotated"].append(annotated)
 				allCitations.append(citationsDict)
-
 
 		#else, if the pmcid citation has never been seen before by the db, retrieve info
 		else:
@@ -203,9 +207,12 @@ def getCitedInfo(pmcid_list, pmid):
 			time.sleep(3)
 		i += 1
 	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
-	c.close() #disconnect here so that the db is not locked when we need to write to it
-	conn.close()
+	#TODO: does this need to be here???
+	# c.close() #disconnect here so that the db is not locked when we need to write to it
+	# conn.close()
 	return allCitations
+
+
 
 #Input: XML string of PMC entry generated with getContentPMC
 #Output: Abstract and journal text
@@ -259,7 +266,7 @@ def parsePMC(xml_string):
 
 #Input: the list of pmcids citing some pmid
 #For each citing pmc_id, this function gest the xml, which is then parsed by parsePMC()
-#Output: Journal texts for each pmcid saved as pmcid.txt to the folder pmcid[:3]/pmicd[3:6] for better organization
+#Output: Those texts for each pmcid saved as pmcid.txt to the folder pmcid[:3]/pmicd[3:6] for better organization
 def getContentPMC(pmcids_list, pmid):
 	t0 = time.time()
 	i = 1
@@ -267,67 +274,61 @@ def getContentPMC(pmcids_list, pmid):
 	contentDictList = []
 
 	for citation in pmcids_list:
-
+		print(citation)
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
-		# a record that this pmc is cited by the new input paper
-		row = checkForPMCID(citation)
+		# a record that this pmc is cited by the new input paper (will be done at this point though... I think?)
+		conn, c = connection()
+		row = checkIfScraped(citation, pmid)
 
-		if row != 'empty':
-			logging.info("pmcid exists in citations db")
-			other_citesPmid = row[5] #the pmid from citesPmid may or may not be the same as the input parameter pmid
-			abstract_check = row[7] #None or yes/no
-			article_check = row[8] #None or yes/no
-			if other_citesPmid != pmid: #if the input pmid is NOT the same as the citesPmid in the databse
-				logging.info("the pmcid already exists in db, citing a different input pmid. don't re-scrape. ignore.")
-				pass
+		if row == 'empty':
 
 			# if the pmcid in the database has our query pmid AND has no abstract check and article check,
 			# get the XML record, parse the xml, and do the abstract and main text checks
-			if other_citesPmid == pmid and abstract_check is None and article_check is None:
-				contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
-				logging.info("pmcid never seen before. needs to be scraped + annotated ")
+			contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
+			logging.info("pmcid never seen before. needs to be scraped + annotated ")
 
-				prefix = '/home/hclent/data/pmcids/' + str(citation[0:3]) #folder for first 3 digits of pmcid
-				suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+			prefix = '/home/hclent/data/pmcids/' + str(citation[0:3]) #folder for first 3 digits of pmcid
+			suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
 
-				try:
-					os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
-				except OSError:
-					if os.path.isdir(prefix):
-						pass
-					else:
-						raise
+			try:
+				os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
+			except OSError:
+				if os.path.isdir(prefix):
+					pass
+				else:
+					raise
 
-				try:
-					os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
-				except OSError:
-					if os.path.isdir(suffix):
-						pass
-					else:
-						raise
+			try:
+				os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
+			except OSError:
+				if os.path.isdir(suffix):
+					pass
+				else:
+					raise
 
-				logging.info(str(i)+" paper")
-				logging.info("CITATION: " +str(citation))
-				handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
-				xml_record = handle.read() #xml str
-				#print(xml_record)
-				logging.info("* got xml record")
-				main_text, abstract_check, whole_article_check = parsePMC(xml_record)
-				for yn in abstract_check: #'yn' = 'yes no'
-					contentDict["all_abstract_check"].append(yn)
-				for yn in whole_article_check:
-					contentDict["all_article_check"].append(yn)
-				#append yes/no content dicts to list
-				contentDictList.append(contentDict)
-				#print
-				logging.info("* ready to print it")
-				completeName = os.path.join(suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
-				sys.stdout = open(completeName, "w")
-				print(main_text)
-				i += 1
-				time.sleep(3)
-	else:
-		pass
+			logging.info(str(i)+" paper")
+			logging.info("CITATION: " +str(citation))
+			handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
+			xml_record = handle.read() #xml str
+			#print(xml_record)
+			logging.info("* got xml record")
+			main_text, abstract_check, whole_article_check = parsePMC(xml_record)
+			for yn in abstract_check: #'yn' = 'yes no'
+				contentDict["all_abstract_check"].append(yn)
+			for yn in whole_article_check:
+				contentDict["all_article_check"].append(yn)
+			#append yes/no content dicts to list
+			contentDictList.append(contentDict)
+			#print
+			logging.info("* ready to print it")
+			completeName = os.path.join(suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
+			sys.stdout = open(completeName, "w")
+			print(main_text)
+			i += 1
+			time.sleep(3)
+		else:
+			logging.info("the document isn't new. pass")
+			pass
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 	return contentDictList
 

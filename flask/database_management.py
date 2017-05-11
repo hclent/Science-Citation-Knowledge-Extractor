@@ -197,9 +197,9 @@ def checkForPMCID(citation):
 	try:
 		c.execute('''SELECT pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article,
  					sents, tokens, annotated FROM citations WHERE pmcid=?''',(citation,))
-		exist = c.fetchone()
+		exist = c.fetchall()
 		#if the row does NOT exist
-		if exist is None:
+		if len(exist) == 0:
 			record = 'empty'
 		#if the row does exist
 		else:
@@ -207,6 +207,21 @@ def checkForPMCID(citation):
 	except Exception as e:
 		record = 'empty'
 	return record
+
+
+#This function will check if a pmcid has been scraped before, by seeing if anything is in abstract, whole_article, sents, tokens
+#Input pmcid, pmid
+#Output: if abstract, whole_article etc have fields, return those
+#Output: else, result should return as a string "empty"
+def checkIfScraped(citation, user_input):
+	c.execute('''SELECT abstract, whole_article FROM citations WHERE pmcid=? AND citesPmid=? AND abstract IS NOT NULL AND whole_article IS NOT NULL''',
+			  (citation, user_input,))
+	exist = c.fetchone()
+	if exist is None: #if the abstract, whole_article columns are blank, its empty
+		result = 'empty'
+	else:
+		result = 'occupied' #otherwise its been scraped
+	return result
 
 
 
