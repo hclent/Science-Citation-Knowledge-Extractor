@@ -4,13 +4,13 @@ from collections import defaultdict
 
 #Basic SQLITE3 structure
 #Database in webdev-biotool for managing pmids and scraped webpages
-conn = sqlite3.connect(database='pmids_info.db') #connect to database
+conn = sqlite3.connect(database='pmids_info.db',timeout=5) #connect to database
 c = conn.cursor() #cursor
 
 
 #Define connection and cursor
 def connection():
-	conn = sqlite3.connect(database='pmids_info.db') #connect to database
+	conn = sqlite3.connect(database='pmids_info.db', timeout=5) #connect to database
 	c = conn.cursor() #cursor
 	return conn, c
 
@@ -27,6 +27,14 @@ def db_inputPapers_retrieval(user_input):
 		url = row[4]
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		return apa
+
+#Input: pmid
+#Output: number of citations
+def db_input_citations_count(user_input):
+	c.execute('''SELECT num_citations FROM inputPapers WHERE pmid=?''', (user_input,))
+	for row in c:
+		num_citations = row[0]
+		return num_citations
 
 
 #Input: pmid
@@ -198,8 +206,8 @@ def checkForPMCID(citation):
 			record = exist
 	except Exception as e:
 		record = 'empty'
-		print(record)
 	return record
+
 
 
 #Check if a pmcid has been annotated before

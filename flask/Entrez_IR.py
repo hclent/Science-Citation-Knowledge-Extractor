@@ -133,14 +133,24 @@ def getCitedInfo(pmcid_list, pmid):
 
 			#If the input pmid is NOT the same as the citesPmid in the db, copy the entry and update for the input pmid
 			if other_citesPmid != pmid:
-				unix = time.time()
-				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 				logging.info("the pmcid already exists in db, citing a different input pmid. don't re-scrape or re-annotate, just re-write to db")
-				conn, c = connection()
-				c.execute(
-					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					                       (date, pmcid, title, author, journal, date, citesPmid, url, abstract_check, article_check, sents, tokens, annotated))  # put user pmid into db
-				conn.commit()
+				#Cannot write to DB in this function because the db will be locked, as it is simultaneously reading/writing.
+				#return a more-complete citationsDict to content_management to be written to the db there
+				citationsDict = {'citesPmid': pmid, "pmcid": citation, "pmc_titles": [], "pmc_authors": [],
+							 "pmc_journals": [], "pmc_dates": [], "pmc_urls": [], "abstract_check": [], "article_check":[],
+							 "sents": [], "tokens":[], "annotated":[]}
+				citationsDict["pmc_titles"].append(title)
+				citationsDict["pmc_authors"].append(author)
+				citationsDict["pmc_journals"].append(journal)
+				citationsDict["pmc_dates"].append(date)
+				citationsDict["pmc_urls"].append(url)
+				citationsDict["abstract_check"].append(abstract_check)
+				citationsDict["article_check"].append(article_check)
+				citationsDict["sents"].append(sents)
+				citationsDict["tokens"].append(tokens)
+				citationsDict["annotated"].append(annotated)
+				allCitations.append(citationsDict)
+
 
 		#else, if the pmcid citation has never been seen before by the db, retrieve info
 		else:
@@ -193,6 +203,8 @@ def getCitedInfo(pmcid_list, pmid):
 			time.sleep(3)
 		i += 1
 	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
+	c.close() #disconnect here so that the db is not locked when we need to write to it
+	conn.close()
 	return allCitations
 
 #Input: XML string of PMC entry generated with getContentPMC

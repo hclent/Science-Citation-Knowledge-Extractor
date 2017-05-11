@@ -64,9 +64,8 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
-			main_info = ['blah', 'blih'] #main_info and target_urls for "citaitons" page
-			db_urls = [] #
-			target_urls = ['www.boob.com', 'www.barf.com']
+			main_info = [] #main_info and target_urls for "citaitons" page
+			target_urls = []
 
 			#target_journals and target_dates for journals vis
 			target_journals = []
@@ -92,21 +91,23 @@ def results():
 				if check1 is None:
 					flash('new pubmedid!')
 					#Using user_input for Information Retireval of citing pmcids and info about them
-					num_citations = run_IR_not_db(user_input) #TODO: See this function's TODO
+					run_IR_not_db(user_input)
 					logging.info("beginning multi-preprocessing")
 					biodoc_data = do_ALL_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
 
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
-					# TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
+					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
 
 
 					#After all citations have been processed, now we can do the analyses:
 					if user_input == pmid_list[-1]: #if its the last pmid
+						logging.info("last pmid in the query")
+						logging.info("begin journal vis!")
 
 
 						#JOURNALS VIS STUFF HERE
-						# logging.info(user_input+" is the last one (JOURNALS)")
+						logging.info(user_input+" is the last one (JOURNALS)")
 						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)
 
 						#TOPIC MODELING HERE
@@ -137,11 +138,11 @@ def results():
 
 
 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
-				# if check1 is not None:
-				# 	flash("alreay exists in database :) ")
-				# 	#Using user_input for Information Retireval of "main info"
-				# 	self_info, main, journals, dates, db_urls = run_IR_in_db(user_input)
-                #
+				if check1 is not None:
+					flash("alreay exists in database :) ")
+					#Using user_input for Information Retireval of "main info"
+					self_info, main, journals, dates, db_urls = run_IR_in_db(user_input)
+
 				# 	for mi in main:
 				# 		main_info.append(mi)
 				# 	logging.info("done with main info list")

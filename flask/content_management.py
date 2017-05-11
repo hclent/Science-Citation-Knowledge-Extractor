@@ -79,29 +79,15 @@ def annotation_check(user_input):
 	return a_check
 
 
-#TODO: Function to check for new papers
-#If pmid (user input) in the inputPapers database,
-#get self_info for inputPapers table and
-#main_info from citations table
-def run_IR_in_db(user_input):
-	logging.info('PMID is in the database')
-	self_info = db_inputPapers_retrieval(user_input)
-	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
-	return self_info, apa_citations, db_journals, db_dates, db_urls
-
-
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 #Write self_info to inputPmids db
 #Write allCitationsInfo to citations db
 #Update citations db with abstract_check and whole_article_check
 #Doesn't re-retrieve information for citations previously scraped (does update db if necessary)
-#TODO: will need to return some information citations tab still work
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the inputPapers database')
 	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
-	num_citations = len(pmc_ids)
-	logging.info(num_citations)
 	logging.info("Writing self_info to inputPapers db")
 	#write self_info to "inputPapers" db
 	for tup in self_info:
@@ -129,22 +115,50 @@ def run_IR_not_db(user_input):
 	allCitationsInfo = getCitedInfo(pmc_ids, user_input) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
 	logging.info("Write basic citation info to citations db")
 	for citation in allCitationsInfo:
-		unix = time.time()
-		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-		pmcid = str(citation["pmcid"])
-		title = str(citation["pmc_titles"][0])
-		authorlist = citation["pmc_authors"][0]
-		s = ', '
-		author = str(s.join(authorlist))
-		journal = str(citation["pmc_journals"][0])
-		pubdate = str(citation["pmc_dates"][0])
-		citesPmid = str(citation["citesPmid"])
-		url = str(citation["pmc_urls"][0])
-		conn, c = connection()
-		c.execute(
-			"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
-			(date, pmcid, title, author, journal, pubdate, citesPmid, url))
-		conn.commit()
+		if "annotated" in citation:
+			logging.info("this entry has already been annotated before. just copy.")
+			unix = time.time()
+			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+			pmcid = str(citation["pmcid"])
+			title = str(citation["pmc_titles"][0])
+			authorlist = citation["pmc_authors"][0]
+			s = ', '
+			author = str(s.join(authorlist))
+			journal = str(citation["pmc_journals"][0])
+			pubdate = str(citation["pmc_dates"][0])
+			citesPmid = str(citation["citesPmid"])
+			url = str(citation["pmc_urls"][0])
+			abstract = str(citation["abstract_check"][0])
+			whole_article = str(citation["article_check"][0])
+			sents = str(citation["sents"][0])
+			tokens = str(citation["tokens"][0])
+			annotated = str(citation["annotated"][0])
+
+			conn, c = connection()
+			c.execute(
+				"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				(date, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens,
+				 annotated))
+			conn.commit()
+
+		if "annotated" not in citation:
+			logging.info("this entry is brand new, never annotated")
+			unix = time.time()
+			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+			pmcid = str(citation["pmcid"])
+			title = str(citation["pmc_titles"][0])
+			authorlist = citation["pmc_authors"][0]
+			s = ', '
+			author = str(s.join(authorlist))
+			journal = str(citation["pmc_journals"][0])
+			pubdate = str(citation["pmc_dates"][0])
+			citesPmid = str(citation["citesPmid"])
+			url = str(citation["pmc_urls"][0])
+			conn, c = connection()
+			c.execute(
+				"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
+				(date, pmcid, title, author, journal, pubdate, citesPmid, url))
+			conn.commit()
 
 	#Get content and update citations db
 	contentDictList = getContentPMC(pmc_ids, user_input)
@@ -156,8 +170,97 @@ def run_IR_not_db(user_input):
 		conn, c = connection()
 		c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?", (abstract, whole_article, pmcid, citesPmid))
 		conn.commit()
-	return num_citations
 
+
+# TODO: Function to check for new papers
+# TODO: not sure you need this function otherwise?
+# If pmid (user input) in the inputPapers database, check for new papers
+# If ther are new citing papers, get those and update the db appropriately
+# Else if there are no new papers, don't need to do anything.
+def run_IR_in_db(user_input):
+	logging.info('PMID is in the database')
+	# Check for new papers:
+	num_in_db = db_input_citations_count(user_input)
+	pmc_ids = getCitationIDs(user_input)
+	num_current = len(pmc_ids)
+	#If there are new papers,
+	if num_current == num_in_db:
+		print("there are new citations!", (num_current, num_in_db))
+		#update number of citations in inputPaper db
+		conn, c = connection()
+		c.execute("UPDATE inputPapers SET num_citations=?WHERE pmid=?", (num_current, user_input))
+		conn.commit()
+		c.close()
+		conn.close()
+
+		#now get the new citation info
+		allCitationsInfo = getCitedInfo(pmc_ids, user_input)  # output: list of dictionaries [{pmid: 1234, author: human, ...}] #skips duplicates
+		logging.info("Write basic citation info to citations db for new papers")
+		for citation in allCitationsInfo:
+			#if its a duplicate entry, just being updated with the new pmcid (i.e. its annotated)
+			if "annotated" in citation:
+				logging.info("this entry has already been annotated before. just copy.")
+				unix = time.time()
+				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+				pmcid = str(citation["pmcid"])
+				title = str(citation["pmc_titles"][0])
+				authorlist = citation["pmc_authors"][0]
+				s = ', '
+				author = str(s.join(authorlist))
+				journal = str(citation["pmc_journals"][0])
+				pubdate = str(citation["pmc_dates"][0])
+				citesPmid = str(citation["citesPmid"])
+				url = str(citation["pmc_urls"][0])
+				abstract = str(citation["abstract_check"][0])
+				whole_article = str(citation["article_check"][0])
+				sents = str(citation["sents"][0])
+				tokens = str(citation["tokens"][0])
+				annotated = str(citation["annotated"][0])
+
+				conn, c = connection()
+				c.execute(
+					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+					(date, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated))
+				conn.commit()
+
+			if "annotated" not in citation:
+				logging.info("this entry is brand new, never annotated")
+				unix = time.time()
+				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+				pmcid = str(citation["pmcid"])
+				title = str(citation["pmc_titles"][0])
+				authorlist = citation["pmc_authors"][0]
+				s = ', '
+				author = str(s.join(authorlist))
+				journal = str(citation["pmc_journals"][0])
+				pubdate = str(citation["pmc_dates"][0])
+				citesPmid = str(citation["citesPmid"])
+				url = str(citation["pmc_urls"][0])
+				conn, c = connection()
+				c.execute(
+					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
+					(date, pmcid, title, author, journal, pubdate, citesPmid, url))
+				conn.commit()
+
+
+		# Get content and update citations db
+		contentDictList = getContentPMC(pmc_ids, user_input)
+		for citation in contentDictList:
+			pmcid = str(citation["pmcid"])
+			citesPmid = str(citation["citesPmid"])
+			abstract = str(citation["all_abstract_check"][0])
+			whole_article = str(citation["all_article_check"][0])
+			conn, c = connection()
+			c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?",
+					  (abstract, whole_article, pmcid, citesPmid))
+			conn.commit()
+
+	else:
+		logging.info("no new papers, nothing to do here folks")
+		pass
+
+
+run_IR_in_db("18952863")
 
 def new_citations_from_db(user_input):
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
@@ -229,7 +332,7 @@ def stats_barchart(query):
 
 
 ############ DATA VISUALIZATIONS #################################################
-#TODO: make it not take journals and dates lists as prameters
+#TODO: make it first check for pre-existing cached json file. If no file, then make json. Else, just reurn same stuff.
 #TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
 def print_journalvis(query):
 	years_range = get_years_range(query) #need range for ALL journals, not just last one
