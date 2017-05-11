@@ -2,7 +2,7 @@ from __future__ import print_function
 import time, sys, pickle, datetime, os.path, logging, json, re
 import xml.etree.ElementTree as ET
 from time import sleep
-from database_management import conn, c, checkForPMCID
+from database_management import conn, c, connection, checkForPMCID
 from Bio import Entrez
 
 
@@ -138,8 +138,8 @@ def getCitedInfo(pmcid_list, pmid):
 				logging.info("the pmcid already exists in db, citing a different input pmid. don't re-scrape or re-annotate, just re-write to db")
 				conn, c = connection()
 				c.execute(
-					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_aricle, sents, tokens, annotated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					                       (datestamp, pmcid, title, author, journal, date, citesPmid, url, abstract_check, article_check, sents, tokens, annotated))  # put user pmid into db
+					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					                       (date, pmcid, title, author, journal, date, citesPmid, url, abstract_check, article_check, sents, tokens, annotated))  # put user pmid into db
 				conn.commit()
 
 		#else, if the pmcid citation has never been seen before by the db, retrieve info

@@ -95,7 +95,7 @@ def run_IR_in_db(user_input):
 #Write allCitationsInfo to citations db
 #Update citations db with abstract_check and whole_article_check
 #Doesn't re-retrieve information for citations previously scraped (does update db if necessary)
-#TODO: will need to return some information so that journals vis and citations tab still work
+#TODO: will need to return some information citations tab still work
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the inputPapers database')
 	self_info = getMainInfo(user_input)

@@ -64,9 +64,9 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
-			main_info = [] #main_info and target_urls for "citaitons" page
+			main_info = ['blah', 'blih'] #main_info and target_urls for "citaitons" page
 			db_urls = [] #
-			target_urls = []
+			target_urls = ['www.boob.com', 'www.barf.com']
 
 			#target_journals and target_dates for journals vis
 			target_journals = []
@@ -213,7 +213,7 @@ def results():
 
 
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
-	   			main_info = main_info, target_journals = target_journals, query=query, range_years=range_years,
+	   			main_info = main_info,  query=query, range_years=range_years,
 			   start_year=start_year, end_year=end_year, unique_publications=unique_publications, unique_journals=unique_journals)
 
 
