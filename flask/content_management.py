@@ -369,12 +369,19 @@ def do_ALL_multi_preprocessing(user_input):
 		c.execute("UPDATE citations SET annotated=? WHERE pmcid=? AND citesPmid=?", (annotated, pmcid, user_input))
 		conn.commit()
 
-
-
-	# biodocs = retrieveBioDocs(user_input)
-	# data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-	# logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	#return data_samples, nes_list, total_sentences, sum_tokens
+	#Now extract information from annotated documents
+	biodocs = retrieveBioDocs(user_input)
+	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	#update db with sents and tokens
+	for b in biodoc_data:
+		pmcid = str(b["pmcid"])
+		sents = b["num_sentences"][0]
+		tokens = b["num_tokens"][0]
+		conn, c = connection()
+		c.execute("UPDATE citations SET sents=?, tokens=? WHERE pmcid=? AND citesPmid=?", (sents, tokens, pmcid, user_input))
+		conn.commit()
+	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	return biodoc_data
 
 
 #Take annotated docs and return data and nes
