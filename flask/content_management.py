@@ -88,6 +88,7 @@ def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the inputPapers database')
 	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
+	num_citations = len(pmc_ids)
 	logging.info("Writing self_info to inputPapers db")
 	#write self_info to "inputPapers" db
 	for tup in self_info:
