@@ -188,7 +188,8 @@ def run_IR_in_db(user_input):
 	num_current = len(pmc_ids)
 	#If there are new papers,
 	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
-		print("there are new citations!", (num_current, num_in_db))
+		need_to_annotate = 'yes'
+		#print("there are new citations!", (num_current, num_in_db))
 		#update number of citations in inputPaper db
 		conn, c = connection()
 		c.execute("UPDATE inputPapers SET num_citations=?WHERE pmid=?", (num_current, user_input))
@@ -201,12 +202,10 @@ def run_IR_in_db(user_input):
 			new_or_copy_db(citation)
 
 		#Get content and update citations db
-		print("now get the content for the new stuff")
-		#TODO: sometimes its not getting the new ones??
+		logging.info("now get the content for the new stuff")
+		#TODO: sometimes its not scraping the new pmcids??
 		contentDictList = getContentPMC(pmc_ids, user_input)
-		print(contentDictList)
 		for citation in contentDictList:
-			print(citation)
 			pmcid = str(citation["pmcid"])
 			citesPmid = str(citation["citesPmid"])
 			abstract = str(citation["all_abstract_check"][0])
@@ -218,7 +217,9 @@ def run_IR_in_db(user_input):
 
 	else:
 		logging.info("no new papers, nothing to do here folks")
+		need_to_annotate = 'no'
 		pass
+	return need_to_annotate
 
 
 
@@ -381,7 +382,7 @@ def inputEligible(query):
 	for pmid in pmid_list:
 		pmcid = pmid2pmcid(pmid)
 		if pmcid != "NA":
-			print(pmcid)
+			#print(pmcid)
 			#print(pmid + " = " + pmcid)
 			#get the pmcid of the pmid
 
@@ -417,11 +418,9 @@ def vis_scifi(corpus, query, eligible_papers):
 # print(len(names))
 
 ############ PROCESSING BIODOCS ############################################
-#Take pmid_n.txt and get an annotated document, as well as lemmas and named entities
-#This method is for user_input NOT already in DB, need to make json, for in DB, no need to make JSON
-#TODO: Update db with sents, tokens, annotated fields
-#TODO: Don't re-annotate
-def do_ALL_multi_preprocessing(user_input):
+#Take pmcid.txt and get an annotated document, as well as lemmas and named entities
+#Doesn't re-annotated documents that have already been annotated.
+def do_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
@@ -449,18 +448,6 @@ def do_ALL_multi_preprocessing(user_input):
 		conn.commit()
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return biodoc_data
-
-
-#Take annotated docs and return data and nes
-#This method is for user_input that IS already in the DB
-def do_SOME_multi_preprocessing(user_input):
-	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
-	t1 = time.time()
-	biodocs = retrieveBioDocs(user_input)
-	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return data_samples, nes_list, total_sentences, sum_tokens
-
 
 
 ############ TOPIC MODELING ############################################
@@ -561,3 +548,19 @@ def print_data_and_nes(query, user_input, data_samples, nes_list):
 # 	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
 # 	data_samples, neslist = loadBioDoc(biodocs)
 # 	return data_samples, neslist
+
+
+
+
+
+
+############## GRAVEYARD ############
+#Take annotated docs and return data and nes
+#This method is for user_input that IS already in the DB
+# def do_SOME_multi_preprocessing(user_input):
+# 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
+# 	t1 = time.time()
+# 	biodocs = retrieveBioDocs(user_input)
+# 	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
+# 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+# 	return data_samples, nes_list, total_sentences, sum_tokens

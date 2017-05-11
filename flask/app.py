@@ -64,14 +64,10 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
-			main_info = ['blah', 'blah'] #main_info and target_urls for "citaitons" page
-			target_urls = ['www.blah.com', 'www.blah.com']
+			main_info = [] #main_info and target_urls for "citaitons" page
+			target_urls = []
 
-			#target_journals and target_dates for journals vis
-			target_journals = []
-			target_dates = []
-
-			#need to re-factor how i do data_samples and ners as DICTS with pmcid keys
+			#TODO: need to re-factor how i do data_samples and ners as DICTS with pmcid keys
 			data_samples = []
 			ners = []
 
@@ -93,7 +89,7 @@ def results():
 					#Using user_input for Information Retireval of citing pmcids and info about them
 					run_IR_not_db(user_input)
 					logging.info("beginning multi-preprocessing")
-					biodoc_data = do_ALL_multi_preprocessing(user_input)
+					biodoc_data = do_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
 
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
@@ -126,6 +122,7 @@ def results():
 
 
 					#after info written to db, now can access db and get formated main_info (main)
+					#TODO: why is this here? and not somewhere else in the code?
 					main, db_urls = new_citations_from_db(user_input)
 					for mi in main:
 						main_info.append(mi)
@@ -140,35 +137,27 @@ def results():
 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
 				if check1 is not None:
 					flash("alreay exists in database :) ")
-					#Using user_input for Information Retireval of "main info"
-					run_IR_in_db(user_input)
+					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
+					need_to_annotate = run_IR_in_db(user_input)
+					#TODO: how to know if we need to annoate new docs? function should return like "yes" or "no"
+					#TODO: if "yes" then do multi-preprocessing on new stuff and re-do data_samples/nes_samples
+					#TODO: if "no" then just grab all the cached things!
+					if need_to_annotate == 'yes':
+						logging.info("need to annotate new documents")
+						biodoc_data = do_multi_preprocessing(user_input)
+					if need_to_annotate == 'no':
+						logging.info("dont need to annotate any new documents")
+						pass
 
-				# 	for mi in main:
-				# 		main_info.append(mi)
-				# 	logging.info("done with main info list")
-				# 	for j in journals:
-				# 		target_journals.append(j)
-				# 	logging.info("done with journals list")
-				# 	lenjournals = (len(target_journals))
-				# 	logging.info("there are "+str(lenjournals)+" publications")
-				# 	for d in dates:
-				# 		target_dates.append(d)
-				# 	logging.info("done with dates list")
-				# 	for url in db_urls:
-				# 		target_urls.append(url)
-				# 	logging.info("done with url list")
-                #
-                #
-				# 	data, named_entities, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
-				# 	for d in data:
-				# 		data_samples.append(d)
-				# 	for n in named_entities:
-				# 		ners.append(n)
-                #
-                #
-				# 	#### errr, if its in the Db, its probably already been topic modeled. so instead should try to load the data,
-				# 	## and if can't load the data, do the analysis
-                #
+
+					main, db_urls = new_citations_from_db(user_input)
+					for mi in main:
+						main_info.append(mi)
+					logging.info("done with main info list")
+					for url in db_urls:
+						target_urls.append(url)
+					logging.info("done with url list")
+
 					## Now that we have all the data, do the topic model
 					## Only want to save final topic model (not running topic model)
 					if user_input == pmid_list[-1]:
@@ -180,20 +169,7 @@ def results():
 						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
 
 
-					# 		# #Do visualization and Topic Modeling
-				# 		jsonDict = run_lsa1(data_samples, 2) #default = 2 "topics" for right now
-                #
-				# 		#latent dirichlet allocation
-				# 		jsonLDA = run_lda1(data_samples, 3, 5)
-
-                #
-				# 		logging.info(user_input+" is the last one (LSA)")
-				# 		print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-				# 		logging.info(user_input+" is the last one (LDA)")
-				# 		print_lda(query, user_input, jsonLDA) #print lda topic model to json
-                #
-				# 		print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
-
+						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
 
 				#End cursor and connection to database
 				c.close()
