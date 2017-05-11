@@ -64,8 +64,8 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
-			main_info = [] #main_info and target_urls for "citaitons" page
-			target_urls = []
+			main_info = ['blah', 'blah'] #main_info and target_urls for "citaitons" page
+			target_urls = ['www.blah.com', 'www.blah.com']
 
 			#target_journals and target_dates for journals vis
 			target_journals = []
@@ -108,7 +108,7 @@ def results():
 
 						#JOURNALS VIS STUFF HERE
 						logging.info(user_input+" is the last one (JOURNALS)")
-						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)
+						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
 
 						#TOPIC MODELING HERE
 						# logging.info(user_input+" is the last one (LSA)")
@@ -141,7 +141,7 @@ def results():
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval of "main info"
-					self_info, main, journals, dates, db_urls = run_IR_in_db(user_input)
+					run_IR_in_db(user_input)
 
 				# 	for mi in main:
 				# 		main_info.append(mi)
@@ -169,27 +169,23 @@ def results():
 				# 	#### errr, if its in the Db, its probably already been topic modeled. so instead should try to load the data,
 				# 	## and if can't load the data, do the analysis
                 #
-				# 	## Now that we have all the data, do the topic model
-				# 	## Only want to save final topic model (not running topic model)
-				# 	if user_input == pmid_list[-1]:
-                #
-				# 		# #Do visualization and Topic Modeling
+					## Now that we have all the data, do the topic model
+					## Only want to save final topic model (not running topic model)
+					if user_input == pmid_list[-1]:
+						logging.info("last pmid in the query")
+						logging.info("begin journal vis!")
+
+						# JOURNALS VIS STUFF HERE
+						logging.info(user_input + " is the last one (JOURNALS)")
+						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
+
+
+					# 		# #Do visualization and Topic Modeling
 				# 		jsonDict = run_lsa1(data_samples, 2) #default = 2 "topics" for right now
                 #
 				# 		#latent dirichlet allocation
 				# 		jsonLDA = run_lda1(data_samples, 3, 5)
-                #
-				# 		logging.info(user_input+" is the last one (JOURNALS)")
-				# 		range_info = print_journalvis(target_journals, target_dates, user_input, query)
-				# 		logging.info(range_info)
-				# 		journal_years = range_info[0]
-				# 		start_year = journal_years[0]
-				# 		end_year = journal_years[1]
-				# 		range_years = str(q.join(journal_years)) #2009+2016
-				# 		logging.info("range years: "+range_years)
-                #
-				# 		unique_publications = range_info[1]
-				# 		unique_journals = range_info[2]
+
                 #
 				# 		logging.info(user_input+" is the last one (LSA)")
 				# 		print_lsa(query, user_input, jsonDict) #print lsa topic model to json

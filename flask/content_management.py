@@ -78,6 +78,52 @@ def annotation_check(user_input):
 		a_check.append(annotationDict)
 	return a_check
 
+#Used by both IR_not_in_db and IR_in_db to 1) add new pmcids to cited db and 2) duplicate entries when necessary
+#Input is the "citation" (dict) result of the result "allCitationsInfo = getCitedInfo(pmc_ids, user_input)" in for loop
+def new_or_copy_db(citation): #citation is a dict
+	if "annotated" in citation:
+		logging.info("this entry has already been annotated before. just copy.")
+		unix = time.time()
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+		pmcid = str(citation["pmcid"])
+		title = str(citation["pmc_titles"][0])
+		author = citation["pmc_authors"][0]  # doest need formatting
+		journal = str(citation["pmc_journals"][0])
+		pubdate = str(citation["pmc_dates"][0])
+		citesPmid = str(citation["citesPmid"])
+		url = str(citation["pmc_urls"][0])
+		abstract = str(citation["abstract_check"][0])
+		whole_article = str(citation["article_check"][0])
+		sents = str(citation["sents"][0])
+		tokens = str(citation["tokens"][0])
+		annotated = str(citation["annotated"][0])
+
+		conn, c = connection()
+		c.execute(
+			"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+			(date, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens,
+			 annotated))
+		conn.commit()
+
+	if "annotated" not in citation:
+		logging.info("this entry is brand new, never annotated")
+		unix = time.time()
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+		pmcid = str(citation["pmcid"])
+		title = str(citation["pmc_titles"][0])
+		authorlist = citation["pmc_authors"][0]
+		s = ', '
+		author = str(s.join(authorlist))  # needs formatting
+		journal = str(citation["pmc_journals"][0])
+		pubdate = str(citation["pmc_dates"][0])
+		citesPmid = str(citation["citesPmid"])
+		url = str(citation["pmc_urls"][0])
+		conn, c = connection()
+		c.execute(
+			"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
+			(date, pmcid, title, author, journal, pubdate, citesPmid, url))
+		conn.commit()
+
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 #Write self_info to inputPmids db
@@ -116,48 +162,7 @@ def run_IR_not_db(user_input):
 	allCitationsInfo = getCitedInfo(pmc_ids, user_input) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
 	logging.info("Write basic citation info to citations db")
 	for citation in allCitationsInfo:
-		if "annotated" in citation:
-			logging.info("this entry has already been annotated before. just copy.")
-			unix = time.time()
-			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-			pmcid = str(citation["pmcid"])
-			title = str(citation["pmc_titles"][0])
-			author = citation["pmc_authors"][0] #doest need formatting
-			journal = str(citation["pmc_journals"][0])
-			pubdate = str(citation["pmc_dates"][0])
-			citesPmid = str(citation["citesPmid"])
-			url = str(citation["pmc_urls"][0])
-			abstract = str(citation["abstract_check"][0])
-			whole_article = str(citation["article_check"][0])
-			sents = str(citation["sents"][0])
-			tokens = str(citation["tokens"][0])
-			annotated = str(citation["annotated"][0])
-
-			conn, c = connection()
-			c.execute(
-				"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-				(date, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens,
-				 annotated))
-			conn.commit()
-
-		if "annotated" not in citation:
-			logging.info("this entry is brand new, never annotated")
-			unix = time.time()
-			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-			pmcid = str(citation["pmcid"])
-			title = str(citation["pmc_titles"][0])
-			authorlist = citation["pmc_authors"][0]
-			s = ', '
-			author = str(s.join(authorlist)) #needs formatting
-			journal = str(citation["pmc_journals"][0])
-			pubdate = str(citation["pmc_dates"][0])
-			citesPmid = str(citation["citesPmid"])
-			url = str(citation["pmc_urls"][0])
-			conn, c = connection()
-			c.execute(
-				"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
-				(date, pmcid, title, author, journal, pubdate, citesPmid, url))
-			conn.commit()
+		new_or_copy_db(citation)
 
 	#Get content and update citations db
 	contentDictList = getContentPMC(pmc_ids, user_input)
@@ -193,51 +198,7 @@ def run_IR_in_db(user_input):
 		allCitationsInfo = getCitedInfo(pmc_ids, user_input)  # output: list of dictionaries [{pmid: 1234, author: human, ...}] #skips duplicates
 		logging.info("Write basic citation info to citations db for new papers")
 		for citation in allCitationsInfo:
-			#if its a duplicate entry, just being updated with the new pmcid (i.e. its annotated)
-			#TODO: make the annotated in/not in part a function since its called twice
-			if "annotated" in citation:
-				logging.info("this entry has already been annotated before. just copy.")
-				unix = time.time()
-				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-				pmcid = str(citation["pmcid"])
-				title = str(citation["pmc_titles"][0])
-				author = citation["pmc_authors"][0] #for some reason you don't need to change this
-				s = ', '
-				journal = str(citation["pmc_journals"][0])
-				pubdate = str(citation["pmc_dates"][0])
-				citesPmid = str(citation["citesPmid"])
-				url = str(citation["pmc_urls"][0])
-				abstract = str(citation["abstract_check"][0])
-				whole_article = str(citation["article_check"][0])
-				sents = str(citation["sents"][0])
-				tokens = str(citation["tokens"][0])
-				annotated = str(citation["annotated"][0])
-
-				conn, c = connection()
-				c.execute(
-					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-					(date, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated))
-				conn.commit()
-
-			if "annotated" not in citation:
-				logging.info("this entry is brand new, never annotated")
-				unix = time.time()
-				date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-				pmcid = str(citation["pmcid"])
-				title = str(citation["pmc_titles"][0])
-				authorlist = citation["pmc_authors"][0]
-				s = ', '
-				author = str(s.join(authorlist)) #authors need some formatting
-				journal = str(citation["pmc_journals"][0])
-				pubdate = str(citation["pmc_dates"][0])
-				citesPmid = str(citation["citesPmid"])
-				url = str(citation["pmc_urls"][0])
-				conn, c = connection()
-				c.execute(
-					"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
-					(date, pmcid, title, author, journal, pubdate, citesPmid, url))
-				conn.commit()
-
+			new_or_copy_db(citation)
 
 		#Get content and update citations db
 		print("now get the content for the new stuff")
