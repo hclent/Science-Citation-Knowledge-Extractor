@@ -298,6 +298,7 @@ def stats_barchart(query):
 def print_journalvis(query):
 	years_range = get_years_range(query) #need range for ALL journals, not just last one
 	publication_data, range_info = journals_vis(years_range, query) #journalvis.py #range info = [('2008', '2016'), 165, 48]
+	#TODO: maybe store start_year, end_year, etc? because right now journals_vis() gets range_info AND does the
 	journal_years = range_info[0]
 	start_year = journal_years[0]
 	end_year = journal_years[1]
@@ -312,7 +313,7 @@ def print_journalvis(query):
 	completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
 	with open(completeName, 'w') as outfile:
 		json.dump(publication_data, outfile)
-	return range_years,start_year, end_year, unique_publications, unique_journals
+	return range_years, unique_publications, unique_journals
 
 
 

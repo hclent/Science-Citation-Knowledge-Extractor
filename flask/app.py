@@ -104,7 +104,7 @@ def results():
 
 						#JOURNALS VIS STUFF HERE
 						logging.info(user_input+" is the last one (JOURNALS)")
-						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
+						range_years, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
 
 						#TOPIC MODELING HERE
 						# logging.info(user_input+" is the last one (LSA)")
@@ -166,7 +166,7 @@ def results():
 
 						# JOURNALS VIS STUFF HERE
 						logging.info(user_input + " is the last one (JOURNALS)")
-						range_years, start_year, end_year, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
+						range_years, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
 
 
 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
@@ -186,9 +186,8 @@ def results():
 
 
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
-	   			main_info = main_info,  query=query, range_years=range_years,
-			   start_year=start_year, end_year=end_year, unique_publications=unique_publications, unique_journals=unique_journals)
-
+	   			main_info = main_info,  query=query, range_years=range_years, unique_publications=unique_publications, unique_journals=unique_journals)
+				#took out start_year, end_year
 
 	except Exception as e:
 		return(str(e))

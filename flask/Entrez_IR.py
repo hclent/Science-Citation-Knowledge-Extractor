@@ -274,7 +274,7 @@ def getContentPMC(pmcids_list, pmid):
 	contentDictList = []
 
 	for citation in pmcids_list:
-		print(citation)
+		#print(citation)
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
 		# a record that this pmc is cited by the new input paper (will be done at this point though... I think?)
 		conn, c = connection()

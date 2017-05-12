@@ -262,6 +262,7 @@ def pmcidAnnotated(pmcid):
 # 		num_citations NUMBER)''')
 #
 #
+
 # #Create table for citations of the citations
 # def create_table_citations():
 # 	c.execute('''CREATE TABLE IF NOT EXISTS citations
@@ -279,21 +280,37 @@ def pmcidAnnotated(pmcid):
 # 		sents NUMBER,
 # 		tokens NUMBER)''')
 #
+
+#Create table for queries put in to the tool!
+# def create_table_citations():
+# 	c.execute('''CREATE TABLE IF NOT EXISTS queries
+# 		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+# 		datestamp TEXT,
+# 		query TEXT,
+# 		range_years TEXT,
+# 		total_pubs NUMBER,
+# 		unique_pubs NUMBER,
+# 		unique_journals NUMBER,
+# 		num_abstracts NUMBER,
+# 		num_whole_articles NUMBER,
+# 		num_sents NUMBER,
+# 		num_tokens NUMBER)''')
 #
+# create_table_citations()
 # #test
 # def test_data_entry():
-# 	c.execute("INSERT INTO citations VALUES(0, '09-21-2016', '000', 'title','author', 'journal', 'pubdate', 'pmid', 'www.website.com')")
+# 	c.execute("INSERT INTO queries VALUES(1, '05-12-2017', 'aaa+bbb', '1992-2017', 100, 90, 41, 90, 90, 28000, 1000000)")
 # 	conn.commit() #to save it to db
 #
-# 	c.execute("SELECT * FROM citations")
+# 	c.execute("SELECT * FROM queries")
 # 	[print(row) for row in c.fetchall()]
 #
-# 	c.close()
-# 	conn.close()
+# 	# c.close()
+# 	# conn.close()
 #
 #
 # #print table
 # def print_inputPapers():
-# 	c.execute("SELECT * FROM inputPapers")
+# 	c.execute("SELECT * FROM queries")
 # 	[print(row) for row in c.fetchall()]
 
