@@ -116,6 +116,8 @@
 
         <iframe  id="clustermap" style="display:none"  src="https://geco.iplantcollaborative.org/hclent/bionlp/cogeclustermap/" width="850" height="1200" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
+        <!--TODO: i would change the "style"-->
+
 		</div>
 <!--this /div responds to the first tab div, which doesnt make sense to me, but moving it breaks things-->
 
@@ -224,10 +226,15 @@
       var visspace2 = document.getElementById(vis2);
       var visspace3 = document.getElementById(vis3);
       visspace1.style.display = visspace1.style.display == 'none' ? '' : 'none'; //if none, display, if not none -> none
-      visspace2.style.display = visspace2.style.display == '' ? 'none' : 'none'; //dont display other ones!
-      visspace3.style.display = visspace3.style.display == '' ? 'none' : 'none'; //dont display other ones!
+      visspace2.style.display = 'none';
+      visspace3.style.display = 'none';
   }
  </script>
+
+
+
+<!--// create iframes with javascript! somehow...-->
+
 
 
 <script>

@@ -15,6 +15,7 @@ def connection():
 	return conn, c
 
 
+#################### SUPPORT FUNCTIONS FOR inputPapers TABLE ######################
 #Input: pmid
 #Output: apa citation of *THAT* pmid
 def db_inputPapers_retrieval(user_input):
@@ -36,7 +37,50 @@ def db_input_citations_count(user_input):
 		num_citations = row[0]
 		return num_citations
 
+# Input: pmid that is cited
+# output: dicts needed for statistics tab
+def db_statistics(user_input):
+	pmidDict = defaultdict(int)
+	# {pmid: num citations}
+	pmcDict = defaultdict(list)
+	# dict value [0] = num abstracts
+	# dict value [1] = num whole articles
+	# dict value [2] = num sentences
+	# dict value [3] = num tokens
+	c.execute('''SELECT num_citations FROM inputPapers WHERE pmid=?''', (user_input,))
+	for row in c:
+		total_citations = row[0]
+		pmidDict[user_input] = total_citations
 
+	c.execute('''SELECT pmcid, abstract, whole_article, sents, tokens FROM citations WHERE citesPmid=?''',
+			  (user_input,))
+	for row in c:
+		pmcid = row[0]
+		abstract = row[1]
+		whole = row[2]
+		sents = row[3]
+		tokens = row[4]
+		pmcDict[pmcid] = [abstract, whole, sents, tokens]
+
+	return pmidDict, pmcDict
+
+# After you've scraped the input_paper, write the information about abstract, article, and self_pmcid to db
+def updateInputPapers(user_input, self_pmcid, abstract, article):
+	# from function getSelfText(user_input)
+	# put pmcid, abstract check, and article check into db from
+	conn, c = connection()
+	c.execute("UPDATE inputPapers SET abstract=?, whole_article=?, pmcid =? WHERE pmid=?",
+			  (abstract, article, self_pmcid, user_input))  # put user pmid into db
+	conn.commit()
+
+# convert pmid2pmcid
+def pmid2pmcid(user_input):
+	c.execute('''SELECT pmcid FROM inputPapers WHERE pmid=?''', (user_input,))
+	for pmcid in c:
+		return pmcid[0]  # return first thing in tuple ('2836516',)
+	# will return NoneType if its not there apparently :)
+
+######################### SUPPORT FUNCTIONS FOR citations TABLE ###########################
 #Input: pmid
 #Output: apa citations for citing pmCids as hyperlinks
 def db_citations_hyperlink_retrieval(user_input):
@@ -132,48 +176,6 @@ def db_journals_and_dates(pmid):
 
 
 
-#Input: pmid that is cited
-#output: dicts needed for statistics tab
-def db_statistics(user_input):
-	pmidDict = defaultdict(int)
-	#{pmid: num citations}
-	pmcDict = defaultdict(list)
-    #dict value [0] = num abstracts
-    #dict value [1] = num whole articles
-    #dict value [2] = num sentences
-    #dict value [3] = num tokens
-	c.execute('''SELECT num_citations FROM inputPapers WHERE pmid=?''', (user_input,))
-	for row in c:
-		total_citations = row[0]
-		pmidDict[user_input] = total_citations
-
-	c.execute('''SELECT pmcid, abstract, whole_article, sents, tokens FROM citations WHERE citesPmid=?''', (user_input,))
-	for row in c:
-		pmcid = row[0]
-		abstract = row[1]
-		whole = row[2]
-		sents = row[3]
-		tokens = row[4]
-		pmcDict[pmcid] = [abstract, whole, sents, tokens]
-
-	return pmidDict, pmcDict
-
-
-#After you've scraped the input_paper, write the information about abstract, article, and self_pmcid to db
-def updateInputPapers(user_input, self_pmcid, abstract, article):
-	#from function getSelfText(user_input)
-    #put pmcid, abstract check, and article check into db from
-    conn, c = connection()
-    c.execute("UPDATE inputPapers SET abstract=?, whole_article=?, pmcid =? WHERE pmid=?",(abstract, article, self_pmcid, user_input))  # put user pmid into db
-    conn.commit()
-
-
-#convert pmid2pmcid
-def pmid2pmcid(user_input):
-	c.execute('''SELECT pmcid FROM inputPapers WHERE pmid=?''', (user_input,))
-	for pmcid in c:
-		return pmcid[0] #return first thing in tuple ('2836516',)
-		# will return NoneType if its not there apparently :)
 
 
 def retrieveAllPmcids():
@@ -246,6 +248,26 @@ def pmcidAnnotated(pmcid):
 		record = 'empty'
 		print(record)
 	return record
+
+######################## SUPPORT FUNCTIONS FOR queries TABLE #######################################
+#check if a query is in db
+def checkForQuery(query):
+	c.execute('''SELECT query FROM queries WHERE query=?''',(query,))
+	exist = c.fetchone()
+	if exist is None:
+		record = 'empty'
+	else:
+		record = 'yes'
+	return record
+
+#Get information for cached journal data vis
+def getJournalsVis(query):
+	c.execute('''SELECT range_years, unique_pubs, unique_journals FROM queries WHERE query=?''', (query,))
+	for row in c:
+		range_years = row[0]
+		unique_pubs = row[1]
+		unique_journals = row[2]
+	return range_years, unique_pubs, unique_journals
 
 
 #Create table for inputPapers

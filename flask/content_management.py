@@ -293,26 +293,34 @@ def stats_barchart(query):
 
 
 ############ DATA VISUALIZATIONS #################################################
-#TODO: make it first check for pre-existing cached json file. If no file, then make json. Else, just reurn same stuff.
 #TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
+#TODO: no mechanism for updating db if more citations have been found!! 
 def print_journalvis(query):
-	years_range = get_years_range(query) #need range for ALL journals, not just last one
-	publication_data, range_info = journals_vis(years_range, query) #journalvis.py #range info = [('2008', '2016'), 165, 48]
-	#TODO: maybe store start_year, end_year, etc? because right now journals_vis() gets range_info AND does the
-	journal_years = range_info[0]
-	start_year = journal_years[0]
-	end_year = journal_years[1]
-	q = '+'
-	range_years = str(q.join(journal_years))
-	logging.info("range years: "+range_years)
-	unique_publications = range_info[1]
-	unique_journals = range_info[2]
-	logging.info(range_info)
-	logging.info('Printing JOURNALS to JSON')
-	save_path = '/home/hclent/data/journals/' #save in journals folder
-	completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
-	with open(completeName, 'w') as outfile:
-		json.dump(publication_data, outfile)
+	record = checkForQuery(query)  # check for query in db.
+	if record == 'empty':
+		#if the record has never been seen before, do the journalsvis and write to db
+		years_range = get_years_range(query) #need range for ALL journals, not just last one
+		publication_data, range_info = journals_vis(years_range, query) #range info = [('2008', '2016'), 165, 48]
+		journal_years = range_info[0]
+		q = '+'
+		range_years = str(q.join(journal_years))
+		logging.info("range years: "+range_years)
+		unique_publications = range_info[1]
+		unique_journals = range_info[2]
+		logging.info(range_info)
+		logging.info('Printing JOURNALS to JSON')
+		save_path = '/home/hclent/data/journals/' #save in journals folder
+		completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
+		with open(completeName, 'w') as outfile:
+			json.dump(publication_data, outfile)
+		unix = time.time()
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+		conn, c = connection()
+		c.execute("INSERT INTO queries (datestamp, query, range_years, unique_pubs, unique_journals) VALUES (?, ?, ?, ?, ?)",
+				  (date, query, range_years, unique_publications, unique_journals))
+		conn.commit()
+	if record == 'yes': #if its in the db, just get the important things from the db!!
+		range_years, unique_publications, unique_journals = getJournalsVis(query)
 	return range_years, unique_publications, unique_journals
 
 
