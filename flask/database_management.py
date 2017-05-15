@@ -2,6 +2,15 @@ import sqlite3, time, datetime
 from collections import defaultdict
 
 
+'''
+Tables in pmids_info.db
+1) inputPapers: stores info about the input pmids and their citations
+2) citations: stores information about pmcids that cite input pmids
+3) queries: stores information about a particular input query e.g. paper1+paper2
+4) annotations: stores information about the annotated pmcids' lemmas and named entities categories
+
+'''
+
 #Basic SQLITE3 structure
 #Database in webdev-biotool for managing pmids and scraped webpages
 conn = sqlite3.connect(database='pmids_info.db',timeout=5) #connect to database
@@ -270,6 +279,14 @@ def getJournalsVis(query):
 	return range_years, unique_pubs, unique_journals
 
 
+
+#################### SUPPORT FUNCTIONS FOR annotations TABLE ############
+
+
+
+
+
+##########################################################################
 #Create table for inputPapers
 # def create_table_input():
 # 	c.execute('''CREATE TABLE IF NOT EXISTS inputPapers
@@ -318,13 +335,35 @@ def getJournalsVis(query):
 # 		num_sents NUMBER,
 # 		num_tokens NUMBER)''')
 #
-# create_table_citations()
-# #test
+
+#Create table for annotations put in to the tool!
+# def create_table_annotations():
+# 	c.execute('''CREATE TABLE IF NOT EXISTS annotations
+# 		(post_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+# 		datestamp TEXT,
+# 		pmcid TEXT,
+# 		lemmas TEXT,
+# 		bioprocess TEXT,
+# 		cell_lines TEXT,
+# 		cell_components TEXT,
+# 		family TEXT,
+# 		gene_product TEXT,
+# 		organ TEXT,
+# 		simple_chemical TEXT,
+# 		site TEXT,
+# 		species TEXT,
+# 		tissue_type TEXT)''')
+#
+# create_table_annotations()
+
+
+
+#test
 # def test_data_entry():
-# 	c.execute("INSERT INTO queries VALUES(1, '05-12-2017', 'aaa+bbb', '1992-2017', 100, 90, 41, 90, 90, 28000, 1000000)")
+# 	c.execute("INSERT INTO annotations VALUES(1, '05-15-2017', 'aaa', 'these are the lemmas in the paper', 'bioprocess, bioprocess, bioprocess', 'cell, cell, line', 'c, c, c', 'fam, fam', 'gene, gene product', 'o, o, o', 'chem, chem', 'site', 'dog, cat', 'kleenex' )")
 # 	conn.commit() #to save it to db
 #
-# 	c.execute("SELECT * FROM queries")
+# 	c.execute("SELECT * FROM annotations")
 # 	[print(row) for row in c.fetchall()]
 #
 # 	# c.close()
@@ -332,7 +371,9 @@ def getJournalsVis(query):
 #
 #
 # #print table
-# def print_inputPapers():
-# 	c.execute("SELECT * FROM queries")
+# def print_table():
+# 	c.execute("SELECT * FROM annotations")
 # 	[print(row) for row in c.fetchall()]
-
+#
+# test_data_entry()
+# print_table()

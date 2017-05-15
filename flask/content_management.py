@@ -294,7 +294,7 @@ def stats_barchart(query):
 
 ############ DATA VISUALIZATIONS #################################################
 #TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
-#TODO: no mechanism for updating db if more citations have been found!! 
+#TODO: no mechanism for updating db if more citations have been found!!
 def print_journalvis(query):
 	record = checkForQuery(query)  # check for query in db.
 	if record == 'empty':
