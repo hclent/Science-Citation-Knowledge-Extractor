@@ -1,5 +1,6 @@
 from processors import * #pyProcessors
 import os.path, time, re, logging, pickle, json
+from itertools import chain #for "flatten" function
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
@@ -61,8 +62,9 @@ def scrape_and_write_Input(user_input):
 #output: list of dicts with annotation checks [{"pmcid": 123, "annotated": yes}]
 def annotation_check(user_input):
 	a_check = []
-	pmc_ids = getCitationIDs(user_input)
+	pmc_ids = db_citation_pmc_ids(user_input) #Used to use getCitationIDs(user_input) here but updated to using my own db
 	for citation in pmc_ids:
+		#print(citation)
 		annotationDict = {"pmcid": citation, "annotated": []}
 
 		prefix = '/home/hclent/data/pmcids/' + str(citation[0:3])  # folder for first 3 digits of pmcid
@@ -125,6 +127,9 @@ def new_or_copy_db(citation): #citation is a dict
 		conn.commit()
 
 
+
+
+
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 #Write self_info to inputPmids db
 #Write allCitationsInfo to citations db
@@ -183,8 +188,8 @@ def run_IR_not_db(user_input):
 def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
 	# Check for new papers:
-	num_in_db = db_input_citations_count(user_input)
-	pmc_ids = getCitationIDs(user_input)
+	num_in_db = db_input_citations_count(user_input) #checks MY db
+	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
 	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
@@ -222,7 +227,6 @@ def run_IR_in_db(user_input):
 	return need_to_annotate
 
 
-
 def new_citations_from_db(user_input):
 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
 	return apa_citations, db_urls
@@ -231,39 +235,43 @@ def new_citations_from_db(user_input):
 
 #Data for populating statistics page in app
 def get_statistics(pmid_list):
-    total = []
-    unique_pmcids = []
-    all_abstracts = []
-    all_whole = []
-    all_sents = []
-    all_tokens = []
-    for pmid in pmid_list:
-        pmidDict, pmcDict = db_statistics(pmid)
-        #print(pmidDict)
-        total.append(pmidDict[pmid])
-        #print(pmcDict)
-        for key, value in pmcDict.items():
-            if key not in unique_pmcids:
-                unique_pmcids.append(key)
-            abstract = value[0]
-            if abstract == 'yes':
-                all_abstracts.append(abstract)
-            whole = value[1]
-            if abstract == 'yes':
-                all_whole.append(whole)
-            sent = value[2]
-            all_sents.append(sent)
-            token = value[3]
-            all_tokens.append(token)
-    sum_total = sum(total)
-    unique = (len(unique_pmcids))
-    sum_abstracts = len(all_abstracts)
-    sum_whole = len(all_whole)
-    sum_sents = sum(all_sents)
-    sum_tokens = sum(all_tokens)
-    statistics = [sum_total, unique, sum_abstracts, sum_whole, sum_sents, sum_tokens]
-    #print(statistics)
-    return statistics
+	total = []
+	unique_pmcids = []
+	all_abstracts = []
+	all_whole = []
+	all_sents = []
+	all_tokens = []
+	for pmid in pmid_list:
+		pmidDict, pmcDict = db_statistics(pmid)
+		#print(pmidDict)
+		total.append(pmidDict[pmid])
+		#print(pmcDict)
+		for key, value in pmcDict.items():
+			if key not in unique_pmcids:
+				unique_pmcids.append(key)
+			abstract = value[0]
+			if abstract == 'yes':
+				all_abstracts.append(abstract)
+			whole = value[1]
+			if abstract == 'yes':
+				all_whole.append(whole)
+			sent = value[2]
+			if isinstance(sent, int):
+				all_sents.append(sent)
+			token = value[3]
+			if isinstance(token, int):
+				all_tokens.append(token)
+	sum_total = sum(total)
+	unique = (len(unique_pmcids))
+	sum_abstracts = len(all_abstracts)
+	sum_whole = len(all_whole)
+	sum_sents = sum(all_sents)
+	sum_tokens = sum(all_tokens)
+	statistics = [sum_total, unique, sum_abstracts, sum_whole, sum_sents, sum_tokens]
+	#print(statistics)
+	return statistics
+
+
 
 #use query to get info about input papers
 def statsSelfInfo(query):
@@ -429,11 +437,14 @@ def vis_scifi(corpus, query, eligible_papers):
 ############ PROCESSING BIODOCS ############################################
 #Take pmcid.txt and get an annotated document, as well as lemmas and named entities
 #Doesn't re-annotated documents that have already been annotated.
+'''
+Some issues with the db being locked with do_multi_preprocessing('18269575')
+'''
 def do_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
-	multiprocess(docs)
+	multiprocess(docs) #if docs is empty [], this function just passes :)
 
 	#Now update annotated_check
 	a_check = annotation_check(user_input)
@@ -444,19 +455,18 @@ def do_multi_preprocessing(user_input):
 		c.execute("UPDATE citations SET annotated=? WHERE pmcid=? AND citesPmid=?", (annotated, pmcid, user_input))
 		conn.commit()
 
+	#TODO: Ignore "annotations" table for now. Problems with sqlite3 persist.
+	#TODO: continue making data_samples the same as before
 	#Now extract information from annotated documents
-	biodocs = retrieveBioDocs(user_input)
-	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	# biodocs = retrieveBioDocs(user_input)
+	# biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	#unlock_db('pmids_info.db')
+	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
 	#update db with sents and tokens
-	for b in biodoc_data:
-		pmcid = str(b["pmcid"])
-		sents = b["num_sentences"][0]
-		tokens = b["num_tokens"][0]
-		conn, c = connection()
-		c.execute("UPDATE citations SET sents=?, tokens=? WHERE pmcid=? AND citesPmid=?", (sents, tokens, pmcid, user_input))
-		conn.commit()
+	# for b in biodoc_data:
+	# 	update_annotations(b, user_input)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return biodoc_data
+
 
 
 ############ TOPIC MODELING ############################################
@@ -539,6 +549,97 @@ def print_lda(query, user_input, jsonLDA):
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonLDA, outfile)
 
+
+def flatten(listOfLists):
+    return list(chain.from_iterable(listOfLists))
+
+#Input: the output of do_multi_preprocessing (list of dicts with lemmas and named entities)
+#This function stores selected information about the annotation in the db table 'annotations'
+#Ooutput: none
+
+
+#TODO: restore this to its former glory once databases are happy again
+def biodoc_to_db(biodoc_data):
+	for biodict in biodoc_data:
+		pmcid = str(biodict["pmcid"])
+		record = annotationsCheckPmcid(pmcid)
+		# step 1: if pmcid already in db, pass
+		if record == 'yes':
+			print("repeat!")
+			pass
+		# step 2: if pmcid not in db, add the things!
+		if record == 'empty':
+			lemmas = str(biodict["lemmas"]) #will be a string that looks like a list... will have to parse back into list somehow
+			print(lemmas)
+			all_nes = biodict["nes"][0] #its a list with one dictionary in it (hence we index [0] to get the dict)
+			try:
+				bioprocess_list = all_nes["BioProcess"]
+				#['translation', 'homeostasis', 'stress response', 'stress response'] #will need to make a string
+				#String where we can put it back in a list!
+				bioprocess = ", ".join(bioprocess_list) #translation, homeostasis, stress response, stress response
+			except Exception as e1:
+				bioprocess = '' #empty string
+			try:
+				cell_lines = ", ".join(all_nes["CellLine"])
+			except Exception as e2:
+				cell_lines = ''
+			try:
+				cell_components = ", ".join(all_nes["Cellular_component"])
+			except Exception as e3:
+				cell_components = ''
+			try:
+				family = ", ".join(all_nes["Family"])
+			except Exception as e4:
+				family = ''
+			try:
+				gene_product = ", ".join(all_nes["Gene_or_gene_product"])
+			except Exception as e5:
+				gene_product = ''
+			try:
+				organ = ", ".join(all_nes["Organ"])
+			except Exception as e6:
+				organ = ''
+			try:
+				simple_chemical = ", ".join(all_nes["Simple_chemical"])
+			except Exception as e7:
+				simple_chemical = ''
+			try:
+				site = ", ".join(all_nes["Site"])
+			except Exception as e8:
+				site = ''
+			try:
+				species = ", ".join(all_nes["Species"])
+			except Exception as e9:
+				species = ''
+			try:
+				tissue_type = ", ".join(all_nes["TissueType"])
+			except Exception as e10:
+				tissue_type = ''
+			unix = time.time()
+			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+			conn, c = connection()
+			c.execute(
+				"INSERT INTO annotations (datestamp, pmcid, lemmas, bioprocess, cell_lines, cell_components, family, gene_product, organ, simple_chemical, site, species, tissue_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				(date, pmcid, lemmas, bioprocess, cell_lines, cell_components, family, gene_product, organ, simple_chemical, site, species, tissue_type))  # put user pmid into db
+			conn.commit()
+
+#biodoc_data = do_multi_preprocessing('18952863')
+# biodoc_data = do_multi_preprocessing('18269575')
+# biodoc_to_db(biodoc_data)
+
+############## GRAVEYARD ##########################################################
+#Take annotated docs and return data and nes
+#This method is for user_input that IS already in the DB
+#TODO: this is temporarily revived. use klugy data_samples and nes_list creation until db migration.
+def do_SOME_multi_preprocessing(user_input):
+	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
+	t1 = time.time()
+	biodocs = retrieveBioDocs(user_input)
+	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
+	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	return data_samples, nes_list, total_sentences, sum_tokens
+
+#TODO: depreciate and replace output pickles with writing to db
 def print_data_and_nes(query, user_input, data_samples, nes_list):
 	logging.info('Printing data_samples to PICKLE')
 	save_path = '/home/hclent/data/data_samples/' #in the folder 'data_samples'
@@ -550,26 +651,3 @@ def print_data_and_nes(query, user_input, data_samples, nes_list):
 	save_path2 = '/home/hclent/data/nes/' #in the folder 'data_samples'
 	nes_completeName = os.path.join(save_path2, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
 	pickle.dump( nes_list, open( nes_completeName, "wb" ) )
-
-
-############# GRAVEYARD ##############################################
-# def get_data_and_ner(pmid):
-# 	biodocs = retrieveBioDocs(str(pmid)) #a bunch of strings
-# 	data_samples, neslist = loadBioDoc(biodocs)
-# 	return data_samples, neslist
-
-
-
-
-
-
-############## GRAVEYARD ############
-#Take annotated docs and return data and nes
-#This method is for user_input that IS already in the DB
-# def do_SOME_multi_preprocessing(user_input):
-# 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
-# 	t1 = time.time()
-# 	biodocs = retrieveBioDocs(user_input)
-# 	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-# 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-# 	return data_samples, nes_list, total_sentences, sum_tokens

@@ -30,7 +30,7 @@
 
     <li role="presentation"><a href="#journals" aria-controls="journals" role="tab" data-toggle="tab">Journals</a></li>
     
-    <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">NEs</a></li>
+    <li role="presentation"><a href="#ner" aria-controls="ner" role="tab" data-toggle="tab">Keywords</a></li>
     
     <li role="presentation"><a href="#dan" aria-controls="dan" role="tab" data-toggle="tab">Topics</a></li>
 
@@ -108,7 +108,7 @@
                       <ul class="dropdown-menu">
                           <!-- TO DO: ajax req it and then append html in  div -->
 
-                          <li><a href="#embedding" id="embedding" onclick="toggle3('resembedding', 'cogelda', 'cogelsa')">Embeddings</a></li> <!--the force directed graph will go here -->
+                        <li><a href="#embedding" id="embedding" onclick="toggle3('resembedding', 'reslda', 'reslsa')">Embeddings</a></li> <!--the force directed graph will go here -->
 
                         <li><a href="#lsa" id="lsa" onclick="toggle3('reslsa', 'reslda', 'resembedding')">LSA</a></li> <!-- I want this button to include results_lsa.html -->
 
@@ -122,11 +122,11 @@
             <br></br>
                 <!--template var at end of link -->
 
-            <iframe  id="resembedding" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/resembeddings/{{query}}" width="1000" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+           <iframe id="resembedding" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/resembed/{{query}}" width="1000" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
-           <iframe  id="reslsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslsa/{{query}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+           <iframe id="reslsa" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslsa/{{query}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
-          <iframe  id="reslda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslda/{{query}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+          <iframe id="reslda" style="display:none" src="https://geco.iplantcollaborative.org/hclent/bionlp/reslda/{{query}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</ul>
@@ -220,10 +220,11 @@
       var visspace2 = document.getElementById(vis2);
       var visspace3 = document.getElementById(vis3);
       visspace1.style.display = visspace1.style.display == 'none' ? '' : 'none'; //if none, display, if not none -> none
-      visspace2.style.display = visspace2.style.display == '' ? 'none' : 'none'; //dont display other ones!
-      visspace3.style.display = visspace3.style.display == '' ? 'none' : 'none'; //dont display other ones!
+      visspace2.style.display = 'none';
+      visspace3.style.display = 'none';
   }
  </script>
+
 
 
 <script>

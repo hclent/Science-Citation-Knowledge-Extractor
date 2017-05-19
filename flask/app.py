@@ -89,8 +89,14 @@ def results():
 					#Using user_input for Information Retireval of citing pmcids and info about them
 					run_IR_not_db(user_input)
 					logging.info("beginning multi-preprocessing")
-					biodoc_data = do_multi_preprocessing(user_input)
+					do_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
+					d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input) #
+
+					for d in d_s:
+						data_samples.append(d)
+					for n in nes_list:
+						ners.append(n)
 
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
 					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
@@ -107,18 +113,18 @@ def results():
 						range_years, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
 
 						#TOPIC MODELING HERE
-						# logging.info(user_input+" is the last one (LSA)")
-						# Do Latent Semantic Analysis and return jsonDict for data vis
-						# jsonDict = run_lsa1(data_samples, 2)
-						# print_lsa(query, user_input, jsonDict) #print lsa topic model to json
+						logging.info(user_input+" is the last one (LSA)")
+						#Do Latent Semantic Analysis and return jsonDict for data vis
+						jsonDict = run_lsa1(data_samples, 2)
+						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
 
-						#logging.info(user_input+" is the last one (LDA)")
-						# jsonLDA = run_lda1(data_samples, 3, 5)
-						#print_lda(query, user_input, jsonLDA) #print lda topic model to json
+						logging.info(user_input+" is the last one (LDA)")
+						jsonLDA = run_lda1(data_samples, 3, 5)
+						print_lda(query, user_input, jsonLDA) #print lda topic model to json
 
 
 						## FUNCTION THAT CACHES DATA_SAMPLES AND NES HERE:
-						#print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 
 					#after info written to db, now can access db and get formated main_info (main)
@@ -138,16 +144,22 @@ def results():
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
-					need_to_annotate = run_IR_in_db(user_input)
-					#TODO: how to know if we need to annoate new docs? function should return like "yes" or "no"
-					#TODO: if "yes" then do multi-preprocessing on new stuff and re-do data_samples/nes_samples
-					#TODO: if "no" then just grab all the cached things!
-					if need_to_annotate == 'yes':
-						logging.info("need to annotate new documents")
-						biodoc_data = do_multi_preprocessing(user_input)
-					if need_to_annotate == 'no':
-						logging.info("dont need to annotate any new documents")
-						pass
+					# need_to_annotate = run_IR_in_db(user_input)
+					# #TODO: how to know if we need to annoate new docs? function should return like "yes" or "no"
+					# #TODO: if "yes" then do multi-preprocessing on new stuff and re-do data_samples/nes_samples
+					# #TODO: if "no" then just grab all the cached things!
+					# if need_to_annotate == 'yes':
+					# 	logging.info("need to annotate new documents")
+					# 	biodoc_data = do_multi_preprocessing(user_input)
+					# if need_to_annotate == 'no':
+					# 	logging.info("dont need to annotate any new documents")
+					# 	pass
+
+					d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
+					for d in d_s:
+						data_samples.append(d)
+					for n in nes_list:
+						ners.append(n)
 
 
 					main, db_urls = new_citations_from_db(user_input)
@@ -169,7 +181,17 @@ def results():
 						range_years, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
 
 
+						## PRINT Data_samples and stuff
+						print_data_and_nes(query, user_input, data_samples, nes_list)
+
 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
+						# logging.info(user_input + " is the last one (LSA)")
+						# jsonDict = run_lsa1(data_samples, 2)
+						# print_lsa(query, user_input, jsonDict)  # print lsa topic model to json
+                        #
+						# logging.info(user_input + " is the last one (LDA)")
+						# jsonLDA = run_lda1(data_samples, 3, 5)
+						# print_lda(query, user_input, jsonLDA)  # print
 
 				#End cursor and connection to database
 				c.close()
@@ -471,9 +493,13 @@ def resjournals(query, range_years):
 
 
 
-@app.route('/resembeddings/<query>', methods=["GET","POST"]) #user embeddings for iframe
-def resembeddings():
-	return render_template('graveyard_results_embeddings.html')
+#TODO: re-implement resembeddings for results!
+@app.route('/resembed/<query>', methods=["GET", "POST"]) #user embeddings for iframe
+def resembeddings(query):
+	if request.method == 'POST':
+		return render_template('results_embeddings.html')
+	else:
+		return render_template('results_embeddings.html')
 
 
 
@@ -721,11 +747,8 @@ def res_stats(query):
 	sum_whole = statistics[3]
 	sum_sents = statistics[4]
 	sum_tokens = statistics[5]
-
 	#get x, y coordinates for pubs x year bar chart.
 	x, y = stats_barchart(query)
-
-
 	return render_template('results_stats.html', input_click_citations=input_click_citations,
 						   venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,

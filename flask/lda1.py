@@ -4,6 +4,7 @@ from sklearn.decomposition import LatentDirichletAllocation
 import re, time
 from multi_preprocess import *
 from collections import defaultdict, Counter
+from database_management import db_citation_pmc_ids, getDataSamples
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -12,6 +13,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 def get_tfidf(data): #data should be a list of strings for the documents
   logging.info("* Preparing to vectorize data ...")
   tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 4), norm='l2')
+  print(tfidf_vectorizer)
   logging.info("* Fitting data to vector ...")
   tfidf = tfidf_vectorizer.fit_transform(data)
   logging.info("* Successfully fit data to the vector !!! ")
@@ -29,11 +31,11 @@ def fit_lda(tfidf, num_topics):
 def print_top_words(model, feature_names, n_top_words):
   jDict = {"name": "flare", "children": []} #initialize dict for json
   for topic_idx, topic in enumerate(model.components_):
-    #print("Topic #%d:" % topic_idx)
+    print("Topic #%d:" % topic_idx)
     running_name = 'concept'+str(topic_idx)
     concept_Dict = {"name": running_name, "children": []}
     jDict["children"].append(concept_Dict)
-    #print(", ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
+    print(", ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
     topic_list = ([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
     for term in topic_list:
       # print(term)
@@ -62,7 +64,32 @@ def topics_lda(tf_vectorizer, lda, n_top_words):
   return jsonLDA
 
 
+# inputs = ['18952863', '18269575']
+# pmcid_list = []
+# for i in inputs:
+#   pmcids = db_citation_pmc_ids(i)
+#   for p in pmcids:
+#     pmcid_list.append(p)
+#
+# data_samples1, pmcid_set  = getDataSamples(pmcid_list)
+# print(len(pmcid_list))
+# print(len(pmcid_set))
+# print(pmcid_set)
+# print(len(data_samples1))
+# print(type(data_samples1))
+# print(type(data_samples1[0]))
 
+
+
+# tfidf, tfidf_vectorizer = get_tfidf(data_samples)
+# num_topics = 10
+# lda = fit_lda(tfidf, num_topics)
+# n_top_words = 15
+# jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
+
+
+
+########## GRAVEYARD ############
 # def get_data_and_ner(pmid):
 #     biodocs = retrieveBioDocs(str(pmid))
 #     data_samples, neslist, total_sentences, sum_tokens = loadBioDoc(biodocs)
@@ -104,8 +131,3 @@ def topics_lda(tf_vectorizer, lda, n_top_words):
 # data_samples = get_data_and_ner("9108111")
 # wordsDict = buildDict(data_samples)
 # filter_data_samples = filter_data(data_samples, wordsDict)
-# tfidf, tfidf_vectorizer = get_tfidf(filter_data_samples)
-# num_topics = 10
-# lda = fit_lda(tfidf, num_topics)
-# n_top_words = 15
-# jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)

@@ -15,15 +15,12 @@ def recurateInputPapers(user_input):
     all_abstract_check, all_article_check = getContentPMC(pmc_ids)
 
 
-recurateInputPapers("6265591")
-recurateInputPapers("17160024")
-recurateInputPapers("25055630")
-recurateInputPapers("23226128")
-recurateInputPapers("18783601")
-recurateInputPapers("24762633")
-recurateInputPapers("25301071")
-recurateInputPapers("22073781")
-recurateInputPapers("18432245")
+def testLock(testid):
+    conn, c = connection()
+    new = 'bbb'
+    c.execute("UPDATE annotations SET pmcid=? WHERE pmcid=?",(new, testid))  # put user pmid into db
+    conn.commit()
+
 
 # def recurateAll(user_input):
 #   self_info, new_info, target_journals, target_dates, num_citations = run_IR_not_db(user_input)

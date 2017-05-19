@@ -1,5 +1,8 @@
 import sqlite3, time, datetime
+from sqlite3 import dbapi2 as sqlite
 from collections import defaultdict
+
+#TODO: migrate from sqlite3 to MySQL or PostgreSQL
 
 
 '''
@@ -22,6 +25,12 @@ def connection():
 	conn = sqlite3.connect(database='pmids_info.db', timeout=5) #connect to database
 	c = conn.cursor() #cursor
 	return conn, c
+
+#forces locked db open
+def unlock_db(db_filename):
+    connection = sqlite.connect(db_filename)
+    connection.commit()
+    connection.close()
 
 
 #################### SUPPORT FUNCTIONS FOR inputPapers TABLE ######################
@@ -163,6 +172,10 @@ def db_citation_pmc_ids(user_input):
 	for row in c:
 		pmcid = row[0]
 		db_pmcids.append(pmcid)
+	# TODO: this function does not work with pmcidAnnotated() function IF the connection + cursor are closed here
+	# TODO: but there are some locked db problems....
+	# c.close() #disconnect here so that the db is not locked when we need to write to it
+	# conn.close()
 	return db_pmcids
 
 
@@ -237,6 +250,10 @@ def checkIfScraped(citation, user_input):
 
 
 #Check if a pmcid has been annotated before
+#Input: a pmcid (string)
+#Output: if the pmcid is in the db AND annotated --> 'yes'
+#Output: if the pmcid is in the db AND not annotated --> 'no'
+#Output: if the pmcid is NOT in the db at all --> 'empty'
 def pmcidAnnotated(pmcid):
 	try:
 		c.execute('''SELECT annotated FROM citations WHERE pmcid=?''', (pmcid,))
@@ -255,8 +272,8 @@ def pmcidAnnotated(pmcid):
 				record = 'empty'
 	except Exception as e:
 		record = 'empty'
-		print(record)
 	return record
+
 
 ######################## SUPPORT FUNCTIONS FOR queries TABLE #######################################
 #check if a query is in db
@@ -282,7 +299,39 @@ def getJournalsVis(query):
 
 #################### SUPPORT FUNCTIONS FOR annotations TABLE ############
 
+#checks whether or not a pmcid is in the db
+def annotationsCheckPmcid(pmcid):
+	c.execute('''SELECT pmcid FROM annotations WHERE pmcid=?''', (pmcid,))
+	exist = c.fetchone()
+	if exist is None:
+		record = 'empty'
+	else:
+		record = 'yes'
+	return record
 
+#retrieve the lemmas for citing documents as list of strings
+#data should be a list of strings for the documents
+def getDataSamples(pmcid_list):
+	data_samples = []
+	pmcid_set = set(pmcid_list) #we only want UNIQUE pmcids
+	for pmcid in pmcid_set:
+		c.execute('''SELECT lemmas FROM annotations WHERE pmcid=?''', (pmcid,))
+		for row in c:
+			lemmas = row[0]
+			data_samples.append(lemmas)
+	return data_samples, pmcid_set
+
+
+def update_annotations(b, user_input):
+	pmcid = str(b["pmcid"])
+	sents = b["num_sentences"][0]
+	tokens = b["num_tokens"][0]
+	conn, c = connection()
+	conn.execute("PRAGMA busy_timeout = 30000")
+	c.execute("UPDATE citations SET sents=?, tokens=? WHERE pmcid=? AND citesPmid=?", (sents, tokens, pmcid, user_input))
+	conn.commit() #TODO: sometimes db is locked here? o_0 #locked even when a_check not used...
+	c.close() #disconnect here so that the db is not locked when we need to write to it
+	conn.close()
 
 
 

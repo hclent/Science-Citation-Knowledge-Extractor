@@ -43,12 +43,19 @@ api = connect_to_Processors(4343)
 #Get all text files for that pmid
 #Returns list of dictionaries [{"pmcid": 1234, "filename": /path/to/file}, {}, {}, ...]
 #Only retrieve txts for documents that have not been annotated before
+'''
+May 17, 2017 note:
+This function calls "db_citation_pmc_ids" and " pmcidAnnotated" from database_management.py.
+If you close the cursor or connection in db_citation_pmc_ids, the pmcidAnnotated function will
+fail to identify papers that are annotated in this function.
+However, there are some database connectivity issues when retrieveDocs() is called in content_management.
+These database connectivity issues, namely when the db is "locked", need more investigation
+'''
 def retrieveDocs(pmid):
   docs = [] #list of strings
   #connect to db for citing id's
   db_pmcids = db_citation_pmc_ids(pmid)
   for pmcid in db_pmcids:
-    #if the pmcid has already been annotated, don't re-annotate it!
     annotated = pmcidAnnotated(pmcid)
     if annotated == 'yes':
       pass
@@ -63,6 +70,8 @@ def retrieveDocs(pmid):
       docs.append(docdict)
   logging.debug('retrieved list of documents to processes')
   return docs
+
+
 
 
 #Define function to call in parallel
@@ -167,26 +176,43 @@ def loadDocuments(doc):
 ###################################################
 #BIODOC HANDLING
 
+#TODO: use this function instead ASAP.
 #Input: Pmid
 #Output: list of dictionaries for all annotated citing pmcids ["pmcid": 123, ]
+# def retrieveBioDocs(pmid):
+#   #print("retrieving biodocs")
+#   biodocs = [] #list of strings
+#
+#   db_pmcids = db_citation_pmc_ids(pmid)
+#   for pmcid in db_pmcids:
+#     annotated = pmcidAnnotated(pmcid)
+#     if annotated == 'no':
+#       pass
+#     if annotated == 'empty':
+#       pass
+#     if annotated == 'yes':
+#       prefix = pmcid[0:3]
+#       suffix = pmcid[3:6]
+#       folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
+#       filename = str(folder + '/' + str(pmcid)) + '.json'
+#       biodict = {"pmcid": pmcid, "jsonpath": filename}
+#       biodocs.append(biodict)
+#   logging.debug('retrieved list of Bio documents to work with')
+#   return biodocs
+
+
+#TODO: depreciate this function ASAP. Opt for the function commented out above ^
 def retrieveBioDocs(pmid):
   #print("retrieving biodocs")
   biodocs = [] #list of strings
 
   db_pmcids = db_citation_pmc_ids(pmid)
   for pmcid in db_pmcids:
-    annotated = pmcidAnnotated(pmcid)
-    if annotated == 'no':
-      pass
-    if annotated == 'empty':
-      pass
-    if annotated == 'yes':
-      prefix = pmcid[0:3]
-      suffix = pmcid[3:6]
-      folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
-      filename = str(folder + '/' + str(pmcid)) + '.json'
-      biodict = {"pmcid": pmcid, "jsonpath": filename}
-      biodocs.append(biodict)
+    prefix = pmcid[0:3]
+    suffix = pmcid[3:6]
+    folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
+    filename = str(folder + '/' + str(pmcid)) + '.json'
+    biodocs.append(filename)
   logging.debug('retrieved list of Bio documents to work with')
   return biodocs
 
@@ -207,48 +233,86 @@ def grab_nes(biodoc):
 #Input: Processors annotated biodocs (from JSON)
 #Output: list of dicts containing {pmcid, lemmas, nes, num_sentences, num_tokens}
 # TODO: Make loading/saving biodocs scalable!!!!!
+# def loadBioDoc(biodocs):
+#   t1 = time.time()
+#
+#   loadedBioDocs = []
+#
+#   for doc in biodocs:
+#     pmcid = doc["pmcid"]
+#     jsonpath = doc["jsonpath"]
+#
+#     #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
+#     biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
+#
+#     token_count_list = []
+#
+#     with open(jsonpath) as jf:
+#       data = Document.load_from_JSON(json.load(jf))
+#       #print(type(data)) is <class 'processors.ds.Document'>
+#       num_sentences = data.size
+#       biodict["num_sentences"].append(num_sentences)
+#       for i in range(0, num_sentences):
+#         s = data.sentences[i]
+#         num_tokens = s.length
+#         token_count_list.append(num_tokens)
+#
+#       num_tokens = sum(token_count_list)
+#       biodict["num_tokens"].append(num_tokens)
+#
+#       lemmas = grab_lemmas(data)
+#       biodict["lemmas"].append(lemmas)
+#       nes = grab_nes(data)
+#       biodict["nes"].append(nes)
+#
+#       loadedBioDocs.append(biodict)
+#
+#   logging.info("Done assembling lemmas, nes, token counts: done in %0.3fs." % (time.time() - t1))
+#   logging.info("Done assembling sent counts and token counts")
+#
+#   return loadedBioDocs
 
+#TODO: Depreciate this funciton ASAP! Opt for the function above ^
+#Input: Processors annotated biodocs(from JSON)
+# Output: data_samples, nes_list, and counts
 def loadBioDoc(biodocs):
   t1 = time.time()
+  data_samples = []
+  nes_list = []
 
-  loadedBioDocs = []
+  total_sentences = []
+
+  total_tokens = []
+  sum_tokens = []
 
   for doc in biodocs:
-    pmcid = doc["pmcid"]
-    jsonpath = doc["jsonpath"]
+    doc_tokens = []
 
-    #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
-    biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
-
-    token_count_list = []
-
-    with open(jsonpath) as jf:
+    with open(doc) as jf:
       data = Document.load_from_JSON(json.load(jf))
-      #print(type(data)) is <class 'processors.ds.Document'>
+      # print(type(data)) is <class 'processors.ds.Document'>
       num_sentences = data.size
-      biodict["num_sentences"].append(num_sentences)
+      total_sentences.append(num_sentences)
       for i in range(0, num_sentences):
         s = data.sentences[i]
         num_tokens = s.length
-        token_count_list.append(num_tokens)
-
-      num_tokens = sum(token_count_list)
-      biodict["num_tokens"].append(num_tokens)
-
+        doc_tokens.append(num_tokens)
       lemmas = grab_lemmas(data)
-      biodict["lemmas"].append(lemmas)
+      data_samples.append(lemmas)
       nes = grab_nes(data)
-      biodict["nes"].append(nes)
+      nes_list.append(nes)
+      total_tokens.append(doc_tokens)
+  logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
 
-      loadedBioDocs.append(biodict)
+  # add up tokens
+  for sents in total_tokens:
+    sum = 0
+    for tokens in sents:
+      sum += tokens
+    sum_tokens.append(sum)
 
-  logging.info("Done assembling lemmas, nes, token counts: done in %0.3fs." % (time.time() - t1))
   logging.info("Done assembling sent counts and token counts")
-
-  return loadedBioDocs
-
-
-
+  return data_samples, nes_list, total_sentences, sum_tokens
 
 
 ################ GRAVEYARD ###############################
