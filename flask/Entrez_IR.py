@@ -2,7 +2,7 @@ from __future__ import print_function
 import time, sys, pickle, datetime, os.path, logging, json, re
 import xml.etree.ElementTree as ET
 from time import sleep
-from database_management import conn, c, connection, checkForPMCID, checkIfScraped
+from database_management import checkForPMCID, checkIfScraped
 from Bio import Entrez
 
 
@@ -117,7 +117,7 @@ def getCitedInfo(pmcid_list, pmid):
 		if rows != 'empty':
 			logging.info("the pmcid already exists in db")
 			# if row(s) exists, need to check what pmids they are citing
-			cited_pmids_in_db = [r[5] for r in rows]
+			cited_pmids_in_db = [r["citesPmid"] for r in rows]
 			if pmid in cited_pmids_in_db:
 				#if our pmid is in there, we don't need to copy the entry
 				logging.info("doesnt need to be coppied again")
@@ -126,18 +126,18 @@ def getCitedInfo(pmcid_list, pmid):
 				logging.info("pmcid needs to be coppied")
 				row = rows[0] #just grab the first one
 				pmcid = citation
-				title = row[1]
-				author = row[2]
-				journal = row[3]
-				date = row[4]
+				title = row["title"]
+				author = row["author"]
+				journal = row["journal"]
+				date = row["datestamp"]
 				citesPmid = pmid #the input pmid
-				other_citesPmid = row[5] #the pmid from citesPmid may or may not be the same as the input parameter pmid
-				url = row[6]
-				abstract_check = row[7] #None or yes/no
-				article_check = row[8] #None or yes/no
-				sents = row[9] #None or number
-				tokens = row[10] #None or number
-				annotated = row[11] #None or yes/no
+				other_citesPmid = row["citesPmid"] #the pmid from citesPmid may or may not be the same as the input parameter pmid
+				url = row["url"]
+				abstract_check = row["abstract"] #None or yes/no
+				article_check = row["whole_article"] #None or yes/no
+				sents = row["sents"] #None or number
+				tokens = row["tokens"] #None or number
+				annotated = row["annotated"] #None or yes/no
 
 				#Cannot write to DB in this function because the db will be locked, as it is simultaneously reading/writing.
 				#return a more-complete citationsDict to content_management to be written to the db there
@@ -207,9 +207,6 @@ def getCitedInfo(pmcid_list, pmid):
 			time.sleep(3)
 		i += 1
 	logging.info("get citations info: done in %0.3fs." % (time.time() - t0))
-	#TODO: does this need to be here???
-	# c.close() #disconnect here so that the db is not locked when we need to write to it
-	# conn.close()
 	return allCitations
 
 
@@ -277,7 +274,6 @@ def getContentPMC(pmcids_list, pmid):
 		#print(citation)
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
 		# a record that this pmc is cited by the new input paper (will be done at this point though... I think?)
-		conn, c = connection()
 		row = checkIfScraped(citation, pmid)
 
 		if row == 'empty':
