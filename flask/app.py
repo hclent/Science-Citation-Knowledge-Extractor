@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, flash, url_for, redirect, session, g, Blueprint
 from flask_wtf import Form
 from wtforms import TextField, SelectField
-import sqlite3, gc, time, datetime, pickle, os.path
+import sqlalchemy, gc, time, datetime, pickle, os.path
 import sys, csv
 from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
-from database_management import connection #mine
+from database_management import engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
 from processors import *
@@ -77,10 +77,8 @@ def results():
 				user_input = str(user_input)
 
 				############################################
-				#Connect to database
-				conn, c = connection()
 				#Check database for pmid #Does the entry exists in the db already?
-				c.execute("SELECT * FROM inputPapers WHERE pmid = (?)", (user_input, ))
+				c = engine.execute('select * from inputPapers where pmcid = :0', [user_input])
 				check1 = c.fetchone()
 
 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
@@ -192,10 +190,6 @@ def results():
 						# logging.info(user_input + " is the last one (LDA)")
 						# jsonLDA = run_lda1(data_samples, 3, 5)
 						# print_lda(query, user_input, jsonLDA)  # print
-
-				#End cursor and connection to database
-				c.close()
-				conn.close()
 
 
 				#Housekeeping
