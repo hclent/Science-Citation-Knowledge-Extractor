@@ -1,4 +1,3 @@
-from database_management import retrieveAllPmids
 from multi_preprocess import retrieveBioDocs
 from processors import *
 import sys, os.path, time

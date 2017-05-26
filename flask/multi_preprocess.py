@@ -6,7 +6,7 @@ from nltk.corpus import stopwords
 import os.path
 from multiprocessing import Pool
 import logging
-from database_management import db_citation_pmc_ids, pmcidAnnotated, conn, c #mine
+from database_management import db_citation_pmc_ids, pmcidAnnotated  #mine
 
 # source activate py34 #my conda python environment for this
 
@@ -177,44 +177,44 @@ def loadDocuments(doc):
 #BIODOC HANDLING
 
 #TODO: use this function instead ASAP.
-#Input: Pmid
-#Output: list of dictionaries for all annotated citing pmcids ["pmcid": 123, ]
-# def retrieveBioDocs(pmid):
-#   #print("retrieving biodocs")
-#   biodocs = [] #list of strings
-#
-#   db_pmcids = db_citation_pmc_ids(pmid)
-#   for pmcid in db_pmcids:
-#     annotated = pmcidAnnotated(pmcid)
-#     if annotated == 'no':
-#       pass
-#     if annotated == 'empty':
-#       pass
-#     if annotated == 'yes':
-#       prefix = pmcid[0:3]
-#       suffix = pmcid[3:6]
-#       folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
-#       filename = str(folder + '/' + str(pmcid)) + '.json'
-#       biodict = {"pmcid": pmcid, "jsonpath": filename}
-#       biodocs.append(biodict)
-#   logging.debug('retrieved list of Bio documents to work with')
-#   return biodocs
-
-
-#TODO: depreciate this function ASAP. Opt for the function commented out above ^
+# Input: Pmid
+# Output: list of dictionaries for all annotated citing pmcids ["pmcid": 123, ]
 def retrieveBioDocs(pmid):
   #print("retrieving biodocs")
   biodocs = [] #list of strings
 
   db_pmcids = db_citation_pmc_ids(pmid)
   for pmcid in db_pmcids:
-    prefix = pmcid[0:3]
-    suffix = pmcid[3:6]
-    folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
-    filename = str(folder + '/' + str(pmcid)) + '.json'
-    biodocs.append(filename)
+    annotated = pmcidAnnotated(pmcid)
+    if annotated == 'no':
+      pass
+    if annotated == 'empty':
+      pass
+    if annotated == 'yes':
+      prefix = pmcid[0:3]
+      suffix = pmcid[3:6]
+      folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
+      filename = str(folder + '/' + str(pmcid)) + '.json'
+      biodict = {"pmcid": pmcid, "jsonpath": filename}
+      biodocs.append(biodict)
   logging.debug('retrieved list of Bio documents to work with')
   return biodocs
+
+
+#TODO: depreciate this function ASAP. Opt for the function commented out above ^
+# def retrieveBioDocs(pmid):
+#   #print("retrieving biodocs")
+#   biodocs = [] #list of strings
+#
+#   db_pmcids = db_citation_pmc_ids(pmid)
+#   for pmcid in db_pmcids:
+#     prefix = pmcid[0:3]
+#     suffix = pmcid[3:6]
+#     folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
+#     filename = str(folder + '/' + str(pmcid)) + '.json'
+#     biodocs.append(filename)
+#   logging.debug('retrieved list of Bio documents to work with')
+#   return biodocs
 
 
 def grab_lemmas(biodoc):
@@ -233,86 +233,84 @@ def grab_nes(biodoc):
 #Input: Processors annotated biodocs (from JSON)
 #Output: list of dicts containing {pmcid, lemmas, nes, num_sentences, num_tokens}
 # TODO: Make loading/saving biodocs scalable!!!!!
-# def loadBioDoc(biodocs):
-#   t1 = time.time()
-#
-#   loadedBioDocs = []
-#
-#   for doc in biodocs:
-#     pmcid = doc["pmcid"]
-#     jsonpath = doc["jsonpath"]
-#
-#     #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
-#     biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
-#
-#     token_count_list = []
-#
-#     with open(jsonpath) as jf:
-#       data = Document.load_from_JSON(json.load(jf))
-#       #print(type(data)) is <class 'processors.ds.Document'>
-#       num_sentences = data.size
-#       biodict["num_sentences"].append(num_sentences)
-#       for i in range(0, num_sentences):
-#         s = data.sentences[i]
-#         num_tokens = s.length
-#         token_count_list.append(num_tokens)
-#
-#       num_tokens = sum(token_count_list)
-#       biodict["num_tokens"].append(num_tokens)
-#
-#       lemmas = grab_lemmas(data)
-#       biodict["lemmas"].append(lemmas)
-#       nes = grab_nes(data)
-#       biodict["nes"].append(nes)
-#
-#       loadedBioDocs.append(biodict)
-#
-#   logging.info("Done assembling lemmas, nes, token counts: done in %0.3fs." % (time.time() - t1))
-#   logging.info("Done assembling sent counts and token counts")
-#
-#   return loadedBioDocs
+def loadBioDoc(biodocs):
+  t1 = time.time()
+
+  loadedBioDocs = []
+
+  for doc in biodocs:
+    pmcid = doc["pmcid"]
+    jsonpath = doc["jsonpath"]
+
+    #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
+    biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
+
+    token_count_list = []
+
+    with open(jsonpath) as jf:
+      data = Document.load_from_JSON(json.load(jf))
+      #print(type(data)) is <class 'processors.ds.Document'>
+      num_sentences = data.size
+      biodict["num_sentences"].append(num_sentences)
+      for i in range(0, num_sentences):
+        s = data.sentences[i]
+        num_tokens = s.length
+        token_count_list.append(num_tokens)
+
+      num_tokens = sum(token_count_list)
+      biodict["num_tokens"].append(num_tokens)
+
+      lemmas = grab_lemmas(data)
+      biodict["lemmas"].append(lemmas)
+      nes = grab_nes(data)
+      biodict["nes"].append(nes)
+
+      loadedBioDocs.append(biodict)
+
+  logging.info("Done assembling lemmas, nes, sent+token counts: done in %0.3fs." % (time.time() - t1))
+  return loadedBioDocs
 
 #TODO: Depreciate this funciton ASAP! Opt for the function above ^
 #Input: Processors annotated biodocs(from JSON)
 # Output: data_samples, nes_list, and counts
-def loadBioDoc(biodocs):
-  t1 = time.time()
-  data_samples = []
-  nes_list = []
-
-  total_sentences = []
-
-  total_tokens = []
-  sum_tokens = []
-
-  for doc in biodocs:
-    doc_tokens = []
-
-    with open(doc) as jf:
-      data = Document.load_from_JSON(json.load(jf))
-      # print(type(data)) is <class 'processors.ds.Document'>
-      num_sentences = data.size
-      total_sentences.append(num_sentences)
-      for i in range(0, num_sentences):
-        s = data.sentences[i]
-        num_tokens = s.length
-        doc_tokens.append(num_tokens)
-      lemmas = grab_lemmas(data)
-      data_samples.append(lemmas)
-      nes = grab_nes(data)
-      nes_list.append(nes)
-      total_tokens.append(doc_tokens)
-  logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
-
-  # add up tokens
-  for sents in total_tokens:
-    sum = 0
-    for tokens in sents:
-      sum += tokens
-    sum_tokens.append(sum)
-
-  logging.info("Done assembling sent counts and token counts")
-  return data_samples, nes_list, total_sentences, sum_tokens
+# def loadBioDoc(biodocs):
+#   t1 = time.time()
+#   data_samples = []
+#   nes_list = []
+#
+#   total_sentences = []
+#
+#   total_tokens = []
+#   sum_tokens = []
+#
+#   for doc in biodocs:
+#     doc_tokens = []
+#
+#     with open(doc) as jf:
+#       data = Document.load_from_JSON(json.load(jf))
+#       # print(type(data)) is <class 'processors.ds.Document'>
+#       num_sentences = data.size
+#       total_sentences.append(num_sentences)
+#       for i in range(0, num_sentences):
+#         s = data.sentences[i]
+#         num_tokens = s.length
+#         doc_tokens.append(num_tokens)
+#       lemmas = grab_lemmas(data)
+#       data_samples.append(lemmas)
+#       nes = grab_nes(data)
+#       nes_list.append(nes)
+#       total_tokens.append(doc_tokens)
+#   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
+#
+#   # add up tokens
+#   for sents in total_tokens:
+#     sum = 0
+#     for tokens in sents:
+#       sum += tokens
+#     sum_tokens.append(sum)
+#
+#   logging.info("Done assembling sent counts and token counts")
+#   return data_samples, nes_list, total_sentences, sum_tokens
 
 
 ################ GRAVEYARD ###############################

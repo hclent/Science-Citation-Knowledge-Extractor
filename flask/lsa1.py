@@ -5,48 +5,6 @@ import pickle, re
 from multi_preprocess import *
 from collections import defaultdict, Counter
 
-# def get_data_and_ner(pmid):
-#     biodocs = retrieveBioDocs(str(pmid))
-#     data_samples, neslist, total_sentences, sum_tokens = loadBioDoc(biodocs)
-#     return data_samples
-#
-# def buildDict(data_samples):
-#     wordsDict = defaultdict(lambda: 0)
-#     for doc in data_samples:
-#       words = doc.split(" ")
-#       for w in words:
-#         wordsDict[w] += 1
-#     return wordsDict
-#
-# # filter out dates and websites
-# def filter_data(data_samples, wordsDict):
-#   total_words = len(wordsDict.keys())
-#   top_percent = total_words * .05 #filter top 3& occuring words
-#   bottom_percent = total_words * .90 #filter lowest 20% occuring words
-#   ordered_dict = Counter(wordsDict)
-#   top_words = ordered_dict.most_common(int(top_percent))
-#   bottom_words = ordered_dict.most_common()[ int(bottom_percent):  ]
-#
-#   exclude_top = [ t[0] for t in top_words]
-#   exclude_bottom = [b[0] for b in bottom_words]
-#   exclude_words = ['http', 'www']
-#   all_exclude = exclude_top + exclude_bottom + exclude_words
-#
-#   filter_data_samples = []
-#   for doc in data_samples:
-#     temp_doc = []
-#     doc_words = doc.split(" ")
-#     for word in doc_words:
-#       if word not in all_exclude:
-#         temp_doc.append(word)
-#
-#     filter_data_samples.append( " ".join(temp_doc)  )
-#   # print(len(filter_data_samples))
-#   # print(data_samples[0])
-#   # print("###############################################")
-#   # print(filter_data_samples[0])
-#   return filter_data_samples
-
 
 #Input: a list of strings for the document
 #Output: TFIDF matrix X, and TfidfVectorizer function

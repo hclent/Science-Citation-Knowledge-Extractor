@@ -157,7 +157,7 @@ def run_IR_not_db(user_input):
 		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
 
 		update = inputPapers.insert().\
-			values(dict(datestamp=date, pmid=pmid, title=title, author=author, journal=journal, pubdate=pubdate,
+			values(dict(datestamp=date, pmid=user_input, title=title, author=author, journal=journal, pubdate=pubdate,
 						url=url, num_citations=num_citations))
 		conn = connection()
 		conn.execute(update)
@@ -183,12 +183,11 @@ def run_IR_not_db(user_input):
 		whole_article = str(citation["all_article_check"][0])
 
 		up = citations.update().\
-			where(inputPapers.c.pmcid == pmcid).\
-			where(inputPapers.c.citesPmid == citesPmid).\
-			values(dict(abstract=abstract, whole_article=article))
+			where(citations.c.pmcid == pmcid).\
+			where(citations.c.citesPmid == citesPmid).\
+			values(dict(abstract=abstract, whole_article=whole_article))
 		conn = connection()
 		conn.execute(up)
-
 
 
 # If pmid (user input) in the inputPapers database, check for new papers
@@ -202,7 +201,7 @@ def run_IR_in_db(user_input):
 	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
-	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
+	if num_current == num_in_db: #TODO change this back to > after i've fixed authors problem
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
 		#update number of citations in inputPaper db
@@ -241,6 +240,9 @@ def run_IR_in_db(user_input):
 		need_to_annotate = 'no'
 		pass
 	return need_to_annotate
+
+
+
 
 
 def new_citations_from_db(user_input):
@@ -466,12 +468,12 @@ def do_multi_preprocessing(user_input):
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
 	multiprocess(docs) #if docs is empty [], this function just passes :)
-
-	#Now update annotated_check
+	# # #Now update annotated_check
 	a_check = annotation_check(user_input)
+
 	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
 		pmcid = str(a["pmcid"])
-		annotated = a["annotated"][0]
+		annotated = str(a["annotated"][0])
 
 		update = citations.update().\
 			where(citations.c.pmcid == pmcid).\
@@ -480,17 +482,14 @@ def do_multi_preprocessing(user_input):
 		conn = connection()
 		conn.execute(update)
 
-	#TODO: Does this work now???
 	#Now extract information from annotated documents
 	biodocs = retrieveBioDocs(user_input)
 	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
-	#unlock_db('pmids_info.db')
 	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
-	update db with sents and tokens
+	#update db with sents and tokens
 	for b in biodoc_data:
 		update_annotations(b, user_input)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-
 
 
 ############ TOPIC MODELING ############################################
@@ -658,23 +657,23 @@ def biodoc_to_db(biodoc_data):
 #Take annotated docs and return data and nes
 #This method is for user_input that IS already in the DB
 #TODO: this is temporarily revived. use klugy data_samples and nes_list creation until db migration.
-def do_SOME_multi_preprocessing(user_input):
-	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
-	t1 = time.time()
-	biodocs = retrieveBioDocs(user_input)
-	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return data_samples, nes_list, total_sentences, sum_tokens
+# def do_SOME_multi_preprocessing(user_input):
+# 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
+# 	t1 = time.time()
+# 	biodocs = retrieveBioDocs(user_input)
+# 	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
+# 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+# 	return data_samples, nes_list, total_sentences, sum_tokens
 
 #TODO: depreciate and replace output pickles with writing to db
-def print_data_and_nes(query, user_input, data_samples, nes_list):
-	logging.info('Printing data_samples to PICKLE')
-	save_path = '/home/hclent/data/data_samples/' #in the folder 'data_samples'
-
-	data_completeName = os.path.join(save_path, ('data_samples_'+(str(query))+'.pickle'))  #with the query for a name
-	pickle.dump( data_samples, open( data_completeName, "wb" ) )
-
-	logging.info('Printing nes_list to PICKLE')
-	save_path2 = '/home/hclent/data/nes/' #in the folder 'data_samples'
-	nes_completeName = os.path.join(save_path2, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
-	pickle.dump( nes_list, open( nes_completeName, "wb" ) )
+# def print_data_and_nes(query, user_input, data_samples, nes_list):
+# 	logging.info('Printing data_samples to PICKLE')
+# 	save_path = '/home/hclent/data/data_samples/' #in the folder 'data_samples'
+#
+# 	data_completeName = os.path.join(save_path, ('data_samples_'+(str(query))+'.pickle'))  #with the query for a name
+# 	pickle.dump( data_samples, open( data_completeName, "wb" ) )
+#
+# 	logging.info('Printing nes_list to PICKLE')
+# 	save_path2 = '/home/hclent/data/nes/' #in the folder 'data_samples'
+# 	nes_completeName = os.path.join(save_path2, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
+# 	pickle.dump( nes_list, open( nes_completeName, "wb" ) )

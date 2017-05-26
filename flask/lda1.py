@@ -13,7 +13,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 def get_tfidf(data): #data should be a list of strings for the documents
   logging.info("* Preparing to vectorize data ...")
   tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 4), norm='l2')
-  print(tfidf_vectorizer)
+  #print(tfidf_vectorizer)
   logging.info("* Fitting data to vector ...")
   tfidf = tfidf_vectorizer.fit_transform(data)
   logging.info("* Successfully fit data to the vector !!! ")
@@ -31,11 +31,11 @@ def fit_lda(tfidf, num_topics):
 def print_top_words(model, feature_names, n_top_words):
   jDict = {"name": "flare", "children": []} #initialize dict for json
   for topic_idx, topic in enumerate(model.components_):
-    print("Topic #%d:" % topic_idx)
+    #print("Topic #%d:" % topic_idx)
     running_name = 'concept'+str(topic_idx)
     concept_Dict = {"name": running_name, "children": []}
     jDict["children"].append(concept_Dict)
-    print(", ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
+    #print(", ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
     topic_list = ([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
     for term in topic_list:
       # print(term)

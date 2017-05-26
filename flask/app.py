@@ -78,7 +78,7 @@ def results():
 
 				############################################
 				#Check database for pmid #Does the entry exists in the db already?
-				c = engine.execute('select * from inputPapers where pmcid = :0', [user_input])
+				c = engine.execute('select * from inputPapers where pmid = :0', [user_input])
 				check1 = c.fetchone()
 
 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
@@ -89,12 +89,12 @@ def results():
 					logging.info("beginning multi-preprocessing")
 					do_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
-					d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input) #
-
-					for d in d_s:
-						data_samples.append(d)
-					for n in nes_list:
-						ners.append(n)
+					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input) #
+                    #
+					# for d in d_s:
+					# 	data_samples.append(d)
+					# for n in nes_list:
+					# 	ners.append(n)
 
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
 					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
@@ -111,18 +111,18 @@ def results():
 						range_years, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
 
 						#TOPIC MODELING HERE
-						logging.info(user_input+" is the last one (LSA)")
-						#Do Latent Semantic Analysis and return jsonDict for data vis
-						jsonDict = run_lsa1(data_samples, 2)
-						print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-
-						logging.info(user_input+" is the last one (LDA)")
-						jsonLDA = run_lda1(data_samples, 3, 5)
-						print_lda(query, user_input, jsonLDA) #print lda topic model to json
+						# logging.info(user_input+" is the last one (LSA)")
+						# #Do Latent Semantic Analysis and return jsonDict for data vis
+						# jsonDict = run_lsa1(data_samples, 2)
+						# print_lsa(query, user_input, jsonDict) #print lsa topic model to json
+                        #
+						# logging.info(user_input+" is the last one (LDA)")
+						# jsonLDA = run_lda1(data_samples, 3, 5)
+						# print_lda(query, user_input, jsonLDA) #print lda topic model to json
 
 
 						## FUNCTION THAT CACHES DATA_SAMPLES AND NES HERE:
-						print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+						#print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 
 					#after info written to db, now can access db and get formated main_info (main)
@@ -142,22 +142,21 @@ def results():
 				if check1 is not None:
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
-					# need_to_annotate = run_IR_in_db(user_input)
-					# #TODO: how to know if we need to annoate new docs? function should return like "yes" or "no"
-					# #TODO: if "yes" then do multi-preprocessing on new stuff and re-do data_samples/nes_samples
-					# #TODO: if "no" then just grab all the cached things!
-					# if need_to_annotate == 'yes':
-					# 	logging.info("need to annotate new documents")
-					# 	biodoc_data = do_multi_preprocessing(user_input)
-					# if need_to_annotate == 'no':
-					# 	logging.info("dont need to annotate any new documents")
-					# 	pass
+					need_to_annotate = run_IR_in_db(user_input)
+					if need_to_annotate == 'yes':
+						logging.info("need to annotate new documents")
+						biodoc_data = do_multi_preprocessing(user_input)
+					if need_to_annotate == 'no':
+						logging.info("dont need to annotate any new documents")
+						pass
 
-					d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
-					for d in d_s:
-						data_samples.append(d)
-					for n in nes_list:
-						ners.append(n)
+					# TODO:redo how data_samples and nes_list are done.
+					# DEPRECIATED
+					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
+					# for d in d_s:
+					# 	data_samples.append(d)
+					# for n in nes_list:
+					# 	ners.append(n)
 
 
 					main, db_urls = new_citations_from_db(user_input)
@@ -180,7 +179,8 @@ def results():
 
 
 						## PRINT Data_samples and stuff
-						print_data_and_nes(query, user_input, data_samples, nes_list)
+						#TODO: Depreciated
+						#print_data_and_nes(query, user_input, data_samples, nes_list)
 
 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
 						# logging.info(user_input + " is the last one (LSA)")
