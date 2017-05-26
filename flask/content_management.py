@@ -82,6 +82,7 @@ def annotation_check(user_input):
 
 #Used by both IR_not_in_db and IR_in_db to 1) add new pmcids to cited db and 2) duplicate entries when necessary
 #Input is the "citation" (dict) result of the result "allCitationsInfo = getCitedInfo(pmc_ids, user_input)" in for loop
+#Updated to sqlalchemy
 def new_or_copy_db(citation): #citation is a dict
 	if "annotated" in citation:
 		logging.info("this entry has already been annotated before. just copy.")
@@ -100,12 +101,12 @@ def new_or_copy_db(citation): #citation is a dict
 		tokens = str(citation["tokens"][0])
 		annotated = str(citation["annotated"][0])
 
-		conn, c = connection()
-		c.execute(
-			"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens, annotated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
-			(date, pmcid, title, author, journal, pubdate, citesPmid, url, abstract, whole_article, sents, tokens,
-			 annotated))
-		conn.commit()
+		update = citations.insert().\
+			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
+						citesPmid=citesPmid, url=url, abstract=abstract, whole_article=whole_article, sents=sents,
+						tokens=tokens, annotated=annotated ))
+		conn = connection()
+		conn.execute(update)
 
 	if "annotated" not in citation:
 		logging.info("this entry is brand new, never annotated")
@@ -120,11 +121,13 @@ def new_or_copy_db(citation): #citation is a dict
 		pubdate = str(citation["pmc_dates"][0])
 		citesPmid = str(citation["citesPmid"])
 		url = str(citation["pmc_urls"][0])
-		conn, c = connection()
-		c.execute(
-			"INSERT INTO citations (datestamp, pmcid, title, author, journal, pubdate, citesPmid, url) VALUES (?,?,?,?,?,?,?,?)",
-			(date, pmcid, title, author, journal, pubdate, citesPmid, url))
-		conn.commit()
+
+		update = citations.insert().\
+			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
+						citesPmid=citesPmid, url=url))
+		conn = connection()
+		conn.execute(update)
+
 
 
 
@@ -135,6 +138,7 @@ def new_or_copy_db(citation): #citation is a dict
 #Write allCitationsInfo to citations db
 #Update citations db with abstract_check and whole_article_check
 #Doesn't re-retrieve information for citations previously scraped (does update db if necessary)
+# Updated to sqlalchemy
 def run_IR_not_db(user_input):
 	logging.info('PMID is NOT in the inputPapers database')
 	self_info = getMainInfo(user_input)
@@ -151,11 +155,12 @@ def run_IR_not_db(user_input):
 		url = tup[4]
 		unix = time.time()
 		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-		conn, c = connection()
-		c.execute(
-			"INSERT INTO inputPapers (datestamp, pmid, title, author, journal, pubdate, url, num_citations) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-			(date, user_input, title, author, journal, pubdate, url, num_citations))  # put user pmid into db
-		conn.commit()
+
+		update = inputPapers.insert().\
+			values(dict(datestamp=date, pmid=pmid, title=title, author=author, journal=journal, pubdate=pubdate,
+						url=url, num_citations=num_citations))
+		conn = connection()
+		conn.execute(update)
 
 	#Retrieve the input paper if avaliable and update db
 	scrape_and_write_Input(user_input)
@@ -176,15 +181,20 @@ def run_IR_not_db(user_input):
 		citesPmid = str(citation["citesPmid"])
 		abstract = str(citation["all_abstract_check"][0])
 		whole_article = str(citation["all_article_check"][0])
-		conn, c = connection()
-		c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?", (abstract, whole_article, pmcid, citesPmid))
-		conn.commit()
+
+		up = citations.update().\
+			where(inputPapers.c.pmcid == pmcid).\
+			where(inputPapers.c.citesPmid == citesPmid).\
+			values(dict(abstract=abstract, whole_article=article))
+		conn = connection()
+		conn.execute(up)
 
 
 
 # If pmid (user input) in the inputPapers database, check for new papers
 # If ther are new citing papers, get those and update the db appropriately
 # Else if there are no new papers, don't need to do anything.
+# Updated to sqlalchemy
 def run_IR_in_db(user_input):
 	logging.info('PMID is in the database')
 	# Check for new papers:
@@ -196,9 +206,12 @@ def run_IR_in_db(user_input):
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
 		#update number of citations in inputPaper db
-		conn, c = connection()
-		c.execute("UPDATE inputPapers SET num_citations=?WHERE pmid=?", (num_current, user_input))
-		conn.commit()
+
+		update = inputPapers.update().\
+			where(inputPapers.c.pmid == user_input).\
+			values(num_citations=num_current)
+		conn = connection()
+		conn.execute(update)
 
 		#now get the new citation info
 		allCitationsInfo = getCitedInfo(pmc_ids, user_input)  # output: list of dictionaries [{pmid: 1234, author: human, ...}] #skips duplicates
@@ -215,10 +228,13 @@ def run_IR_in_db(user_input):
 			citesPmid = str(citation["citesPmid"])
 			abstract = str(citation["all_abstract_check"][0])
 			whole_article = str(citation["all_article_check"][0])
-			conn, c = connection()
-			c.execute("UPDATE citations SET abstract=?, whole_article=? WHERE pmcid=? AND citesPmid=?",
-					  (abstract, whole_article, pmcid, citesPmid))
-			conn.commit()
+
+			up = citations.update().\
+				where(citations.c.pmcid == pmcid).\
+				where(citations.c.citesPmid == citesPmid).\
+				values(dict(abstract=abstract, whole_article=whole_article))
+			conn = connection()
+			conn.execute(up)
 
 	else:
 		logging.info("no new papers, nothing to do here folks")
@@ -301,6 +317,7 @@ def stats_barchart(query):
 
 
 ############ DATA VISUALIZATIONS #################################################
+#Updated to SqlAlchemy
 #TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
 #TODO: no mechanism for updating db if more citations have been found!!
 def print_journalvis(query):
@@ -323,10 +340,13 @@ def print_journalvis(query):
 			json.dump(publication_data, outfile)
 		unix = time.time()
 		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-		conn, c = connection()
-		c.execute("INSERT INTO queries (datestamp, query, range_years, unique_pubs, unique_journals) VALUES (?, ?, ?, ?, ?)",
-				  (date, query, range_years, unique_publications, unique_journals))
-		conn.commit()
+
+		update = queries.insert().\
+			values(dict(datestamp=date, query=query, range_years=range_years, unique_pubs=unique_publications,
+						unique_journals=unique_journals))
+		conn = connection()
+		conn.execute(update)
+
 	if record == 'yes': #if its in the db, just get the important things from the db!!
 		range_years, unique_publications, unique_journals = getJournalsVis(query)
 	return range_years, unique_publications, unique_journals
@@ -440,6 +460,7 @@ def vis_scifi(corpus, query, eligible_papers):
 '''
 Some issues with the db being locked with do_multi_preprocessing('18269575')
 '''
+#Updated to sqlalchemy
 def do_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
 	t1 = time.time()
@@ -451,20 +472,23 @@ def do_multi_preprocessing(user_input):
 	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
 		pmcid = str(a["pmcid"])
 		annotated = a["annotated"][0]
-		conn, c = connection()
-		c.execute("UPDATE citations SET annotated=? WHERE pmcid=? AND citesPmid=?", (annotated, pmcid, user_input))
-		conn.commit()
 
-	#TODO: Ignore "annotations" table for now. Problems with sqlite3 persist.
-	#TODO: continue making data_samples the same as before
+		update = citations.update().\
+			where(citations.c.pmcid == pmcid).\
+			where(citations.c.citesPmid == user_input).\
+			values(annotated=annotated)
+		conn = connection()
+		conn.execute(update)
+
+	#TODO: Does this work now???
 	#Now extract information from annotated documents
-	# biodocs = retrieveBioDocs(user_input)
-	# biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	biodocs = retrieveBioDocs(user_input)
+	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
 	#unlock_db('pmids_info.db')
 	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
-	#update db with sents and tokens
-	# for b in biodoc_data:
-	# 	update_annotations(b, user_input)
+	update db with sents and tokens
+	for b in biodoc_data:
+		update_annotations(b, user_input)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 
 
@@ -558,7 +582,7 @@ def flatten(listOfLists):
 #Ooutput: none
 
 
-#TODO: restore this to its former glory once databases are happy again
+#Updated to sqlalchemy
 def biodoc_to_db(biodoc_data):
 	for biodict in biodoc_data:
 		pmcid = str(biodict["pmcid"])
@@ -617,11 +641,14 @@ def biodoc_to_db(biodoc_data):
 				tissue_type = ''
 			unix = time.time()
 			date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-			conn, c = connection()
-			c.execute(
-				"INSERT INTO annotations (datestamp, pmcid, lemmas, bioprocess, cell_lines, cell_components, family, gene_product, organ, simple_chemical, site, species, tissue_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				(date, pmcid, lemmas, bioprocess, cell_lines, cell_components, family, gene_product, organ, simple_chemical, site, species, tissue_type))  # put user pmid into db
-			conn.commit()
+
+			update = annotations.insert().\
+				values(dict(datestamp=date, pmcid=pmcid, lemmas=lemmas, bioprocess=bioprocess, cell_lines=cell_lines, cell_components=cell_components,
+							family=family, gene_product=gene_product, organ=organ, simple_chemical=simple_chemical, site=site, species=species,
+							tissue_type=tissue_type))
+			conn = connection()
+			conn.execute(update)
+
 
 #biodoc_data = do_multi_preprocessing('18952863')
 # biodoc_data = do_multi_preprocessing('18269575')
