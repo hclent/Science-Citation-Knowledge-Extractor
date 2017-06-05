@@ -44,7 +44,8 @@ def get_words_tags(pmid_list):
         for doc in biodocs:
             doc_words = []
             doc_tags = []
-            with open(doc) as jf:
+            json_file = doc["jsonpath"]
+            with open(json_file) as jf:
                 data = Document.load_from_JSON(json.load(jf))
                 num_sentences = data.size
                 for i in range(0, num_sentences):
