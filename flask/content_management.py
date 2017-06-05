@@ -1,5 +1,5 @@
 from processors import * #pyProcessors
-import os.path, time, re, logging, pickle, json
+import os.path, time, re, logging, pickle, json, codecs
 from itertools import chain #for "flatten" function
 from database_management import * #mine
 from Entrez_IR import * #mine
@@ -84,22 +84,23 @@ def annotation_check(user_input):
 #Input is the "citation" (dict) result of the result "allCitationsInfo = getCitedInfo(pmc_ids, user_input)" in for loop
 #Updated to sqlalchemy
 def new_or_copy_db(citation): #citation is a dict
+	logging.info(citation)
 	if "annotated" in citation:
 		logging.info("this entry has already been annotated before. just copy.")
 		unix = time.time()
-		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-		pmcid = str(citation["pmcid"])
-		title = str(citation["pmc_titles"][0])
-		author = citation["pmc_authors"][0]  # doest need formatting
-		journal = str(citation["pmc_journals"][0])
-		pubdate = str(citation["pmc_dates"][0])
-		citesPmid = str(citation["citesPmid"])
-		url = str(citation["pmc_urls"][0])
-		abstract = str(citation["abstract_check"][0])
-		whole_article = str(citation["article_check"][0])
-		sents = str(citation["sents"][0])
-		tokens = str(citation["tokens"][0])
-		annotated = str(citation["annotated"][0])
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S')).encode('utf-8')
+		pmcid = str(citation["pmcid"]).encode('utf-8')
+		title = str(citation["pmc_titles"][0]).encode('utf-8')
+		author = str(citation["pmc_authors"][0]).encode('utf-8')  # doest need formatting
+		journal = str(citation["pmc_journals"][0]).encode('utf-8')
+		pubdate = str(citation["pmc_dates"][0]).encode('utf-8')
+		citesPmid = str(citation["citesPmid"]).encode('utf-8')
+		url = str(citation["pmc_urls"][0]).encode('utf-8')
+		abstract = str(citation["abstract_check"][0]).encode('utf-8')
+		whole_article = str(citation["article_check"][0]).encode('utf-8')
+		sents = str(citation["sents"][0]).encode('utf-8')
+		tokens = str(citation["tokens"][0]).encode('utf-8')
+		annotated = str(citation["annotated"][0]).encode('utf-8')
 
 		update = citations.insert().\
 			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
@@ -111,16 +112,16 @@ def new_or_copy_db(citation): #citation is a dict
 	if "annotated" not in citation:
 		logging.info("this entry is brand new, never annotated")
 		unix = time.time()
-		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-		pmcid = str(citation["pmcid"])
-		title = str(citation["pmc_titles"][0])
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S')).encode('utf-8')
+		pmcid = str(citation["pmcid"]).encode('utf-8')
+		title = str(citation["pmc_titles"][0]).encode('utf-8')
 		authorlist = citation["pmc_authors"][0]
 		s = ', '
-		author = str(s.join(authorlist))  # needs formatting
-		journal = str(citation["pmc_journals"][0])
-		pubdate = str(citation["pmc_dates"][0])
-		citesPmid = str(citation["citesPmid"])
-		url = str(citation["pmc_urls"][0])
+		author = str(s.join(authorlist)).encode('utf-8')  # needs formatting
+		journal = str(citation["pmc_journals"][0]).encode('utf-8')
+		pubdate = str(citation["pmc_dates"][0]).encode('utf-8')
+		citesPmid = str(citation["citesPmid"]).encode('utf-8')
+		url = str(citation["pmc_urls"][0]).encode('utf-8')
 
 		update = citations.insert().\
 			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
@@ -147,14 +148,14 @@ def run_IR_not_db(user_input):
 	logging.info("Writing self_info to inputPapers db")
 	#write self_info to "inputPapers" db
 	for tup in self_info:
-		title = tup[0]
+		title = tup[0].encode('utf-8')
 		s = ', '
-		author = str(s.join(tup[1]))
-		journal = tup[2]
-		pubdate = tup[3]
-		url = tup[4]
+		author = str(s.join(tup[1])).encode('utf-8')
+		journal = tup[2].encode('utf-8')
+		pubdate = tup[3].encode('utf-8')
+		url = tup[4].encode('utf-8')
 		unix = time.time()
-		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S')).encode('utf-8')
 
 		update = inputPapers.insert().\
 			values(dict(datestamp=date, pmid=user_input, title=title, author=author, journal=journal, pubdate=pubdate,
@@ -169,18 +170,20 @@ def run_IR_not_db(user_input):
 	logging.info("Get basic info about the citations")
 	# Previously unseen pmcids only in allCitationsInfo.
 	# Previously seen pmcids are copied to db for new pmid in getCitedInfo
+	# TODO: for special characters 'latin-1' codec can't encode character '\u03b3' in position 31: ordinal not in range(256)
 	allCitationsInfo = getCitedInfo(pmc_ids, user_input) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
 	logging.info("Write basic citation info to citations db")
 	for citation in allCitationsInfo:
+		logging.info(citation)
 		new_or_copy_db(citation)
 
 	#Get content and update citations db
 	contentDictList = getContentPMC(pmc_ids, user_input)
 	for citation in contentDictList:
-		pmcid = str(citation["pmcid"])
-		citesPmid = str(citation["citesPmid"])
-		abstract = str(citation["all_abstract_check"][0])
-		whole_article = str(citation["all_article_check"][0])
+		pmcid = str(citation["pmcid"]).encode('utf-8')
+		citesPmid = str(citation["citesPmid"]).encode('utf-8')
+		abstract = str(citation["all_abstract_check"][0]).encode('utf-8')
+		whole_article = str(citation["all_article_check"][0]).encode('utf-8')
 
 		up = citations.update().\
 			where(citations.c.pmcid == pmcid).\
@@ -205,10 +208,11 @@ def run_IR_in_db(user_input):
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
 		#update number of citations in inputPaper db
+		n_c = str(num_current).encode('utf-8')
 
 		update = inputPapers.update().\
 			where(inputPapers.c.pmid == user_input).\
-			values(num_citations=num_current)
+			values(num_citations=n_c)
 		conn = connection()
 		conn.execute(update)
 
@@ -223,10 +227,10 @@ def run_IR_in_db(user_input):
 		#TODO: sometimes its not scraping the new pmcids??
 		contentDictList = getContentPMC(pmc_ids, user_input)
 		for citation in contentDictList:
-			pmcid = str(citation["pmcid"])
-			citesPmid = str(citation["citesPmid"])
-			abstract = str(citation["all_abstract_check"][0])
-			whole_article = str(citation["all_article_check"][0])
+			pmcid = str(citation["pmcid"]).encode('utf-8')
+			citesPmid = str(citation["citesPmid"]).encode('utf-8')
+			abstract = str(citation["all_abstract_check"][0]).encode('utf-8')
+			whole_article = str(citation["all_article_check"][0]).encode('utf-8')
 
 			up = citations.update().\
 				where(citations.c.pmcid == pmcid).\
@@ -324,13 +328,19 @@ def stats_barchart(query):
 #TODO: no mechanism for updating db if more citations have been found!!
 def print_journalvis(query):
 	record = checkForQuery(query)  # check for query in db.
+	logging.info("checked for query!!!")
+	logging.info(record)
 	if record == 'empty':
 		#if the record has never been seen before, do the journalsvis and write to db
 		years_range = get_years_range(query) #need range for ALL journals, not just last one
+		logging.info(years_range)
 		publication_data, range_info = journals_vis(years_range, query) #range info = [('2008', '2016'), 165, 48]
+		logging.info(range_info)
 		journal_years = range_info[0]
+		logging.info(journal_years)
 		q = '+'
-		range_years = str(q.join(journal_years))
+		logging.info(q)
+		range_years = str(q.join(journal_years)).encode('utf-8')
 		logging.info("range years: "+range_years)
 		unique_publications = range_info[1]
 		unique_journals = range_info[2]
@@ -341,13 +351,14 @@ def print_journalvis(query):
 		with open(completeName, 'w') as outfile:
 			json.dump(publication_data, outfile)
 		unix = time.time()
-		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S'))
-
+		date = str(datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%d %H: %M: %S')).encode('utf-8')
+		q = query.encode('utf-8')
 		update = queries.insert().\
-			values(dict(datestamp=date, query=query, range_years=range_years, unique_pubs=unique_publications,
+			values(dict(datestamp=date, query=q, range_years=range_years, unique_pubs=unique_publications,
 						unique_journals=unique_journals))
 		conn = connection()
 		conn.execute(update)
+
 
 	if record == 'yes': #if its in the db, just get the important things from the db!!
 		range_years, unique_publications, unique_journals = getJournalsVis(query)

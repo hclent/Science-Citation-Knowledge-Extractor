@@ -78,8 +78,14 @@ def results():
 
 				############################################
 				#Check database for pmid #Does the entry exists in the db already?
-				c = engine.execute('select * from inputPapers where pmid = :0', [user_input])
+				conn = connection()
+				s = inputPapers.select().\
+					where(inputPapers.c.pmid == user_input)
+				c = conn.execute(s)
 				check1 = c.fetchone()
+				c.close()
+				# c = engine.execute('select * from inputPapers where pmid = :0', [user_input])
+				# check1 = c.fetchone()
 
 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
 				if check1 is None:
@@ -196,6 +202,7 @@ def results():
 				gc.collect() #garbage collector for cleaning up unneeded stuff
 				session['entered_id'] = True
 				session['engaged'] = 'engaged'
+
 
 
 		citations_with_links = list(zip(main_info, target_urls))
