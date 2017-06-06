@@ -15,9 +15,8 @@ Tables in pmids_info.db
 
 #Connect to db through SqlAlchemy:
 #engine = create_engine('sqlite:///pmids_info.db')
-#engine = create_engine('mysql+pymysql://hclent:sckehclent@localhost:3306/scke')
 #TODO: DO NOT COMMIT DB PASSWORD TO REPO!!!!! :P
-engine = create_engine("mysql://info/for/db", encoding='utf8', convert_unicode='True')
+engine = create_engine("mysql://info/for/db?charset=utf8mb4")
 
 def connection():
 	conn = engine.connect()
