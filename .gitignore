@@ -4,6 +4,8 @@
 *.bak
 *.dat
 *.dir
+*.sql
+*.db
 bower_components
 csvgraphs/
 fgraphs/
