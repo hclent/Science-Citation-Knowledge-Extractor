@@ -39,179 +39,179 @@ def cogecrawl():
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
 @app.route('/results/', methods=["POST"])
-# def results():
-# 	logging.info("In app route RESULTS")
-# 	form = pmidForm(app.config['SECRET_KEY'])
-# 	try:
-# 		if request.method == 'POST':
-# 			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
-# 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
-# 			logging.info(pmid_list)
-#
-#
-# 			# If the user inputs more than 5 PMIDs, return the home page and flash a warning
-# 			# Need 5 PMIDs or less
-# 			if len(pmid_list) > 5:
-# 				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
-# 				with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
-# 					citations_with_links = pickle.load(f)
-# 				return render_template("dashboard.html", citations_with_links=citations_with_links)
-#
-#
-# 			q = '+'
-# 			query = str(q.join(pmid_list))
-# 			logging.info("query: " + str(query))
-#
-# 			main_info = [] #main_info and target_urls for "citaitons" page
-# 			target_urls = []
-#
-# 			#TODO: need to re-factor how i do data_samples and ners as DICTS with pmcid keys
-# 			data_samples = []
-# 			ners = []
-#
-#
-# 			for user_input in pmid_list:
-# 				logging.info(str(user_input))
-# 				user_input = str(user_input)
-#
-# 				############################################
-# 				#Check database for pmid #Does the entry exists in the db already?
-# 				conn = connection()
-# 				s = inputPapers.select().\
-# 					where(inputPapers.c.pmid == user_input)
-# 				c = conn.execute(s)
-# 				check1 = c.fetchone()
-# 				c.close()
-#
-#
-# 				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
-# 				if check1 is None:
-# 					flash('new pubmedid!')
-# 					#Using user_input for Information Retireval of citing pmcids and info about them
-# 					run_IR_not_db(user_input)
-# 					logging.info("beginning multi-preprocessing")
-# 					do_multi_preprocessing(user_input)
-# 					logging.info("done with new document multi_preprocessing")
-# 					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input) #
-#                     #
-# 					# for d in d_s:
-# 					# 	data_samples.append(d)
-# 					# for n in nes_list:
-# 					# 	ners.append(n)
-#
-# 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
-# 					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
-#
-#
-# 					#After all citations have been processed, now we can do the analyses:
-# 					if user_input == pmid_list[-1]: #if its the last pmid
-# 						logging.info("last pmid in the query")
-# 						logging.info("begin journal vis!")
-#
-#
-# 						#JOURNALS VIS STUFF HERE
-# 						logging.info(user_input+" is the last one (JOURNALS)")
-# 						range_years, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
-#
-# 						#TOPIC MODELING HERE
-# 						# logging.info(user_input+" is the last one (LSA)")
-# 						# #Do Latent Semantic Analysis and return jsonDict for data vis
-# 						# jsonDict = run_lsa1(data_samples, 2)
-# 						# print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-#                         #
-# 						# logging.info(user_input+" is the last one (LDA)")
-# 						# jsonLDA = run_lda1(data_samples, 3, 5)
-# 						# print_lda(query, user_input, jsonLDA) #print lda topic model to json
-#
-#
-# 						## FUNCTION THAT CACHES DATA_SAMPLES AND NES HERE:
-# 						#print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
-#
-#
-# 					#after info written to db, now can access db and get formated main_info (main)
-# 					#TODO: why is this here? and not somewhere else in the code?
-# 					main, db_urls = new_citations_from_db(user_input)
-# 					for mi in main:
-# 						main_info.append(mi)
-# 					logging.info("done with main info list")
-# 					for url in db_urls:
-# 						target_urls.append(url)
-# 					logging.info("done with url list")
-#
-#
-#
-#
-# 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
-# 				if check1 is not None:
-# 					flash("alreay exists in database :) ")
-# 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
-# 					need_to_annotate = run_IR_in_db(user_input)
-# 					if need_to_annotate == 'yes':
-# 						logging.info("need to annotate new documents")
-# 						biodoc_data = do_multi_preprocessing(user_input)
-# 					if need_to_annotate == 'no':
-# 						logging.info("dont need to annotate any new documents")
-# 						pass
-#
-# 					# TODO:redo how data_samples and nes_list are done.
-# 					# DEPRECIATED
-# 					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
-# 					# for d in d_s:
-# 					# 	data_samples.append(d)
-# 					# for n in nes_list:
-# 					# 	ners.append(n)
-#
-#
-# 					main, db_urls = new_citations_from_db(user_input)
-# 					for mi in main:
-# 						main_info.append(mi)
-# 					logging.info("done with main info list")
-# 					for url in db_urls:
-# 						target_urls.append(url)
-# 					logging.info("done with url list")
-#
-# 					## Now that we have all the data, do the topic model
-# 					## Only want to save final topic model (not running topic model)
-# 					if user_input == pmid_list[-1]:
-# 						logging.info("last pmid in the query")
-# 						logging.info("begin journal vis!")
-#
-# 						# JOURNALS VIS STUFF HERE
-# 						logging.info(user_input + " is the last one (JOURNALS)")
-# 						range_years, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
-#
-#
-# 						## PRINT Data_samples and stuff
-# 						#TODO: Depreciated
-# 						#print_data_and_nes(query, user_input, data_samples, nes_list)
-#
-# 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
-# 						# logging.info(user_input + " is the last one (LSA)")
-# 						# jsonDict = run_lsa1(data_samples, 2)
-# 						# print_lsa(query, user_input, jsonDict)  # print lsa topic model to json
-#                         #
-# 						# logging.info(user_input + " is the last one (LDA)")
-# 						# jsonLDA = run_lda1(data_samples, 3, 5)
-# 						# print_lda(query, user_input, jsonLDA)  # print
-#
-#
-# 				#Housekeeping
-# 				gc.collect() #garbage collector for cleaning up unneeded stuff
-# 				session['entered_id'] = True
-# 				session['engaged'] = 'engaged'
-#
-#
-# 
-# 		citations_with_links = list(zip(main_info, target_urls))
-#
-#
-# 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
-# 	   			main_info = main_info,  query=query, range_years=range_years, unique_publications=unique_publications, unique_journals=unique_journals)
-# 				#took out start_year, end_year
-#
-# 	except Exception as e:
-# 		return(str(e))
-#
+def results():
+	logging.info("In app route RESULTS")
+	form = pmidForm(app.config['SECRET_KEY'])
+	try:
+		if request.method == 'POST':
+			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
+			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
+			logging.info(pmid_list)
+
+
+			# If the user inputs more than 5 PMIDs, return the home page and flash a warning
+			# Need 5 PMIDs or less
+			if len(pmid_list) > 5:
+				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
+				with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
+					citations_with_links = pickle.load(f)
+				return render_template("dashboard.html", citations_with_links=citations_with_links)
+
+
+			q = '+'
+			query = str(q.join(pmid_list))
+			logging.info("query: " + str(query))
+
+			main_info = [] #main_info and target_urls for "citaitons" page
+			target_urls = []
+
+			#TODO: need to re-factor how i do data_samples and ners as DICTS with pmcid keys
+			data_samples = []
+			ners = []
+
+
+			for user_input in pmid_list:
+				logging.info(str(user_input))
+				user_input = str(user_input)
+
+				############################################
+				#Check database for pmid #Does the entry exists in the db already?
+				conn = connection()
+				s = inputPapers.select().\
+					where(inputPapers.c.pmid == user_input)
+				c = conn.execute(s)
+				check1 = c.fetchone()
+				c.close()
+
+
+				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
+				if check1 is None:
+					flash('new pubmedid!')
+					#Using user_input for Information Retireval of citing pmcids and info about them
+					run_IR_not_db(user_input)
+					logging.info("beginning multi-preprocessing")
+					do_multi_preprocessing(user_input)
+					logging.info("done with new document multi_preprocessing")
+					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input) #
+                    #
+					# for d in d_s:
+					# 	data_samples.append(d)
+					# for n in nes_list:
+					# 	ners.append(n)
+
+					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
+					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
+
+
+					#After all citations have been processed, now we can do the analyses:
+					if user_input == pmid_list[-1]: #if its the last pmid
+						logging.info("last pmid in the query")
+						logging.info("begin journal vis!")
+
+
+						#JOURNALS VIS STUFF HERE
+						logging.info(user_input+" is the last one (JOURNALS)")
+						range_years, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
+
+						#TOPIC MODELING HERE
+						# logging.info(user_input+" is the last one (LSA)")
+						# #Do Latent Semantic Analysis and return jsonDict for data vis
+						# jsonDict = run_lsa1(data_samples, 2)
+						# print_lsa(query, user_input, jsonDict) #print lsa topic model to json
+                        #
+						# logging.info(user_input+" is the last one (LDA)")
+						# jsonLDA = run_lda1(data_samples, 3, 5)
+						# print_lda(query, user_input, jsonLDA) #print lda topic model to json
+
+
+						## FUNCTION THAT CACHES DATA_SAMPLES AND NES HERE:
+						#print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
+
+
+					#after info written to db, now can access db and get formated main_info (main)
+					#TODO: why is this here? and not somewhere else in the code?
+					main, db_urls = new_citations_from_db(user_input)
+					for mi in main:
+						main_info.append(mi)
+					logging.info("done with main info list")
+					for url in db_urls:
+						target_urls.append(url)
+					logging.info("done with url list")
+
+
+
+
+				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
+				if check1 is not None:
+					flash("alreay exists in database :) ")
+					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
+					need_to_annotate = run_IR_in_db(user_input)
+					if need_to_annotate == 'yes':
+						logging.info("need to annotate new documents")
+						biodoc_data = do_multi_preprocessing(user_input)
+					if need_to_annotate == 'no':
+						logging.info("dont need to annotate any new documents")
+						pass
+
+					# TODO:redo how data_samples and nes_list are done.
+					# DEPRECIATED
+					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
+					# for d in d_s:
+					# 	data_samples.append(d)
+					# for n in nes_list:
+					# 	ners.append(n)
+
+
+					main, db_urls = new_citations_from_db(user_input)
+					for mi in main:
+						main_info.append(mi)
+					logging.info("done with main info list")
+					for url in db_urls:
+						target_urls.append(url)
+					logging.info("done with url list")
+
+					## Now that we have all the data, do the topic model
+					## Only want to save final topic model (not running topic model)
+					if user_input == pmid_list[-1]:
+						logging.info("last pmid in the query")
+						logging.info("begin journal vis!")
+
+						# JOURNALS VIS STUFF HERE
+						logging.info(user_input + " is the last one (JOURNALS)")
+						range_years, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
+
+
+						## PRINT Data_samples and stuff
+						#TODO: Depreciated
+						#print_data_and_nes(query, user_input, data_samples, nes_list)
+
+						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
+						# logging.info(user_input + " is the last one (LSA)")
+						# jsonDict = run_lsa1(data_samples, 2)
+						# print_lsa(query, user_input, jsonDict)  # print lsa topic model to json
+                        #
+						# logging.info(user_input + " is the last one (LDA)")
+						# jsonLDA = run_lda1(data_samples, 3, 5)
+						# print_lda(query, user_input, jsonLDA)  # print
+
+
+				#Housekeeping
+				gc.collect() #garbage collector for cleaning up unneeded stuff
+				session['entered_id'] = True
+				session['engaged'] = 'engaged'
+
+
+
+		citations_with_links = list(zip(main_info, target_urls))
+
+
+		return render_template('results.html', form=form, citations_with_links=citations_with_links,
+	   			main_info = main_info,  query=query, range_years=range_years, unique_publications=unique_publications, unique_journals=unique_journals)
+				#took out start_year, end_year
+
+	except Exception as e:
+		return(str(e))
+
 
 
 
