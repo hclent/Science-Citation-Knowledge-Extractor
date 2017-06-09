@@ -1,8 +1,9 @@
 import time, datetime
 from collections import defaultdict
-from sqlalchemy import create_engine, MetaData, Table, select
+#from sqlalchemy import create_engine, MetaData, Table, select
+from flask_sqlalchemy import SQLAlchemy
+from app import db
 
-#May 26, 2017: accessing db through sqlite3 library depreciated
 
 '''
 Tables in pmids_info.db
@@ -13,17 +14,16 @@ Tables in pmids_info.db
 
 '''
 
-#Connect to db through SqlAlchemy:
-#engine = create_engine('sqlite:///pmids_info.db')
-#TODO: DO NOT COMMIT DB PASSWORD TO REPO!!!!! :P
-engine = create_engine("mysql://info/for/db?charset=utf8mb4")
+def connect_db():
+	#makes an engine to connect to db
+	engine = db.engine
+	return engine
+
 
 def connection():
 	conn = engine.connect()
 	return conn
 
-
-#TODO: should conn be a global variable??
 
 def load_tables():
 	metadata = MetaData(bind=engine) #init metadata. will be empty
@@ -34,6 +34,8 @@ def load_tables():
 	annotations = Table('annotations', metadata)
 	return inputPapers, citations, queries, annotations
 
+engine = connect_db()
+conn = connection()
 inputPapers, citations, queries, annotations = load_tables()
 
 
@@ -42,7 +44,6 @@ inputPapers, citations, queries, annotations = load_tables()
 #Output: apa citation of *THAT* pmid
 #Updated to use sqlalchemy
 def db_inputPapers_retrieval(user_input):
-	conn = connection()
 	s = select([inputPapers.c.title, inputPapers.c.author, inputPapers.c.journal, inputPapers.c.pubdate, inputPapers.c.url]).\
 		where(inputPapers.c.pmid == user_input)
 	result = conn.execute(s)
@@ -53,7 +54,6 @@ def db_inputPapers_retrieval(user_input):
 		pubdate = row['pubdate']
 		url = row['url']
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
-	result.close()
 	return apa
 
 
@@ -61,13 +61,11 @@ def db_inputPapers_retrieval(user_input):
 #Output: number of citations
 #Updated to use sqlalchemy
 def db_input_citations_count(user_input):
-	conn = connection()
 	s = select([inputPapers.c.num_citations]).\
 		where(inputPapers.c.pmid == user_input)
 	result = conn.execute(s)
 	for row in result:
 		num_citations = row['num_citations']
-	result.close()
 	return num_citations
 
 
@@ -81,7 +79,6 @@ def db_statistics(user_input):
 	num_citations = db_input_citations_count(user_input)
 	pmidDict[user_input] = num_citations
 
-	conn = connection()
 	s = select([citations.c.pmcid, citations.c.abstract, citations.c.whole_article, citations.c.sents, citations.c.tokens]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -93,7 +90,6 @@ def db_statistics(user_input):
 		sents = row['sents']
 		tokens = row['tokens']
 		pmcDict[pmcid] = [abstract, whole, sents, tokens]
-	result.close()
 	return pmidDict, pmcDict
 
 
@@ -105,7 +101,6 @@ def updateInputPapers(user_input, self_pmcid, abstract, article):
 	up = inputPapers.update().\
 		where(inputPapers.c.pmid == user_input).\
 		values(dict(abstract=abstract, whole_article=article, pmcid=self_pmcid))
-	conn = connection()
 	conn.execute(up)
 
 
@@ -113,13 +108,11 @@ def updateInputPapers(user_input, self_pmcid, abstract, article):
 # convert pmid2pmcid
 # updated to sqlAlchemy
 def pmid2pmcid(user_input):
-	conn = connection()
 	s = select([inputPapers.c.pmcid]).\
 		where(inputPapers.c.pmid == user_input)
 	result = conn.execute(s)
 	for row in result:
 		pmcid = row["pmcid"]  # return first thing in tuple ('2836516',)
-	result.close()
 	return pmcid
 	# will return NoneType if its not there apparently :)
 
@@ -130,7 +123,6 @@ def pmid2pmcid(user_input):
 #Output: apa citations for citing pmCids as hyperlinks
 #Updated to sqlAlchemy
 def db_citations_hyperlink_retrieval(user_input):
-	conn = connection()
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -144,7 +136,6 @@ def db_citations_hyperlink_retrieval(user_input):
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
 		apa_citations.append(href_label)
-	result.close()
 	return apa_citations
 
 
@@ -152,7 +143,6 @@ def db_citations_hyperlink_retrieval(user_input):
 #Output: list of apa citations of pmc-ids citing that pmid
 #Updated to sqlAlchemy
 def db_citations_retrieval(user_input):
-	conn = connection()
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -175,7 +165,6 @@ def db_citations_retrieval(user_input):
 
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		apa_citations.append(apa)
-	result.close()
 	return apa_citations, db_journals, db_dates, db_urls
 
 
@@ -183,7 +172,6 @@ def db_citations_retrieval(user_input):
 #Output: list of titles for citation_venn.py
 #updated to sqlAlchemy
 def db_citation_titles(user_input):
-	conn = connection()
 	s = select([citations.c.title]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -191,7 +179,6 @@ def db_citation_titles(user_input):
 	for row in result:
 		title = row["title"]
 		db_titles.append(title)
-	result.close()
 	return db_titles
 
 
@@ -199,7 +186,6 @@ def db_citation_titles(user_input):
 #Output: list of urls for heatmap and barchart hrefs
 #Updated to sqlAlchemy
 def db_citation_urls(user_input):
-	conn = connection()
 	s = select([citations.c.url]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -207,7 +193,6 @@ def db_citation_urls(user_input):
 	for row in result:
 		url = row["url"]
 		db_urls.append(url)
-	result.close()
 	return db_urls
 
 
@@ -215,7 +200,6 @@ def db_citation_urls(user_input):
 #Output: list of pmc_ids for citation
 #Updated to sqlalchemy
 def db_citation_pmc_ids(user_input):
-	conn = connection()
 	s = select([citations.c.pmcid]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -223,7 +207,6 @@ def db_citation_pmc_ids(user_input):
 	for row in result:
 		pmcid = row["pmcid"]
 		db_pmcids.append(pmcid)
-	result.close()
 	return db_pmcids
 
 
@@ -234,7 +217,6 @@ def db_journals_and_dates(pmid):
 	journals = []
 	dates = []
 	pmcids = []
-	conn = connection()
 	s = select([citations.c.pmcid, citations.c.journal, citations.c.pubdate]).\
 		where(citations.c.citesPmid == pmid)
 	result = conn.execute(s)
@@ -245,7 +227,6 @@ def db_journals_and_dates(pmid):
 		journals.append(j)
 		d = row["pubdate"]
 		dates.append(d)
-	result.close()
 	return pmcids, journals, dates
 
 
@@ -257,7 +238,6 @@ def db_journals_and_dates(pmid):
 #Updated to sqlAlchemy
 def checkForPMCID(citation):
 	try:
-		conn = connection()
 		s = citations.select().\
 			where(citations.c.pmcid == citation)
 		result = conn.execute(s)
@@ -268,7 +248,6 @@ def checkForPMCID(citation):
 		#if the row does exist
 		else:
 			record = exist
-		result.close()
 	except Exception as e:
 		record = 'empty'
 	return record
@@ -286,7 +265,6 @@ def checkIfScraped(citation, user_input):
 		where(citations.c.pmcid == citation).\
 		where(citations.c.citesPmid == user_input).\
 		where(citations.c.abstract != None)
-	conn = connection()
 	c = conn.execute(s)
 	exist = c.fetchone()
 	if exist is None: #if the abstract, whole_article columns are blank, its empty
@@ -305,7 +283,6 @@ def checkIfScraped(citation, user_input):
 #Updated to sqlAlchemy
 def pmcidAnnotated(pmcid):
 	try:
-		conn = connection()
 		s = select([citations.c.annotated]).\
 			where(citations.c.pmcid == pmcid)
 		result = conn.execute(s)
@@ -322,7 +299,6 @@ def pmcidAnnotated(pmcid):
 				record = 'no'
 			else:
 				record = 'empty'
-		result.close()
 	except Exception as e:
 		record = 'empty'
 	return record
@@ -337,7 +313,6 @@ def update_annotations(b, user_input):
 		where(citations.c.pmcid == pc).\
 		where(citations.c.citesPmid == user_input).\
 		values(dict(sents = s, tokens = t))
-	conn = connection()
 	conn.execute(up)
 
 
@@ -345,7 +320,6 @@ def update_annotations(b, user_input):
 #check if a query is in db
 #Updated to sqlAlchemy
 def checkForQuery(query):
-	conn = connection()
 	s = select([queries.c.query]).\
 		where(queries.c.query == query)
 	result = conn.execute(s)
@@ -354,14 +328,12 @@ def checkForQuery(query):
 		record = 'empty'
 	else:
 		record = 'yes'
-	result.close()
 	return record
 
 
 #Get information for cached journal data vis
 #Updated to sqlalchemy
 def getJournalsVis(query):
-	conn = connection()
 	s = select([queries.c.range_years, queries.c.unique_pubs, queries.c.unique_journals]).\
 		where(queries.c.query == query)
 	result = conn.execute(s)
@@ -369,7 +341,6 @@ def getJournalsVis(query):
 		range_years = row["range_years"]
 		unique_pubs = row["unique_pubs"]
 		unique_journals = row["unique_journals"]
-	result.close()
 	return range_years, unique_pubs, unique_journals
 
 
@@ -379,7 +350,6 @@ def getJournalsVis(query):
 #checks whether or not a pmcid is in the db
 #updated to sqlalchemy
 def annotationsCheckPmcid(pmcid):
-	conn = connection()
 	s = select([annotations.c.pmcid]).\
 		where(annotations.c.pmcid == pmcid)
 	result = conn.execute(s)
@@ -388,7 +358,6 @@ def annotationsCheckPmcid(pmcid):
 		record = 'empty'
 	else:
 		record = 'yes'
-	result.close()
 	return record
 
 
@@ -398,7 +367,6 @@ def annotationsCheckPmcid(pmcid):
 def getDataSamples(pmcid_list):
 	data_samples = []
 	pmcid_set = set(pmcid_list) #we only want UNIQUE pmcids
-	conn = connection()
 	for pmcid in pmcid_set:
 		s = select([annotations.c.lemmas]).\
 			where(annotations.c.pmcid == pmcid)
@@ -406,7 +374,6 @@ def getDataSamples(pmcid_list):
 		for row in result:
 			lemmas = row["lemmas"]
 			data_samples.append(lemmas)
-	result.close()
 	return data_samples, pmcid_set
 
 

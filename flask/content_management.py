@@ -104,7 +104,6 @@ def new_or_copy_db(citation): #citation is a dict
 			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
 						citesPmid=citesPmid, url=url, abstract=abstract, whole_article=whole_article, sents=sents,
 						tokens=tokens, annotated=annotated ))
-		conn = connection()
 		conn.execute(update)
 
 	if "annotated" not in citation:
@@ -123,7 +122,6 @@ def new_or_copy_db(citation): #citation is a dict
 		update = citations.insert().\
 			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
 						citesPmid=citesPmid, url=url))
-		conn = connection()
 		conn.execute(update)
 
 
@@ -156,7 +154,6 @@ def run_IR_not_db(user_input):
 		update = inputPapers.insert().\
 			values(dict(datestamp=date, pmid=user_input, title=title, author=author, journal=journal, pubdate=pubdate,
 						url=url, num_citations=num_citations))
-		conn = connection()
 		conn.execute(update)
 
 	#Retrieve the input paper if avaliable and update db
@@ -185,7 +182,6 @@ def run_IR_not_db(user_input):
 			where(citations.c.pmcid == pmcid).\
 			where(citations.c.citesPmid == citesPmid).\
 			values(dict(abstract=abstract, whole_article=whole_article))
-		conn = connection()
 		conn.execute(up)
 
 
@@ -208,7 +204,6 @@ def run_IR_in_db(user_input):
 		update = inputPapers.update().\
 			where(inputPapers.c.pmid == user_input).\
 			values(num_citations=num_current)
-		conn = connection()
 		conn.execute(update)
 
 		#now get the new citation info
@@ -231,7 +226,6 @@ def run_IR_in_db(user_input):
 				where(citations.c.pmcid == pmcid).\
 				where(citations.c.citesPmid == citesPmid).\
 				values(dict(abstract=abstract, whole_article=whole_article))
-			conn = connection()
 			conn.execute(up)
 
 	else:
@@ -350,7 +344,6 @@ def print_journalvis(query):
 		update = queries.insert().\
 			values(dict(datestamp=date, query=query, range_years=range_years, unique_pubs=unique_publications,
 						unique_journals=unique_journals))
-		conn = connection()
 		conn.execute(update)
 
 
@@ -484,7 +477,6 @@ def do_multi_preprocessing(user_input):
 			where(citations.c.pmcid == pmcid).\
 			where(citations.c.citesPmid == user_input).\
 			values(annotated=annotated)
-		conn = connection()
 		conn.execute(update)
 
 	#Now extract information from annotated documents
@@ -649,7 +641,6 @@ def biodoc_to_db(biodoc_data):
 				values(dict(datestamp=date, pmcid=pmcid, lemmas=lemmas, bioprocess=bioprocess, cell_lines=cell_lines, cell_components=cell_components,
 							family=family, gene_product=gene_product, organ=organ, simple_chemical=simple_chemical, site=site, species=species,
 							tissue_type=tissue_type))
-			conn = connection()
 			conn.execute(update)
 
 
