@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, flash, url_for, redirect, session, g, Blueprint
-from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import Form
 from wtforms import TextField, SelectField
 import gc, time, datetime, pickle, os.path
@@ -13,8 +12,7 @@ from processors import *
 
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_envar('SCKE_CONFIG', silent=True)
-db = SQLAlchemy(app)
+app.config.from_envvar('SCKE_CONFIG', silent=False) #pass abs path
 
 
 #Create Form for handling user-entered pmid
@@ -41,7 +39,7 @@ def cogecrawl():
 @app.route('/results/', methods=["POST"])
 def results():
 	logging.info("In app route RESULTS")
-	form = pmidForm(app.config['SECRET_KEY'])
+	form = pmidForm()
 	try:
 		if request.method == 'POST':
 			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
@@ -243,7 +241,7 @@ class corpusOptions(Form):
 ################ Default CoGe Data #############################
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method =='POST':
 		logging.info("posted something to cogembeddings")
 		query = '18952863+18269575'
@@ -261,7 +259,7 @@ def cogeembeddings():
 
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -286,7 +284,7 @@ def cogelsa():
 
 @app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
 def cogelda():
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -320,7 +318,7 @@ def cogejournals():
 
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
-	form = nesOptions(app.config['SECRET_KEY'])
+	form = nesOptions()
 	if request.method == 'POST':
 
 		nes_categories = request.form.getlist('check')
@@ -347,7 +345,7 @@ def cogewordcloud():
 
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
-	form = nesOptions(app.config['SECRET_KEY'])
+	form = nesOptions()
 	query = '18952863+18269575'
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('check')
@@ -372,7 +370,7 @@ def cogeheatmap():
 @app.route('/cogeclustermap/', methods=["GET","POST"]) #default coge clustermap
 def cogeclustermap():
 	query = '18952863+18269575'
-	form = nesOptions(app.config['SECRET_KEY'])
+	form = nesOptions()
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
@@ -391,7 +389,7 @@ def cogeclustermap():
 
 @app.route('/cogekmeans/', methods=["GET","POST"]) #default coge k-means clustering for iframe
 def cogekmeans():
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method == 'POST':
 
 		data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
@@ -421,7 +419,7 @@ def coge_stats():
 
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
-	form = corpusOptions(app.config['SECRET_KEY'])
+	form = corpusOptions()
 	eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
@@ -503,7 +501,7 @@ def resembeddings(query):
 
 @app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query):
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -542,7 +540,7 @@ def reslsa(query):
 
 @app.route('/reslda/<query>', methods=["GET", "POST"]) #user lda for iframe
 def reslda(query):
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -575,7 +573,7 @@ def reslda(query):
 
 @app.route('/reswordcloud/<query>', methods=["GET", "POST"]) #user wordcloud for iframe
 def reswordcloud(query):
-	form = nesOptions(app.config['SECRET_KEY'])
+	form = nesOptions()
 	if request.method == 'POST':
 
 		nes_categories = request.form.getlist('check')
@@ -609,7 +607,7 @@ def reswordcloud(query):
 
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_heatmap(query):
-	form = nesOptions(app.config['SECRET_KEY'])
+	form = nesOptions()
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
@@ -651,7 +649,7 @@ def res_heatmap(query):
 
 @app.route('/res_clustermap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_clustermap(query):
-	form = nesOptions(app.config['SECRET_KEY'])
+	form = nesOptions()
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
@@ -669,26 +667,13 @@ def res_clustermap(query):
 
 		return render_template('results_clustermap.html',image=image, query=query)
 	else:
-		# nes_categories = ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ',
-		# 				  'Simple_chemical', 'Site', 'Species', 'TissueType']
-		# w_number = 10
-		# logging.info("the w value is " + str(w_number))
-        #
-		# nes_filename = "/home/hclent/data/nes/nes_" + str(query) + ".pickle"
-		# nes_list = pickle.load(open(nes_filename, "rb"))  # pre-processed already
-        #
-		# data_filename = "/home/hclent/data/data_samples/data_samples_" + str(query) + ".pickle"
-		# data_samples = pickle.load(open(data_filename, "rb"))  # pre-processed already
-        #
-		# saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
-		# image = '/images/' + saveName
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Choose N and categories to run clustermap.</div>'
 		return render_template('results_clustermapH.html', query=query, popup=popup)
 
 
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
 def res_kmeans(query):
-	form = visOptions(app.config['SECRET_KEY'])
+	form = visOptions()
 	if request.method == 'POST':
 
 		pmid_list = query.split('+') #list of string pmids
@@ -698,11 +683,6 @@ def res_kmeans(query):
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
 		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(data_samples, k_clusters, pmid_list)
-		# print(x0_coordinates)
-		# print(x1_coordinates)
-		# print(x2_coordinates)
-		# print(x3_coordinates)
-		# print(x4_coordinates)
 		return render_template('res_kmeans1.html', query=query,
 		   x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
@@ -711,25 +691,6 @@ def res_kmeans(query):
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
 			titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
-		#pmid_list = query.split('+') #list of string pmids
-		#last_entry = pmid_list[-1]
-		#data_filename = "/home/hclent/data/"+str(last_entry)+"/data_samples_"+str(query)+".pickle"
-		#data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
-
-		# k_clusters = 3 #default is 3
-		# print("the k value is " + str(k_clusters))
-		# x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates = vis_kmeans(data_samples, k_clusters)
-		# print(x0_coordinates)
-		# print(x1_coordinates)
-		# print(x2_coordinates)
-		# print(x3_coordinates)
-		# print(x4_coordinates)
-		# return render_template('res_kmeans1.html', query=query,
-		#    x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
-		#    x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
-		#    x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
-		#    x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
-		#    x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates)
 		return render_template('res_kmeans1.html', query=query)
 
 
@@ -755,7 +716,7 @@ def res_stats(query):
 
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe
 def results_scifi(query):
-	form = corpusOptions(app.config['SECRET_KEY'])
+	form = corpusOptions()
 	pmid_list = query.split('+')  # list of string pmids
 	#decide eligible papers:
 	eligible_papers = inputEligible(query)

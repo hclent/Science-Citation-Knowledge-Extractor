@@ -6,6 +6,7 @@
 *.dir
 *.sql
 *.db
+*.cfg
 bower_components
 csvgraphs/
 fgraphs/
