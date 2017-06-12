@@ -5,14 +5,14 @@ import gc, time, datetime, pickle, os.path
 import sys, csv
 from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
-#from database_management import engine, connection, inputPapers #mine
+from database_management import engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
 from processors import *
 
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_envvar('SCKE_CONFIG', silent=False) #pass abs path
+app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
 
 #Create Form for handling user-entered pmid

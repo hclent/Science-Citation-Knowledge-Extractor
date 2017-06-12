@@ -7,6 +7,7 @@
 *.sql
 *.db
 *.cfg
+config.py
 bower_components
 csvgraphs/
 fgraphs/

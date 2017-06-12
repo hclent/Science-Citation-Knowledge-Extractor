@@ -1,8 +1,9 @@
+from flask import Flask
 import time, datetime
 from collections import defaultdict
-#from sqlalchemy import create_engine, MetaData, Table, select
-from flask_sqlalchemy import SQLAlchemy
-from app import db
+from sqlalchemy import create_engine, MetaData, Table, select
+import logging
+#from app import db #THIS MAKES THINGS UNHAPPY
 
 
 '''
@@ -15,8 +16,9 @@ Tables in pmids_info.db
 '''
 
 def connect_db():
-	#makes an engine to connect to db
-	engine = db.engine
+	app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
+	app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False)  # pass abs path
+	engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 	return engine
 
 
@@ -33,6 +35,9 @@ def load_tables():
 	queries = Table('queries', metadata)
 	annotations = Table('annotations', metadata)
 	return inputPapers, citations, queries, annotations
+
+logging.basicConfig(filename='.app.log',level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 engine = connect_db()
 conn = connection()
