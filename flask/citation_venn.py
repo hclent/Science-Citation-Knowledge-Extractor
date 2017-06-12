@@ -1,4 +1,4 @@
-from database_management import db_citation_titles, db_citation_pmc_ids
+from database_management import db_citation_pmc_ids
 from itertools import combinations
 from collections import defaultdict
 

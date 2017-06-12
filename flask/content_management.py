@@ -12,7 +12,7 @@ from journalvis import * #mine
 from nes import * #mine
 from kmeans1 import * #mine
 from naive_cosineSim import * #mine
-from fgraph2json import embedding_json
+from fgraph2json import embedding_json #mine
 
 
 
@@ -448,12 +448,6 @@ def vis_scifi(corpus, query, eligible_papers):
 	x, y, names, color_list = prepare_for_histogram(all_sorted_combos)
 	return x, y, names, color_list
 
-# eligible_papers = inputEligible('18952863')
-# print(eligible_papers)
-# [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
-# x, y, names = vis_scifi('darwin', '18952863+18269575', eligible_papers)
-# print(len(names))
-
 ############ PROCESSING BIODOCS ############################################
 #Take pmcid.txt and get an annotated document, as well as lemmas and named entities
 #Doesn't re-annotated documents that have already been annotated.
@@ -576,8 +570,6 @@ def flatten(listOfLists):
 #Input: the output of do_multi_preprocessing (list of dicts with lemmas and named entities)
 #This function stores selected information about the annotation in the db table 'annotations'
 #Ooutput: none
-
-
 #Updated to sqlalchemy
 def biodoc_to_db(biodoc_data):
 	for biodict in biodoc_data:
@@ -644,31 +636,4 @@ def biodoc_to_db(biodoc_data):
 			conn.execute(update)
 
 
-#biodoc_data = do_multi_preprocessing('18952863')
-# biodoc_data = do_multi_preprocessing('18269575')
-# biodoc_to_db(biodoc_data)
-
 ############## GRAVEYARD ##########################################################
-#Take annotated docs and return data and nes
-#This method is for user_input that IS already in the DB
-#TODO: this is temporarily revived. use klugy data_samples and nes_list creation until db migration.
-# def do_SOME_multi_preprocessing(user_input):
-# 	logging.info('Beginning multiprocessing for PRE-EXISTING docs')
-# 	t1 = time.time()
-# 	biodocs = retrieveBioDocs(user_input)
-# 	data_samples, nes_list, total_sentences, sum_tokens = loadBioDoc(biodocs)
-# 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-# 	return data_samples, nes_list, total_sentences, sum_tokens
-
-#TODO: depreciate and replace output pickles with writing to db
-# def print_data_and_nes(query, user_input, data_samples, nes_list):
-# 	logging.info('Printing data_samples to PICKLE')
-# 	save_path = '/home/hclent/data/data_samples/' #in the folder 'data_samples'
-#
-# 	data_completeName = os.path.join(save_path, ('data_samples_'+(str(query))+'.pickle'))  #with the query for a name
-# 	pickle.dump( data_samples, open( data_completeName, "wb" ) )
-#
-# 	logging.info('Printing nes_list to PICKLE')
-# 	save_path2 = '/home/hclent/data/nes/' #in the folder 'data_samples'
-# 	nes_completeName = os.path.join(save_path2, ('nes_'+(str(query))+'.pickle'))  #with the query for a name
-# 	pickle.dump( nes_list, open( nes_completeName, "wb" ) )
