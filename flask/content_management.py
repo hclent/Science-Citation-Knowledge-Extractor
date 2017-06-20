@@ -163,7 +163,6 @@ def run_IR_not_db(user_input):
 	logging.info("Get basic info about the citations")
 	# Previously unseen pmcids only in allCitationsInfo.
 	# Previously seen pmcids are copied to db for new pmid in getCitedInfo
-	# TODO: for special characters 'latin-1' codec can't encode character '\u03b3' in position 31: ordinal not in range(256)
 	allCitationsInfo = getCitedInfo(pmc_ids, user_input) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
 	logging.info("Write basic citation info to citations db")
 	for citation in allCitationsInfo:
@@ -214,7 +213,6 @@ def run_IR_in_db(user_input):
 
 		#Get content and update citations db
 		logging.info("now get the content for the new stuff")
-		#TODO: sometimes its not scraping the new pmcids??
 		contentDictList = getContentPMC(pmc_ids, user_input)
 		for citation in contentDictList:
 			pmcid = str(citation["pmcid"])
@@ -297,6 +295,7 @@ def statsSelfInfo(query):
 
 
 #take a query and generate x and y datapoints for pubs x year bar chart in "Stats" tab
+#TODO: sepperate counts (have a different bar) for each inputPaper
 def stats_barchart(query):
 	pmid_list = query.split('+') #list of string pmids
 	journals = []
@@ -313,7 +312,6 @@ def stats_barchart(query):
 
 ############ DATA VISUALIZATIONS #################################################
 #Updated to SqlAlchemy
-#TODO: investigate why sometimes generated json fails to load (e.g. PMID: 20600996)
 #TODO: no mechanism for updating db if more citations have been found!!
 def print_journalvis(query):
 	record = checkForQuery(query)  # check for query in db.
@@ -451,9 +449,6 @@ def vis_scifi(corpus, query, eligible_papers):
 ############ PROCESSING BIODOCS ############################################
 #Take pmcid.txt and get an annotated document, as well as lemmas and named entities
 #Doesn't re-annotated documents that have already been annotated.
-'''
-Some issues with the db being locked with do_multi_preprocessing('18269575')
-'''
 #Updated to sqlalchemy
 def do_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
@@ -481,6 +476,89 @@ def do_multi_preprocessing(user_input):
 	for b in biodoc_data:
 		update_annotations(b, user_input)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	return biodoc_data
+
+#Revamped data_samples caching function
+#Old method: save a pickled list of lists for each query
+#New method:
+'''Going to save a dictionary of {citing pmcid: ['the text']} for each pmid, named "data_samples_<pmid>.pickle"
+   Save this as a pickle in a super nested directory (for speed), like what I do with annotated Biodocs.
+   Then to get the data_samples list of lists, I will concatenate the dictionaries and pull out only the set() to get just the unique items
+   (no repeats).
+   Then will convert this to the list of lists, (and make a list of the pmcids_list)
+
+   Also will do the same for nes_samples :)
+ '''
+def print_data_samples(user_input, biodoc_data):
+	logging.info("printing datasamples... ")
+
+	prefix = '/home/hclent/data/pmid_ds/' + str(user_input[0:3])  # folder for first 3 digits of pmcid
+	suffix = prefix + '/' + str(user_input[3:6])  # folder for second 3 digits of pmcid nested in prefix
+
+	try:
+		os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
+	except OSError:
+		if os.path.isdir(prefix):
+			pass
+		else:
+			raise
+
+	try:
+		os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
+	except OSError:
+		if os.path.isdir(suffix):
+			pass
+		else:
+			raise
+
+	data_completeName = os.path.join(suffix, ('data_samples_' + (str(user_input)) + '.pickle'))
+	logging.info(data_completeName)
+	pickle.dump(biodoc_data, open( data_completeName , "wb"))
+	logging.info("data_samples dumped to pickle")
+
+
+
+def biodoc2data(query):
+	pmid_list = query.split('+')  # list of string pmids
+
+	all_pmcids = []
+	all_lemma_samples = []
+	all_nes_samples = []
+	for pmid in pmid_list:
+		filename = '/home/hclent/data/pmid_ds/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'data_samples_' + (str(pmid)) + '.pickle'
+		print(filename)
+		with open(filename, 'rb') as f:
+			list_of_biodicts = pickle.load(f)
+		for biodict in list_of_biodicts:
+			pmcid = biodict["pmcid"]
+			all_pmcids.append(pmcid)
+			lemmas = biodict["lemmas"]
+			all_lemma_samples.append(lemmas)
+			nes = biodict["nes"]
+			all_nes_samples.append(nes)
+	#get unique pmcids so no repeats
+	pmcids_set = set(all_pmcids)
+	pmcids = [p for p in pmcids_set]
+
+	lemma_samples_set = [list(x) for x in set(tuple(x) for x in all_lemma_samples)]
+	lemma_samples = [ds for ds in lemma_samples_set]
+
+	# nes_set = [list(n) for n in set(tuple(n) for n in all_nes_samples)] #n in all_nes_samples is a list of dictionaries
+	# nes_samples = [ns for ns in nes_samples]
+
+	print("###### ALL ########")
+	print(len(all_pmcids))
+	print(len(all_lemma_samples))
+	print(len(all_nes_samples))
+	print('######## UNIQUE #########')
+	print(len(pmcids))
+	print(len(lemma_samples))
+
+	print(all_nes_samples[0])
+
+
+
+#biodoc2data('18952863+18269575')
 
 
 ############ TOPIC MODELING ############################################
@@ -571,18 +649,19 @@ def flatten(listOfLists):
 #This function stores selected information about the annotation in the db table 'annotations'
 #Ooutput: none
 #Updated to sqlalchemy
+#TODO: I don't think this is super helpful... better to just cache pickle files
 def biodoc_to_db(biodoc_data):
 	for biodict in biodoc_data:
 		pmcid = str(biodict["pmcid"])
 		record = annotationsCheckPmcid(pmcid)
 		# step 1: if pmcid already in db, pass
 		if record == 'yes':
-			print("repeat!")
+			logging.info("repeat!")
 			pass
 		# step 2: if pmcid not in db, add the things!
 		if record == 'empty':
 			lemmas = str(biodict["lemmas"]) #will be a string that looks like a list... will have to parse back into list somehow
-			print(lemmas)
+			logging.info(lemmas)
 			all_nes = biodict["nes"][0] #its a list with one dictionary in it (hence we index [0] to get the dict)
 			try:
 				bioprocess_list = all_nes["BioProcess"]

@@ -88,15 +88,11 @@ def results():
 					#Using user_input for Information Retireval of citing pmcids and info about them
 					run_IR_not_db(user_input)
 					logging.info("beginning multi-preprocessing")
-					do_multi_preprocessing(user_input)
+					biodoc_data = do_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
-					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input) #
-                    #
-					# for d in d_s:
-					# 	data_samples.append(d)
-					# for n in nes_list:
-					# 	ners.append(n)
-
+					logging.info("writing the BIODOC LEMMAS")
+					biodoc_to_db(biodoc_data) #writes data_samples (lemmas) and NER to db
+					logging.info("* done writing the biodoc lemmas")
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
 					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
 
@@ -144,21 +140,19 @@ def results():
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input)
-					if need_to_annotate == 'yes':
-						logging.info("need to annotate new documents")
-						biodoc_data = do_multi_preprocessing(user_input)
-					if need_to_annotate == 'no':
-						logging.info("dont need to annotate any new documents")
-						pass
-
-					# TODO:redo how data_samples and nes_list are done.
-					# DEPRECIATED
-					# d_s, nes_list, total_sentences, sum_tokens = do_SOME_multi_preprocessing(user_input)
-					# for d in d_s:
-					# 	data_samples.append(d)
-					# for n in nes_list:
-					# 	ners.append(n)
-
+					biodoc_data = do_multi_preprocessing(user_input)
+					logging.info("done with new document multi_preprocessing")
+					logging.info("writing the BIODOC LEMMAS")
+					#biodoc_to_db(biodoc_data)  # writes data_samples (lemmas) and NER to db ## writing to db suucckkss
+					print_data_samples(user_input, biodoc_data)
+					# if need_to_annotate == 'yes':
+					# 	logging.info("need to annotate new documents")
+					# 	biodoc_data = do_multi_preprocessing(user_input)
+					# 	biodoc_to_db(biodoc_data)
+					#   print_data_samples(user_input, biodoc_data)
+					# if need_to_annotate == 'no':
+					# 	logging.info("dont need to annotate any new documents")
+					# 	pass
 
 					main, db_urls = new_citations_from_db(user_input)
 					for mi in main:
