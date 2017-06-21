@@ -73,43 +73,6 @@ def retrieveDocs(pmid):
 
 
 
-
-#Define function to call in parallel
-#Annotation of docs will be the process in the pool
-#Prints to JSON
-def multiprocess(docs):
-  if len(docs) == 0: #if there are no docs, abort
-    logging.info("no documents to annotate")
-    pass
-  else:
-    t1 = time.time()
-    pool = Pool(75)
-    logging.debug('created worker pools')
-    results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt', ...]
-    logging.debug('initialized map_async to loadDocs function with docs')
-    logging.debug('did map to loadDocs function with docs. WITH async')
-    pool.close()
-    logging.debug('closed pool')
-    pool.join()
-    logging.debug('joined pool')
-    logging.info(results.get())
-
-    for biodoc, pmcid in results.get():
-      prefix = pmcid[0:3]
-      suffix = pmcid[3:6]
-      save_path = '/home/hclent/data/pmcids/'+str(prefix)+'/'+str(suffix) #look in folder that matches pmcid
-      completeName = os.path.join(save_path, (str(pmcid)+'.json'))
-
-      with open(completeName, 'w') as out:
-        out.write(biodoc.to_JSON())
-        logging.debug('printed to json')
-
-    logging.info("All biodoc creations: done in %0.3fs." % (time.time() - t1))
-    logging.info('Finished')
-
-
-
-
 #Input: String(text)
 #Output: This method cleans the text of newline markups, DNA sequences, and some punctuation
 def preProcessing(text):
@@ -172,6 +135,38 @@ def loadDocuments(doc):
   logging.debug("END OF TASK")
   return biodoc, pmcid
 
+#Define function to call in parallel
+#Annotation of docs will be the process in the pool
+#Prints to JSON
+def multiprocess(docs):
+  if len(docs) == 0: #if there are no docs, abort
+    logging.info("no documents to annotate")
+    pass
+  else:
+    t1 = time.time()
+    pool = Pool(75)
+    logging.debug('created worker pools')
+    results = pool.map_async(loadDocuments, docs) #docs = ['17347674_1.txt', '17347674_2.txt', '17347674_3.txt', ...]
+    logging.debug('initialized map_async to loadDocs function with docs')
+    logging.debug('did map to loadDocs function with docs. WITH async')
+    pool.close()
+    logging.debug('closed pool')
+    pool.join()
+    logging.debug('joined pool')
+    logging.info(results.get())
+
+    for biodoc, pmcid in results.get():
+      prefix = pmcid[0:3]
+      suffix = pmcid[3:6]
+      save_path = '/home/hclent/data/pmcids/'+str(prefix)+'/'+str(suffix) #look in folder that matches pmcid
+      completeName = os.path.join(save_path, (str(pmcid)+'.json'))
+
+      with open(completeName, 'w') as out:
+        out.write(biodoc.to_JSON())
+        logging.debug('printed to json')
+
+    logging.info("All biodoc creations: done in %0.3fs." % (time.time() - t1))
+    logging.info('Finished')
 
 ###################################################
 #BIODOC HANDLING
@@ -244,6 +239,7 @@ def loadBioDoc(biodocs):
 
     #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
     biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
+    #key "lemmas" used to be a stand alone list called data_samples
 
     token_count_list = []
 

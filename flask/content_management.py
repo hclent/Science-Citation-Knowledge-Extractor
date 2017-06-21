@@ -489,10 +489,12 @@ def do_multi_preprocessing(user_input):
 
    Also will do the same for nes_samples :)
  '''
-def print_data_samples(user_input, biodoc_data):
-	logging.info("printing datasamples... ")
 
-	prefix = '/home/hclent/data/pmid_ds/' + str(user_input[0:3])  # folder for first 3 digits of pmcid
+#TODO: add so that it checks for if it already exists
+def print_lemma_nes_samples(user_input, biodoc_data):
+	logging.info("printing lemma samples & nes samples ... ")
+
+	prefix = '/home/hclent/data/pmcids/' + str(user_input[0:3])  # folder for first 3 digits of pmcid
 	suffix = prefix + '/' + str(user_input[3:6])  # folder for second 3 digits of pmcid nested in prefix
 
 	try:
@@ -511,54 +513,30 @@ def print_data_samples(user_input, biodoc_data):
 		else:
 			raise
 
-	data_completeName = os.path.join(suffix, ('data_samples_' + (str(user_input)) + '.pickle'))
-	logging.info(data_completeName)
-	pickle.dump(biodoc_data, open( data_completeName , "wb"))
-	logging.info("data_samples dumped to pickle")
+	#biodocdata to "data_samples"
+	lemma_samples = []
+	nes_samples = []
+	# going to add the pmcid to the first place in every lemma row, to attach the id before its sent off to a pickle :')
+	for bd_dict in biodoc_data:
+		pmcid = bd_dict["pmcid"]
+		lemmas = bd_dict["lemmas"]
+		#add the id to the first position in the list so that we can be sure what the text refers to.
+		lemmas.insert(0, pmcid) #yucky and not functional blegh :/
+		lemma_samples.append(lemmas)
 
+		nes = bd_dict["nes"]
+		nes.insert(0, pmcid)
+		nes_samples.append(nes)
 
+	lemma_completeName = os.path.join(suffix, ('lemma_samples_' + (str(user_input)) + '.pickle'))
+	logging.info(lemma_completeName)
+	pickle.dump(lemma_samples, open( lemma_completeName , "wb"))
+	logging.info("lemma_samples dumped to pickle")
+	nes_completeName = os.path.join(suffix, ('nes_' + (str(user_input)) + '.pickle'))
+	logging.info(nes_completeName)
+	pickle.dump(nes_samples, open(nes_completeName, "wb"))
+	logging.info("lemma_samples dumped to pickle")
 
-def biodoc2data(query):
-	pmid_list = query.split('+')  # list of string pmids
-
-	all_pmcids = []
-	all_lemma_samples = []
-	all_nes_samples = []
-	for pmid in pmid_list:
-		filename = '/home/hclent/data/pmid_ds/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'data_samples_' + (str(pmid)) + '.pickle'
-		print(filename)
-		with open(filename, 'rb') as f:
-			list_of_biodicts = pickle.load(f)
-		for biodict in list_of_biodicts:
-			pmcid = biodict["pmcid"]
-			all_pmcids.append(pmcid)
-			lemmas = biodict["lemmas"]
-			all_lemma_samples.append(lemmas)
-			nes = biodict["nes"]
-			all_nes_samples.append(nes)
-	#get unique pmcids so no repeats
-	pmcids_set = set(all_pmcids)
-	pmcids = [p for p in pmcids_set]
-
-	lemma_samples_set = [list(x) for x in set(tuple(x) for x in all_lemma_samples)]
-	lemma_samples = [ds for ds in lemma_samples_set]
-
-	# nes_set = [list(n) for n in set(tuple(n) for n in all_nes_samples)] #n in all_nes_samples is a list of dictionaries
-	# nes_samples = [ns for ns in nes_samples]
-
-	print("###### ALL ########")
-	print(len(all_pmcids))
-	print(len(all_lemma_samples))
-	print(len(all_nes_samples))
-	print('######## UNIQUE #########')
-	print(len(pmcids))
-	print(len(lemma_samples))
-
-	print(all_nes_samples[0])
-
-
-
-#biodoc2data('18952863+18269575')
 
 
 ############ TOPIC MODELING ############################################
