@@ -478,65 +478,6 @@ def do_multi_preprocessing(user_input):
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return biodoc_data
 
-#Revamped data_samples caching function
-#Old method: save a pickled list of lists for each query
-#New method:
-'''Going to save a dictionary of {citing pmcid: ['the text']} for each pmid, named "data_samples_<pmid>.pickle"
-   Save this as a pickle in a super nested directory (for speed), like what I do with annotated Biodocs.
-   Then to get the data_samples list of lists, I will concatenate the dictionaries and pull out only the set() to get just the unique items
-   (no repeats).
-   Then will convert this to the list of lists, (and make a list of the pmcids_list)
-
-   Also will do the same for nes_samples :)
- '''
-
-#TODO: add so that it checks for if it already exists
-def print_lemma_nes_samples(user_input, biodoc_data):
-	logging.info("printing lemma samples & nes samples ... ")
-
-	prefix = '/home/hclent/data/pmcids/' + str(user_input[0:3])  # folder for first 3 digits of pmcid
-	suffix = prefix + '/' + str(user_input[3:6])  # folder for second 3 digits of pmcid nested in prefix
-
-	try:
-		os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
-	except OSError:
-		if os.path.isdir(prefix):
-			pass
-		else:
-			raise
-
-	try:
-		os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
-	except OSError:
-		if os.path.isdir(suffix):
-			pass
-		else:
-			raise
-
-	#biodocdata to "data_samples"
-	lemma_samples = []
-	nes_samples = []
-	# going to add the pmcid to the first place in every lemma row, to attach the id before its sent off to a pickle :')
-	for bd_dict in biodoc_data:
-		pmcid = bd_dict["pmcid"]
-		lemmas = bd_dict["lemmas"]
-		#add the id to the first position in the list so that we can be sure what the text refers to.
-		lemmas.insert(0, pmcid) #yucky and not functional blegh :/
-		lemma_samples.append(lemmas)
-
-		nes = bd_dict["nes"]
-		nes.insert(0, pmcid)
-		nes_samples.append(nes)
-
-	lemma_completeName = os.path.join(suffix, ('lemma_samples_' + (str(user_input)) + '.pickle'))
-	logging.info(lemma_completeName)
-	pickle.dump(lemma_samples, open( lemma_completeName , "wb"))
-	logging.info("lemma_samples dumped to pickle")
-	nes_completeName = os.path.join(suffix, ('nes_' + (str(user_input)) + '.pickle'))
-	logging.info(nes_completeName)
-	pickle.dump(nes_samples, open(nes_completeName, "wb"))
-	logging.info("lemma_samples dumped to pickle")
-
 
 
 ############ TOPIC MODELING ############################################
