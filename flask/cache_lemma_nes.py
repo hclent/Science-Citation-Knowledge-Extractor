@@ -123,10 +123,12 @@ def concat_lemma_nes_samples(query):
 		first_pmid = pmid_list[0]
 
 		query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-			first_pmid[3:6]) + 'lemma_samples_' + str(query) + ".pickle"
+			first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+		#print(query_lemma_completeName)
 
 		query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-			first_pmid[3:6]) + 'nes_' + str(query) + ".pickle"
+			first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
+		#print(query_nes_completeName)
 
 		try:
 			#check for the file
@@ -159,20 +161,19 @@ def concat_lemma_nes_samples(query):
 					all_nes_samples.append(ns)
 
 
-
 			### Now to get the UNIQUE stuff only!
 			#now get all_lemma_samples and all_nes_samples to ONLY contain UNIQUE stuff. no duplicates
 
-			print(len(all_lemma_samples))
+			#print(len(all_lemma_samples))
 			lemma_samples_set = [list(x) for x in set(tuple(x) for x in all_lemma_samples)]
 			lemma_samples = [ds for ds in lemma_samples_set]
-			print(len(lemma_samples))
+			#print(len(lemma_samples))
 
-			print(len(all_nes_samples)) #list of lists containing [str, dict]
+			#print(len(all_nes_samples)) #list of lists containing [str, dict]
 			set_of_jsons = { json.dumps(d, sort_keys=True) for d in all_nes_samples}
 			#just treat it as json to avoid problems w/ hashability
 			nes_samples = [json.loads(t) for t in set_of_jsons]
-			print(len(nes_samples))
+			#print(len(nes_samples))
 
 			#Dump to pickle
 			with open(query_lemma_completeName, "wb") as qlcn:
@@ -192,4 +193,4 @@ def concat_lemma_nes_samples(query):
 
 
 
-concat_lemma_nes_samples('18952863+18269575')
+#concat_lemma_nes_samples('18952863+18269575')
