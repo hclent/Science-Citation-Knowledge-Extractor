@@ -1,5 +1,4 @@
-import time, os.path, pickle, logging
-from  more_itertools import unique_everseen
+import time, os.path, pickle, logging, json
 
 
 '''
@@ -121,12 +120,17 @@ def concat_lemma_nes_samples(query):
 	#only need to concatenate datasamples if the query is more than 1 pubmed ID long
 	if len(pmid_list) > 1:
 		#does the file already exist?
+		first_pmid = pmid_list[0]
+
+		query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+			first_pmid[3:6]) + 'lemma_samples_' + str(query) + ".pickle"
+
+		query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+			first_pmid[3:6]) + 'nes_' + str(query) + ".pickle"
+
 		try:
 			#check for the file
 			#store these in the dir named for the first item in query
-			first_pmid = pmid_list[0]
-			query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + 'lemma_samples_' + str(query) + ".pickle"
-			query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + 'nes_' + str(query) + ".pickle"
 
 			# efficient way to open a pickle is via "with" because it closes after the statement ends
             # even if an exception occurs!
@@ -159,27 +163,25 @@ def concat_lemma_nes_samples(query):
 			### Now to get the UNIQUE stuff only!
 			#now get all_lemma_samples and all_nes_samples to ONLY contain UNIQUE stuff. no duplicates
 
-			## problem: list and dict are unhashable. can't use set() or unique_everseen()
-			##
-
 			print(len(all_lemma_samples))
 			lemma_samples_set = [list(x) for x in set(tuple(x) for x in all_lemma_samples)]
 			lemma_samples = [ds for ds in lemma_samples_set]
 			print(len(lemma_samples))
-			# print(lemma_samples[0])
 
+			print(len(all_nes_samples)) #list of lists containing [str, dict]
+			set_of_jsons = { json.dumps(d, sort_keys=True) for d in all_nes_samples}
+			#just treat it as json to avoid problems w/ hashability
+			nes_samples = [json.loads(t) for t in set_of_jsons]
+			print(len(nes_samples))
 
+			#Dump to pickle
+			with open(query_lemma_completeName, "wb") as qlcn:
+				pickle.dump(lemma_samples, qlcn)
+			logging.info("lemma_samples dumped to pickle for QUERY")
 
-			print(len(all_nes_samples))
-			#nes_set = [list(n) for n in set((n[0]) for n in all_nes_samples)] #n in all_nes_samples is a list of dictionaries
-
-
-			#nes_samples = [ns for ns in nes_set]
-			#print(len(nes_samples))
-			#print(nes_samples[0])
-
-
-
+			with open(query_nes_completeName, "wb") as qncn:
+					pickle.dump(nes_samples, qncn)
+			logging.info("lemma_samples dumped to pickle for QUERY")
 
 
 	#don't need to create a new file if its like... just 1 pmcid
