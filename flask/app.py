@@ -378,7 +378,6 @@ def cogeclustermap():
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is " + str(w_number))
-
 		nes_list = pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb"))  # pre-processed already
 		data_samples = pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb"))  # p
 		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
@@ -394,11 +393,15 @@ def cogekmeans():
 	form = visOptions()
 	if request.method == 'POST':
 
-		data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
-		pmid_list = ['18952863', '18269575']
+		#depreciate data_samples
+		#data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
+		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		with open(lemma_file, "rb") as f:
+			lemma_samples = pickle.load(f) #the pmcids are in lemma_samples yay!
+
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(data_samples, k_clusters, pmid_list)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters)
 
 		return render_template('coge_kmeans2.html', x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 							   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,

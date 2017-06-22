@@ -387,16 +387,17 @@ def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
 	return saveName #return filename
 
 
-def vis_kmeans(data_samples, num_clusters, pmid_list):
+def vis_kmeans(lemma_samples, num_clusters):
 	#use query to get titles
 	titles = [] #want citations instead of titles
-	for pmid in pmid_list:
-		#temp_titles = db_citation_titles(pmid)
-		temp_titles = db_citations_hyperlink_retrieval(pmid) #return apa citation hyperlink for click data
-		for t in temp_titles: #
-			titles.append(t)
 
-	hX, hasher = get_hashing(data_samples)
+	pmcids = [l[0] for l in lemma_samples]
+	for id in pmcids:
+		hyperlink = db_citations_hyperlink_retrieval(id)
+		titles.append(hyperlink)
+
+	lemmas_for_kmeans = [l[1] for l in lemma_samples] #grab JUST the lemmas
+	hX, hasher = get_hashing(lemmas_for_kmeans)
 	clusters = do_kemeans(hX, int(num_clusters)) #list of cluster assignments
 	coordinates = do_NMF(hX) #dimensionality reduction for visualization
 	#zip coordinates and titles

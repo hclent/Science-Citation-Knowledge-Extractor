@@ -124,12 +124,13 @@ def pmid2pmcid(user_input):
 
 
 ######################### SUPPORT FUNCTIONS FOR citations TABLE ###########################
-#Input: pmid
+#Input: pmcid
 #Output: apa citations for citing pmCids as hyperlinks
 #Updated to sqlAlchemy
-def db_citations_hyperlink_retrieval(user_input):
+#UPDATED
+def db_citations_hyperlink_retrieval(pmcid):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
-		where(citations.c.citesPmid == user_input)
+		where(citations.c.pmcid == pmcid)
 	result = conn.execute(s)
 	apa_citations = []
 	for row in result:
@@ -380,6 +381,10 @@ def getDataSamples(pmcid_list):
 			lemmas = row["lemmas"]
 			data_samples.append(lemmas)
 	return data_samples, pmcid_set
+
+########### O R M ########################
+
+
 
 
 '''
