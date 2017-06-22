@@ -259,12 +259,17 @@ def cogelsa():
 		logging.info("the k value is " + str(k_clusters))
 		query = '18952863+18269575'
 
-		data_filename = "/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		#UPDATING TO NEW & IMPROVED lemma_samples!
+		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		with open(lemma_file, "rb") as f:
+			lemma_samples = pickle.load(f)
+
+		lemmas_for_lsa = [l[1] for l in lemma_samples] #ignore the pmcid's in l[0]
 
 		logging.info("rerunning the analysis")
 		k = int(k_clusters)
-		jsonLSA = run_lsa1(data_samples, k)
+
+		jsonLSA = run_lsa1(lemmas_for_lsa, k)
 		logging.info("did it all!")
 		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA) #needs to be parsed
 	else: #if nothing is

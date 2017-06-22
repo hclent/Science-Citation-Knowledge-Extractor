@@ -1,9 +1,11 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn import metrics
 from sklearn.decomposition import TruncatedSVD
-import pickle, re
-from multi_preprocess import *
-from collections import defaultdict, Counter
+import json
+
+
+
+
+### NB: Cannot give TruncatedSVD n_jobs :'(
 
 
 #Input: a list of strings for the document
@@ -35,14 +37,10 @@ def do_LSA(X, vectorizer, k):
       term_Dict = {"name": term[0], "size": 700}
       concept_Dict["children"].append(term_Dict)
     #print("#########################")
-  jsonDict = re.sub('\'', '\"', str(jDict)) #json needs double quotes, not single quotes
+
+  jsonDict = json.dumps(jDict)
+
   #print(jsonDict)
   return jsonDict
 
 
-
-# data_samples = get_data_and_ner("18952863")
-# wordsDict = buildDict(data_samples)
-# filter_data_samples = filter_data(data_samples, wordsDict)
-# matrix, vectorizer = get_tfidf(filter_data_samples)
-# dictionary = do_LSA(matrix, vectorizer, 10)
