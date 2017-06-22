@@ -36,8 +36,9 @@ def connect_to_Processors(port_num):
   init_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   return api
 
+################ WORD EMBEDDING MODEL ############## (Global var)
 
-#TODO: Possibly load FastText model as global variable?
+fasttext_model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
 
 ################### INPUT #########################################################
 
@@ -482,16 +483,16 @@ def do_multi_preprocessing(user_input):
 
 
 ############ TOPIC MODELING ############################################
-def run_lsa1(data_samples, k):
+def run_lsa1(lsa_lemmas, k):
 	logging.info('Beginning Latent Semantic Analysis')
-	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
+	tfidf, tfidf_vectorizer = get_tfidf(lsa_lemmas)
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
 	return jsonDict
 
 
-def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number of words=5
+def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number of words=5
 	logging.info('Beginning Latent Dirichlet Allocation')
-	tfidf, tfidf_vectorizer = get_tfidf(data_samples)
+	tfidf, tfidf_vectorizer = get_tfidf(lda_lemmas)
 	lda = fit_lda(tfidf, num_topics)
 	jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 	return jsonLDA
@@ -502,7 +503,11 @@ def run_lda1(data_samples, num_topics, n_top_words): #set at defulat k=3, number
 def run_embeddings(query, top_n, k_clusters):
 	logging.info("in run_embeddings function")#
 	pmid_list = query.split('+')  # list of string pmids
+
+	#TODO: REPLACE THIS WITH CACHING
 	words, tags = get_words_tags(pmid_list) #list of words/tags per doc
+	####
+
 	transformed_sentence = transform_text(words, tags)
 	npDict = chooseTopNPs(transformed_sentence)
 	logging.info("done with npDict")
@@ -529,17 +534,13 @@ def run_embeddings(query, top_n, k_clusters):
 	else:
 		top = list(npDict.most_common(top_n))
 	logging.info("done with top NPs")
-	model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
 	logging.info("loaded model all the way!")
-	matrix = getNPvecs(top, model)
+	matrix = getNPvecs(top, fasttext_model) #loaded as global variable
 	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
 	results = list(zip(kmeans.labels_, top))
 	embedding_json(results, query)
 	logging.info("made json for embedding topic model")
-	'''depreciated CSV'''
-	#val_matrix = make_matrix(results, model)
-	#make_csv(val_matrix, results, query)
 
 
 

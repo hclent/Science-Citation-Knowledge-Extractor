@@ -171,7 +171,7 @@ var svg = d3.select(".fdg"),
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function (d) { return d.id; }))
+    .force("link", d3.forceLink().id(function (d) { return d.id; }).distance(100)) //.distance() is the same as linkDistance()
     .force("charge", d3.forceManyBody().strength(-5))
     .force("center", d3.forceCenter(width / 1.5, height / 1.5));
 
@@ -197,12 +197,12 @@ d3.json("{{ url_for('static', filename=filepath) }}", function(error, graph) {
         .attr("fill", function (d) {
             return color(d.group);
         })
-        .on("mouseover", function (d) {
-            d3.select("#" + d.id.replace(".","")).style("display", "initial"); // replace "." with ""
-        }) //show label on hover
-        .on("mouseout", function (d) {
-            d3.select("#" + d.id.replace(".","")).style("display", "none"); // replace "." with ""
-        }) //hide again off label
+//        .on("mouseover", function (d) {
+//            d3.select("#" + d.id.replace(".","")).style("display", "initial"); // replace "." with ""
+//        }) //show label on hover
+//        .on("mouseout", function (d) {
+//            d3.select("#" + d.id.replace(".","")).style("display", "none"); // replace "." with ""
+//        }) //hide again off label
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
@@ -223,7 +223,7 @@ d3.json("{{ url_for('static', filename=filepath) }}", function(error, graph) {
         .style("fill", "#555")
         .style("font-family", "Arial")
         .style("font-size", 12)
-        .style("display", "none"); //hide the label by default
+        //.style("display", "none"); //hide the label by default
 
     simulation
         .nodes(graph.nodes)
