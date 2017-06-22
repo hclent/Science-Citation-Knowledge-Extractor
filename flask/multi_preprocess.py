@@ -196,22 +196,6 @@ def retrieveBioDocs(pmid):
   return biodocs
 
 
-#TODO: depreciate this function ASAP. Opt for the function commented out above ^
-# def retrieveBioDocs(pmid):
-#   #print("retrieving biodocs")
-#   biodocs = [] #list of strings
-#
-#   db_pmcids = db_citation_pmc_ids(pmid)
-#   for pmcid in db_pmcids:
-#     prefix = pmcid[0:3]
-#     suffix = pmcid[3:6]
-#     folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
-#     filename = str(folder + '/' + str(pmcid)) + '.json'
-#     biodocs.append(filename)
-#   logging.debug('retrieved list of Bio documents to work with')
-#   return biodocs
-
-
 def grab_lemmas(biodoc):
   lemmas_list = biodoc.lemmas #list
   keep_lemmas = [w for w in lemmas_list if w.lower() not in eng_stopwords]
@@ -225,9 +209,13 @@ def grab_nes(biodoc):
   ners_list = biodoc.nes
   return ners_list
 
+
+def flatten_tags(listOfLists):
+    return list(chain.from_iterable(listOfLists))
+
+
 #Input: Processors annotated biodocs (from JSON)
 #Output: list of dicts containing {pmcid, lemmas, nes, num_sentences, num_tokens}
-# TODO: Make loading/saving biodocs scalable!!!!!
 def loadBioDoc(biodocs):
   t1 = time.time()
 
@@ -238,10 +226,10 @@ def loadBioDoc(biodocs):
     jsonpath = doc["jsonpath"]
 
     #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
-    biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": []}
-    #key "lemmas" used to be a stand alone list called data_samples
+    biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": [], "tags": []}
 
     token_count_list = []
+    pos_tags = []
 
     with open(jsonpath) as jf:
       data = Document.load_from_JSON(json.load(jf))
@@ -253,8 +241,14 @@ def loadBioDoc(biodocs):
         num_tokens = s.length
         token_count_list.append(num_tokens)
 
+        #trying to get the tags for fasttext.py
+        tags = s.tags
+        pos_tags.append(tags)
+
       num_tokens = sum(token_count_list)
       biodict["num_tokens"].append(num_tokens)
+
+      biodict["tags"].append(flatten_tags(pos_tags)) #going to need tags for fasttext viz
 
       lemmas = grab_lemmas(data)
       biodict["lemmas"].append(lemmas)
@@ -266,61 +260,3 @@ def loadBioDoc(biodocs):
   logging.info("Done assembling lemmas, nes, sent+token counts: done in %0.3fs." % (time.time() - t1))
   return loadedBioDocs
 
-#TODO: Depreciate this funciton ASAP! Opt for the function above ^
-#Input: Processors annotated biodocs(from JSON)
-# Output: data_samples, nes_list, and counts
-# def loadBioDoc(biodocs):
-#   t1 = time.time()
-#   data_samples = []
-#   nes_list = []
-#
-#   total_sentences = []
-#
-#   total_tokens = []
-#   sum_tokens = []
-#
-#   for doc in biodocs:
-#     doc_tokens = []
-#
-#     with open(doc) as jf:
-#       data = Document.load_from_JSON(json.load(jf))
-#       # print(type(data)) is <class 'processors.ds.Document'>
-#       num_sentences = data.size
-#       total_sentences.append(num_sentences)
-#       for i in range(0, num_sentences):
-#         s = data.sentences[i]
-#         num_tokens = s.length
-#         doc_tokens.append(num_tokens)
-#       lemmas = grab_lemmas(data)
-#       data_samples.append(lemmas)
-#       nes = grab_nes(data)
-#       nes_list.append(nes)
-#       total_tokens.append(doc_tokens)
-#   logging.info("Done assembling lemmas and nes: done in %0.3fs." % (time.time() - t1))
-#
-#   # add up tokens
-#   for sents in total_tokens:
-#     sum = 0
-#     for tokens in sents:
-#       sum += tokens
-#     sum_tokens.append(sum)
-#
-#   logging.info("Done assembling sent counts and token counts")
-#   return data_samples, nes_list, total_sentences, sum_tokens
-
-
-################ GRAVEYARD ###############################
-
-# Get all text docs for that pmid
-# Returns list of strings e.g. ['1234_1.txt', '1234_2.txt', ...]
-# def retrieveDocs(pmid):
-#   docs = [] #list of strings
-#   folder = '/home/hclent/data/'+pmid+'/' #look in folder named after pmid
-#   files = os.listdir(folder)
-#   for f in files:
-#     if pmid in f and 'doc' not in f:
-#       #dont read .json or pickle objs
-#       if '.txt' in f and 'self' not in f: #don't include 'self' docs
-#         docs.append(f) #str
-#   logging.debug('retrieved list of documents to processes')
-#   return docs
