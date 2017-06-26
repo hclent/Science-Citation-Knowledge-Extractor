@@ -9,10 +9,11 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 
 
 def get_tfidf(data): #data should be a list of strings for the documents (lemmas_for_lda)
+  list_data_strings = [' '.join(map(str, d)) for d in data] #map to string. strings are necessary for the TFIDF
   logging.info("* Preparing to vectorize data ...")
   tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 4), norm='l2')
   logging.info("* Fitting data to vector ...")
-  tfidf = tfidf_vectorizer.fit_transform(data)
+  tfidf = tfidf_vectorizer.fit_transform(list_data_strings)
   logging.info("* Successfully fit data to the vector !!! ")
   return tfidf, tfidf_vectorizer
 

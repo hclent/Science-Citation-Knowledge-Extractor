@@ -313,8 +313,8 @@ def pmcidAnnotated(pmcid):
 #Updated to sqlalchemy
 def update_annotations(b, user_input):
 	pc = str(b["pmcid"])
-	s = b["num_sentences"][0]
-	t = b["num_tokens"][0]
+	s = b["num_sentences"]
+	t = b["num_tokens"]
 	up = citations.update().\
 		where(citations.c.pmcid == pc).\
 		where(citations.c.citesPmid == user_input).\

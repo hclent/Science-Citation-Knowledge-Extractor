@@ -10,11 +10,12 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 #Input: Eata_samples (list of lists containing strings)
 #Output: Sparse matrix, l2 normalization for preserving Euclidean distance
 def get_hashing(data):
+  list_data_strings = [' '.join(map(str, d)) for d in data] #map to string. strings are necessary for the TFIDF
   t0 = time.time()
   logging.info("* Making hashing vectorizor with the data ...")
   hasher = HashingVectorizer(stop_words='english', ngram_range=(1,3), norm='l2', non_negative=True)
   #l2 projected on the euclidean unit sphere
-  hX = hasher.fit_transform(data)
+  hX = hasher.fit_transform(list_data_strings)
   logging.info("done in %0.3fs." % (time.time() - t0))
   return hX, hasher
 

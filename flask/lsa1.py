@@ -11,9 +11,10 @@ import json
 #Input: a list of strings for the document
 #Output: TFIDF matrix X, and TfidfVectorizer function
 #Output: TFIDF matrix X is a sparse matrix
-def get_tfidf(data): 
+def get_tfidf(data):
+  list_data_strings = [' '.join(map(str, d)) for d in data] #map to string. strings are necessary for the TFIDF
   tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 3), norm='l2')
-  tfidf = tfidf_vectorizer.fit_transform(data) 
+  tfidf = tfidf_vectorizer.fit_transform(list_data_strings)
   return tfidf, tfidf_vectorizer
 
 

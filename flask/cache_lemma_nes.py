@@ -54,8 +54,6 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 
 	#Step 2: The file doesn't exist? So make it!
 	except Exception as e:
-	#try:
-		print("SOME TEST FAILEDDDDDDDDDDD")
 		logging.info("the file doesn't exist! Make it!")
 
 		try:
@@ -80,16 +78,17 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 
 		# going to add the pmcid to the first place in every lemma row, to attach the id before its sent off to a pickle :')
 		for bd_dict in biodoc_data:
-			pmcid = bd_dict["pmcid"]
-			lemmas = bd_dict["lemmas"]
-			tags = bd_dict["tags"][0] # {tags: [[stuff in here]]}, so just take the 0 index
+			pmcid = bd_dict["pmcid"] #this is a string!
+			lemmas = bd_dict["lemmas"] #this is a list!
+			tags = bd_dict["tags"] # this is a list!
 			#add the id to the first position in the list so that we can be sure what the text refers to.
 			lemmas.insert(0, pmcid) #yucky and not functional blegh :/
 			lemmas.insert(2, tags) #need the tags to be lemma_samples[2] for embedding vis
 
+
 			lemma_samples.append(lemmas)
 
-			nes = bd_dict["nes"]
+			nes = bd_dict["nes"] #list
 			nes.insert(0, pmcid)
 			nes_samples.append(nes)
 
@@ -110,8 +109,12 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 
 
 # biodoc_data = do_multi_preprocessing('18952863')
-# print(biodoc_data[0])
 # print_lemma_nes_samples('18952863', biodoc_data)
+# #
+# biodoc_data = do_multi_preprocessing('18269575')
+# print_lemma_nes_samples('18269575', biodoc_data)
+
+
 
 
 '''
@@ -164,6 +167,7 @@ def concat_lemma_nes_samples(query):
 				for ls in lemma_list:
 					all_lemma_samples.append(ls)
 
+
 				nes_file = '/home/hclent/data/pmcids/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'nes_' + (str(pmid)) + '.pickle'
 				with open(nes_file, 'rb') as f2:
 					nes_list = pickle.load(f2)
@@ -197,5 +201,4 @@ def concat_lemma_nes_samples(query):
 
 	logging.info("Execute concat_lemma_nes_samples: done in %0.3fs." % (time.time() - t1))
 
-
-#concat_lemma_nes_samples('18952863+18269575')
+#concat_lemma_nes_samples("18952863+18269575")

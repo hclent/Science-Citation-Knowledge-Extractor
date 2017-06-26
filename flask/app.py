@@ -264,7 +264,8 @@ def cogelsa():
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
-		lemmas_for_lsa = [l[1] for l in lemma_samples] #ignore the pmcid's in l[0]
+		logging.info("GETTING THE DATA ....")
+		lemmas_for_lsa = [l[1] for l in lemma_samples] #ignore the pmcid's in l[0], ignore tags in l[2]
 
 		logging.info("rerunning the analysis")
 		k = int(k_clusters)
@@ -295,7 +296,7 @@ def cogelda():
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
-		lemmas_for_lda = [l[1] for l in lemma_samples]  # ignore the pmcid's in l[0]
+		lemmas_for_lda = [l[1] for l in lemma_samples] #ignore the pmcid's in l[0], ignore tags in l[2]
 
 		logging.info("rerunning the analysis")
 		k = int(k_clusters)

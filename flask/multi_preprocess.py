@@ -200,12 +200,8 @@ def grab_lemmas_and_tags(biodoc):
   lemmas_with_tags = list(zip(lemmas_list, tags_list))
   keep = [lt for lt in lemmas_with_tags if lt[0].lower() not in eng_stopwords]
 
-
-  #keep_lemmas = [w for w in lemmas_list if w.lower() not in eng_stopwords]
   keep_lemmas = [lt[0] for lt in keep]
-  keep_tags = [lt[1] for lt in keep] #not making it a string here. will deal with it later
-
-  keep_lemmas = (' '.join(map(str, keep_lemmas))) #map to string. strings are necessary for the TFIDF
+  keep_tags = [lt[1] for lt in keep]
   return keep_lemmas, keep_tags
 
 
@@ -229,7 +225,8 @@ def loadBioDoc(biodocs):
     jsonpath = doc["jsonpath"]
 
     #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
-    biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": [], "tags": []}
+    #biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": [], "tags": []}
+    biodict = {"pmcid": pmcid, "jsonpath": jsonpath, "nes": [], "lemmas": []}
 
     token_count_list = []
 
@@ -237,18 +234,21 @@ def loadBioDoc(biodocs):
       data = Document.load_from_JSON(json.load(jf))
       #print(type(data)) is <class 'processors.ds.Document'>
       num_sentences = data.size
-      biodict["num_sentences"].append(num_sentences)
+      #biodict["num_sentences"].append(num_sentences)
+      biodict["num_sentences"] = num_sentences
       for i in range(0, num_sentences):
         s = data.sentences[i]
         num_tokens = s.length
         token_count_list.append(num_tokens)
 
       num_tokens = sum(token_count_list)
-      biodict["num_tokens"].append(num_tokens)
+      #biodict["num_tokens"].append(num_tokens)
+      biodict["num_tokens"] = num_tokens
 
       lemmas, tags = grab_lemmas_and_tags(data)
-      biodict["lemmas"].append(lemmas) #lemmas is a STRING
-      biodict["tags"].append(tags) #tags is a LIST
+      biodict["lemmas"].append(lemmas) #lemmas is a LIST
+      # biodict["tags"].append(tags) #tags is a LIST
+      biodict["tags"] = tags
 
       nes = grab_nes(data)
       biodict["nes"].append(nes)
