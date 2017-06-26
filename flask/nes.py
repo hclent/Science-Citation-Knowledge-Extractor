@@ -6,6 +6,7 @@ import pandas as pd
 import re, os, json
 from collections import defaultdict
 from processors import *
+from database_management import db_citations_mini_hyperlink
 
 
 
@@ -23,7 +24,6 @@ def frequency_dict(nes_list, category_list):
                         nesDict[n] += 1
                     #     if n not in nes_stopwords:
                     #        nesDict[n] += 1
-    print(nesDict)
     return nesDict
 
 #D3 wordcloud
@@ -109,9 +109,11 @@ def doHeatmap(nesDict, n, lemma_samples):
     i = 1
     for document in lemma_samples:
         pmcid = document[0]
+        label, year = db_citations_mini_hyperlink(pmcid)
+        doc_label = label[0]
         #TODO: MAKE A BETTER DOC LABEL FOR X AXIS!!!
-        docname = "doc"+str(i)
-        x.append(docname)
+        #docname = "doc"+str(i)
+        x.append(doc_label)
         i += 1
     return x, y, z
 

@@ -1,9 +1,8 @@
 from flask import Flask
-import time, datetime
+import time, datetime, re
 from collections import defaultdict
 from sqlalchemy import create_engine, MetaData, Table, select
 import logging
-#from app import db #THIS MAKES THINGS UNHAPPY
 
 
 '''
@@ -143,6 +142,34 @@ def db_citations_hyperlink_retrieval(pmcid):
 		href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
 		apa_citations.append(href_label)
 	return apa_citations
+
+#This is for the heatmap x-axis labels
+def db_citations_mini_hyperlink(pmcid):
+	s = select([citations.c.author, citations.c.pubdate, citations.c.url]).\
+		where(citations.c.pmcid == pmcid)
+	result = conn.execute(s)
+	label = []
+	for row in result:
+		author = row["author"] #grab up to first comma and ad "et al"
+		first_author = re.match('^\w+\s\w+,' ,author)
+		if first_author:
+			keep_author = first_author.group(0)
+		else:
+			keep_author = str(author[:10]) + '...'
+
+		pubdate = row["pubdate"] #need to just get year
+		year = re.search('\d{4}', pubdate)
+		if year:
+			keep_year = year.group(0)
+		else:
+			keep_year = pubdate
+
+		url = row["url"]
+		apa = str(keep_author+' et al. ('+keep_year+')')
+		#href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
+		label.append(apa)
+	return label, year
+
 
 
 #Input: pmid
