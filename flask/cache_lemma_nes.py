@@ -1,4 +1,5 @@
 import time, os.path, pickle, logging, json
+#from content_management import do_multi_preprocessing
 
 
 '''
@@ -37,6 +38,7 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 	suffix = prefix + '/' + str(user_input[3:6])  # folder for second 3 digits of pmcid nested in prefix
 
 	#Step 1: does this file already exist? if so, pass
+	#Maybe should do these sepperately?
 	try:
 		#to open the file!!
 		lemma_completeName = os.path.join(suffix, ('lemma_samples_' + (str(user_input)) + '.pickle'))
@@ -45,14 +47,15 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 		logging.info("lemmma_samples for " + user_input + " already exists! Don't re-make" )
 
 		nes_completeName = os.path.join(suffix, ('nes_' + (str(user_input)) + '.pickle'))
-		with open(nes_completeName, 'rb') as f:
-			pickle.load(f)
+		with open(nes_completeName, 'rb') as f2:
+			pickle.load(f2)
 		logging.info("nes_samples for " + user_input + " already exists! Don't re-make")
 		pass
 
 	#Step 2: The file doesn't exist? So make it!
 	except Exception as e:
 	#try:
+		print("SOME TEST FAILEDDDDDDDDDDD")
 		logging.info("the file doesn't exist! Make it!")
 
 		try:
@@ -79,7 +82,7 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 		for bd_dict in biodoc_data:
 			pmcid = bd_dict["pmcid"]
 			lemmas = bd_dict["lemmas"]
-			tags = bd_dict["tags"][0]
+			tags = bd_dict["tags"][0] # {tags: [[stuff in here]]}, so just take the 0 index
 			#add the id to the first position in the list so that we can be sure what the text refers to.
 			lemmas.insert(0, pmcid) #yucky and not functional blegh :/
 			lemmas.insert(2, tags) #need the tags to be lemma_samples[2] for embedding vis
@@ -98,7 +101,7 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 
 		nes_completeName = os.path.join(suffix, ('nes_' + (str(user_input)) + '.pickle'))
 		logging.info(nes_completeName)
-		with open(nes_completeName) as ncn:
+		with open(nes_completeName, "wb") as ncn:
 			pickle.dump(nes_samples, ncn)
 		logging.info("lemma_samples dumped to pickle")
 
@@ -106,6 +109,9 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 	logging.info("Execute print_lemma_nes_samples: done in %0.3fs." % (time.time() - t1))
 
 
+# biodoc_data = do_multi_preprocessing('18952863')
+# print(biodoc_data[0])
+# print_lemma_nes_samples('18952863', biodoc_data)
 
 
 '''
@@ -159,8 +165,8 @@ def concat_lemma_nes_samples(query):
 					all_lemma_samples.append(ls)
 
 				nes_file = '/home/hclent/data/pmcids/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'nes_' + (str(pmid)) + '.pickle'
-				with open(nes_file, 'rb') as f:
-					nes_list = pickle.load(f)
+				with open(nes_file, 'rb') as f2:
+					nes_list = pickle.load(f2)
 				for ns in nes_list:
 					all_nes_samples.append(ns)
 
@@ -192,3 +198,4 @@ def concat_lemma_nes_samples(query):
 	logging.info("Execute concat_lemma_nes_samples: done in %0.3fs." % (time.time() - t1))
 
 
+#concat_lemma_nes_samples('18952863+18269575')

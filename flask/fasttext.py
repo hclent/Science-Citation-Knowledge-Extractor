@@ -1,22 +1,16 @@
-from multi_preprocess import retrieveBioDocs
 from processors import *
-import sys, os.path, time
 import numpy as np
-from collections import defaultdict, Counter
-import gensim, os, codecs
+import pickle
+from collections import defaultdict, Counter, Iterable
 from gensim.models import Word2Vec
-from sklearn.cluster import KMeans
-import math, random
-from kmeans1 import do_kemeans, get_hashing
 
 
 '''
 Step 1:
-    Get lemmas and tags from biodocs
-    [[doc1 words], [doc2 words]] & [[doc1 tags],[doc2 tags]]
+    Get lemmas and tags from cache
 Step 2:
     NP tokenization
-    [[doc1 tokens], [doc2 tokens]]
+    [[doc1 noun tokens], [doc2 noun tokens]]
 Step 3:
     flatmap tokens for training w2v
     [all tokens ever]
@@ -33,34 +27,47 @@ Step 5:
 def flatten(listOfLists):
     return list(chain.from_iterable(listOfLists))
 
-#Input: biodoc
+
+#Input: query
 #Output, list of words, and corresponding list of tags
-def get_words_tags(pmid_list):
-    words = []
-    tags = []
-    for pmid in pmid_list:
-        biodocs = retrieveBioDocs(pmid)
-        #print(len(biodocs))
-        for doc in biodocs:
-            doc_words = []
-            doc_tags = []
-            json_file = doc["jsonpath"]
-            with open(json_file) as jf:
-                data = Document.load_from_JSON(json.load(jf))
-                num_sentences = data.size
-                for i in range(0, num_sentences):
-                    s = data.sentences[i]
-                    s_words = s.lemmas
-                    s_tags = s.tags
-                    doc_words.append(s_words)
-                    doc_tags.append(s_tags)
-            doc_words = flatten(doc_words)
-            doc_tags = flatten(doc_tags)
-            words.append(doc_words)
-            tags.append(doc_tags)
-    flat_words = flatten(words)
+def get_words_tags(query):
+    pmid_list = query.split('+')  # list of string pmids
+    first_pmid = pmid_list[0]
+
+    path_to_lemma_samples = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+        first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+
+    with open(path_to_lemma_samples, "rb") as file:
+        lemma_samples = pickle.load(file)
+
+    words = [l[1] for l in lemma_samples]
+
+    tokens = [ w.split(' ') for w in words  ] #nltk.word_tokenize() is slower and hardly better
+    flat_words = flatten(tokens)
+
+    tags = [l[2] for l in lemma_samples]
     flat_tags = flatten(tags)
+
+    word_length = len(flat_words)
+    tag_length = len(flat_tags)
+
+    #force the tags to have the same plength as tokens, if they do not :(
+    #this is hacky and terrible :( Sorry, world!!!! Its probably only 1 or 2 off
+    if word_length != tag_length:
+        print("they aren't the same :(( ")
+        if word_length > tag_length:
+            #shorten word_length
+            flat_words = flat_words[:tag_length]
+        elif tag_length > word_length:
+            #shorten tag_length
+            flat_tags = flat_tags[:word_length]
+
     return flat_words, flat_tags
+
+
+#words, tags = get_words_tags("18952863+18269575")
+
+
 
 #Input: list of words and corresponding list of tags
 #Output: list of noun phrases joined as a string
@@ -80,6 +87,10 @@ def transform_text(words, tags):
             # append current token
             transformed_tokens.append(w)
     return transformed_tokens
+
+
+#transformed_tokens = transform_text(words, tags)
+
 
 #make dict of NPs with their frequency counts
 def chooseTopNPs(transformed_tokens):

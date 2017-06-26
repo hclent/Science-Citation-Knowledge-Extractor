@@ -1,17 +1,16 @@
 from processors import * #pyProcessors
 import os.path, time, re, logging, pickle, json, codecs, arrow
-from itertools import chain #for "flatten" function
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
 from lsa1 import * #mine
 from lda1 import * #mine
-from fasttext import * #mine
-from fgraph import *
 from journalvis import * #mine
 from nes import * #mine
 from kmeans1 import * #mine
 from naive_cosineSim import * #mine
+from fasttext import * #mine
+from fgraph import * #mine
 from fgraph2json import embedding_json #mine
 
 
@@ -124,9 +123,6 @@ def new_or_copy_db(citation): #citation is a dict
 			values(dict(datestamp = date, pmcid=pmcid, title=title, author=author, journal=journal, pubdate=pubdate,
 						citesPmid=citesPmid, url=url))
 		conn.execute(update)
-
-
-
 
 
 
@@ -360,6 +356,7 @@ def vis_wordcloud(neslist, nes_categories, w_number):
 	#print(wcl)
 	return wcl
 
+
 #TODO: word counts for documents seem to have some mistakes. Look into this!!!
 def vis_heatmap(data_samples, neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
@@ -397,7 +394,8 @@ def vis_kmeans(lemma_samples, num_clusters):
 		hyperlink = db_citations_hyperlink_retrieval(id)
 		titles.append(hyperlink)
 
-	lemmas_for_kmeans = [l[1] for l in lemma_samples] #grab JUST the lemmas
+	# ignore the pmcid's in l[0], ignore tags in l[2] and just grab the lemmas
+	lemmas_for_kmeans = [l[1] for l in lemma_samples]
 	hX, hasher = get_hashing(lemmas_for_kmeans)
 	clusters = do_kemeans(hX, int(num_clusters)) #list of cluster assignments
 	coordinates = do_NMF(hX) #dimensionality reduction for visualization
@@ -502,12 +500,8 @@ def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number o
 #Output: prints csv for force directed graph
 def run_embeddings(query, top_n, k_clusters):
 	logging.info("in run_embeddings function")#
-	pmid_list = query.split('+')  # list of string pmids
-
-	#TODO: REPLACE THIS WITH CACHING
-	words, tags = get_words_tags(pmid_list) #list of words/tags per doc
-	####
-
+	logging.info(query)
+	words, tags = get_words_tags(query) #list of words/tags per doc
 	transformed_sentence = transform_text(words, tags)
 	npDict = chooseTopNPs(transformed_sentence)
 	logging.info("done with npDict")
@@ -565,75 +559,6 @@ def print_lda(query, user_input, jsonLDA):
 
 def flatten(listOfLists):
     return list(chain.from_iterable(listOfLists))
-
-#Input: the output of do_multi_preprocessing (list of dicts with lemmas and named entities)
-#This function stores selected information about the annotation in the db table 'annotations'
-#Ooutput: none
-#Updated to sqlalchemy
-#TODO: I don't think this is super helpful... better to just cache pickle files
-def biodoc_to_db(biodoc_data):
-	for biodict in biodoc_data:
-		pmcid = str(biodict["pmcid"])
-		record = annotationsCheckPmcid(pmcid)
-		# step 1: if pmcid already in db, pass
-		if record == 'yes':
-			logging.info("repeat!")
-			pass
-		# step 2: if pmcid not in db, add the things!
-		if record == 'empty':
-			lemmas = str(biodict["lemmas"]) #will be a string that looks like a list... will have to parse back into list somehow
-			logging.info(lemmas)
-			all_nes = biodict["nes"][0] #its a list with one dictionary in it (hence we index [0] to get the dict)
-			try:
-				bioprocess_list = all_nes["BioProcess"]
-				#['translation', 'homeostasis', 'stress response', 'stress response'] #will need to make a string
-				#String where we can put it back in a list!
-				bioprocess = ", ".join(bioprocess_list) #translation, homeostasis, stress response, stress response
-			except Exception as e1:
-				bioprocess = '' #empty string
-			try:
-				cell_lines = ", ".join(all_nes["CellLine"])
-			except Exception as e2:
-				cell_lines = ''
-			try:
-				cell_components = ", ".join(all_nes["Cellular_component"])
-			except Exception as e3:
-				cell_components = ''
-			try:
-				family = ", ".join(all_nes["Family"])
-			except Exception as e4:
-				family = ''
-			try:
-				gene_product = ", ".join(all_nes["Gene_or_gene_product"])
-			except Exception as e5:
-				gene_product = ''
-			try:
-				organ = ", ".join(all_nes["Organ"])
-			except Exception as e6:
-				organ = ''
-			try:
-				simple_chemical = ", ".join(all_nes["Simple_chemical"])
-			except Exception as e7:
-				simple_chemical = ''
-			try:
-				site = ", ".join(all_nes["Site"])
-			except Exception as e8:
-				site = ''
-			try:
-				species = ", ".join(all_nes["Species"])
-			except Exception as e9:
-				species = ''
-			try:
-				tissue_type = ", ".join(all_nes["TissueType"])
-			except Exception as e10:
-				tissue_type = ''
-			date = str(arrow.now().format('YYYY-MM-DD'))
-
-			update = annotations.insert().\
-				values(dict(datestamp=date, pmcid=pmcid, lemmas=lemmas, bioprocess=bioprocess, cell_lines=cell_lines, cell_components=cell_components,
-							family=family, gene_product=gene_product, organ=organ, simple_chemical=simple_chemical, site=site, species=species,
-							tissue_type=tissue_type))
-			conn.execute(update)
 
 
 ############## GRAVEYARD ##########################################################

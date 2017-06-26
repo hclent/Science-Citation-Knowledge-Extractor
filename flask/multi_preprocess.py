@@ -2,7 +2,6 @@ from __future__ import print_function
 from processors import *
 import re, nltk, json, pickle, time
 import json
-from nltk.corpus import stopwords
 import os.path
 from multiprocessing import Pool
 import logging
@@ -171,7 +170,6 @@ def multiprocess(docs):
 ###################################################
 #BIODOC HANDLING
 
-#TODO: use this function instead ASAP.
 # Input: Pmid
 # Output: list of dictionaries for all annotated citing pmcids ["pmcid": 123, ]
 def retrieveBioDocs(pmid):
@@ -196,11 +194,19 @@ def retrieveBioDocs(pmid):
   return biodocs
 
 
-def grab_lemmas(biodoc):
+def grab_lemmas_and_tags(biodoc):
   lemmas_list = biodoc.lemmas #list
-  keep_lemmas = [w for w in lemmas_list if w.lower() not in eng_stopwords]
+  tags_list = biodoc.tags
+  lemmas_with_tags = list(zip(lemmas_list, tags_list))
+  keep = [lt for lt in lemmas_with_tags if lt[0].lower() not in eng_stopwords]
+
+
+  #keep_lemmas = [w for w in lemmas_list if w.lower() not in eng_stopwords]
+  keep_lemmas = [lt[0] for lt in keep]
+  keep_tags = [lt[1] for lt in keep] #not making it a string here. will deal with it later
+
   keep_lemmas = (' '.join(map(str, keep_lemmas))) #map to string. strings are necessary for the TFIDF
-  return keep_lemmas
+  return keep_lemmas, keep_tags
 
 
 #Input: Processors annotated biodocs
@@ -209,9 +215,6 @@ def grab_nes(biodoc):
   ners_list = biodoc.nes
   return ners_list
 
-
-def flatten_tags(listOfLists):
-    return list(chain.from_iterable(listOfLists))
 
 
 #Input: Processors annotated biodocs (from JSON)
@@ -229,7 +232,6 @@ def loadBioDoc(biodocs):
     biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": [], "tags": []}
 
     token_count_list = []
-    pos_tags = []
 
     with open(jsonpath) as jf:
       data = Document.load_from_JSON(json.load(jf))
@@ -241,17 +243,13 @@ def loadBioDoc(biodocs):
         num_tokens = s.length
         token_count_list.append(num_tokens)
 
-        #trying to get the tags for fasttext.py
-        tags = s.tags
-        pos_tags.append(tags)
-
       num_tokens = sum(token_count_list)
       biodict["num_tokens"].append(num_tokens)
 
-      biodict["tags"].append(flatten_tags(pos_tags)) #going to need tags for fasttext viz
+      lemmas, tags = grab_lemmas_and_tags(data)
+      biodict["lemmas"].append(lemmas) #lemmas is a STRING
+      biodict["tags"].append(tags) #tags is a LIST
 
-      lemmas = grab_lemmas(data)
-      biodict["lemmas"].append(lemmas)
       nes = grab_nes(data)
       biodict["nes"].append(nes)
 
