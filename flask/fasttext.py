@@ -31,7 +31,7 @@ def flatten(listOfLists):
 #Input: query
 #Output, list of words, and corresponding list of tags
 def get_words_tags(query):
-    pmid_list = query.split('+')  # list of string pmids
+    pmid_list = query.split('+')
     first_pmid = pmid_list[0]
 
     path_to_lemma_samples = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
@@ -42,8 +42,7 @@ def get_words_tags(query):
 
     words = [l[1] for l in lemma_samples]
 
-    tokens = [ w.split(' ') for w in words  ] #nltk.word_tokenize() is slower and hardly better
-    flat_words = flatten(tokens)
+    flat_words = flatten(words)
 
     tags = [l[2] for l in lemma_samples]
     flat_tags = flatten(tags)
@@ -51,10 +50,10 @@ def get_words_tags(query):
     word_length = len(flat_words)
     tag_length = len(flat_tags)
 
-    #force the tags to have the same plength as tokens, if they do not :(
-    #this is hacky and terrible :( Sorry, world!!!! Its probably only 1 or 2 off
+    # It SHOULD NOT happen that the tags and words are not the same length...
+    # But JUST IN CASE.... force them to have the same length
     if word_length != tag_length:
-        print("they aren't the same :(( ")
+        #print("they aren't the same :(( ")
         if word_length > tag_length:
             #shorten word_length
             flat_words = flat_words[:tag_length]
@@ -64,8 +63,6 @@ def get_words_tags(query):
 
     return flat_words, flat_tags
 
-
-#words, tags = get_words_tags("18952863+18269575")
 
 
 
@@ -88,8 +85,6 @@ def transform_text(words, tags):
             transformed_tokens.append(w)
     return transformed_tokens
 
-
-#transformed_tokens = transform_text(words, tags)
 
 
 #make dict of NPs with their frequency counts

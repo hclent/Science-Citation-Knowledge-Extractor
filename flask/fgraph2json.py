@@ -1,5 +1,4 @@
 import json, re, os, logging
-from fasttext import *
 from operator import itemgetter
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
@@ -29,7 +28,6 @@ def embedding_json(results, query):
     ordered_nodes = sorted(json_out["nodes"], key=itemgetter('group'))
     links = json_out["links"]
     print_json = {"nodes": ordered_nodes, "links": links}
-    logging.info(print_json)
     save_path = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/fgraphs'  # in the folder of the last pmid
     completeName = os.path.join(save_path, ('fgraph_' + (str(query)) + '.json'))  # with the query for a name
     logging.info(completeName)
