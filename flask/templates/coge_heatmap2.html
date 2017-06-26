@@ -137,11 +137,15 @@ Plotly.newPlot('myDiv', data, layout);
 myPlot.on('plotly_click', function(data){
 	for (var i=0; i<data.points.length; i++) { //safety net
         var selected_point = data.points[i];
+        //console.log(selected_point)
 
 		var point_numbers = data.points[i].pointNumber; //two numbers
         var point_number = point_numbers[1]; //grab the second number
 		var point_data = selected_point['data'];
 		var point_title = point_data['name'][point_number];
+//        console.log(point_number)
+//        console.log(point_data)
+//        console.log(point_title)
 		//var point_title = data.points[i]['data']['name'][data.points[i].pointNumber];
 
 //

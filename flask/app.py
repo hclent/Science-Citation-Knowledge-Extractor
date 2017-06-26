@@ -329,9 +329,13 @@ def cogewordcloud():
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		nes_list =  pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb")) #pre-processed already
+		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		#logging.info(nes_list)
+		nes_list = [n[1] for n in nes_samples]
+		#id_list = [n[0] for n in nes_samples]
+
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = ' '
 		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data, popup=popup)
@@ -341,7 +345,7 @@ def cogewordcloud():
 		with open(completeName) as load_data:
 			wordcloud_data = json.load(load_data) #this result doesn't need to be parsed but unsure how to write that in javascript
 		#so i'm going to read it in as a string that needs to be parsed anyway
-		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #json needs double quotes, not single quotes
+		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #for some reason JS wants the \ by the quotes...
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data, popup=popup)
 
@@ -356,17 +360,26 @@ def cogeheatmap():
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		nes_list =  pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb")) #pre-processed already
-		data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
+		#nes_list =  pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb")) #pre-processed already
+		#data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
+		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
-		titles = vis_heatmapTitles(query)
+
+		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		with open(lemma_file, "rb") as f:
+			lemma_samples = pickle.load(f)
+
+		x_docs, y_words, z_counts = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
+		titles = vis_heatmapTitles(lemma_samples)
 		#print(z_counts)
 		#print(x_docs)
 		#print(y_words)
 		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles)
 	else:
 		#Default data
+		#MAKE A NEW ONE aaaaaahhh
 		return render_template('coge_heatmap1.html')
 
 

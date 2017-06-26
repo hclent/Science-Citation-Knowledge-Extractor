@@ -351,28 +351,30 @@ def print_journalvis(query):
 
 def vis_wordcloud(neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
-	#print(nesDict)
 	wcl = wordcloud(nesDict, int(w_number))
-	#print(wcl)
 	return wcl
 
 
-#TODO: word counts for documents seem to have some mistakes. Look into this!!!
-def vis_heatmap(data_samples, neslist, nes_categories, w_number):
+#Fixed
+#TODO: fix the titles from appearing several times
+#TODO: fix x-axis (Author, 2014)
+#TODO: sort x-axis somehow (by date?)
+def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
+	neslist = [n[1] for n in nes_samples]
 	nesDict = frequency_dict(neslist, nes_categories)
-	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, data_samples)
+	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, lemma_samples)
 	return x_docs, y_words, z_counts
 
-#for getting heatmap titles
-#TODO: word counts for documents seem to have some mistakes. Look into this!!!
-def vis_heatmapTitles(query):
+
+def vis_heatmapTitles(lemma_samples):
 	titles = []  # want citations instead of titles
-	pmid_list = query.split('+')  # list of string pmids
-	for pmid in pmid_list:
-		temp_titles = db_citations_hyperlink_retrieval(pmid)  # return apa citation hyperlink for click data
-		for t in temp_titles:  #
-			titles.append(t)
+	pmcids = [l[0] for l in lemma_samples]
+	for id in pmcids:
+		hyperlink = db_citations_hyperlink_retrieval(id)
+		titles.append(hyperlink[0])
+	#titles =
 	return titles
+
 
 #TODO: fix papers axis so its not smooshed together and ugly
 def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
@@ -392,7 +394,7 @@ def vis_kmeans(lemma_samples, num_clusters):
 	pmcids = [l[0] for l in lemma_samples]
 	for id in pmcids:
 		hyperlink = db_citations_hyperlink_retrieval(id)
-		titles.append(hyperlink)
+		titles.append(hyperlink[0])
 
 	# ignore the pmcid's in l[0], ignore tags in l[2] and just grab the lemmas
 	lemmas_for_kmeans = [l[1] for l in lemma_samples]
@@ -458,7 +460,9 @@ def do_multi_preprocessing(user_input):
 	# # #Now update annotated_check
 	a_check = annotation_check(user_input)
 
+	#TODO: only update/annotate check if there's new docs since last time?
 	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
+		logging.info("updating the annotation checks in the db")
 		pmcid = str(a["pmcid"])
 		annotated = str(a["annotated"][0])
 

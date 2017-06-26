@@ -314,7 +314,7 @@ def pmcidAnnotated(pmcid):
 def update_annotations(b, user_input):
 	pc = str(b["pmcid"])
 	s = b["num_sentences"]
-	t = b["num_tokens"]
+	t = b["num_tokens"][0]
 	up = citations.update().\
 		where(citations.c.pmcid == pc).\
 		where(citations.c.citesPmid == user_input).\

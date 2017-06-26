@@ -3,10 +3,9 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
-import re, os
+import re, os, json
 from collections import defaultdict
 from processors import *
-import pickle, random, time
 
 
 
@@ -15,8 +14,8 @@ import pickle, random, time
 def frequency_dict(nes_list, category_list):
     #nes_stopwords = ['gene', 'genes', 'genetics', 'genome', 'genomic', 'chromosome', 'chromosomes', 'result', 'line', 'time']
     nesDict = defaultdict(lambda:0)
-    for docs in nes_list:
-        for key in docs:
+    for docs in nes_list: #docs is dict
+        for key in docs: #key of dict
             for category in category_list: #no error with category 'Potato'
                 if key == category:
                     nes = (docs[key])
@@ -24,6 +23,7 @@ def frequency_dict(nes_list, category_list):
                         nesDict[n] += 1
                     #     if n not in nes_stopwords:
                     #        nesDict[n] += 1
+    print(nesDict)
     return nesDict
 
 #D3 wordcloud
@@ -34,12 +34,12 @@ def wordcloud(nesDict, x):
             entry = {"text": nes, "size": nesDict[nes]} #no scaling
             #entry = {"text": nes, "size": nesDict[nes]*.25} #scaling
             wordcloud_list.append(entry)
-    wordcloud_list = re.sub('\'', "\"", str(wordcloud_list))
-    return wordcloud_list
+    wordcloud_json = json.dumps(wordcloud_list)
+    return wordcloud_json
 
 
 #makes the data for plotly heatmap
-def doHeatmap(nesDict, n, data_samples):
+def doHeatmap(nesDict, n, lemma_samples):
     y = [] # y list of words
     x = [] # x list of documents
     z = [] # z list of lists with word counts for each document
@@ -54,6 +54,7 @@ def doHeatmap(nesDict, n, data_samples):
         if not match1:
             lemma_Dict[word] += nesDict[word]
 
+    lemma_list = [l[1] for l in lemma_samples]
 
     for word in lemma_Dict:
         # print(word)
@@ -67,14 +68,14 @@ def doHeatmap(nesDict, n, data_samples):
             #i = 0
             #print(word)
             word_counts = []
-            for documents in data_samples:
+            for document in lemma_list: #[['doc 1 words'], []]
                 #docname = "doc"+str(i)
                 #print(docname)
-                unigrams_list = documents.split(" ")
+
                 runningDict = defaultdict(lambda:0)
 
                 if len_word == 1:
-                    for unigram in unigrams_list:
+                    for unigram in document:
                         if unigram == word:
                             #print(str(unigram)+" is the same as "+str(word))
                             runningDict[word] += 1
@@ -83,7 +84,7 @@ def doHeatmap(nesDict, n, data_samples):
                 #bigrams
                 if len_word == 2:
                     b = 2
-                    bigrams = [ unigrams_list[i:i+b] for i in range(len(unigrams_list)-b)]
+                    bigrams = [ document[i:i+b] for i in range(len(document)-b)]
                     for grams in bigrams:
                         q = ' '
                         grams = str(q.join(grams))
@@ -94,17 +95,6 @@ def doHeatmap(nesDict, n, data_samples):
                             runningDict[word] +=0
 
                 #trigrams are too long for this data visualization
-                # if len_word == 3:
-                #     t = 3
-                #     trigrams = [unigrams_list[i:i+t] for i in range(len(unigrams_list)-t)]
-                #     for grams in trigrams:
-                #         q = ' '
-                #         grams = str(q.join(grams))
-                #         if grams == word:
-                #             runningDict[word] +=1
-                #             #print(grams+' = '+word)
-                #         if grams != word:
-                #             runningDict[word] +=0
 
                 #3 grams, 4 grams, +
                 if len_word > 2:
@@ -117,7 +107,9 @@ def doHeatmap(nesDict, n, data_samples):
             z.append(word_counts)
 
     i = 1
-    for documents in data_samples:
+    for document in lemma_samples:
+        pmcid = document[0]
+        #TODO: MAKE A BETTER DOC LABEL FOR X AXIS!!!
         docname = "doc"+str(i)
         x.append(docname)
         i += 1
