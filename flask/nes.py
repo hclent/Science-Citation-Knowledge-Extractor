@@ -6,14 +6,12 @@ import pandas as pd
 import re, os, json
 from collections import defaultdict
 from processors import *
-from database_management import db_citations_mini_hyperlink
-
+from database_management import db_citations_mini_hyperlink, db_citations_mini_year
 
 
 
 #Make dictionary with NES counts {'gluten': 5, 'span': 9}
 def frequency_dict(nes_list, category_list):
-    #nes_stopwords = ['gene', 'genes', 'genetics', 'genome', 'genomic', 'chromosome', 'chromosomes', 'result', 'line', 'time']
     nesDict = defaultdict(lambda:0)
     for docs in nes_list: #docs is dict
         for key in docs: #key of dict
@@ -22,8 +20,6 @@ def frequency_dict(nes_list, category_list):
                     nes = (docs[key])
                     for n in nes:
                         nesDict[n] += 1
-                    #     if n not in nes_stopwords:
-                    #        nesDict[n] += 1
     return nesDict
 
 #D3 wordcloud
@@ -40,12 +36,33 @@ def wordcloud(nesDict, x):
 
 #makes the data for plotly heatmap
 def doHeatmap(nesDict, n, lemma_samples):
+    years = []  # so we can sort by years
+    lemma_Dict = defaultdict(lambda: 0)
+
     y = [] # y list of words
     x = [] # x list of documents
     z = [] # z list of lists with word counts for each document
 
-    lemma_Dict = defaultdict(lambda:0)
 
+    #STEP 1: SORT THE LEMMA_SAMPLES BY YEAR SO THAT
+    #X-AXIS ON VIS CAN BE SORTED BY YEAR AS WELL :D
+    for document in lemma_samples:
+        pmcid = document[0]
+        year = db_citations_mini_year(pmcid)
+        years.append(year)
+
+
+    #Sort lemma_samples by year, that way the vis goes from early years - later years
+    zipped = zip(years, lemma_samples)
+    sorted_data = list(sorted(zipped, key=lambda z: int(z[0])))
+    sorted_lemmas = [l[1][1] for l in sorted_data] #just the lemmas in lemma_samples
+    sorted_pmcids = [l[1][0] for l in sorted_data] #just the pmcids in lemma_samples
+
+    for pmcid in sorted_pmcids:
+        #print(pmcid)
+        label = db_citations_mini_hyperlink(pmcid)
+        keep_label = label[0] #there could be multiple, so just take the first one
+        x.append(keep_label)
 
     #remove plurals (very rough)
     for word in nesDict:
@@ -54,7 +71,6 @@ def doHeatmap(nesDict, n, lemma_samples):
         if not match1:
             lemma_Dict[word] += nesDict[word]
 
-    lemma_list = [l[1] for l in lemma_samples]
 
     for word in lemma_Dict:
         # print(word)
@@ -68,7 +84,7 @@ def doHeatmap(nesDict, n, lemma_samples):
             #i = 0
             #print(word)
             word_counts = []
-            for document in lemma_list: #[['doc 1 words'], []]
+            for document in sorted_lemmas: #[['doc 1 words'], []]
                 #docname = "doc"+str(i)
                 #print(docname)
 
@@ -106,34 +122,9 @@ def doHeatmap(nesDict, n, lemma_samples):
             #print(word_counts)
             z.append(word_counts)
 
-    i = 1
-    for document in lemma_samples:
-        pmcid = document[0]
-        label, year = db_citations_mini_hyperlink(pmcid)
-        doc_label = label[0]
-        #TODO: MAKE A BETTER DOC LABEL FOR X AXIS!!!
-        #docname = "doc"+str(i)
-        x.append(doc_label)
-        i += 1
-    return x, y, z
+    return x, y, z, years
 
 
-#deciding k for num of clusters
-# def elbowMethod(z):
-#     z_array = np.array(z)
-#     linkArray =  linkage(z_array, 'average')
-#     last = linkArray[-10:, 2]
-#     # last_rev = last[::-1]
-#     # idxs = np.arange(1, len(last) + 1)
-#     acceleration = np.diff(last, 2)  # 2nd derivative of the distances
-#     acceleration_rev = acceleration[::-1]
-#     k = acceleration_rev.argmax() + 2  # if idx 0 is the max of this we want 2 clusters
-#     if k > 6:
-#         k = 6
-#         print("k is greater than 6 yikes")
-#     else:
-#         print("clusters: " + str(k))
-#     return k
 
 #format x, y, z for Seaborn cluster map
 def make_seaborn_data(x, y, z):

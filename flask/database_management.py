@@ -143,6 +143,31 @@ def db_citations_hyperlink_retrieval(pmcid):
 		apa_citations.append(href_label)
 	return apa_citations
 
+
+
+
+#Gets the YEAR only for a given pmcid for the heatmap vis
+def db_citations_mini_year(pmcid):
+	s = select([citations.c.pubdate]).\
+		where(citations.c.pmcid == pmcid)
+	result = conn.execute(s)
+	years = []
+	for row in result:
+		pubdate = row["pubdate"] #need to just get year
+		year = re.search('\d{4}', pubdate)
+		if year:
+			keep_year = int(year.group(0))
+		else:
+			try:
+				keep_year = str(pubdate)
+			except Exception as e:
+				#we need an int no matter what...
+				keep_year = "0000"
+		years.append(keep_year) #there could be more than one result
+	use_year = years[0] #but we'll just use the first result
+	return use_year
+
+
 #This is for the heatmap x-axis labels
 def db_citations_mini_hyperlink(pmcid):
 	s = select([citations.c.author, citations.c.pubdate, citations.c.url]).\
@@ -150,25 +175,30 @@ def db_citations_mini_hyperlink(pmcid):
 	result = conn.execute(s)
 	label = []
 	for row in result:
-		author = row["author"] #grab up to first comma and ad "et al"
-		first_author = re.match('^\w+\s\w+,' ,author)
+		author = row["author"] #grab first author's last name (ie texts up until first space)
+		first_author = re.match('^\w+\s' ,author)
 		if first_author:
-			keep_author = first_author.group(0)
+			keep_author = str(first_author.group(0))
 		else:
-			keep_author = str(author[:10]) + '...'
+			keep_author = str(author[:5]) + '...'
 
 		pubdate = row["pubdate"] #need to just get year
 		year = re.search('\d{4}', pubdate)
 		if year:
-			keep_year = year.group(0)
+			keep_year = int(year.group(0))
 		else:
-			keep_year = pubdate
+			try:
+				keep_year = str(pubdate)
+			except Exception as e:
+				#we need an int no matter what...
+				keep_year = "0000"
 
 		url = row["url"]
-		apa = str(keep_author+' et al. ('+keep_year+')')
+		apa = str(str(keep_year) + ', ' + keep_author) #2008, author last name
+		#Use the href_label if they should be hyperlinks
 		#href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
 		label.append(apa)
-	return label, year
+	return label
 
 
 

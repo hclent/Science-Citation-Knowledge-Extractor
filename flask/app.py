@@ -360,26 +360,19 @@ def cogeheatmap():
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		#nes_list =  pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb")) #pre-processed already
-		#data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
 		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
-
 
 		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
-		x_docs, y_words, z_counts = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
-		titles = vis_heatmapTitles(lemma_samples)
-		#print(z_counts)
-		#print(x_docs)
-		#print(y_words)
-		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles)
+		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
+		len_x_docs = list(range(len(x_docs)))
+		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles, len_x_docs=len_x_docs)
 	else:
-		#Default data
-		#MAKE A NEW ONE aaaaaahhh
+		#Make new default data!!!!
 		return render_template('coge_heatmap1.html')
 
 

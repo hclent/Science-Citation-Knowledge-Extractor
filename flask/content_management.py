@@ -1,5 +1,6 @@
 from processors import * #pyProcessors
 import os.path, time, re, logging, pickle, json, codecs, arrow
+import operator
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
@@ -355,31 +356,41 @@ def vis_wordcloud(neslist, nes_categories, w_number):
 	return wcl
 
 
-#Fixed
-#TODO: fix the titles from appearing several times
-#TODO: fix x-axis (Author, 2014)
-#TODO: sort x-axis somehow (by date?)
-def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
-	neslist = [n[1] for n in nes_samples]
-	nesDict = frequency_dict(neslist, nes_categories)
-	x_docs, y_words, z_counts  = doHeatmap(nesDict, w_number, lemma_samples)
-	return x_docs, y_words, z_counts
 
-
-def vis_heatmapTitles(lemma_samples):
+def vis_heatmapTitles(lemma_samples, years):
 	titles = []  # want citations instead of titles
-	pmcids = [l[0] for l in lemma_samples]
+
+	zipped = zip(years, lemma_samples)
+	sorted_data = list(sorted(zipped, key=lambda z: int(z[0])))
+	pmcids = [l[1][0] for l in sorted_data]
+
+	#pmcids = [l[0] for l in lemma_samples]
 	for id in pmcids:
 		hyperlink = db_citations_hyperlink_retrieval(id)
 		titles.append(hyperlink[0])
 	#titles =
 	return titles
 
+#Fixed
+#TODO: fix x-axis (Author, 2014)
+#TODO: sort x-axis somehow (by date?)
+#TODO: these changes made everything out of order :'(((
+def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
+	neslist = [n[1] for n in nes_samples]
+	nesDict = frequency_dict(neslist, nes_categories)
+	#everything is sorted by year inside doHeatmap
+	x_docs, y_words, z_counts, years = doHeatmap(nesDict, w_number, lemma_samples)
+	#sorted by year in vis_HeatmapTitles the sme way as doHeatmap
+	titles = vis_heatmapTitles(lemma_samples, years)
+	return x_docs, y_words, z_counts, titles
+
+
+
 
 #TODO: fix papers axis so its not smooshed together and ugly
 def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
 	logging.info("starting clustermap")
-	x, y, z = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+	x, y, z, = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
 	logging.info("making clustermap data")
 	seaData = make_seaborn_data(x, y, z)
 	logging.info("saving clustermap png")
