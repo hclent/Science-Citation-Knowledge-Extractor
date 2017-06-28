@@ -339,7 +339,8 @@ def cogewordcloud():
 		#id_list = [n[0] for n in nes_samples]
 
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
-		popup = ' '
+		#TODO: display popup/label of what categories/N are being shown
+		#popup = '[!] Displaying results for N='+str(w_number)+', from categories:' + str(nes_categories)
 		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data, popup=popup)
 	else:
 		#Default data
@@ -397,7 +398,8 @@ def cogeclustermap():
 			lemma_samples = pickle.load(f)
 
 		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query)
-		image = 'clustermaps/'+saveName
+		#Fix.... why bother returning full file path if html only looks in "static" dir?
+		image = "clustermaps/cm_"+str(query)+".png"
 		return render_template('coge_clustermap.html', image=image)
 	else:
 		image = "clustermaps/cm_18952863+18269575.png"
@@ -438,6 +440,7 @@ def coge_stats():
 	return render_template('coge_stats.html', input_click_citations=input_click_citations)
 
 
+#TODO: where did the texts go?!?! O_0
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions()
