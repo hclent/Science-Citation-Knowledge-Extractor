@@ -3,7 +3,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
-import re, os, json
+import re, os, json, string
 from collections import defaultdict
 from processors import *
 from database_management import db_citations_mini_hyperlink, db_citations_mini_year
@@ -58,10 +58,22 @@ def doHeatmap(nesDict, n, lemma_samples):
     sorted_lemmas = [l[1][1] for l in sorted_data] #just the lemmas in lemma_samples
     sorted_pmcids = [l[1][0] for l in sorted_data] #just the pmcids in lemma_samples
 
+    #get year-sorted x-axis labels!
+    alphabet = list(string.ascii_lowercase)
+    #Probelm: Plotly doesn't like repeat x-axis labels! Try adding "a" like, 2008a, Author; 2008b Author, etc?
+    #I know its a bit hacky but I couldn't get Plotly to behave with me so...
     for pmcid in sorted_pmcids:
         #print(pmcid)
         label = db_citations_mini_hyperlink(pmcid)
-        keep_label = label[0] #there could be multiple, so just take the first one
+        keep_label = label[0] #there could be multiple records from db, so just take the first one
+        #Step 1: check if its in the x list
+        repeat_count = x.count(keep_label)
+        if repeat_count > 0:
+            #eww hacky yucky i'm really sorry!
+            add_letter = alphabet[repeat_count]
+            keep_label = keep_label[:4] + add_letter + keep_label[4:]
+        elif repeat_count == 0:
+            pass
         x.append(keep_label)
 
     #remove plurals (very rough)
