@@ -241,6 +241,7 @@ def new_citations_from_db(user_input):
 
 
 #Data for populating statistics page in app
+#TODO: integrate queries table
 def get_statistics(pmid_list):
 	total = []
 	unique_pmcids = []
@@ -281,6 +282,7 @@ def get_statistics(pmid_list):
 
 
 #use query to get info about input papers
+#TODO: integrate queries table
 def statsSelfInfo(query):
     input_click_citations = []
     pmid_list = query.split('+')  # list of string pmids
@@ -310,7 +312,9 @@ def stats_barchart(query):
 
 ############ DATA VISUALIZATIONS #################################################
 #Updated to SqlAlchemy
-#TODO: no mechanism for updating db if more citations have been found!!
+#TODO: no mechanism for updating **DB** (table: queries) if more citations have been found!!
+#TODO: update wc cache if new citations to a query
+#TODO: check for journals vis file
 def print_journalvis(query):
 	record = checkForQuery(query)  # check for query in db.
 	logging.info("checked for query!!!")
@@ -349,12 +353,12 @@ def print_journalvis(query):
 
 
 
-
+#TODO: chcek for wc file
+#TODO: update wc cache if new citations to a query
 def vis_wordcloud(neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
 	wcl = wordcloud(nesDict, int(w_number))
 	return wcl
-
 
 
 def vis_heatmapTitles(lemma_samples, years):
@@ -371,10 +375,7 @@ def vis_heatmapTitles(lemma_samples, years):
 	#titles =
 	return titles
 
-#Fixed
-#TODO: fix x-axis (Author, 2014)
-#TODO: sort x-axis somehow (by date?)
-#TODO: these changes made everything out of order :'(((
+
 def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
 	neslist = [n[1] for n in nes_samples]
 	nesDict = frequency_dict(neslist, nes_categories)
@@ -385,12 +386,15 @@ def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
 	return x_docs, y_words, z_counts, titles
 
 
-
-
+#TODO: vis_heatmap and vis_clustermap bascially work the same.
+#TODO: share the x_docs, y_words, z_counts between the two, for faster work :)
 #TODO: fix papers axis so its not smooshed together and ugly
-def vis_clustermap(data_samples, nes_list, nes_categories, w_number, query):
+#TODO: fix the way papers are saved here, so we have the nested directories for faster lookup
+#TODO: check for clustermap file
+#TODO: update clustermap cache if new citations to a query
+def vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query):
 	logging.info("starting clustermap")
-	x, y, z, = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+	x, y, z, years = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
 	logging.info("making clustermap data")
 	seaData = make_seaborn_data(x, y, z)
 	logging.info("saving clustermap png")

@@ -27,6 +27,8 @@ class pmidForm(Form):
 @app.route("/cogecrawl/")
 def cogecrawl():
 	#error = None
+	#TODO: Don't have this in a pickle file omg. Make it call from db, so that its always up to date!
+	#TODO: or at least update the pickle file jeez
 	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
 		citations_with_links = pickle.load(f)
 	return render_template("dashboard.html", citations_with_links=citations_with_links)
@@ -385,13 +387,20 @@ def cogeclustermap():
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is " + str(w_number))
-		nes_list = pickle.load(open("/home/hclent/data/nes/nes_18952863+18269575.pickle", "rb"))  # pre-processed already
-		data_samples = pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb"))  # p
-		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
-		image = '/images/'+saveName
+
+		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
+
+		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		with open(lemma_file, "rb") as f:
+			lemma_samples = pickle.load(f)
+
+		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query)
+		image = 'clustermaps/'+saveName
 		return render_template('coge_clustermap.html', image=image)
 	else:
-		image = "images/coge_clustermap.png"
+		image = "clustermaps/cm_18952863+18269575.png"
 		return render_template('coge_clustermap.html', image=image)
 
 

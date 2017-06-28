@@ -155,6 +155,7 @@ def make_seaborn_data(x, y, z):
         d += 1
     return seaData
 
+
 #make jpeg clusterMap
 def makeClusterMap(seaData, query):
     seaFrame = pd.DataFrame((seaData), columns=['word', 'publication', 'count'])
@@ -166,7 +167,7 @@ def makeClusterMap(seaData, query):
     col = seamap.ax_col_dendrogram.get_position()
     seamap.ax_col_dendrogram.set_position([col.x0, col.y0, col.width, col.height])
 
-    save_path = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/images'  # in the folder 'clustermaps'
+    save_path = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/clustermaps'  # in the folder 'clustermaps'
     save_name = ('cm_' + (str(query)) + '.png')
     completeName = os.path.join(save_path, save_name)  # with the query for a name
     seamap.savefig(completeName)
