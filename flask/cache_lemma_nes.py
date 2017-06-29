@@ -201,4 +201,38 @@ def concat_lemma_nes_samples(query):
 
 	logging.info("Execute concat_lemma_nes_samples: done in %0.3fs." % (time.time() - t1))
 
-#concat_lemma_nes_samples("18952863+18269575")
+
+
+def load_lemma_cache(query):
+	pmid_list = query.split('+')  # list of string pmids
+
+	first_pmid = pmid_list[0]
+
+	query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+		first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+	try:
+		with open(query_lemma_completeName, "rb") as qlemma:
+			lemma_samples = pickle.load(qlemma)
+	except Exception as e:
+		concat_lemma_nes_samples(query)
+		lemma_samples = load_lemma_cache(query)
+	return lemma_samples
+
+
+
+def load_nes_cache(query):
+	pmid_list = query.split('+')  # list of string pmids
+
+	first_pmid = pmid_list[0]
+
+	query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+		first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
+	try:
+		with open(query_nes_completeName, "rb") as qnes:
+			nes_samples = pickle.load(qnes)
+	except Exception as e:
+		concat_lemma_nes_samples(query)
+		nes_samples = load_nes_cache(query)
+	return nes_samples
+
+

@@ -1,6 +1,7 @@
-import pickle, os
+import string
 import naive_makeVecs as makeVecs #mine
-from database_management import db_citation_urls, db_citations_hyperlink_retrieval, pmid2pmcid #mine
+from database_management import db_citations_mini_hyperlink, db_citations_hyperlink_retrieval #mine
+from cache_lemma_nes import load_lemma_cache
 
 
 #Load from pickled data_samples instead of filename
@@ -23,14 +24,7 @@ def loadMessages(filename):
 
 # Print cosine similarity scores
 def cosineSimilarityScore(vector1, vector2):
-    # cos (self, self) should = 1
-    # cosine_sim_score1 = (str(makeVecs.cosine(vector1, vector1)))
-    # print("cos (vec1, vec1): " + cosine_sim_score1)
-    # cosine_sim_score2 = (str(makeVecs.cosine(vector2, vector2)))
-    # print("cos (vec2, vec2): " + cosine_sim_score2)
     cosine_sim_score_1_2 = (makeVecs.cosine(vector1, vector2))
-    # print("cos (vec1, vec2): " + cosine_sim_score_1_2)
-    # print("-------------------------------------------------------")
     return cosine_sim_score_1_2
 
 
@@ -116,11 +110,14 @@ def load_corpus(corpus, eligible_papers):
     return corpus_vec, color
 
 
+#Updated to use new cache :) yay
 def load_datasamples(query):
-    data_samples = pickle.load(open('/home/hclent/data/data_samples/data_samples_'+str(query)+'.pickle', "rb")) #pre-processed
-    #print(len(data_samples)) #num docs
-    data_vecs_list = loadFromDataSamples(data_samples)
-    return data_vecs_list
+    lemma_samples = load_lemma_cache(query)
+    lemma_list = [l[1] for l in lemma_samples]
+    pmcids_list = [l[0] for l in lemma_samples]
+    list_data_strings = [' '.join(map(str, l)) for l in  lemma_list]
+    data_vecs_list = loadFromDataSamples(list_data_strings)
+    return data_vecs_list, pmcids_list
 
 
 def get_cosine_list(corpus_vec, data_vecs_list):
@@ -151,33 +148,32 @@ def get_cosine_eligible(corpus_vec, eligible_papers):
 
 
 #take the list cosines and match scores with the url to the paper
-def add_urls(query, cosine_list, color):
-    url_list = []
+#Updated with new titles, making sure there's no repeats :)
+def add_urls(cosine_list, color, pmcids_list):
     doc_list = []
     histogram_labels = [] #this is what will be in the visualization
     apa_labels = []
 
-    pmid_list = query.split('+') #list of string pmids
-    for user_input in pmid_list:
-        #get the urls
-        urls = db_citation_urls(user_input)
-        for url in urls:
-            url_list.append(url)
-        #get hyperlinked apa citations for click event
-        citations = db_citations_hyperlink_retrieval(user_input)
-        for c in citations:
-            apa_labels.append(c)
+    alphabet = list(string.ascii_lowercase)
+    for pmcid in pmcids_list:
+        label = db_citations_mini_hyperlink(pmcid)
+        keep_label = label[0]  # there could be multiple records from db, so just take the first one
+        # Step 1: check if its in the x list
+        repeat_count = histogram_labels.count(keep_label)
+        if repeat_count > 0:
+            # eww hacky yucky i'm really sorry!
+            add_letter = alphabet[repeat_count]
+            keep_label = keep_label[:4] + add_letter + keep_label[4:]
+        elif repeat_count == 0:
+            pass
+        histogram_labels.append(keep_label)
 
-    num_papers = len(url_list)
-    for i in range(1, (num_papers+1)):
-        name = str('Doc'+str(i))
-        doc_list.append(name)
-    titles = list(zip(url_list, doc_list))
-    for t in titles:
-        label = '<a href='+str(t[0])+'>'+str(t[1])+'</a>'
-        histogram_labels.append(label)
+        #get the hyperlink apa_lables
+        hyperlink_list = db_citations_hyperlink_retrieval(pmcid)
+        keep_hyperlink = hyperlink_list[0]
+        apa_labels.append(keep_hyperlink)
 
-    colors_list = [color] * int(len(titles))
+    colors_list = [color] * int(len(histogram_labels))
 
     #need to sort the histogram_labels to match that order
     combo = list(zip(cosine_list, histogram_labels, apa_labels, colors_list))
@@ -192,7 +188,9 @@ def add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines):
         click_label = []
         for e in eligible_papers:
             pmid = e[1]
+            #TODO: look up pmid in db to get a proper title!
             label = 'PMID '+str(pmid)
+            #TODO: fix these fucky histogram labels!!
             histogram_labels.append(pmid)
             click_label.append(label)
         color = 'rgb(244, 241, 48)'

@@ -38,7 +38,7 @@ def connect_to_Processors(port_num):
 
 ################ WORD EMBEDDING MODEL ############## (Global var)
 
-fasttext_model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
+#fasttext_model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
 
 ################### INPUT #########################################################
 
@@ -455,13 +455,36 @@ def inputEligible(query):
 # TODO: make hyperlinks https
 def vis_scifi(corpus, query, eligible_papers):
 	corpus_vec, color = load_corpus(corpus, eligible_papers)
+	logging.info(corpus_vec) #corpus_vec is dict of
+	logging.info(color)
 	eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)
-	data_vecs_list = load_datasamples(query)
+	logging.info("eligible_cosines: done")
+	data_vecs_list, pmcids_list  = load_datasamples(query)
+	logging.info("data_vecs_list: done")
 	cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
-	sorted_combos = add_urls(query, cosine_list, color)
+	logging.info("cosine_list: done")
+	print("COSINE LIST")
+	print(cosine_list)
+	print(len(cosine_list))
+	#cosine list is the cosine sim score for each document
+	#TODO: FAILS HERE
+	sorted_combos = add_urls(cosine_list, color, pmcids_list)
+	logging.info("sorted combos: done")
 	all_sorted_combos = add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines)
+	logging.info("all_sorted_combos: done")
 	x, y, names, color_list = prepare_for_histogram(all_sorted_combos)
+	logging.info(x)
+	logging.info(y)
+	logging.info(color_list)
 	return x, y, names, color_list
+
+eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
+corpus = 'darwin'
+query = "18952863+18269575"
+x, y, names, color_list = vis_scifi(corpus, query, eligible_papers)
+
+
+
 
 ############ PROCESSING BIODOCS ############################################
 #Take pmcid.txt and get an annotated document, as well as lemmas and named entities
