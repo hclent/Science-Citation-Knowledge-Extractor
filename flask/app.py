@@ -340,7 +340,7 @@ def cogewordcloud():
 
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		#TODO: display popup/label of what categories/N are being shown
-		#popup = '[!] Displaying results for N='+str(w_number)+', from categories:' + str(nes_categories)
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data, popup=popup)
 	else:
 		#Default data
@@ -373,7 +373,8 @@ def cogeheatmap():
 
 		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
 		len_x_docs = list(range(len(x_docs)))
-		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles, len_x_docs=len_x_docs)
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
+		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles, len_x_docs=len_x_docs, popup=popup)
 	else:
 		#Make new default data!!!!
 		return render_template('coge_heatmap1.html')
@@ -444,7 +445,7 @@ def coge_stats():
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions()
-	eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
+	eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt', '2008, Lyons')]
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
@@ -477,7 +478,7 @@ def coge_scifi():
 		if corpus == 'bible':
 			title = 'The Bible'
 		if corpus == 'paper1':
-			title =  'PMID: 18952863'
+			title =  'Lyons et al., 2008'
 		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
 		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color, names=names, eligible_papers=eligible_papers)
 	else:

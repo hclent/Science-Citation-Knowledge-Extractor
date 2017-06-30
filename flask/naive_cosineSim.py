@@ -1,7 +1,7 @@
 import string
 import naive_makeVecs as makeVecs #mine
-from database_management import db_citations_mini_hyperlink, db_citations_hyperlink_retrieval #mine
-from cache_lemma_nes import load_lemma_cache
+from database_management import db_citations_mini_hyperlink, db_citations_hyperlink_retrieval, db_pmid_axis_label, db_pmid_hyperlink_retrieval #mine
+from cache_lemma_nes import load_lemma_cache #mine
 
 
 #Load from pickled data_samples instead of filename
@@ -150,7 +150,7 @@ def get_cosine_eligible(corpus_vec, eligible_papers):
 #take the list cosines and match scores with the url to the paper
 #Updated with new titles, making sure there's no repeats :)
 def add_urls(cosine_list, color, pmcids_list):
-    doc_list = []
+
     histogram_labels = [] #this is what will be in the visualization
     apa_labels = []
 
@@ -167,7 +167,6 @@ def add_urls(cosine_list, color, pmcids_list):
         elif repeat_count == 0:
             pass
         histogram_labels.append(keep_label)
-
         #get the hyperlink apa_lables
         hyperlink_list = db_citations_hyperlink_retrieval(pmcid)
         keep_hyperlink = hyperlink_list[0]
@@ -182,25 +181,47 @@ def add_urls(cosine_list, color, pmcids_list):
 
 
 
+#eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
 def add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines):
+    labels_thus_far = [c[1] for c in sorted_combos]
+
+    alphabet = list(string.ascii_lowercase)
+    #get the label for the eligible papers!
+
     if len(eligible_papers) > 0:
         histogram_labels = []
         click_label = []
         for e in eligible_papers:
             pmid = e[1]
-            #TODO: look up pmid in db to get a proper title!
-            label = 'PMID '+str(pmid)
-            #TODO: fix these fucky histogram labels!!
-            histogram_labels.append(pmid)
-            click_label.append(label)
-        color = 'rgb(244, 241, 48)'
+            label = db_pmid_axis_label(pmid)
+            keep_label = label[0] #there might be multiple, just get first
+
+            #check if the label is unique from others. plotly deletes duplicate lables :/
+            repeat_count = labels_thus_far.count(keep_label)
+            if repeat_count > 0:
+                add_letter = alphabet[repeat_count]
+                keep_label = keep_label[:4] + add_letter + keep_label[4:]
+            elif repeat_count == 0:
+                pass
+
+            hyperlink = db_pmid_hyperlink_retrieval(pmid)
+            keep_hyperlink = hyperlink[0]
+
+            histogram_labels.append(keep_label)
+
+            click_label.append(keep_hyperlink)
+
+        color = 'rgb(244, 241, 48)' #Hilight inputPapers in Yellow :)
         colors_list = [color] * int(len(histogram_labels))
         combo = list(zip(eligible_cosines, histogram_labels, click_label, colors_list))
         all_combos = sorted_combos + combo
         sorted_all_combos =  sorted(all_combos, reverse=False)
         return sorted_all_combos
+
+    #if there are no eligible papers just pass
     if len(eligible_papers) == 0:
         return sorted_combos
+
 
 def prepare_for_histogram(sorted_combos):
     x = [] #url labels
@@ -213,22 +234,3 @@ def prepare_for_histogram(sorted_combos):
         names.append(combo[2])
         color.append(combo[3])
     return x, y, names, color
-
-
-## function to get cosine of eligible papers,
-## then add that on to end of lists below
-## then sort
-## add color stuff too
-# eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
-# corpus = 'darwin'
-# corpus_vec, color = load_corpus(corpus, eligible_papers)
-# eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)
-# data_vecs_list = load_datasamples('18952863+18269575')
-# cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
-# sc = add_urls('18952863+18269575', cosine_list, color)
-# all_sc = add_eligible_cosines(sc, eligible_papers, eligible_cosines)
-# x, y, names, color = prepare_for_histogram(all_sc)
-# print(x)
-# print(y)
-# print(names)
-# print(color)

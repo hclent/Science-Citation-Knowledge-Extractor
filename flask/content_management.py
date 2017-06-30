@@ -38,7 +38,9 @@ def connect_to_Processors(port_num):
 
 ################ WORD EMBEDDING MODEL ############## (Global var)
 
-#fasttext_model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
+#This is really slow to load :/ Maybe shouldn't be a global var?
+# Don't want to re-load for each analysis though
+fasttext_model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
 
 ################### INPUT #########################################################
 
@@ -424,14 +426,19 @@ def vis_kmeans(lemma_samples, num_clusters):
 
 #scifi visualization
 #are query papers eligible to be loaded as a corpus?
-#first pass: check to see if the self_ text exists
-#later on can check databse instead.
+#step 1: does the pmid have a pmcid? If so, it was probably scraped
+#step 2: check to make sure that file actually exists
+#Get the data for it
+#TODO: Not sure that this should be done? Code assumes if pmid has pmcid, then it has been scraped
 def inputEligible(query):
 	papers = []
 	values = ['paper1', 'paper2', 'paper3', 'paper4', 'paper5']
 	path_to_paper = []
 	pmid_list = query.split('+')  # list of string pmids
+	display_title = [] #title for the dropdown menu
+
 	for pmid in pmid_list:
+	#We are assuming that if there is a pmcid for the pmid, that means it was in PubmedCentral and we scraped it
 		pmcid = pmid2pmcid(pmid)
 		if pmcid != "NA":
 			#print(pmcid)
@@ -447,7 +454,11 @@ def inputEligible(query):
 				#print(filename) #NA won't exist
 				papers.append(pmid)
 				path_to_paper.append(filename)
-	eligible_papers = list(zip(values, papers, path_to_paper))
+				display = db_pmid_axis_label(pmid)
+				keep_display = display[0]
+				display_title.append(keep_display)
+
+	eligible_papers = list(zip(values, papers, path_to_paper, display_title))
 	return eligible_papers
 
 
@@ -455,19 +466,13 @@ def inputEligible(query):
 # TODO: make hyperlinks https
 def vis_scifi(corpus, query, eligible_papers):
 	corpus_vec, color = load_corpus(corpus, eligible_papers)
-	logging.info(corpus_vec) #corpus_vec is dict of
-	logging.info(color)
 	eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)
 	logging.info("eligible_cosines: done")
 	data_vecs_list, pmcids_list  = load_datasamples(query)
 	logging.info("data_vecs_list: done")
 	cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
 	logging.info("cosine_list: done")
-	print("COSINE LIST")
-	print(cosine_list)
-	print(len(cosine_list))
 	#cosine list is the cosine sim score for each document
-	#TODO: FAILS HERE
 	sorted_combos = add_urls(cosine_list, color, pmcids_list)
 	logging.info("sorted combos: done")
 	all_sorted_combos = add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines)
@@ -478,10 +483,10 @@ def vis_scifi(corpus, query, eligible_papers):
 	logging.info(color_list)
 	return x, y, names, color_list
 
-eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
-corpus = 'darwin'
-query = "18952863+18269575"
-x, y, names, color_list = vis_scifi(corpus, query, eligible_papers)
+# eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
+# corpus = 'darwin'
+# query = "18952863+18269575"
+# x, y, names, color_list = vis_scifi(corpus, query, eligible_papers)
 
 
 

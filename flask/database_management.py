@@ -121,6 +121,53 @@ def pmid2pmcid(user_input):
 	# will return NoneType if its not there apparently :)
 
 
+#This is for TextCompare x-axis labels for eligible_papers (inputPapers)
+def db_pmid_axis_label(pmid):
+	s = select([inputPapers.c.author, inputPapers.c.pubdate, inputPapers.c.url]).\
+		where(inputPapers.c.pmid == pmid)
+	result = conn.execute(s)
+	label = []
+	href_label = []
+	for row in result:
+		author = row["author"] #grab first author's last name (ie texts up until first space)
+		first_author = re.match('^\w+\s' ,author)
+		if first_author:
+			keep_author = str(first_author.group(0))
+		else:
+			keep_author = str(author[:5]) + '...'
+
+		pubdate = row["pubdate"] #need to just get year
+		year = re.search('\d{4}', pubdate)
+		if year:
+			keep_year = int(year.group(0))
+		else:
+			try:
+				keep_year = str(pubdate)
+			except Exception as e:
+				#we need an int no matter what...
+				keep_year = "0000"
+
+		url = row["url"]
+		apa = str(str(keep_year) + ', ' + keep_author) #2008, author last name
+		label.append(apa)
+	return label
+
+
+def db_pmid_hyperlink_retrieval(pmid):
+	s = select([inputPapers.c.title, inputPapers.c.author, inputPapers.c.journal, inputPapers.c.pubdate, inputPapers.c.url]).\
+		where(inputPapers.c.pmid == pmid)
+	result = conn.execute(s)
+	apa_citations = []
+	for row in result:
+		title = row["title"]
+		author = row["author"]
+		journal = row["journal"]
+		pubdate = row["pubdate"]
+		url = row["url"]
+		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
+		href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
+		apa_citations.append(href_label)
+	return apa_citations
 
 ######################### SUPPORT FUNCTIONS FOR citations TABLE ###########################
 #Input: pmcid
@@ -168,7 +215,7 @@ def db_citations_mini_year(pmcid):
 	return use_year
 
 
-#This is for the heatmap x-axis labels
+#This is for the heatmap x-axis labels and TextCompare x-axis labels
 def db_citations_mini_hyperlink(pmcid):
 	s = select([citations.c.author, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.pmcid == pmcid)
