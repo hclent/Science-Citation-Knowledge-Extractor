@@ -251,7 +251,6 @@ def get_statistics(query):
 
 
 #use query to get info about input papers
-#TODO: integrate queries table
 def statsSelfInfo(query):
     input_click_citations = []
     pmid_list = query.split('+')  # list of string pmids
@@ -267,16 +266,26 @@ def statsSelfInfo(query):
 #TODO: sepperate counts (have a different bar) for each inputPaper
 def stats_barchart(query):
 	pmid_list = query.split('+') #list of string pmids
-	journals = []
-	dates = []
+
+	x_all = [] #list of list
+	y_all = []
 	for user_input in pmid_list:
+		journals = []
+		dates = []
 		db_journals, db_dates = db_bar_chart(user_input)
 		for j in db_journals:
 			journals.append(j)
 		for d in db_dates:
 			dates.append(d)
-	x, y = paper_dates_barchart(journals, dates, query)
-	return x, y
+		#TODO: only issue here is that we need the years range for the QUERY, and also 0 counts for any empties.
+		#maybe something like:
+		#years_range = getfromquerydb(qyer)
+		#x, y = paper_dates_barchart(journals, dates, years_range, user_input)
+		x, y = paper_dates_barchart(journals, dates, user_input)
+		x_all.append(x)
+		y_all.append(y)
+	return x_all, y_all
+
 
 
 ############ DATA VISUALIZATIONS #################################################

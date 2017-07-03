@@ -54,9 +54,9 @@ body {
 
 
 <script>
-var sets = [{sets : [0], label : 'PMID:18269575 (75)', size : 75},
-            {sets : [1], label : 'PMID:18952863 (90)', size: 90},
-            {sets : [0,1], label: '24', size:24}
+var sets = [{sets : [0], label : 'PMID:18952863 (99)', size: 99},
+            {sets : [1], label : 'PMID:18269575 (82)', size : 82},
+            {sets : [0,1], label: '26', size:26}
             ];
 
 var chart = venn.VennDiagram()
@@ -70,19 +70,28 @@ d3.select("#venn").datum(sets).call(chart);
 
  <div id="myDiv" style="width: 680px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
-    var data = [{
-    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
-    y:  [4, 4, 11, 16, 23, 27, 34, 19, 27],
+var paper1 = {
+    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
+    y: [1, 1, 5, 11, 15, 11, 21, 12, 19, 3],
+    name: '18952863',
+    type: 'bar'};
+
+    var paper2 = {
+    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
+    y: [3, 3, 6, 5, 8, 16, 13, 8, 19, 1],
+    name: '18269575',
+    type: 'bar'};
 
 
-    type: 'bar'
-        }];
-
-            var layout = {
-              title: 'Citations by Year'
-            };
+    var data = [paper1, paper2];
 
 
-        Plotly.newPlot('myDiv', data, layout);
+    var layout = {
+      title: 'Citations by Year',
+      barmode: 'group'
+    };
+
+
+    Plotly.newPlot('myDiv', data, layout);
 
   </script>

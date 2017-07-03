@@ -73,6 +73,7 @@ def db_input_citations_count(user_input):
 	return num_citations
 
 
+
 # Input: pmid that is cited
 # Output: dicts needed for statistics tab
 # Updated to use sqlalchemy
@@ -250,7 +251,7 @@ def db_citations_mini_hyperlink(pmcid):
 #Input: pmid
 #Output: list of apa citations of pmc-ids citing that pmid
 #Updated to sqlAlchemy
-#Journalsvis uses this. Maybe go back and change 
+#Journalsvis uses this. Maybe go back and change
 def db_citations_retrieval(user_input):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.citesPmid == user_input)
