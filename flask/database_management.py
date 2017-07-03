@@ -247,11 +247,10 @@ def db_citations_mini_hyperlink(pmcid):
 		label.append(apa)
 	return label
 
-
-
 #Input: pmid
 #Output: list of apa citations of pmc-ids citing that pmid
 #Updated to sqlAlchemy
+#Journalsvis uses this. Maybe go back and change 
 def db_citations_retrieval(user_input):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.citesPmid == user_input)
@@ -260,7 +259,6 @@ def db_citations_retrieval(user_input):
 	db_journals = []
 	db_dates = []
 	db_urls = []
-	#TODO: this would append duplicates, if there are any in the db.... that's not good...
 	for row in result:
 		title = row["title"]
 		author = row["author"]
@@ -277,6 +275,24 @@ def db_citations_retrieval(user_input):
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		apa_citations.append(apa)
 	return apa_citations, db_journals, db_dates, db_urls
+
+
+#Input: pmid
+#Output: list of apa citations of pmc-ids citing that pmid
+#Updated to sqlAlchemy
+def db_bar_chart(user_input):
+	s = select([citations.c.journal, citations.c.pubdate]).\
+		where(citations.c.citesPmid == user_input)
+	result = conn.execute(s)
+	db_journals = []
+	db_dates = []
+	for row in result:
+		journal = row["journal"]
+		db_journals.append(journal)
+
+		pubdate = row["pubdate"]
+		db_dates.append(pubdate)
+	return db_journals, db_dates
 
 
 #for the "citations" tab.
@@ -492,40 +508,20 @@ def db_unique_citations_number(query):
 		unique_pubs = row["unique_pubs"]
 	return unique_pubs
 
-#################### SUPPORT FUNCTIONS FOR annotations TABLE ############
 
-#checks whether or not a pmcid is in the db
-#updated to sqlalchemy
-def annotationsCheckPmcid(pmcid):
-	s = select([annotations.c.pmcid]).\
-		where(annotations.c.pmcid == pmcid)
+def db_query_statistics(query):
+	s = select([queries.c.total_pubs, queries.c.unique_pubs,
+				queries.c.num_abstracts, queries.c.num_whole_articles, queries.c.num_sents, queries.c.num_tokens]).\
+		where(queries.c.query == query)
 	result = conn.execute(s)
-	exist = result.fetchone()
-	if exist is None:
-		record = 'empty'
-	else:
-		record = 'yes'
-	return record
-
-
-#retrieve the lemmas for citing documents as list of strings
-#data should be a list of strings for the documents
-#Updated to sqlAlchemy
-def getDataSamples(pmcid_list):
-	data_samples = []
-	pmcid_set = set(pmcid_list) #we only want UNIQUE pmcids
-	for pmcid in pmcid_set:
-		s = select([annotations.c.lemmas]).\
-			where(annotations.c.pmcid == pmcid)
-		result = conn.execute(s)
-		for row in result:
-			lemmas = row["lemmas"]
-			data_samples.append(lemmas)
-	return data_samples, pmcid_set
-
-########### O R M ########################
-
-
+	for row in result:
+		total_pubs = row["total_pubs"]
+		unique_pubs = row["unique_pubs"]
+		abstracts = row["num_abstracts"]
+		whole = row["num_whole_articles"]
+		sentences = row["num_sents"]
+		words = row["num_tokens"]
+	return total_pubs, unique_pubs, abstracts, whole, sentences, words
 
 
 '''
@@ -542,6 +538,7 @@ CREATE TABLE citations (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DAT
 
 CREATE TABLE queries (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DATE, query VARCHAR(500), range_years VARCHAR(20), total_pubs INT, unique_pubs INT, unique_journals INT, num_abstracts INT, num_whole_articles INT, num_sents INT, num_tokens INT, KEY(post_id));
 
+Annotations table depreciated
 CREATE TABLE annotations (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DATE, pmcid VARCHAR(20), lemmas LONGTEXT, bioprocess LONGTEXT, cell_lines LONGTEXT, cell_components LONGTEXT, family LONGTEXT, gene_product LONGTEXT, organ LONGTEXT, simple_chemical LONGTEXT, site LONGTEXT, species LONGTEXT, tissue_type LONGTEXT, KEY(post_id));
 
 '''

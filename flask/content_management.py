@@ -30,7 +30,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
   path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx25G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx100G")
   logging.info('Connected to pyProcessors')
   #Initialize the bionlp annotator by passing it a doc
   init_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
@@ -235,50 +235,17 @@ def run_IR_in_db(user_input):
 
 
 
-
-def new_citations_from_db(user_input):
-	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
-	return apa_citations, db_urls
-	#apa_citations called 'main' in app.py
+#Depreciate this  :|
+# def new_citations_from_db(user_input):
+# 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
+# 	return apa_citations, db_urls
+# 	#apa_citations called 'main' in app.py
 
 
 #Data for populating statistics page in app
-#TODO: integrate queries table
-def get_statistics(pmid_list):
-	total = []
-	unique_pmcids = []
-	all_abstracts = []
-	all_whole = []
-	all_sents = []
-	all_tokens = []
-	for pmid in pmid_list:
-		pmidDict, pmcDict = db_statistics(pmid)
-		#print(pmidDict)
-		total.append(pmidDict[pmid])
-		#print(pmcDict)
-		for key, value in pmcDict.items():
-			if key not in unique_pmcids:
-				unique_pmcids.append(key)
-			abstract = value[0]
-			if abstract == 'yes':
-				all_abstracts.append(abstract)
-			whole = value[1]
-			if abstract == 'yes':
-				all_whole.append(whole)
-			sent = value[2]
-			if isinstance(sent, int):
-				all_sents.append(sent)
-			token = value[3]
-			if isinstance(token, int):
-				all_tokens.append(token)
-	sum_total = sum(total)
-	unique = (len(unique_pmcids))
-	sum_abstracts = len(all_abstracts)
-	sum_whole = len(all_whole)
-	sum_sents = sum(all_sents)
-	sum_tokens = sum(all_tokens)
-	statistics = [sum_total, unique, sum_abstracts, sum_whole, sum_sents, sum_tokens]
-	#print(statistics)
+def get_statistics(query):
+	total_pubs, unique_pubs, abstracts, whole, sentences, words =  db_query_statistics(query)
+	statistics = [total_pubs, unique_pubs, abstracts, whole, sentences, words]
 	return statistics
 
 
@@ -293,7 +260,7 @@ def statsSelfInfo(query):
         url = "https://www.ncbi.nlm.nih.gov/pubmed/"+str(user_input)
         href_label = (apa, url) #store apa and url as a tuple
         input_click_citations.append(href_label) #then append to list
-    return(input_click_citations)
+    return input_click_citations
 
 
 #take a query and generate x and y datapoints for pubs x year bar chart in "Stats" tab
@@ -303,7 +270,7 @@ def stats_barchart(query):
 	journals = []
 	dates = []
 	for user_input in pmid_list:
-		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
+		db_journals, db_dates = db_bar_chart(user_input)
 		for j in db_journals:
 			journals.append(j)
 		for d in db_dates:
@@ -429,7 +396,7 @@ def vis_kmeans(lemma_samples, num_clusters):
 #step 1: does the pmid have a pmcid? If so, it was probably scraped
 #step 2: check to make sure that file actually exists
 #Get the data for it
-#TODO: Not sure that this should be done? Code assumes if pmid has pmcid, then it has been scraped
+#NB: This code assumes if pmid has pmcid, then it has been scraped
 def inputEligible(query):
 	papers = []
 	values = ['paper1', 'paper2', 'paper3', 'paper4', 'paper5']
@@ -463,7 +430,6 @@ def inputEligible(query):
 
 
 #visualization for scifi div
-# TODO: make hyperlinks https
 def vis_scifi(corpus, query, eligible_papers):
 	corpus_vec, color = load_corpus(corpus, eligible_papers)
 	eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)

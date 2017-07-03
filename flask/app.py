@@ -421,7 +421,16 @@ def cogekmeans():
 def coge_stats():
 	query = "18952863+18269575"
 	input_click_citations = statsSelfInfo(query)
-	return render_template('coge_stats.html', input_click_citations=input_click_citations)
+	statistics = get_statistics(query) #actually a lot of these are "None" right now. Will need to populate.
+	sum_total = statistics[0]
+	unique = statistics[1]
+	sum_abstracts = statistics[2]
+	sum_whole = statistics[3]
+	sum_sents = statistics[4]
+	sum_tokens = statistics[5]
+	return render_template('coge_stats.html', input_click_citations=input_click_citations,
+						   sum_total=sum_total, unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
+						   sum_sents=sum_sents, sum_tokens=sum_tokens)
 
 
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
