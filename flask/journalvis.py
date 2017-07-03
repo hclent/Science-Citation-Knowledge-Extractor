@@ -1,4 +1,4 @@
-import re, operator, collections
+import re, operator, collections, json
 from itertools import chain
 from collections import defaultdict
 from database_management import db_citations_retrieval, db_journals_and_dates
@@ -180,7 +180,8 @@ def journals_vis(years_range, query):
 	#Example range info: [('2008', '2016'), 165, 48] means years 2008-2016, 165 publications, 48 unique journals
 	#Get some info about the publication before changing it to a string for the json
 	#Year range, number of publications, number of unique journals
-	publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
+	#publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
+	publication_data = json.dump(publication_data)
 
 	return (publication_data, range_info)
 

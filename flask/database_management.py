@@ -454,7 +454,6 @@ def getJournalsVis(query):
 	return range_years, unique_pubs, unique_journals
 
 
-
 #################### SUPPORT FUNCTIONS FOR annotations TABLE ############
 
 #checks whether or not a pmcid is in the db

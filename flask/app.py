@@ -318,7 +318,13 @@ def cogelda():
 def cogejournals():
 	with open("/home/hclent/data/journals/journals_18952863+18269575.json") as load_data:
 		journals = json.load(load_data)
-	return render_template('coge_journals.html', journals=journals)
+	query = '18952863+18269575'
+	range_years, unique_pubs, unique_journals = getJournalsVis(query)
+	years_list = range_years.split('+')
+	s_year = years_list[0]
+	e_year = years_list[1]
+	return render_template('coge_journals.html', journals=journals, unique_pubs=unique_pubs, unique_journals=unique_journals,
+						   s_year=s_year, e_year=e_year)
 
 
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
@@ -441,7 +447,6 @@ def coge_stats():
 	return render_template('coge_stats.html', input_click_citations=input_click_citations)
 
 
-#TODO: where did the texts go?!?! O_0
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions()
