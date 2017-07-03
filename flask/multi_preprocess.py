@@ -25,7 +25,8 @@ logging.info('Stopword settings set')
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
-  path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
+  #path = '/home/hclent/anaconda3/envs/odin/lib/python3.5/site-packages/processors/processors-server.jar'
+  path = '/home/hclent/anaconda3/envs/pyNLP/lib/python3.4/site-packages/processors/processors-server.jar'
   api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx100G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
@@ -37,6 +38,8 @@ def connect_to_Processors(port_num):
 #We will keep it as a global variable because initializing the bioNLP processor has a cost
 #Do not want to initialize the processors over and over
 api = connect_to_Processors(4343)
+print(api)
+#for odin path, lets do port 4342 
 
 
 #Get all text files for that pmid

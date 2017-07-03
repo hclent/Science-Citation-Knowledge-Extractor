@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, flash, url_for, redirect, session, g, Blueprint
 from flask_wtf import Form
 from wtforms import TextField, SelectField
-import gc, time, datetime, pickle, os.path
+import gc, time, datetime, pickle, os.path, json
 import sys, csv
 from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
@@ -25,13 +25,15 @@ class pmidForm(Form):
 #Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
 @app.route("/cogecrawl/")
+#TODO: maybe pickle the citations_with_links later, but for now load from db
 def cogecrawl():
 	#error = None
-	#TODO: Don't have this in a pickle file omg. Make it call from db, so that its always up to date!
-	#TODO: or at least update the pickle file jeez
-	with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
-		citations_with_links = pickle.load(f)
-	return render_template("dashboard.html", citations_with_links=citations_with_links)
+	# with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
+	# 	citations_with_links = pickle.load(f)
+	query = '18952863+18269575'
+	citations_with_links = db_unique_citations_retrieval(query) #unique
+	unique_publications = db_unique_citations_number(query)
+	return render_template("dashboard.html", citations_with_links=citations_with_links, unique_publications=unique_publications)
 
 
 
@@ -62,13 +64,6 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
-			main_info = [] #main_info and target_urls for "citaitons" page
-			target_urls = []
-
-			#TODO: need to re-factor how i do data_samples and ners as DICTS with pmcid keys
-			data_samples = []
-			ners = []
-
 
 			for user_input in pmid_list:
 				logging.info(str(user_input))
@@ -95,6 +90,7 @@ def results():
 					logging.info("writing the BIODOC LEMMAS")
 					biodoc_to_db(biodoc_data) #writes data_samples (lemmas) and NER to db
 					logging.info("* done writing the biodoc lemmas")
+					#WRITE TO CACHE
 					#TODO: Change how I am making data_samples. Use dict so I can access by pmcid, NOT just index
 					#TODO: Change how I am making named_entites. Use dict so I can access by pmcid, NOT just index
 
@@ -124,19 +120,6 @@ def results():
 						#print_data_and_nes(query, user_input, data_samples, ners) #print data_samples and nes_list to pickle
 
 
-					#after info written to db, now can access db and get formated main_info (main)
-					#TODO: why is this here? and not somewhere else in the code?
-					main, db_urls = new_citations_from_db(user_input)
-					for mi in main:
-						main_info.append(mi)
-					logging.info("done with main info list")
-					for url in db_urls:
-						target_urls.append(url)
-					logging.info("done with url list")
-
-
-
-
 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
 				if check1 is not None:
 					flash("alreay exists in database :) ")
@@ -152,17 +135,11 @@ def results():
 					# 	biodoc_data = do_multi_preprocessing(user_input)
 					# 	biodoc_to_db(biodoc_data)
 					#   print_data_samples(user_input, biodoc_data)
+					#TODO: here we'll update the caches if need_to_annotate is "true"
 					# if need_to_annotate == 'no':
 					# 	logging.info("dont need to annotate any new documents")
 					# 	pass
 
-					main, db_urls = new_citations_from_db(user_input)
-					for mi in main:
-						main_info.append(mi)
-					logging.info("done with main info list")
-					for url in db_urls:
-						target_urls.append(url)
-					logging.info("done with url list")
 
 					## Now that we have all the data, do the topic model
 					## Only want to save final topic model (not running topic model)
@@ -196,9 +173,9 @@ def results():
 
 
 
-		citations_with_links = list(zip(main_info, target_urls))
-
-
+		#citations_with_links = list(zip(main_info, target_urls))
+		citations_with_links = db_unique_citations_retrieval(query) #unique
+		unique_publications = db_unique_citations_number(query)
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
 	   			main_info = main_info,  query=query, range_years=range_years, unique_publications=unique_publications, unique_journals=unique_journals)
 				#took out start_year, end_year

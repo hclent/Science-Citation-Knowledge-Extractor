@@ -1,5 +1,5 @@
 from flask import Flask
-import time, datetime, re
+import time, datetime, re, json
 from collections import defaultdict
 from sqlalchemy import create_engine, MetaData, Table, select
 import logging
@@ -260,6 +260,7 @@ def db_citations_retrieval(user_input):
 	db_journals = []
 	db_dates = []
 	db_urls = []
+	#TODO: this would append duplicates, if there are any in the db.... that's not good...
 	for row in result:
 		title = row["title"]
 		author = row["author"]
@@ -276,6 +277,35 @@ def db_citations_retrieval(user_input):
 		apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
 		apa_citations.append(apa)
 	return apa_citations, db_journals, db_dates, db_urls
+
+
+#for the "citations" tab.
+#put in a quiery
+#get back the unique list of [[citation, url],[citation, url],...[]]
+def db_unique_citations_retrieval(query):
+	apa_citations = []
+	db_urls = []
+
+	pmid_list = query.split('+')  # list of string pmids
+	for user_input in pmid_list:
+		s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
+			where(citations.c.citesPmid == user_input)
+		result = conn.execute(s)
+
+		for row in result:
+			title = row["title"]
+			author = row["author"]
+			journal = row["journal"]
+			pubdate = row["pubdate"]
+			url = row["url"]
+
+			db_urls.append(url)
+			apa = str(author+' ('+pubdate+'). '+title+'. '+journal+'. Retrieved from '+url)
+			apa_citations.append(apa)
+	#only want unique
+	citations_with_links = list(zip(apa_citations, db_urls))
+	return_citations = list(set(citations_with_links))
+	return return_citations
 
 
 #Input: pmid that is cited
@@ -453,6 +483,14 @@ def getJournalsVis(query):
 		unique_journals = row["unique_journals"]
 	return range_years, unique_pubs, unique_journals
 
+#Grab number of unique (i.e. no repeats) citations for a query
+def db_unique_citations_number(query):
+	s = select([queries.c.unique_pubs]).\
+		where(queries.c.query == query)
+	result = conn.execute(s)
+	for row in result:
+		unique_pubs = row["unique_pubs"]
+	return unique_pubs
 
 #################### SUPPORT FUNCTIONS FOR annotations TABLE ############
 
