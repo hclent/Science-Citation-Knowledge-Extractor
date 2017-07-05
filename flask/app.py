@@ -223,13 +223,14 @@ def cogeembeddings():
 		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
 		logging.info(k_clusters)
 		run_embeddings(query, window, k_clusters)  # 50 words in 6 clusters
-		filepath = 'fgraphs/fgraph_' + str(query) + '.json'
-		logging.info(filepath)
+		filename = 'fgraph_'+str(query)+'.json'
+		filepath = os.path.join((app.config['PATH_TO_FGRAPHS']), filename) #should this be os.path.abspath()?
 		return render_template('coge_embeddings.html', filepath=filepath)
 	else:
 		filepath = 'coge_embed.json'
 		return render_template('coge_embeddings.html', filepath=filepath)
 
+#TODO: new default coge_lsa
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions()
@@ -238,8 +239,8 @@ def cogelsa():
 		logging.info("the k value is " + str(k_clusters))
 		query = '18952863+18269575'
 
-		#UPDATING TO NEW & IMPROVED lemma_samples!
-		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		filename = '189/528/lemma_samples_18952863+18269575.pickle'
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
@@ -251,16 +252,17 @@ def cogelsa():
 
 		jsonLSA = run_lsa1(lemmas_for_lsa, k)
 		logging.info("did it all!")
-		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA) #needs to be parsed
-	else: #if nothing is
-		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_lsa.json"
-		with open(completeName) as load_data:
-			jsonLSA = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
-		#so i'm going to read it in as a string that needs to be parsed anyway
-		jsonLSA = re.sub('\'', '\"', str(jsonLSA)) #json needs double quotes, not single quotes
+		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA)
+	else:
+		filename = "coge_lsa.json"
+		filepath = os.path.join((app.config['PATH_TO_STATIC']), filename)
+		with open(filepath) as load_data:
+			jsonLSA = json.load(load_data)
+		jsonLSA = re.sub('\'', '\"', str(jsonLSA)) #when I update the default, i can delete this trash!!
 		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA)
 
 
+#TODO: new default coge_lda
 @app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
 def cogelda():
 	form = visOptions()
@@ -271,7 +273,8 @@ def cogelda():
 		logging.info("the w value is "+str(num_words))
 		query = '18952863+18269575'
 
-		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		filename = "189/528/lemma_samples_18952863+18269575.pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
@@ -283,27 +286,30 @@ def cogelda():
 		jsonLDA = run_lda1(lemmas_for_lda, k, w)
 		return render_template('coge_lda.html', form=form, jsonLDA=jsonLDA)
 	else:
-		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_lda1.json"
-		with open(completeName) as load_data:
-			jsonLDA = json.load(load_data) #doesn't need to be parsed but unsure how to write that in javascript
-		#so i'm going to read it in as a string that needs to be parsed anyway
-		jsonLDA = re.sub('\'', '\"', str(jsonLDA)) #json needs double quotes, not single quotes
+		filename = "coge_lda1.json"
+		filepath = os.path.join((app.config['PATH_TO_STATIC']), filename)
+		with open(filepath) as load_data:
+			jsonLDA = json.load(load_data)
+		jsonLDA = re.sub('\'', '\"', str(jsonLDA)) #when I update the default, i can delete this trash!!
 		return render_template('coge_lda.html', form=form, jsonLDA=jsonLDA)
 
 
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
-	with open("/home/hclent/data/journals/journals_18952863+18269575.json") as load_data:
+	filename = "189/528/journals_18952863+18269575.json"
+	filepath = os.path.join((app.config['PATH_TO_JOURNALS']), filename)
+	with open(filepath) as load_data:
 		journals = json.load(load_data)
 	query = '18952863+18269575'
 	range_years, unique_pubs, unique_journals = getJournalsVis(query)
 	years_list = range_years.split('+')
 	s_year = years_list[0]
 	e_year = years_list[1]
-	return render_template('coge_journals.html', journals=journals, unique_pubs=unique_pubs, unique_journals=unique_journals,
-						   s_year=s_year, e_year=e_year)
+	return render_template('coge_journals.html', journals=journals, unique_pubs=unique_pubs,
+						   unique_journals=unique_journals, s_year=s_year, e_year=e_year)
 
 
+#TODO: Make new default wordcloud
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
 	form = nesOptions()
@@ -314,7 +320,9 @@ def cogewordcloud():
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		filename = "189/528/nes_18952863+18269575.pickle"
+		#nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
 
@@ -322,20 +330,20 @@ def cogewordcloud():
 		#id_list = [n[0] for n in nes_samples]
 
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
-		#TODO: display popup/label of what categories/N are being shown
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		return render_template('coge_wordcloud.html',  wordcloud_data=wordcloud_data, popup=popup)
 	else:
 		#Default data
-		completeName = "/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_wcloud1.json"
-		with open(completeName) as load_data:
-			wordcloud_data = json.load(load_data) #this result doesn't need to be parsed but unsure how to write that in javascript
-		#so i'm going to read it in as a string that needs to be parsed anyway
+		filename = "coge_wcloud1.json"
+		filepath = os.path.join((app.config['PATH_TO_STATIC']), filename)
+		with open(filepath) as load_data:
+			wordcloud_data = json.load(load_data)
 		wordcloud_data = re.sub('\'', '\"', str(wordcloud_data)) #for some reason JS wants the \ by the quotes...
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data, popup=popup)
 
 
+#TODO: Make new default data
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions()
@@ -346,11 +354,13 @@ def cogeheatmap():
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		filename1 = "189/528/nes_18952863+18269575.pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
 
-		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		filename2 = "189/528/lemma_samples_18952863+18269575.pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename2)
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
@@ -359,7 +369,6 @@ def cogeheatmap():
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles, len_x_docs=len_x_docs, popup=popup)
 	else:
-		#Make new default data!!!!
 		return render_template('coge_heatmap1.html')
 
 
@@ -373,11 +382,13 @@ def cogeclustermap():
 		w_number = form.w_words.data
 		logging.info("the w value is " + str(w_number))
 
-		nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
+		filename1 = "189/528/nes_18952863+18269575.pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
 
-		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		filename2 = "189/528/lemma_samples_18952863+18269575.pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename2)
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
@@ -390,16 +401,16 @@ def cogeclustermap():
 		return render_template('coge_clustermap.html', image=image)
 
 
+#TODO: update default kmeans
 @app.route('/cogekmeans/', methods=["GET","POST"]) #default coge k-means clustering for iframe
 def cogekmeans():
 	form = visOptions()
 	if request.method == 'POST':
 
-		#depreciate data_samples
-		#data_samples =  pickle.load(open("/home/hclent/data/data_samples/data_samples_18952863+18269575.pickle", "rb")) #pre-processed already
-		lemma_file = '/home/hclent/data/pmcids/189/528/lemma_samples_18952863+18269575.pickle'
+		filename = "189/528/lemma_samples_18952863+18269575.pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(lemma_file, "rb") as f:
-			lemma_samples = pickle.load(f) #the pmcids are in lemma_samples yay!
+			lemma_samples = pickle.load(f)
 
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -411,7 +422,6 @@ def cogekmeans():
 							   x3_coordinates=x3_coordinates, y3_coordinates=y3_coordinates, z3_coordinates=z3_coordinates,
 							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
 							   titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
-
 	else:
 		return render_template('coge_kmeans.html')
 
@@ -436,7 +446,8 @@ def coge_stats():
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions()
-	eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt', '2008, Lyons')]
+	path_to_eligible_paper = os.path.join((app.config['PATH_TO_CACHE']), '259/367/2593677.txt')
+	eligible_papers = [('paper1', '18952863', path_to_eligible_paper, '2008, Lyons')]
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
@@ -491,13 +502,14 @@ def resjournals(query, range_years):
 
 	#only want to load the json for the LAST id in the query (so includes all)
 	pmid_list = query.split('+') #list of string pmids
-	last_entry = pmid_list[-1]
-	logging.info("the last entry is: " + str(last_entry))
+	pmid = pmid_list[0]
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
 
-	file_name = "journals_"+str(query)+".json"
-	logging.info("last entry's JOURNAL is named: " + str(file_name))
-	savePath = "/home/hclent/data/journals"
-	completeName = os.path.join(savePath, file_name)
+	filename = str(prefix)+'/'+str(suffix)+'/'+"journals_"+str(query)+".json"
+	logging.info("last entry's JOURNAL is named: " + str(filename))
+	savePath = (app.config['PATH_TO_JOURNALS'])
+	completeName = os.path.join(savePath, filename)
 	logging.info("complete file: " + str(completeName))
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
@@ -519,36 +531,40 @@ def resembeddings(query):
 def reslsa(query):
 	form = visOptions()
 	if request.method == 'POST':
+		logging.info("LSA: RERUN")
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
 
-		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
 
-		num_pubs = int(len(data_samples))
-		logging.info("there are  "+str(num_pubs)+ " publications")
-		logging.info("rerunning the analysis")
+		filename =  str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
+		with open(lemma_file, "rb") as l:
+			lemma_samples = pickle.load(l)
+
+		lemmas_for_lsa = [l[1] for l in lemma_samples]  # ignore the pmcid's in l[0], ignore tags in l[2]
+
 		k = int(k_clusters)
 		if num_pubs < k:
 			logging.info("k value is larger than number of publications")
-			#flash("For LSA, you cannot have more topics than documents. Try again")
-		temp_jsonDict = run_lsa1(data_samples, k)
+		temp_jsonDict = run_lsa1(lemmas_for_lsa, k)
 		logging.info("did it all!")
 		return render_template('results_lsa.html', query=query, jsonDict=temp_jsonDict)
 	else:
-		#need to get last user_input
-		#use id to do stuff
-		logging.info("in routine resla")
-		logging.info("RES-LSA ID: " +str(query))
-		#only want to load the json for the LAST id in the query (so includes all)
+		logging.info("LSA: DEFAULT (results)")
+		logging.info("LSA ID: " +str(query))
+
 		pmid_list = query.split('+') #list of string pmids
-		last_entry = pmid_list[-1]
-		logging.info("the last entry is: " + str(last_entry))
-		file_name = "lsa_"+str(query)+".json" #file named after query
-		logging.info("last entry's LSA is named: " + str(file_name))
-		savePath = "/home/hclent/data/topics/lsa" #saved in folder of topics/lsa
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
+
+		filename = str(prefix) + '/' + str(suffix) + '/' + "lsa_"+str(query)+".json" #file named after query
+		savePath = (app.config['PATH_TO_LSA'])
 		completeName = os.path.join(savePath, file_name)
-		logging.info("complete file: " + str(completeName))
 		with open(completeName) as load_data:
 			jsonDict = json.load(load_data)
 		return render_template('results_lsa.html', query=query, jsonDict=jsonDict)
@@ -563,24 +579,39 @@ def reslda(query):
 		num_words = form.w_words.data
 		logging.info("the w value is "+str(num_words))
 
-		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
+
+		filename = str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
+		with open(lemma_file, "rb") as l:
+			lemma_samples = pickle.load(l)
+
+		lemmas_for_lda = [l[1] for l in lemma_samples]  # ignore the pmcid's in l[0], ignore tags in l[2]
 
 		logging.info("rerunning the analysis")
 		k = int(k_clusters)
 		w = int(num_words)
-		temp_jsonLDA = run_lda1(data_samples, k, w)
+		temp_jsonLDA = run_lda1(lemmas_for_lda, k, w)
 		return render_template('results_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
 	else:
 		#need to get last user_input
 		#use id to do stuff
 		logging.info("in routine reslDa")
 		logging.info("RES-LDA ID: " +str(query))
-		file_name = "lda_"+str(query)+".json" #file named after query
+
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
+
+
+		filename = str(prefix) + '/' + str(suffix) + '/' + "lda_"+str(query)+".json" #file named after query
 		logging.info("last entry's LDA is named: " + str(file_name))
-		savePath = "/home/hclent/data/topics/lda" #saved in folder of topics/lda
+		savePath = (app.config['PATH_TO_LDA'])
 		completeName = os.path.join(savePath, file_name)
-		#logging.info("complete file: " + str(completeName))
 		with open(completeName) as load_data:
 			jsonLDA = json.load(load_data)
 		logging.info(jsonLDA)
@@ -597,12 +628,17 @@ def reswordcloud(query):
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
 
-		filename = "/home/hclent/data/nes/nes_"+str(query)+".pickle"
-		nes_list =  pickle.load(open(filename, "rb")) #pre-processed already
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		#print(nes_list)
-		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
+		wordcloud_data = vis_wordcloud(nes_samples, nes_categories, w_number)
 		popup = ' '
 		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup)
 	else:
@@ -611,11 +647,17 @@ def reswordcloud(query):
 		w_number = 10
 		logging.info("the w value is "+str(w_number))
 
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
 
-		filename = "/home/hclent/data/nes/nes_"+str(query)+".pickle"
-		nes_list =  pickle.load(open(filename, "rb")) #pre-processed already
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
+		wordcloud_data = vis_wordcloud(nes_samples, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 
 		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup)
@@ -630,33 +672,46 @@ def res_heatmap(query):
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		nes_filename = "/home/hclent/data/nes/nes_"+str(query)+".pickle"
-		nes_list =  pickle.load(open(nes_filename, "rb")) #pre-processed already
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
 
-		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+		filename2 = str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename2)
+		with open(lemma_file, "rb") as l:
+			lemma_samples = pickle.load(l)
+
+		x_docs, y_words, z_counts = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
 		titles = vis_heatmapTitles(query)
-		# print(z_counts)
-		# print(x_docs)
-		# print(y_words)
 		popup = ' '
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
-		#print(nes_categories)
 		w_number = 10
 		logging.info("the w value is "+str(w_number))
 
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
 
-		nes_filename = "/home/hclent/data/nes/nes_"+str(query)+".pickle"
-		nes_list =  pickle.load(open(nes_filename, "rb")) #pre-processed already
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		filename2 = str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename2)
+		with open(lemma_file, "rb") as l:
+			lemma_samples = pickle.load(l)
 
-		x_docs, y_words, z_counts = vis_heatmap(data_samples, nes_list, nes_categories, w_number)
+		x_docs, y_words, z_counts = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
 		titles = vis_heatmapTitles(query)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
@@ -672,13 +727,22 @@ def res_clustermap(query):
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
 
-		nes_filename = "/home/hclent/data/nes/nes_"+str(query)+".pickle"
-		nes_list =  pickle.load(open(nes_filename, "rb")) #pre-processed already
+		pmid_list = query.split('+')
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
 
-		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
+		with open(nes_file, "rb") as f:
+			nes_samples = pickle.load(f)
 
-		saveName = vis_clustermap(data_samples, nes_list, nes_categories, w_number, query)
+		filename2 = str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename2)
+		with open(lemma_file, "rb") as l:
+			lemma_samples = pickle.load(l)
+
+		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query)
 		image = '/images/' + saveName
 
 		return render_template('results_clustermap.html',image=image, query=query)
@@ -693,12 +757,18 @@ def res_kmeans(query):
 	if request.method == 'POST':
 
 		pmid_list = query.split('+') #list of string pmids
-		data_filename = "/home/hclent/data/data_samples/data_samples_"+str(query)+".pickle"
-		data_samples =  pickle.load(open(data_filename, "rb")) #pre-processed already
+		pmid = pmid_list[0]
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
+
+		filename2 = str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
+		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename2)
+		with open(lemma_file, "rb") as l:
+			lemma_samples = pickle.load(l)
 
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(data_samples, k_clusters, pmid_list)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters, pmid_list)
 		return render_template('res_kmeans1.html', query=query,
 		   x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
@@ -710,18 +780,21 @@ def res_kmeans(query):
 		return render_template('res_kmeans1.html', query=query)
 
 
+#TODO: update for stacked barchart
 @app.route('/res_stats/<query>', methods=["GET"]) #user statistics for iframe
 def res_stats(query):
 	pmid_list = query.split('+') #list of string pmids
-	input_click_citations = statsSelfInfo(query)
 	venn_data = make_venn(pmid_list)
-	statistics = get_statistics(pmid_list)
+
+	input_click_citations = statsSelfInfo(query)
+	statistics = get_statistics(query)
 	sum_total = statistics[0]
 	unique = statistics[1]
 	sum_abstracts = statistics[2]
 	sum_whole = statistics[3]
 	sum_sents = statistics[4]
 	sum_tokens = statistics[5]
+
 	#get x, y coordinates for pubs x year bar chart.
 	x, y = stats_barchart(query)
 	return render_template('results_stats.html', input_click_citations=input_click_citations,
@@ -804,7 +877,7 @@ def page_not_found(e):
 #Configuration settings
 if __name__ == '__main__':
 	run_simple('0.0.0.0', 5000, app, use_reloader=True)
-	#app.run(host='0.0.0.0') #dont want app.run() for uwsgi
+	#app.run(host='0.0.0.0') if you are not running the app with uwsgi!
 
 
 #TODO: Add unit tests and such for Git & Travis UI

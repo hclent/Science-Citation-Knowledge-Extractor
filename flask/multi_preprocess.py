@@ -38,8 +38,7 @@ def connect_to_Processors(port_num):
 #We will keep it as a global variable because initializing the bioNLP processor has a cost
 #Do not want to initialize the processors over and over
 api = connect_to_Processors(4343)
-print(api)
-#for odin path, lets do port 4342 
+#for odin path, lets do port 4342
 
 
 #Get all text files for that pmid
