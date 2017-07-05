@@ -175,6 +175,9 @@ def db_pmid_hyperlink_retrieval(pmid):
 #Output: apa citations for citing pmCids as hyperlinks
 #Updated to sqlAlchemy
 #UPDATED
+'''
+July 5, 2017: This randomly failed in deployment for a query that normally works. Couldn't find "title"
+'''
 def db_citations_hyperlink_retrieval(pmcid):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.pmcid == pmcid)
@@ -190,8 +193,6 @@ def db_citations_hyperlink_retrieval(pmcid):
 		href_label = str('<a href="'+url+'">'+str(apa)+'</a>')
 		apa_citations.append(href_label)
 	return apa_citations
-
-
 
 
 #Gets the YEAR only for a given pmcid for the heatmap vis
