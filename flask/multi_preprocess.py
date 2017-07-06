@@ -5,10 +5,16 @@ import json
 import os.path
 from multiprocessing import Pool
 import logging
+from flask import Flask
 from database_management import db_citation_pmc_ids, pmcidAnnotated  #mine
 
 # source activate py34 #my conda python environment for this
 
+
+#TODO: set path to processors as a config var
+
+app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
+app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False)
 
 #Create log
 logging.basicConfig(filename='.multi_preprocess.log',level=logging.DEBUG)
@@ -65,8 +71,10 @@ def retrieveDocs(pmid):
     if annotated == 'empty':
       prefix = pmcid[0:3]
       suffix = pmcid[3:6]
-      folder = '/home/hclent/data/pmcids/'+str(prefix)+'/'+str(suffix) #look in folder that matches pmcid
-      filename = str(folder + '/' + str(pmcid)) + '.txt'
+
+      #~path/123/456/12345678.txt
+      folder = str(prefix)+'/'+str(suffix)+'/'+str(pmcid)+'.txt' #
+      filename = os.path.join((app.config['PATH_TO_CACHE']), folder)
       docdict = {"pmcid": pmcid, "filepath": filename}
       docs.append(docdict)
   logging.debug('retrieved list of documents to processes')
@@ -159,8 +167,8 @@ def multiprocess(docs):
     for biodoc, pmcid in results.get():
       prefix = pmcid[0:3]
       suffix = pmcid[3:6]
-      save_path = '/home/hclent/data/pmcids/'+str(prefix)+'/'+str(suffix) #look in folder that matches pmcid
-      completeName = os.path.join(save_path, (str(pmcid)+'.json'))
+      save_path = +str(prefix)+'/'+str(suffix)+'/'+str(pmcid)+'.json' #look in folder that matches pmcid
+      completeName = os.path.join((app.config['PATH_TO_CACHE']), save_path)
 
       with open(completeName, 'w') as out:
         out.write(biodoc.to_JSON())
@@ -188,8 +196,10 @@ def retrieveBioDocs(pmid):
     if annotated == 'yes':
       prefix = pmcid[0:3]
       suffix = pmcid[3:6]
-      folder = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix)  # look in folder that matches pmcid
-      filename = str(folder + '/' + str(pmcid)) + '.json'
+
+      folder = str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.json'  #
+      filename = os.path.join((app.config['PATH_TO_CACHE']), folder)
+
       biodict = {"pmcid": pmcid, "jsonpath": filename}
       biodocs.append(biodict)
   logging.debug('retrieved list of Bio documents to work with')
