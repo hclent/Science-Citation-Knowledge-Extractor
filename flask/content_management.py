@@ -1,4 +1,5 @@
 from processors import * #pyProcessors
+from flask import Flask
 import os.path, time, re, logging, pickle, json, codecs, arrow
 import operator
 from database_management import * #mine
@@ -23,6 +24,12 @@ from fgraph2json import embedding_json #mine
 #Create log
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+
+############## CONFIG ######################################
+app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
+app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
+
 
 ############# PROCESSORS SERVER ##################################################
 
@@ -313,7 +320,12 @@ def print_journalvis(query):
 		unique_journals = range_info[2]
 		logging.info(range_info)
 		logging.info('Printing JOURNALS to JSON')
-		save_path = '/home/hclent/data/journals/' #save in journals folder
+		save_path = (app.config['PATH_TO_JOURNALS'])
+
+		#TODO: nested directory stuff
+
+
+		#save_path = '/home/hclent/data/journals/' #save in journals folder
 		completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
 		with open(completeName, 'w') as outfile:
 			json.dump(publication_data, outfile)

@@ -1,5 +1,10 @@
+from flask import Flask
 import time, os.path, pickle, logging, json
-#from content_management import do_multi_preprocessing
+
+#Does this need to be here? Because in app.py it will have the app as a global variable? idk
+app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
+app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
+
 
 
 '''
@@ -17,7 +22,7 @@ So I've changed the code to instead be:
 [['1234', 'lemma for doc 1', 'doc tags'], ['45678', 'lemma for doc 2', 'tags'],['09876', 'lemma for doc n', 'tags']]
 where the pmcid is in the first position of every lemma list
 
-Ditto for nes_samples :) (no tags)
+Ditto for nes_samples :) (but no tags)
 
 '''
 
@@ -34,8 +39,11 @@ def print_lemma_nes_samples(user_input, biodoc_data):
 	t1 = time.time()
 	logging.info("printing lemma samples & nes samples ... ")
 
-	prefix = '/home/hclent/data/pmcids/' + str(user_input[0:3])  # folder for first 3 digits of pmcid
-	suffix = prefix + '/' + str(user_input[3:6])  # folder for second 3 digits of pmcid nested in prefix
+	#prefix = '/home/hclent/data/pmcids/' + str(user_input[0:3])  # folder for first 3 digits of pmcid
+	#suffix = prefix + '/' + str(user_input[3:6])  # folder for second 3 digits of pmcid nested in prefix
+
+	prefix = os.path.join((app.config['PATH_TO_CACHE']), str(user_input[0:3]))
+	suffix = os.path.join(prefix, str(user_input[3:6]))
 
 	#Step 1: does this file already exist? if so, pass
 	#Maybe should do these sepperately?
@@ -136,11 +144,16 @@ def concat_lemma_nes_samples(query):
 		#does the file already exist?
 		first_pmid = pmid_list[0]
 
-		query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-			first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+		filename1 = str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+		query_lemma_completeName = os.path.join((app.config['PATH_TO_CACHE']), filename1)
+		# query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+		# 	first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
 
-		query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-			first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
+
+		filename2 = str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
+		query_nes_completeName = os.path.join((app.config['PATH_TO_CACHE']), filename2)
+		# query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+		# 	first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
 
 		try:
 			#check for the file
@@ -159,16 +172,19 @@ def concat_lemma_nes_samples(query):
 		except Exception as e:
 			logging.info(e)
 
-
 			for pmid in pmid_list:
-				lemma_file = '/home/hclent/data/pmcids/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'lemma_samples_' + (str(pmid)) + '.pickle'
+
+				l_name = str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'lemma_samples_' + (str(pmid)) + '.pickle'
+				lemma_file = os.path.join((app.config['PATH_TO_CACHE']), l_name)
+				#lemma_file = '/home/hclent/data/pmcids/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'lemma_samples_' + (str(pmid)) + '.pickle'
 				with open(lemma_file, 'rb') as f:
 					lemma_list = pickle.load(f)
 				for ls in lemma_list:
 					all_lemma_samples.append(ls)
 
-
-				nes_file = '/home/hclent/data/pmcids/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'nes_' + (str(pmid)) + '.pickle'
+				n_name = str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'nes_' + (str(pmid)) + '.pickle'
+				nes_file =  os.path.join((app.config['PATH_TO_CACHE']), n_name)
+				#nes_file = '/home/hclent/data/pmcids/' + str(pmid[0:3])  + '/' + str(pmid[3:6]) + '/' +'nes_' + (str(pmid)) + '.pickle'
 				with open(nes_file, 'rb') as f2:
 					nes_list = pickle.load(f2)
 				for ns in nes_list:
@@ -208,8 +224,11 @@ def load_lemma_cache(query):
 
 	first_pmid = pmid_list[0]
 
-	query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-		first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+	l_name =  str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+	query_lemma_completeName = os.path.join((app.config['PATH_TO_CACHE']), l_name)
+
+	# query_lemma_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+	# 	first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
 	try:
 		with open(query_lemma_completeName, "rb") as qlemma:
 			lemma_samples = pickle.load(qlemma)
@@ -225,8 +244,11 @@ def load_nes_cache(query):
 
 	first_pmid = pmid_list[0]
 
-	query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-		first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
+	n_name = str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
+	query_nes_completeName = os.path.join((app.config['PATH_TO_CACHE']), n_name)
+
+	# query_nes_completeName = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+	# 	first_pmid[3:6]) + '/nes_' + str(query) + ".pickle"
 	try:
 		with open(query_nes_completeName, "rb") as qnes:
 			nes_samples = pickle.load(qnes)
