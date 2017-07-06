@@ -77,10 +77,11 @@ def annotation_check(user_input):
 		#print(citation)
 		annotationDict = {"pmcid": citation, "annotated": []}
 
-		prefix = '/home/hclent/data/pmcids/' + str(citation[0:3])  # folder for first 3 digits of pmcid
+		prefix = str(citation[0:3])  # folder for first 3 digits of pmcid
 		suffix = prefix + '/' + str(citation[3:6])  # folder for second 3 digits of pmcid nested in prefix
 		filename = suffix + '/' + str(citation) + '.json'
-		with open(filename) as data_file:
+		full_filename = os.path.join((app.config['PATH_TO_CACHE']) ,filename)
+		with open(full_filename) as data_file:
 			data = json.load(data_file)
 			if "error annotating document" in data["text"][:25]:
 				annotationDict["annotated"].append("no")
@@ -304,7 +305,7 @@ def print_journalvis(query):
 	record = checkForQuery(query)  # check for query in db.
 	logging.info("checked for query!!!")
 	logging.info(record)
-	if record == 'empty':
+	if record == 'empty': #TODO: CHANGE BACK TO 'empty'
 		#if the record has never been seen before, do the journalsvis and write to db
 		years_range = get_years_range(query) #need range for ALL journals, not just last one
 		logging.info(years_range)
@@ -319,14 +320,38 @@ def print_journalvis(query):
 		unique_publications = range_info[1]
 		unique_journals = range_info[2]
 		logging.info(range_info)
+
+		#########
+		#TODO: nested directory stuff
 		logging.info('Printing JOURNALS to JSON')
+		pmid_list = query.split('+')  # list of string pmids
+		pmid = pmid_list[0] #get the first
+		prefix = pmid[0:3]
+		suffix = pmid[3:6]
+
+		try:
+			os.makedirs(os.path.join((app.config['PATH_TO_JOURNALS']), prefix))
+		except OSError:
+			if os.path.isdir(os.path.join((app.config['PATH_TO_JOURNALS']), prefix)):
+				pass
+			else:
+				raise
+
+		try:
+			os.makedirs(os.path.join((app.config['PATH_TO_JOURNALS']), prefix, suffix))
+		except OSError:
+			if os.path.isdir(os.path.join((app.config['PATH_TO_JOURNALS']), prefix, suffix)):
+				pass
+			else:
+				raise
+
+		filename = str(prefix)+'/'+str(suffix)+'/'+"journals_"+str(query)+".json"
 		save_path = (app.config['PATH_TO_JOURNALS'])
 
-		#TODO: nested directory stuff
-
-
-		#save_path = '/home/hclent/data/journals/' #save in journals folder
-		completeName = os.path.join(save_path, ('journals_'+(str(query))+'.json')) #named after query
+		completeName = os.path.join(save_path, filename)
+		print("#" * 20)
+		print(completeName)
+		print("#"*20)
 		with open(completeName, 'w') as outfile:
 			json.dump(publication_data, outfile)
 		date = str(arrow.now().format('YYYY-MM-DD'))
@@ -358,11 +383,9 @@ def vis_heatmapTitles(lemma_samples, years):
 	sorted_data = list(sorted(zipped, key=lambda z: int(z[0])))
 	pmcids = [l[1][0] for l in sorted_data]
 
-	#pmcids = [l[0] for l in lemma_samples]
 	for id in pmcids:
 		hyperlink = db_citations_hyperlink_retrieval(id)
 		titles.append(hyperlink[0])
-	#titles =
 	return titles
 
 
@@ -435,8 +458,8 @@ def inputEligible(query):
 
 			prefix = pmcid[0:3]
 			suffix = pmcid[3:6]
-			filename = '/home/hclent/data/pmcids/' + str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.txt' # look in folder that matches pmcid
-			#print(filename)
+			path_to_txt = str(prefix) + '/' + str(suffix) + '/' + str(pmcid) + '.txt' # look in folder that matches pmcid
+			filename = os.path.join((app.config['PATH_TO_CACHE']) , path_to_txt)
 			truth_value = os.path.isfile(filename)
 			if truth_value is True:
 				#print(filename) #NA won't exist
@@ -574,6 +597,7 @@ def run_embeddings(query, top_n, k_clusters):
 
 ########### WRITING TO JSON / PICKLE ###############################################
 
+#TODO: edit saving path
 def print_lsa(query, user_input, jsonDict):
 	#Save the json for @app.route('/reslsa/')
 	logging.info('Printing LSA to JSON')
@@ -582,6 +606,7 @@ def print_lsa(query, user_input, jsonDict):
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonDict, outfile)
 
+#TODO: edit saving path
 def print_lda(query, user_input, jsonLDA):
 	#Save the json for @app.route('/reslda/')
 	logging.info('Printing LDA to JSON')

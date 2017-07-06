@@ -516,8 +516,7 @@ def resjournals(query, range_years):
 	prefix = pmid[0:3]
 	suffix = pmid[3:6]
 
-	#filename = str(prefix)+'/'+str(suffix)+'/'+"journals_"+str(query)+".json"
-	filename =  "journals_" + str(query) + ".json"
+	filename = str(prefix)+'/'+str(suffix)+'/'+"journals_"+str(query)+".json"
 	logging.info("last entry's JOURNAL is named: " + str(filename))
 	savePath = (app.config['PATH_TO_JOURNALS'])
 	completeName = os.path.join(savePath, filename)

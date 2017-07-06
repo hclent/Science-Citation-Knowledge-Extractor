@@ -181,7 +181,7 @@ def journals_vis(years_range, query):
 	#Get some info about the publication before changing it to a string for the json
 	#Year range, number of publications, number of unique journals
 	#publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
-	publication_data = json.dump(publication_data)
+	publication_data = json.dumps(publication_data)
 
 	return (publication_data, range_info)
 
