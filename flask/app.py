@@ -109,7 +109,8 @@ def results():
 
 						#JOURNALS VIS STUFF HERE
 						logging.info(user_input+" is the last one (JOURNALS)")
-						range_years, unique_publications, unique_journals = print_journalvis(query)#TODO: Check for vis.json first
+						need_to_update = ["yes"]
+						range_years, unique_publications, unique_journals = print_journalvis(query, need_to_update)#TODO: Check for vis.json first
 
 						#TOPIC MODELING HERE
 
@@ -143,7 +144,7 @@ def results():
 						biodoc_data = do_multi_preprocessing(user_input)
 
 						#TODO: PROBLEM!!!!! THIS WILL NOT UPDATE CUZ THE FILE ALREADY EXISTS AAAHHHH. :'(
-						print_lemma_nes_samples(user_input, biodoc_data)
+						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
 					#TODO: here we'll update the caches if need_to_annotate is "true"
 					if need_to_annotate == 'no':
 						logging.info("dont need to annotate any new documents")
@@ -160,11 +161,12 @@ def results():
 						if 'yes' in needed_to_annotate_check:
 							#TODO: PROBLEM!!! THIS WILL NOT UPDATE CUZ THE FILE ALREADY EXISTS AAAAHHHH. :'(
 							#TODO: for concat_lemma_nes_samples, need a way to tell if ANY user_inputs needed_to_annotated=yes or not
-							concat_lemma_nes_samples(query)
+							need_to_update = 'yes'
+							concat_lemma_nes_samples(query, need_to_update)
 
 						# JOURNALS VIS STUFF HERE
 						logging.info(user_input + " is the last one (JOURNALS)")
-						range_years, unique_publications, unique_journals = print_journalvis(query)  # TODO: Check for vis.json first
+						range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)  # TODO: Check for vis.json first
 
 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
 						# logging.info(user_input + " is the last one (LSA)")

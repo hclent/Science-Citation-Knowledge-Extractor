@@ -203,7 +203,7 @@ def run_IR_in_db(user_input):
 	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
-	if num_current == num_in_db: #TODO change this back to > after i've fixed authors problem
+	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
 		#update number of citations in inputPaper db
@@ -301,11 +301,18 @@ def stats_barchart(query):
 #TODO: no mechanism for updating **DB** (table: queries) if more citations have been found!!
 #TODO: update wc cache if new citations to a query
 #TODO: check for journals vis file
-def print_journalvis(query):
+def print_journalvis(query, needed_to_annotate_check):
+	#update the cache!
+	# if 'yes' in needed_to_annotate_check:
+    #
+    #
+	# #if nothing was annotated, check the existing file. If there isn't one, pass
+	# if 'yes' not in needed_to_annotate_check:
+
 	record = checkForQuery(query)  # check for query in db.
 	logging.info("checked for query!!!")
 	logging.info(record)
-	if record == 'empty': #TODO: CHANGE BACK TO 'empty'
+	if record == 'empty':
 		#if the record has never been seen before, do the journalsvis and write to db
 		years_range = get_years_range(query) #need range for ALL journals, not just last one
 		logging.info(years_range)
@@ -321,8 +328,6 @@ def print_journalvis(query):
 		unique_journals = range_info[2]
 		logging.info(range_info)
 
-		#########
-		#TODO: nested directory stuff
 		logging.info('Printing JOURNALS to JSON')
 		pmid_list = query.split('+')  # list of string pmids
 		pmid = pmid_list[0] #get the first
@@ -349,9 +354,6 @@ def print_journalvis(query):
 		save_path = (app.config['PATH_TO_JOURNALS'])
 
 		completeName = os.path.join(save_path, filename)
-		print("#" * 20)
-		print(completeName)
-		print("#"*20)
 		with open(completeName, 'w') as outfile:
 			json.dump(publication_data, outfile)
 		date = str(arrow.now().format('YYYY-MM-DD'))
