@@ -16,27 +16,22 @@ from fgraph import * #mine
 from fgraph2json import embedding_json #mine
 
 
-
-## Supporting functions for app.py
-
-################## LOGGING #######################################################
-
-#Create log
-logging.basicConfig(filename='.app.log',level=logging.DEBUG)
-logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
-
 ############## CONFIG ######################################
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
 app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
 
+################## LOGGING #######################################################
+
+logging.basicConfig(filename=app.config['PATH_TO_LOG'],level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.debug("Why dost thine tail -F break?")
+
 ############# PROCESSORS SERVER ##################################################
 
-#Set a PROCESSORS_SERVER environment variable.
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
-  path = '/home/hclent/anaconda3/envs/py34/lib/python3.4/site-packages/processors/processors-server.jar'
+  path = (app.config['PATH_TO_JAR'])
   api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx100G")
   logging.info('Connected to pyProcessors')
   #Initialize the bionlp annotator by passing it a doc
@@ -46,8 +41,8 @@ def connect_to_Processors(port_num):
 ################ WORD EMBEDDING MODEL ############## (Global var)
 
 #This is really slow to load :/ Maybe shouldn't be a global var?
-# Don't want to re-load for each analysis though
-fasttext_model = load_model('/home/hclent/tmp/fastText/16kmodel.vec')
+# Don't want to re-load for each analysis though...
+fasttext_model = load_model(app.config['PATH_TO_FASTTEXT_MODEL'])
 
 ################### INPUT #########################################################
 
@@ -303,11 +298,11 @@ def stats_barchart(query):
 #TODO: check for journals vis file
 def print_journalvis(query, needed_to_annotate_check):
 	#update the cache!
-	# if 'yes' in needed_to_annotate_check:
+	# if 'yes' in needed_to_annotate_check: #update the DB
     #
     #
 	# #if nothing was annotated, check the existing file. If there isn't one, pass
-	# if 'yes' not in needed_to_annotate_check:
+	# if 'yes' not in needed_to_annotate_check: ## check the record.
 
 	record = checkForQuery(query)  # check for query in db.
 	logging.info("checked for query!!!")
