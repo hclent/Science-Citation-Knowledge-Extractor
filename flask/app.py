@@ -133,18 +133,18 @@ def results():
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input)
-					logging.info("done with new document multi_preprocessing")
-					logging.info("writing the BIODOC LEMMAS")
 
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')
 						logging.info("need to annotate new documents")
 						biodoc_data = do_multi_preprocessing(user_input)
-
+						logging.info("done with new document multi_preprocessing")
 						#If need_to_annotate is "yes", will re-populate :)
 						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
+						logging.info("repopulated lemmas and nes cache")
 
 					#Don't need to re-populat cache
+					#TODO: maybe still double check if the lemma & nes files exist?? :s
 					if need_to_annotate == 'no':
 						logging.info("dont need to annotate any new documents")
 						needed_to_annotate_check.append('no')
@@ -162,6 +162,9 @@ def results():
 							need_to_update = 'yes'
 							#will over-ride existing file :)
 							concat_lemma_nes_samples(query, need_to_update)
+
+						if 'yes' not in needed_to_annotate_check:
+							pass
 
 						# JOURNALS VIS STUFF HERE
 						logging.info(user_input + " is the last one (JOURNALS)")
@@ -645,12 +648,13 @@ def reswordcloud(query):
 		prefix = pmid[0:3]
 		suffix = pmid[3:6]
 
-		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_" + str(query) + ".pickle"
 		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
 
-		wordcloud_data = vis_wordcloud(nes_samples, nes_categories, w_number)
+		nes_list = [n[1] for n in nes_samples]
+		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = ' '
 		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup)
 	else:
@@ -664,12 +668,13 @@ def reswordcloud(query):
 		prefix = pmid[0:3]
 		suffix = pmid[3:6]
 
-		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_" + str(query) + ".pickle"
 		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
 
-		wordcloud_data = vis_wordcloud(nes_samples, nes_categories, w_number)
+		nes_list = [n[1] for n in nes_samples]
+		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 
 		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup)
@@ -689,7 +694,7 @@ def res_heatmap(query):
 		prefix = pmid[0:3]
 		suffix = pmid[3:6]
 
-		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_" + str(query) + ".pickle"
 		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
@@ -713,7 +718,7 @@ def res_heatmap(query):
 		prefix = pmid[0:3]
 		suffix = pmid[3:6]
 
-		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_" + str(query) + ".pickle"
 		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
@@ -744,7 +749,7 @@ def res_clustermap(query):
 		prefix = pmid[0:3]
 		suffix = pmid[3:6]
 
-		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_samples_" + str(query) + ".pickle"
+		filename1 = str(prefix) + '/' + str(suffix) + '/' + "nes_" + str(query) + ".pickle"
 		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
