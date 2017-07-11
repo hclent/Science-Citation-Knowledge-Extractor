@@ -26,16 +26,11 @@ class pmidForm(Form):
 #Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
 @app.route("/cogecrawl/")
-#TODO: maybe pickle the citations_with_links later, but for now load from db
 def cogecrawl():
-	#error = None
-	# with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
-	# 	citations_with_links = pickle.load(f)
 	query = '18952863+18269575'
 	citations_with_links = db_unique_citations_retrieval(query) #unique
 	unique_publications = db_unique_citations_number(query)
 	return render_template("dashboard.html", citations_with_links=citations_with_links, unique_publications=unique_publications)
-
 
 
 #Getting Flask-WTFs to work with sqlite3 here
@@ -80,15 +75,17 @@ def results():
 				c.close()
 
 
-				#if the entry does NOT exist in the db already, will need to retrieve text and annotate
+				#if the entry does NOT exist in the db already, will need to retrieve text, annotate it, and populate cache
 				if check1 is None:
 					flash('new pubmedid!')
 					#Using user_input for Information Retireval of citing pmcids and info about them
 					run_IR_not_db(user_input)
 					logging.info("beginning multi-preprocessing")
+					#Annotate
 					biodoc_data = do_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
 					logging.info("writing the BIODOC LEMMAS")
+					#Populate cache (lemmas and nes)
 					biodoc_to_db(biodoc_data) #writes data_samples (lemmas) and NER to db
 					logging.info("* done writing the biodoc lemmas")
 					logging.info("* writing to cache: lemma_samples and nes_samples ")
@@ -103,6 +100,7 @@ def results():
 
 						#Lemma_samples and nes_samples for entire query here:
 						logging.info("concatting lemma nes samples for query")
+						#Populate cache
 						concat_lemma_nes_samples(query)
 
 						#TODO: do I want to do journals vis and topic modeling visualizations HERE or in their functions??
@@ -126,6 +124,8 @@ def results():
 
 
 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
+				#MAYBE need to annotate some new documents, maybe not
+				#If new citations do need to be retireved, annotated, etc then DO NEED to re-populate cache
 				if check1 is not None:
 
 					needed_to_annotate_check = []
@@ -133,19 +133,18 @@ def results():
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input)
-					biodoc_data = do_multi_preprocessing(user_input)
 					logging.info("done with new document multi_preprocessing")
 					logging.info("writing the BIODOC LEMMAS")
-					#biodoc_to_db(biodoc_data)  # writes data_samples (lemmas) and NER to db ## writing to db suucckkss
-					#print_data_samples(user_input, biodoc_data)
+
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')
 						logging.info("need to annotate new documents")
 						biodoc_data = do_multi_preprocessing(user_input)
 
-						#TODO: PROBLEM!!!!! THIS WILL NOT UPDATE CUZ THE FILE ALREADY EXISTS AAAHHHH. :'(
+						#If need_to_annotate is "yes", will re-populate :)
 						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
-					#TODO: here we'll update the caches if need_to_annotate is "true"
+
+					#Don't need to re-populat cache
 					if need_to_annotate == 'no':
 						logging.info("dont need to annotate any new documents")
 						needed_to_annotate_check.append('no')
@@ -158,17 +157,18 @@ def results():
 						logging.info("last pmid in the query")
 						logging.info("begin journal vis!")
 
+						#If ANY user_inputs in the query needed to update, we must update the query's comprehensive cache.
 						if 'yes' in needed_to_annotate_check:
-							#TODO: PROBLEM!!! THIS WILL NOT UPDATE CUZ THE FILE ALREADY EXISTS AAAAHHHH. :'(
-							#TODO: for concat_lemma_nes_samples, need a way to tell if ANY user_inputs needed_to_annotated=yes or not
 							need_to_update = 'yes'
+							#will over-ride existing file :)
 							concat_lemma_nes_samples(query, need_to_update)
 
 						# JOURNALS VIS STUFF HERE
 						logging.info(user_input + " is the last one (JOURNALS)")
-						range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)  # TODO: Check for vis.json first
+						range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)
 
-						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES
+
+						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES BUT EASIER TO DO HERE :((((
 						# logging.info(user_input + " is the last one (LSA)")
 						# jsonDict = run_lsa1(data_samples, 2)
 						# print_lsa(query, user_input, jsonDict)  # print lsa topic model to json

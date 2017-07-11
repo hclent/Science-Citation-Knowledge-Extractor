@@ -201,8 +201,9 @@ def run_IR_in_db(user_input):
 	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
+		logging.info("num_in_db: ", num_in_db)
+		logging.info("num_current: ", num_current)
 		#update number of citations in inputPaper db
-
 		update = inputPapers.update().\
 			where(inputPapers.c.pmid == user_input).\
 			values(num_citations=num_current)
@@ -237,20 +238,11 @@ def run_IR_in_db(user_input):
 
 
 
-
-#Depreciate this  :|
-# def new_citations_from_db(user_input):
-# 	apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(user_input)
-# 	return apa_citations, db_urls
-# 	#apa_citations called 'main' in app.py
-
-
 #Data for populating statistics page in app
 def get_statistics(query):
 	total_pubs, unique_pubs, abstracts, whole, sentences, words =  db_query_statistics(query)
 	statistics = [total_pubs, unique_pubs, abstracts, whole, sentences, words]
 	return statistics
-
 
 
 #use query to get info about input papers
@@ -292,75 +284,78 @@ def stats_barchart(query):
 
 
 ############ DATA VISUALIZATIONS #################################################
-#Updated to SqlAlchemy
-#TODO: no mechanism for updating **DB** (table: queries) if more citations have been found!!
-#TODO: update wc cache if new citations to a query
-#TODO: check for journals vis file
+
+#This code is called in the function below (print_journalvis)
+#Basically it forces an update of the journals vis & update to "queries" table of db.
+#We would want to force an update of the journals vis if there are new papers to a previously seen query
+def force_update_journals(query):
+	years_range = get_years_range(query)  # need range for ALL journals, not just last one
+	logging.info(years_range)
+	publication_data, range_info = journals_vis(years_range, query)  # range info = [('2008', '2016'), 165, 48]
+	logging.info(range_info)
+	journal_years = range_info[0]
+	logging.info(journal_years)
+	q = '+'
+	logging.info(q)
+	range_years = str(q.join(journal_years))
+	logging.info("range years: " + range_years)
+	unique_publications = range_info[1]
+	unique_journals = range_info[2]
+	logging.info(range_info)
+
+	logging.info('Printing JOURNALS to JSON')
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_JOURNALS']), prefix))
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_JOURNALS']), prefix)):
+			pass
+		else:
+			raise
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_JOURNALS']), prefix, suffix))
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_JOURNALS']), prefix, suffix)):
+			pass
+		else:
+			raise
+
+	filename = str(prefix) + '/' + str(suffix) + '/' + "journals_" + str(query) + ".json"
+	save_path = (app.config['PATH_TO_JOURNALS'])
+
+	completeName = os.path.join(save_path, filename)
+	with open(completeName, 'w') as outfile:
+		json.dump(publication_data, outfile)
+	date = str(arrow.now().format('YYYY-MM-DD'))
+
+	update = queries.insert(). \
+		values(dict(datestamp=date, query=query, range_years=range_years, unique_pubs=unique_publications,
+					unique_journals=unique_journals))
+	conn.execute(update)
+	return range_years, unique_publications, unique_journals
+
+
+#Function called for actually making the journals vis.
 def print_journalvis(query, needed_to_annotate_check):
 	#update the cache!
-	# if 'yes' in needed_to_annotate_check: #update the DB
-    #
-    #
+	if 'yes' in needed_to_annotate_check: #update the DB ()
+		logging.info("Journals: NEW docs, so need to force update")
+		range_years, unique_publications, unique_journals = force_update_journals(query)
 	# #if nothing was annotated, check the existing file. If there isn't one, pass
-	# if 'yes' not in needed_to_annotate_check: ## check the record.
-
-	record = checkForQuery(query)  # check for query in db.
-	logging.info("checked for query!!!")
-	logging.info(record)
-	if record == 'empty':
-		#if the record has never been seen before, do the journalsvis and write to db
-		years_range = get_years_range(query) #need range for ALL journals, not just last one
-		logging.info(years_range)
-		publication_data, range_info = journals_vis(years_range, query) #range info = [('2008', '2016'), 165, 48]
-		logging.info(range_info)
-		journal_years = range_info[0]
-		logging.info(journal_years)
-		q = '+'
-		logging.info(q)
-		range_years = str(q.join(journal_years))
-		logging.info("range years: "+range_years)
-		unique_publications = range_info[1]
-		unique_journals = range_info[2]
-		logging.info(range_info)
-
-		logging.info('Printing JOURNALS to JSON')
-		pmid_list = query.split('+')  # list of string pmids
-		pmid = pmid_list[0] #get the first
-		prefix = pmid[0:3]
-		suffix = pmid[3:6]
-
-		try:
-			os.makedirs(os.path.join((app.config['PATH_TO_JOURNALS']), prefix))
-		except OSError:
-			if os.path.isdir(os.path.join((app.config['PATH_TO_JOURNALS']), prefix)):
-				pass
-			else:
-				raise
-
-		try:
-			os.makedirs(os.path.join((app.config['PATH_TO_JOURNALS']), prefix, suffix))
-		except OSError:
-			if os.path.isdir(os.path.join((app.config['PATH_TO_JOURNALS']), prefix, suffix)):
-				pass
-			else:
-				raise
-
-		filename = str(prefix)+'/'+str(suffix)+'/'+"journals_"+str(query)+".json"
-		save_path = (app.config['PATH_TO_JOURNALS'])
-
-		completeName = os.path.join(save_path, filename)
-		with open(completeName, 'w') as outfile:
-			json.dump(publication_data, outfile)
-		date = str(arrow.now().format('YYYY-MM-DD'))
-
-		update = queries.insert().\
-			values(dict(datestamp=date, query=query, range_years=range_years, unique_pubs=unique_publications,
-						unique_journals=unique_journals))
-		conn.execute(update)
-
-
-	if record == 'yes': #if its in the db, just get the important things from the db!!
-		range_years, unique_publications, unique_journals = getJournalsVis(query)
+	if 'yes' not in needed_to_annotate_check: ## check the record.
+		#check for file and get stuff from db
+		record = checkForQuery(query)
+		if record == 'yes':  # if its in the db, just get the important things from the db!!
+			logging.info("Journals: NO new docs, retrive from db")
+			range_years, unique_publications, unique_journals = getJournalsVis(query)
+		if record == 'empty':
+			logging.info("Journals: QUERY not in db table queries! Force update.")
+			range_years, unique_publications, unique_journals = force_update_journals(query)
 	return range_years, unique_publications, unique_journals
 
 
@@ -485,16 +480,7 @@ def vis_scifi(corpus, query, eligible_papers):
 	all_sorted_combos = add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines)
 	logging.info("all_sorted_combos: done")
 	x, y, names, color_list = prepare_for_histogram(all_sorted_combos)
-	logging.info(x)
-	logging.info(y)
-	logging.info(color_list)
 	return x, y, names, color_list
-
-# eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
-# corpus = 'darwin'
-# query = "18952863+18269575"
-# x, y, names, color_list = vis_scifi(corpus, query, eligible_papers)
-
 
 
 
@@ -502,15 +488,16 @@ def vis_scifi(corpus, query, eligible_papers):
 #Take pmcid.txt and get an annotated document, as well as lemmas and named entities
 #Doesn't re-annotated documents that have already been annotated.
 #Updated to sqlalchemy
+#This is only called when there are new documents to annotate :)
 def do_multi_preprocessing(user_input):
 	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
 	t1 = time.time()
 	docs = retrieveDocs(user_input)
 	multiprocess(docs) #if docs is empty [], this function just passes :)
-	# # #Now update annotated_check
+
+	#Now update annotated_check
 	a_check = annotation_check(user_input)
 
-	#TODO: only update/annotate check if there's new docs since last time?
 	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
 		logging.info("updating the annotation checks in the db")
 		pmcid = str(a["pmcid"])

@@ -62,17 +62,33 @@ def paper_dates_barchart(journals, dates, query):
 	return x_vals, y_vals
 
 #Years range looks like (2008, 2017)
+#TODO: update this to use re.match or whatever instead of re.sub so we dont have the year 20170706 :)
 def get_years_range(query):
 	years_list = []
 	pmid_list = query.split('+') #list of string pmids
 	#print(pmid_list)
 	for pmid in pmid_list:
 		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(pmid)
+
 		#print(db_dates) #step1 : get years
 		for d in db_dates:
-			y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
-			y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
+
+			year = re.search('\d{4}', d)
+			if year:
+				y = int(year.group(0))
+			else:
+				try:
+					y = int(d[0:4])
+				except Exception as e:
+					# we need an int no matter what...
+					y = int(d[0:4])
+
+			#y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
+			#y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
+
+			#if its ONLY numbers like 20170607, we're gonna gamble and just put the first 4.
 			years_list.append(int(y)) #append year as an int
+
 		#print("------------------------")
 	sorted_years = (sorted(years_list))
 	if sorted_years[-1] - sorted_years[0] < 8: #if the years range is less than eight, need to adjust that
@@ -97,9 +113,21 @@ def journals_vis(years_range, query):
 	years_list = []
 
 	#print(dates) #step1 : get years
+	#July 11, 2017: Updating the regex here to deal with DUMB PEOPLE WHO PUT 20170607 as the date in the metadata on pubmed
 	for d in dates:
-		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
-		y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
+
+		year = re.search('\d{4}', d)
+		if year:
+			y = int(year.group(0))
+		else:
+			try:
+				y = int(d[0:4])
+			except Exception as e:
+				# we need an int no matter what...
+				y = int(d[0:4])
+
+		# y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
+		# y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
 		years_list.append(y)
 	#print(years_list)
 
@@ -178,19 +206,12 @@ def journals_vis(years_range, query):
 
 	#print("RANGE INFO: ")
 	#Example range info: [('2008', '2016'), 165, 48] means years 2008-2016, 165 publications, 48 unique journals
-	#Get some info about the publication before changing it to a string for the json
-	#Year range, number of publications, number of unique journals
-	#publication_data = re.sub('\'', '\"', str(publication_data)) #json needs double quotes, not single quotes
+
 	publication_data = json.dumps(publication_data)
 
-	return (publication_data, range_info)
+	return publication_data, range_info
 
 
-#
-# years_range = get_years_range("18952863+18269575")
-# publication_data, range_info = journals_vis(years_range, "18952863+18269575") #[('2008', '2016'), 165, 48]
-# print(publication_data)
-# print(range_info)
-#
+
 
 
