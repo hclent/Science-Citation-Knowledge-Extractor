@@ -145,13 +145,12 @@
 		<div role="tabpanel" class="tab-pane fade" id="citations">
 		  	<h4>{{unique_publications}} publications have cited you</h4>
 
-            <ul class="list-group">
-		  	<!--results of MainCrawler.py pmc_spider-->
-		  	{% for result in citations_with_links %}
-		  		<!--<li>{{result}}</li>-->
-             <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
+            <ul>
 
+            {% for result in citations_with_links %}
+             <li><a href="{{result[1]}}" class="list-group-item">{{result[0]}}</a></li>
 		  	{% endfor %}
+
 
             </ul>
 		</div>
