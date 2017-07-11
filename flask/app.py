@@ -77,6 +77,7 @@ def results():
 
 				#if the entry does NOT exist in the db already, will need to retrieve text, annotate it, and populate cache
 				if check1 is None:
+					update_check = "yes"
 					flash('new pubmedid!')
 					#Using user_input for Information Retireval of citing pmcids and info about them
 					run_IR_not_db(user_input)
@@ -96,25 +97,16 @@ def results():
 					#After all citations have been processed, now we can do the analyses:
 					if user_input == pmid_list[-1]: #if its the last pmid
 						logging.info("last pmid in the query")
-						logging.info("begin journal vis!")
 
 						#Lemma_samples and nes_samples for entire query here:
 						logging.info("concatting lemma nes samples for query")
 						#Populate cache
 						concat_lemma_nes_samples(query)
 
-						#TODO: do I want to do journals vis and topic modeling visualizations HERE or in their functions??
-
-						#JOURNALS VIS STUFF HERE
-						logging.info(user_input+" is the last one (JOURNALS)")
-						need_to_update = ["yes"]
-						range_years, unique_publications, unique_journals = print_journalvis(query, need_to_update)#TODO: Check for vis.json first
-
-
-						# Probably update "queries" table of db here?
+						#Update "queries" table of db here!!
 						db_query_update_statistics(query)
 
-						#TOPIC MODELING HERE
+						#TODO: move TOPIC MODELING to its own functions
 
 						# logging.info(user_input+" is the last one (LSA)")
 						# #Do Latent Semantic Analysis and return jsonDict for data vis
@@ -131,6 +123,7 @@ def results():
 				#MAYBE need to annotate some new documents, maybe not
 				#If new citations do need to be retireved, annotated, etc then DO NEED to re-populate cache
 				if check1 is not None:
+					update_check = "no" #no by default
 
 					needed_to_annotate_check = []
 
@@ -159,7 +152,6 @@ def results():
 					## Only want to save final topic model (not running topic model)
 					if user_input == pmid_list[-1]:
 						logging.info("last pmid in the query")
-						logging.info("begin journal vis!")
 
 						#If ANY user_inputs in the query needed to update, we must update the query's comprehensive cache.
 						if 'yes' in needed_to_annotate_check:
@@ -167,18 +159,13 @@ def results():
 							#will over-ride existing file :)
 							concat_lemma_nes_samples(query, need_to_update)
 							db_query_update_statistics(query)
+							update_check = "yes"
 
 						if 'yes' not in needed_to_annotate_check:
+							#update_check is "no" by default
 							pass
 
-						# JOURNALS VIS STUFF HERE
-						logging.info(user_input + " is the last one (JOURNALS)")
-						range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)
-
-
-						# Probably update "queries" table of db here?
-
-
+						# TODO: move TOPIC MODELING to its own functions
 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES BUT EASIER TO DO HERE :((((
 						# logging.info(user_input + " is the last one (LSA)")
 						# jsonDict = run_lsa1(data_samples, 2)
@@ -195,13 +182,10 @@ def results():
 				session['engaged'] = 'engaged'
 
 
-
-		#citations_with_links = list(zip(main_info, target_urls))
 		citations_with_links = db_unique_citations_retrieval(query) #unique
 		unique_publications = db_unique_citations_number(query)
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
-	   			query=query, range_years=range_years, unique_publications=unique_publications, unique_journals=unique_journals)
-				#took out start_year, end_year
+	   			query=query, update_check=update_check)
 
 	except Exception as e:
 		return(str(e))
@@ -509,11 +493,14 @@ def coge_scifi():
 
 
 ############### Results visualizations #########################################
-@app.route('/resjournals/<query>/<range_years>', methods=["GET", "POST"]) #user journals for iframe
-def resjournals(query, range_years):
+@app.route('/resjournals/<query>/<update_check>', methods=["GET", "POST"]) #user journals for iframe
+def resjournals(query, update_check):
 	#need to get last user_input
 	logging.info("in routine res-journals")
-	logging.info("JOURNALS ID: " +str(query))
+
+	needed_to_annotate_check = [update_check]
+	range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)
+
 	logging.info("YEARS RANGE: " +str(range_years))
 	#Need years for range
 	years_list = range_years.split('+')
@@ -533,7 +520,8 @@ def resjournals(query, range_years):
 	logging.info("complete file: " + str(completeName))
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
-	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year)
+	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year,
+						   unique_journals=unique_journals, unique_publications=unique_publications)
 
 
 

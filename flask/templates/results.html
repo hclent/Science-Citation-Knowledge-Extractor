@@ -2,11 +2,7 @@
 {% extends "header.html" %}
 
 {% block body %}
-<style>
-.list-group {
-    list-style: decimal inside !important
-}
-</style>
+
 
 <!-- Pubmed ID Submit form button -->
 <!-- User input is saved to the database pmids_info.db -->
@@ -52,8 +48,8 @@
 
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade" id="journals">
-		  	<h4> {{unique_publications}} publications in {{unique_journals}} different journals  </h4> <!--title goes here-->
-            <iframe  id="resjournals" src="https://geco.iplantcollaborative.org/hclent/bionlp/resjournals/{{query}}/{{range_years}}" width="1100" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+
+            <iframe  id="resjournals" src="https://geco.iplantcollaborative.org/hclent/bionlp/resjournals/{{query}}/{{update_check}}" width="1100" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</div>
@@ -143,7 +139,7 @@
 
         		<!--  Citations -->
 		<div role="tabpanel" class="tab-pane fade" id="citations">
-		  	<h4>{{unique_publications}} publications have cited you</h4>
+		  	<h4>Citing publications: </h4>
 
             <ul>
 
