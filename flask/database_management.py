@@ -501,6 +501,7 @@ def getJournalsVis(query):
 		unique_journals = row["unique_journals"]
 	return range_years, unique_pubs, unique_journals
 
+
 #Grab number of unique (i.e. no repeats) citations for a query
 def db_unique_citations_number(query):
 	s = select([queries.c.unique_pubs]).\
@@ -524,6 +525,51 @@ def db_query_statistics(query):
 		sentences = row["num_sents"]
 		words = row["num_tokens"]
 	return total_pubs, unique_pubs, abstracts, whole, sentences, words
+
+#Update the queries table for statistics
+def db_query_update_statistics(query):
+	total = []
+	unique_pmcids = []
+	all_abstracts = []
+	all_whole = []
+	all_sents = []
+	all_tokens = []
+
+	pmid_list = query.split('+')
+
+	for pmid in pmid_list:
+		pmidDict, pmcDict = db_statistics(pmid)
+		#print(pmidDict)
+		total.append(pmidDict[pmid])
+		#print(pmcDict)
+		for key, value in pmcDict.items():
+			if key not in unique_pmcids:
+				unique_pmcids.append(key)
+			abstract = value[0]
+			if abstract == 'yes':
+				all_abstracts.append(abstract)
+			whole = value[1]
+			if abstract == 'yes':
+				all_whole.append(whole)
+			sent = value[2]
+			if isinstance(sent, int):
+				all_sents.append(sent)
+			token = value[3]
+			if isinstance(token, int):
+				all_tokens.append(token)
+	sum_total = sum(total)
+	unique = (len(unique_pmcids))
+	sum_abstracts = len(all_abstracts)
+	sum_whole = len(all_whole)
+	sum_sents = sum(all_sents)
+	sum_tokens = sum(all_tokens)
+
+	up = queries.update().\
+		where(queries.c.query == query).\
+		values(dict(total_pubs=sum_total, unique_pubs=unique, num_abstracts=sum_abstracts,
+					num_whole_articles=sum_whole, num_sents=sum_sents, num_tokens=sum_tokens))
+	conn.execute(up)
+
 
 
 '''

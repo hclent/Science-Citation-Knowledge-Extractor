@@ -110,6 +110,10 @@ def results():
 						need_to_update = ["yes"]
 						range_years, unique_publications, unique_journals = print_journalvis(query, need_to_update)#TODO: Check for vis.json first
 
+
+						# Probably update "queries" table of db here?
+						db_query_update_statistics(query)
+
 						#TOPIC MODELING HERE
 
 						# logging.info(user_input+" is the last one (LSA)")
@@ -162,6 +166,7 @@ def results():
 							need_to_update = 'yes'
 							#will over-ride existing file :)
 							concat_lemma_nes_samples(query, need_to_update)
+							db_query_update_statistics(query)
 
 						if 'yes' not in needed_to_annotate_check:
 							pass
@@ -169,6 +174,9 @@ def results():
 						# JOURNALS VIS STUFF HERE
 						logging.info(user_input + " is the last one (JOURNALS)")
 						range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)
+
+
+						# Probably update "queries" table of db here?
 
 
 						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES BUT EASIER TO DO HERE :((((
