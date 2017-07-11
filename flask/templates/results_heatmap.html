@@ -124,15 +124,15 @@ var myPlot = document.getElementById('myDiv'),
     name: {{titles|safe}},
     type: 'heatmap',
       colorscale: [[0.0, 'rgb(204,204,204)'], [0.01111111111111111, 'rgb(69,79,220)'],[0.1111111111111111, 'rgb(84,73,210)'], [0.2222222222222222, 'rgb(98,67,201)'], [0.3333333333333333, 'rgb(127,54,181)'], [0.4444444444444444, 'rgb(142,48,172)'], [0.5555555555555556, 'rgb(171,36,152)'], [0.6666666666666666, 'rgb(199,24,133)'], [0.7777777777777778, 'rgb(214,17,123)'], [0.8888888888888888, 'rgb(228,11,114)'], [1.0, 'rgb(243,5,104)']]
-  }
-];
+  }];
 
 
 layout = {
   title: 'Keyword Distribution',
       margin:{
-    l:150}
-}
+    l:150,
+    b:200}
+};
 
 Plotly.newPlot('myDiv', data, layout);
 myPlot.on('plotly_click', function(data){

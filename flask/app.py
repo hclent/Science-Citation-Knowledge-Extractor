@@ -324,7 +324,6 @@ def cogejournals():
 						   unique_journals=unique_journals, s_year=s_year, e_year=e_year)
 
 
-#TODO: Make new default wordcloud
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
 	form = nesOptions()
@@ -358,7 +357,6 @@ def cogewordcloud():
 		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data, popup=popup)
 
 
-#TODO: Make new default data
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions()
@@ -416,7 +414,6 @@ def cogeclustermap():
 		return render_template('coge_clustermap.html', image=image)
 
 
-#TODO: update default kmeans
 @app.route('/cogekmeans/', methods=["GET","POST"]) #default coge k-means clustering for iframe
 def cogekmeans():
 	form = visOptions()
@@ -704,8 +701,7 @@ def res_heatmap(query):
 		with open(lemma_file, "rb") as l:
 			lemma_samples = pickle.load(l)
 
-		x_docs, y_words, z_counts = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
-		titles = vis_heatmapTitles(query)
+		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
 		popup = ' '
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 	else:
@@ -728,8 +724,7 @@ def res_heatmap(query):
 		with open(lemma_file, "rb") as l:
 			lemma_samples = pickle.load(l)
 
-		x_docs, y_words, z_counts = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
-		titles = vis_heatmapTitles(query)
+		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 
