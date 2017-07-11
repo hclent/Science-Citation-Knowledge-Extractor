@@ -755,7 +755,7 @@ def res_clustermap(query):
 			lemma_samples = pickle.load(l)
 
 		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query)
-		image = '/images/' + saveName
+		image = '/clustermaps/' + saveName
 
 		return render_template('results_clustermap.html',image=image, query=query)
 	else:

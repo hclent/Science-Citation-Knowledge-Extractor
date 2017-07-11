@@ -1,6 +1,7 @@
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+from flask import Flask
 import seaborn as sns
 import pandas as pd
 import re, os, json, string
@@ -8,6 +9,8 @@ from collections import defaultdict
 from processors import *
 from database_management import db_citations_mini_hyperlink, db_citations_mini_year
 
+app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
+app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
 
 #Make dictionary with NES counts {'gluten': 5, 'span': 9}
@@ -167,8 +170,8 @@ def makeClusterMap(seaData, query):
     col = seamap.ax_col_dendrogram.get_position()
     seamap.ax_col_dendrogram.set_position([col.x0, col.y0, col.width, col.height])
 
-    save_path = '/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/clustermaps'  # in the folder 'clustermaps'
-    save_name = ('cm_' + (str(query)) + '.png')
+    save_path = (app.config['PATH_TO_CLUSTERM'])
+    save_name = 'cm_' + (str(query)) + '.png'
     completeName = os.path.join(save_path, save_name)  # with the query for a name
     seamap.savefig(completeName)
     return save_name
