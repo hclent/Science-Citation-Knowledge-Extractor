@@ -106,13 +106,6 @@ def results():
 						#Update "queries" table of db here!!
 						db_query_update_statistics(query)
 
-						#TODO: move TOPIC MODELING to its own functions
-
-						# logging.info(user_input+" is the last one (LSA)")
-						# #Do Latent Semantic Analysis and return jsonDict for data vis
-						# jsonDict = run_lsa1(data_samples, 2)
-						# print_lsa(query, user_input, jsonDict) #print lsa topic model to json
-                        #
 						# logging.info(user_input+" is the last one (LDA)")
 						# jsonLDA = run_lda1(data_samples, 3, 5)
 						# print_lda(query, user_input, jsonLDA) #print lda topic model to json
@@ -165,11 +158,6 @@ def results():
 							#update_check is "no" by default
 							pass
 
-						# TODO: move TOPIC MODELING to its own functions
-						### TOPIC MODELING STUFF. SHOULD DO ALL IN iFRAMES BUT EASIER TO DO HERE :((((
-						# logging.info(user_input + " is the last one (LSA)")
-						# jsonDict = run_lsa1(data_samples, 2)
-						# print_lsa(query, user_input, jsonDict)  # print lsa topic model to json
                         #
 						# logging.info(user_input + " is the last one (LDA)")
 						# jsonLDA = run_lda1(data_samples, 3, 5)
@@ -526,8 +514,8 @@ def resjournals(query, update_check):
 
 
 #TODO: re-implement resembeddings for results!
-@app.route('/resembed/<query>', methods=["GET", "POST"]) #user embeddings for iframe
-def resembeddings(query):
+@app.route('/resembed/<query>/<update_check>', methods=["GET", "POST"]) #user embeddings for iframe
+def resembeddings(query, update_check):
 	if request.method == 'POST':
 		return render_template('results_embeddings.html')
 	else:
@@ -535,51 +523,64 @@ def resembeddings(query):
 
 
 
-@app.route('/reslsa/<query>', methods=["GET", "POST"]) #user lsa for iframe
-def reslsa(query):
+@app.route('/reslsa/<query>/<update_check>', methods=["GET", "POST"]) #user lsa for iframe
+def reslsa(query, update_check):
 	form = visOptions()
 	if request.method == 'POST':
-		logging.info("LSA: RERUN")
-		k_clusters = form.k_val.data #2,3,4,or 5
+		k_clusters = form.k_val.data  # 2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-
-		pmid_list = query.split('+')
-		pmid = pmid_list[0]
-		prefix = pmid[0:3]
-		suffix = pmid[3:6]
-
-		filename =  str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
-		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
-		with open(lemma_file, "rb") as l:
-			lemma_samples = pickle.load(l)
-
-		lemmas_for_lsa = [l[1] for l in lemma_samples]  # ignore the pmcid's in l[0], ignore tags in l[2]
-
 		k = int(k_clusters)
-		if num_pubs < k:
-			logging.info("k value is larger than number of publications")
-		temp_jsonDict = run_lsa1(lemmas_for_lsa, k)
-		logging.info("did it all!")
-		return render_template('results_lsa.html', query=query, jsonDict=temp_jsonDict)
+
+		#update check? yes --> force update of file and save it
+		#update check? no --> look for file, if no file, make it
+		if update_check == 'no':
+			#look for file, if no file, make it
+			jsonDict = load_lsa(query, k)
+
+		if update_check == 'yes':
+			logging.info("LSA: RERUN")
+
+			#load data for analysis
+			lemma_samples = load_lemma_cache(query)
+			lsa_lemmas = [l[1] for l in lemma_samples]
+
+			num_pubs = len(lsa_lemmas)
+			if num_pubs < k:
+				logging.info("k value is larger than number of publications")
+
+			#run analysis
+			jsonDict = run_lsa1(lsa_lemmas, k)
+			#save it
+			print_lsa(query, jsonDict, k)
+
+
+			logging.info("did it all!")
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
 	else:
 		logging.info("LSA: DEFAULT (results)")
 		logging.info("LSA ID: " +str(query))
 
-		pmid_list = query.split('+') #list of string pmids
-		pmid = pmid_list[0]
-		prefix = pmid[0:3]
-		suffix = pmid[3:6]
+		if update_check == 'yes':
+			#force update
+			##load the lemmas
+			k=7
+			lemma_samples = load_lemma_cache(query)
 
-		filename = str(prefix) + '/' + str(suffix) + '/' + "lsa_"+str(query)+".json" #file named after query
-		savePath = (app.config['PATH_TO_LSA'])
-		completeName = os.path.join(savePath, file_name)
-		with open(completeName) as load_data:
-			jsonDict = json.load(load_data)
-		return render_template('results_lsa.html', query=query, jsonDict=jsonDict)
+			lsa_lemmas = [l[1] for l in lemma_samples]
+
+			jsonDict = run_lsa1(lsa_lemmas, k)
+			print_lsa(query, jsonDict, k)
 
 
-@app.route('/reslda/<query>', methods=["GET", "POST"]) #user lda for iframe
-def reslda(query):
+		if update_check == 'no':
+			k=7
+			jsonDict = load_lsa(query, k)
+
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
+
+
+@app.route('/reslda/<query>/<update_check>', methods=["GET", "POST"]) #user lda for iframe
+def reslda(query, update_check):
 	form = visOptions()
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5

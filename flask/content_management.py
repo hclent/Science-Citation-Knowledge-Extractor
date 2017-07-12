@@ -14,6 +14,7 @@ from naive_cosineSim import * #mine
 from fasttext import * #mine
 from fgraph import * #mine
 from fgraph2json import embedding_json #mine
+from cache_lemma_nes import load_lemma_cache #mine
 
 
 ############## CONFIG ######################################
@@ -281,6 +282,42 @@ def stats_barchart(query):
 		y_all.append(y)
 	return x_all, y_all
 
+############ PROCESSING BIODOCS ############################################
+#Take pmcid.txt and get an annotated document, as well as lemmas and named entities
+#Doesn't re-annotated documents that have already been annotated.
+#Updated to sqlalchemy
+#This is only called when there are new documents to annotate :)
+def do_multi_preprocessing(user_input):
+	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
+	t1 = time.time()
+	docs = retrieveDocs(user_input)
+	multiprocess(docs) #if docs is empty [], this function just passes :)
+
+	#Now update annotated_check
+	a_check = annotation_check(user_input)
+
+	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
+		logging.info("updating the annotation checks in the db")
+		pmcid = str(a["pmcid"])
+		annotated = str(a["annotated"][0])
+
+		update = citations.update().\
+			where(citations.c.pmcid == pmcid).\
+			where(citations.c.citesPmid == user_input).\
+			values(annotated=annotated)
+		conn.execute(update)
+
+	#Now extract information from annotated documents
+	biodocs = retrieveBioDocs(user_input)
+	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
+	#update db with sents and tokens
+	for b in biodoc_data:
+		update_annotations(b, user_input)
+	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	return biodoc_data
+
+
 
 
 ############ DATA VISUALIZATIONS #################################################
@@ -482,46 +519,10 @@ def vis_scifi(corpus, query, eligible_papers):
 	x, y, names, color_list = prepare_for_histogram(all_sorted_combos)
 	return x, y, names, color_list
 
-
-
-############ PROCESSING BIODOCS ############################################
-#Take pmcid.txt and get an annotated document, as well as lemmas and named entities
-#Doesn't re-annotated documents that have already been annotated.
-#Updated to sqlalchemy
-#This is only called when there are new documents to annotate :)
-def do_multi_preprocessing(user_input):
-	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
-	t1 = time.time()
-	docs = retrieveDocs(user_input)
-	multiprocess(docs) #if docs is empty [], this function just passes :)
-
-	#Now update annotated_check
-	a_check = annotation_check(user_input)
-
-	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
-		logging.info("updating the annotation checks in the db")
-		pmcid = str(a["pmcid"])
-		annotated = str(a["annotated"][0])
-
-		update = citations.update().\
-			where(citations.c.pmcid == pmcid).\
-			where(citations.c.citesPmid == user_input).\
-			values(annotated=annotated)
-		conn.execute(update)
-
-	#Now extract information from annotated documents
-	biodocs = retrieveBioDocs(user_input)
-	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
-	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
-	#update db with sents and tokens
-	for b in biodoc_data:
-		update_annotations(b, user_input)
-	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return biodoc_data
-
-
-
 ############ TOPIC MODELING ############################################
+
+
+#### L S A #####
 def run_lsa1(lsa_lemmas, k):
 	logging.info('Beginning Latent Semantic Analysis')
 	tfidf, tfidf_vectorizer = get_tfidf(lsa_lemmas)
@@ -529,12 +530,85 @@ def run_lsa1(lsa_lemmas, k):
 	return jsonDict
 
 
+def print_lsa(query, jsonDict, k):
+	logging.info('Printing LSA to JSON')
+	save_path = (app.config['PATH_TO_LSA'])
+
+	#create folders if don't exist
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_LSA']), prefix))
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_LSA']), prefix)):
+			pass
+		else:
+			raise
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_LSA']), prefix, suffix))
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_LSA']), prefix, suffix)):
+			pass
+		else:
+			raise
+
+	filename = str(prefix) + '/' + str(suffix) + '/' + "lsa_" + str(query) + "_" + str(k) + ".json"
+
+	completeName = os.path.join(save_path, filename) #with the query for a name
+	with open(completeName, 'w') as outfile:
+		json.dump(jsonDict, outfile)
+
+
+#Loads the LSA json for vis
+#First checks if the file exists. If the file doesn't exist, it makes it.
+def load_lsa(query, k):
+	save_path = (app.config['PATH_TO_LSA'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+	filename = str(prefix) + '/' + str(suffix) + '/' + "lsa_" + str(query) + "_" + str(k) + ".json"
+	completeName = os.path.join(save_path, filename)
+	try:
+		with open(completeName, "rb") as infile:
+			jsonDict = json.load(inflie)
+	except Exception as e:
+		#there's no file! So we gotta make one!
+		#load lemmas
+		lemma_samples = load_lemma_cache(query)
+		lemmas_for_lsa = [l[1] for l in lemma_samples]
+		jsonDict = run_lsa1(lemmas_for_lsa, k)
+		print_lsa(query, jsonDict, k)
+	return jsonDict
+
+
+###### L D A ########
 def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number of words=5
 	logging.info('Beginning Latent Dirichlet Allocation')
 	tfidf, tfidf_vectorizer = get_tfidf(lda_lemmas)
 	lda = fit_lda(tfidf, num_topics)
 	jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 	return jsonLDA
+
+
+#TODO: edit saving path
+def print_lda(query, user_input, jsonLDA):
+	#Save the json for @app.route('/reslda/')
+	logging.info('Printing LDA to JSON')
+	save_path = '/home/hclent/data/topics/lda' #in the folder of the last pmid
+	completeName = os.path.join(save_path, ('lda_'+(str(query))+'.json'))  #with the query for a name
+	with open(completeName, 'w') as outfile:
+		json.dump(jsonLDA, outfile)
+
+
+##### E M B E D D I N G  ######
+
+def flatten(listOfLists):
+    return list(chain.from_iterable(listOfLists))
 
 
 #Input: query, top N desired bin, k clusters
@@ -577,31 +651,6 @@ def run_embeddings(query, top_n, k_clusters):
 	embedding_json(results, query)
 	logging.info("made json for embedding topic model")
 
-
-
-########### WRITING TO JSON / PICKLE ###############################################
-
-#TODO: edit saving path
-def print_lsa(query, user_input, jsonDict):
-	#Save the json for @app.route('/reslsa/')
-	logging.info('Printing LSA to JSON')
-	save_path = '/home/hclent/data/topics/lsa' #in the folder of the last pmid
-	completeName = os.path.join(save_path, ('lsa_'+(str(query))+'.json')) #with the query for a name
-	with open(completeName, 'w') as outfile:
-		json.dump(jsonDict, outfile)
-
-#TODO: edit saving path
-def print_lda(query, user_input, jsonLDA):
-	#Save the json for @app.route('/reslda/')
-	logging.info('Printing LDA to JSON')
-	save_path = '/home/hclent/data/topics/lda' #in the folder of the last pmid
-	completeName = os.path.join(save_path, ('lda_'+(str(query))+'.json'))  #with the query for a name
-	with open(completeName, 'w') as outfile:
-		json.dump(jsonLDA, outfile)
-
-
-def flatten(listOfLists):
-    return list(chain.from_iterable(listOfLists))
 
 
 ############## GRAVEYARD ##########################################################
