@@ -574,8 +574,8 @@ def load_lsa(query, k):
 	filename = str(prefix) + '/' + str(suffix) + '/' + "lsa_" + str(query) + "_" + str(k) + ".json"
 	completeName = os.path.join(save_path, filename)
 	try:
-		with open(completeName, "rb") as infile:
-			jsonDict = json.load(inflie)
+		with open(completeName) as infile:
+			jsonDict = json.load(infile)
 	except Exception as e:
 		#there's no file! So we gotta make one!
 		#load lemmas
