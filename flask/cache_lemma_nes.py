@@ -113,6 +113,7 @@ def print_lemma_nes_samples(user_input, biodoc_data, need_to_update):
 				pickle.dump(nes_samples, ncn)
 			logging.info("lemma_samples dumped to pickle")
 
+	#Force an update, regardless of
 	if need_to_update == 'yes':
 		try:
 			os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
@@ -170,9 +171,6 @@ def print_lemma_nes_samples(user_input, biodoc_data, need_to_update):
 # #
 # biodoc_data = do_multi_preprocessing('18269575')
 # print_lemma_nes_samples('18269575', biodoc_data)
-
-
-
 
 '''
 This function concatenates previous lemma_samples and nes_samples for queries longer than 1 input Paper.

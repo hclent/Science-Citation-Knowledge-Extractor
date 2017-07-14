@@ -167,7 +167,7 @@ def multiprocess(docs):
     for biodoc, pmcid in results.get():
       prefix = pmcid[0:3]
       suffix = pmcid[3:6]
-      save_path = +str(prefix)+'/'+str(suffix)+'/'+str(pmcid)+'.json' #look in folder that matches pmcid
+      save_path = str(prefix)+'/'+str(suffix)+'/'+str(pmcid)+'.json' #look in folder that matches pmcid
       completeName = os.path.join((app.config['PATH_TO_CACHE']), save_path)
 
       with open(completeName, 'w') as out:
