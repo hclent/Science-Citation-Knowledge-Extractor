@@ -656,7 +656,7 @@ def flatten(listOfLists):
 
 #Input: query, top N desired bin, k clusters
 #Output: prints csv for force directed graph
-def run_embeddings(query, top_n, k_clusters):
+def run_embeddings(query, k_clusters, top_n):
 	logging.info("in run_embeddings function")#
 	logging.info(query)
 	words, tags = get_words_tags(query) #list of words/tags per doc
@@ -691,8 +691,26 @@ def run_embeddings(query, top_n, k_clusters):
 	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
 	results = list(zip(kmeans.labels_, top))
-	embedding_json(results, query)
+	print(results)
+	embedding_json(results, query, k_clusters, top_n) #this saves it as a file
 	logging.info("made json for embedding topic model")
+
+def embedding_lookup(query, k_clusters, top_n):
+	save_path = (app.config['PATH_TO_FGRAPHS'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+	filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(top_n) + '.json'
+	completeName = os.path.join(save_path, filename)
+	try:
+		with open(completeName) as infile:
+			json.load(infile) #if it can load it, its good
+	except Exception as e:
+		run_embeddings(query, k_clusters, top_n)
+	return completeName
+
+
 
 
 

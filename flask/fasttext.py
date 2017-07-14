@@ -28,6 +28,7 @@ def flatten(listOfLists):
     return list(chain.from_iterable(listOfLists))
 
 
+#TODO: update this to use the config file to point to lemma samples
 #Input: query
 #Output, list of words, and corresponding list of tags
 def get_words_tags(query):
