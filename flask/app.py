@@ -553,7 +553,6 @@ def reslsa(query, update_check):
 			#save it
 			print_lsa(query, jsonDict, k)
 
-
 			logging.info("did it all!")
 		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
 	else:
@@ -587,44 +586,41 @@ def reslda(query, update_check):
 		logging.info("the k value is " + str(k_clusters))
 		num_words = form.w_words.data
 		logging.info("the w value is "+str(num_words))
-
-		pmid_list = query.split('+')
-		pmid = pmid_list[0]
-		prefix = pmid[0:3]
-		suffix = pmid[3:6]
-
-		filename = str(prefix) + '/' + str(suffix) + '/' + "lemma_samples_" + str(query) + ".pickle"
-		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
-		with open(lemma_file, "rb") as l:
-			lemma_samples = pickle.load(l)
-
-		lemmas_for_lda = [l[1] for l in lemma_samples]  # ignore the pmcid's in l[0], ignore tags in l[2]
-
-		logging.info("rerunning the analysis")
 		k = int(k_clusters)
 		w = int(num_words)
-		temp_jsonLDA = run_lda1(lemmas_for_lda, k, w)
-		return render_template('results_lda.html', form=form, jsonLDA=temp_jsonLDA, query=query)
+
+		if update_check == 'yes':
+			lemma_samples = load_lemma_cache(query)
+			lda_lemmas = [l[1] for l in lemma_samples]
+			jsonLDA = run_lda1(lda_lemmas, k, w)
+			print_lda(query, jsonLDA, k, w)
+
+
+		if update_check == 'no':
+			jsonLDA = load_lda(query, k, w)
+
+
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check)
 	else:
 		#need to get last user_input
 		#use id to do stuff
 		logging.info("in routine reslDa")
 		logging.info("RES-LDA ID: " +str(query))
+		k = 7
+		w = 7
 
-		pmid_list = query.split('+')
-		pmid = pmid_list[0]
-		prefix = pmid[0:3]
-		suffix = pmid[3:6]
+		if update_check == 'yes':
+			lemma_samples = load_lemma_cache(query)
+			lda_lemmas = [l[1] for l in lemma_samples]
+			jsonLDA = run_lda1(lda_lemmas, k, w)
+			print_lda(query, jsonLDA, k, w)
 
 
-		filename = str(prefix) + '/' + str(suffix) + '/' + "lda_"+str(query)+".json" #file named after query
-		logging.info("last entry's LDA is named: " + str(file_name))
-		savePath = (app.config['PATH_TO_LDA'])
-		completeName = os.path.join(savePath, file_name)
-		with open(completeName) as load_data:
-			jsonLDA = json.load(load_data)
-		logging.info(jsonLDA)
-		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query)
+		if update_check == 'no':
+			jsonLDA = load_lda(query, k, w)
+
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check)
+
 
 
 @app.route('/reswordcloud/<query>', methods=["GET", "POST"]) #user wordcloud for iframe

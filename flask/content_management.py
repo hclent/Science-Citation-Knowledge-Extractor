@@ -595,14 +595,57 @@ def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number o
 	return jsonLDA
 
 
-#TODO: edit saving path
-def print_lda(query, user_input, jsonLDA):
-	#Save the json for @app.route('/reslda/')
-	logging.info('Printing LDA to JSON')
-	save_path = '/home/hclent/data/topics/lda' #in the folder of the last pmid
-	completeName = os.path.join(save_path, ('lda_'+(str(query))+'.json'))  #with the query for a name
+#Save the json for @app.route('/reslda/')
+def print_lda(query, jsonLDA, k, w):
+	save_path = (app.config['PATH_TO_LDA'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_LDA']), prefix))
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_LDA']), prefix)):
+			pass
+		else:
+			raise
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_LDA']), prefix, suffix))
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_LDA']), prefix, suffix)):
+			pass
+		else:
+			raise
+
+	filename = str(prefix) + '/' + str(suffix) + '/' + "lda_" + str(query) + "_" + str(k) + "_" + str(w) + ".json"
+
+	completeName = os.path.join(save_path, filename)  # with the query for a name
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonLDA, outfile)
+
+
+
+def load_lda(query, k, w):
+	save_path = (app.config['PATH_TO_LDA'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+	filename = str(prefix) + '/' + str(suffix) + '/' + "lda_" + str(query) + "_" + str(k) + "_" + str(w) + ".json"
+	completeName = os.path.join(save_path, filename)
+	try:
+		with open(completeName) as infile:
+			jsonLDA = json.load(infile)
+	except Exception as e:
+		# there's no file! So we gotta make one!
+		# load lemmas
+		lemma_samples = load_lemma_cache(query)
+		lemmas_for_lda = [l[1] for l in lemma_samples]
+		jsonLDA = run_lda1(lemmas_for_lda, k, w)
+		print_lda(query, jsonLDA, k, w)
+	return jsonLDA
 
 
 ##### E M B E D D I N G  ######
