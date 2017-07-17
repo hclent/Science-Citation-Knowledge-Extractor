@@ -208,30 +208,20 @@ class corpusOptions(Form):
 
 ################ Default CoGe Data #############################
 
-#TODO: just load cache
+#TODO: just load cache if its there
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
 	form = visOptions()
 	if request.method =='POST':
 		logging.info("posted something to cogembeddings")
 		query = '18952863+18269575'
-		# pmid_list = query.split('+')  # list of string pmids
-		# pmid = pmid_list[0]  # get the first
-		# prefix = pmid[0:3]
-		# suffix = pmid[3:6]
 
 		window = int(form.w_words.data)
 		logging.info(window)
 		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
 		logging.info(k_clusters)
 
-		# run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
-		# filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(
-		# 	window) + '.json'
-        #
-		# filepath = os.path.join('fgraphs', filename) #should this be os.path.abspath()?
 		filepath = embedding_lookup(query, k_clusters, window)
-
 		return render_template('coge_embeddings.html', filepath=filepath)
 	else:
 		filepath = 'coge_embed.json'
@@ -247,20 +237,22 @@ def cogelsa():
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
 		query = '18952863+18269575'
-
-		filename = '189/528/lemma_samples_18952863+18269575.pickle'
-		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
-		with open(lemma_file, "rb") as f:
-			lemma_samples = pickle.load(f)
-
-		logging.info("GETTING THE DATA ....")
-		lemmas_for_lsa = [l[1] for l in lemma_samples] #ignore the pmcid's in l[0], ignore tags in l[2]
-
-		logging.info("rerunning the analysis")
 		k = int(k_clusters)
 
-		jsonLSA = run_lsa1(lemmas_for_lsa, k)
-		logging.info("did it all!")
+		try:
+			jsonLSA= load_lsa(query, k)
+		except Exception as e:
+			# load data for analysis
+			lemma_samples = load_lemma_cache(query)
+			lsa_lemmas = [l[1] for l in lemma_samples]
+
+			num_pubs = len(lsa_lemmas)
+			if num_pubs < k:
+				logging.info("k value is larger than number of publications")
+
+			# run analysis & save it
+			jsonLSA = run_lsa1(lsa_lemmas, k)
+			print_lsa(query, jsonLSA, k)
 		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA)
 	else:
 		filename = "coge_lsa.json"
