@@ -207,34 +207,39 @@ class corpusOptions(Form):
 											('paper2', 'paper2'),('paper3', 'paper3'), ('paper4', 'paper4'), ('paper5', 'paper5')])
 
 ################ Default CoGe Data #############################
+
+#TODO: just load cache
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
 	form = visOptions()
 	if request.method =='POST':
 		logging.info("posted something to cogembeddings")
 		query = '18952863+18269575'
-		pmid_list = query.split('+')  # list of string pmids
-		pmid = pmid_list[0]  # get the first
-		prefix = pmid[0:3]
-		suffix = pmid[3:6]
+		# pmid_list = query.split('+')  # list of string pmids
+		# pmid = pmid_list[0]  # get the first
+		# prefix = pmid[0:3]
+		# suffix = pmid[3:6]
 
 		window = int(form.w_words.data)
 		logging.info(window)
 		k_clusters = int(form.k_val.data)  # 2,3,4,or 5
 		logging.info(k_clusters)
 
-		run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
-		filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(
-			window) + '.json'
+		# run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
+		# filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(
+		# 	window) + '.json'
+        #
+		# filepath = os.path.join('fgraphs', filename) #should this be os.path.abspath()?
+		filepath = embedding_lookup(query, k_clusters, window)
 
-		filepath = os.path.join('fgraphs', filename) #should this be os.path.abspath()?
 		return render_template('coge_embeddings.html', filepath=filepath)
 	else:
 		filepath = 'coge_embed.json'
 		return render_template('coge_embeddings.html', filepath=filepath)
 
 
-#TODO: new default coge_lsa
+#TODO: new default
+#TODO: update for chaching sub options
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions()
@@ -550,6 +555,7 @@ def resembeddings(query, update_check):
 	else:
 		k_clusters = 10
 		window = 100
+		logging.info("update_check: ", update_check)
 
 		pmid_list = query.split('+')  # list of string pmids
 		pmid = pmid_list[0]  # get the first
@@ -560,7 +566,7 @@ def resembeddings(query, update_check):
 			run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
 			filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(
 				k_clusters) + '_' + str(window) + '.json'
-			filepath = os.path.join((app.config['PATH_TO_FGRAPHS']), filename)
+			filepath = os.path.join('fgraphs', filename)
 
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)

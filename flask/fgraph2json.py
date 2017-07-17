@@ -1,4 +1,4 @@
-import json, re, os.path, logging, errno
+import json, re, os.path, logging
 from operator import itemgetter
 from flask import Flask
 
@@ -40,29 +40,22 @@ def embedding_json(results, query, k, top_n):
     suffix = pmid[3:6]
 
 
-    # if not os.path.exists(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix)):
-    #     os.makedirs(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix))
-    #
-    # if not os.path.exists(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix, suffix)):
-    #     os.makedirs(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix, suffix))
-
 
     try:
         os.makedirs(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix))
-    except OSError as e:
-        if e.errno != errno.EEXIST:
+    except OSError as e1:
+        if os.path.isdir(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix)):
+            pass
+        else:
             raise
-        pass
-
 
     try:
         os.makedirs(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix, suffix))
-    except OSError as s:
-        print(s)
-        if s.errno != errno.EEXIST:
-            raise
-        else:
+    except OSError as e2:
+        if os.path.isdir(os.path.join((app.config['PATH_TO_FGRAPHS']), prefix, suffix)):
             pass
+        else:
+            raise
 
     save_path = (app.config['PATH_TO_FGRAPHS']) #/flask/static/fgraphs
     filename =  str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k) + '_' + str(top_n) + '.json'

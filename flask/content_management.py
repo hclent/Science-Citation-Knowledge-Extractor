@@ -691,7 +691,6 @@ def run_embeddings(query, k_clusters, top_n):
 	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
 	results = list(zip(kmeans.labels_, top))
-	print(results)
 	embedding_json(results, query, k_clusters, top_n) #this saves it as a file
 	logging.info("made json for embedding topic model")
 
@@ -702,7 +701,7 @@ def embedding_lookup(query, k_clusters, top_n):
 	prefix = pmid[0:3]
 	suffix = pmid[3:6]
 	filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(top_n) + '.json'
-	completeName = os.path.join(save_path, filename)
+	completeName = os.path.join('fgraphs', filename)
 	try:
 		with open(completeName) as infile:
 			json.load(infile) #if it can load it, its good
