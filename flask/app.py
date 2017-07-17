@@ -229,7 +229,6 @@ def cogeembeddings():
 
 
 #TODO: new default
-#TODO: update for chaching sub options
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions()
@@ -273,18 +272,18 @@ def cogelda():
 		num_words = form.w_words.data
 		logging.info("the w value is "+str(num_words))
 		query = '18952863+18269575'
-
-		filename = "189/528/lemma_samples_18952863+18269575.pickle"
-		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
-		with open(lemma_file, "rb") as f:
-			lemma_samples = pickle.load(f)
-
-		lemmas_for_lda = [l[1] for l in lemma_samples] #ignore the pmcid's in l[0], ignore tags in l[2]
-
-		logging.info("rerunning the analysis")
 		k = int(k_clusters)
 		w = int(num_words)
-		jsonLDA = run_lda1(lemmas_for_lda, k, w)
+
+		try:
+			jsonLDA = load_lda(query, k, w)
+
+		except Exception as e:
+			lemma_samples = load_lemma_cache(query)
+			lda_lemmas = [l[1] for l in lemma_samples]
+			jsonLDA = run_lda1(lda_lemmas, k, w)
+			print_lda(query, jsonLDA, k, w)
+
 		return render_template('coge_lda.html', form=form, jsonLDA=jsonLDA)
 	else:
 		filename = "coge_lda1.json"
