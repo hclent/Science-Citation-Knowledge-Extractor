@@ -701,13 +701,15 @@ def embedding_lookup(query, k_clusters, top_n):
 	prefix = pmid[0:3]
 	suffix = pmid[3:6]
 	filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(top_n) + '.json'
-	completeName = os.path.join('fgraphs', filename)
-	try:
-		with open(completeName) as infile:
-			json.load(infile) #if it can load it, its good
-	except Exception as e:
+	completeName = os.path.join(save_path, filename)
+	returnName = os.path.join('fgraphs', filename)
+	if os.path.isfile(completeName): #if the file exists, all's well!
+		logging.info("fgraph file exists! :)")
+		pass
+	else:
+		logging.info("failed to load/find an existing fgraph. Make a new one.")
 		run_embeddings(query, k_clusters, top_n)
-	return completeName
+	return returnName
 
 
 
