@@ -1,7 +1,7 @@
 import re, operator, collections, json
 from itertools import chain
 from collections import defaultdict
-from database_management import db_citations_retrieval, db_journals_and_dates
+from database_management import db_journals_and_dates, db_citations_retrieval, db_get_years_range
 
 
 def flatten(listOfLists):
@@ -36,33 +36,39 @@ def paper_dates_barchart(journals, dates, query):
 	x_vals = []
 	y_vals = []
 
-
 	yearDict = defaultdict(lambda:0)
-	years_list = []
+	years_list = dates
+	#print(years_list)
 
-	years_range = get_years_range(query)
+	try:
+		years_plus_range = db_get_years_range(query) #use the years range of the entire query
+		#print("got years range from db") #in db years_range looks like "2008+2017
+		years_range = years_plus_range.split('+')
+	except Exception as e:
+		years_range = get_years_range(query)
+		#print("calculate years_range by hand")
 
-	for d in dates:
-		y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
-		y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
-		years_list.append(y)
+	#print(years_range)
 
 	# Associate journals with years
 	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
+	#print(journal_year)
 
 	for year in range(int(years_range[0]), int(years_range[1]) + 1):
 		for pair in journal_year:
 			if year == int(pair[1]):
 				yearDict[year] +=1
 
+	#print(yearDict)
 	for year in sorted(yearDict):
 		x_vals.append(year)
 		y_vals.append(yearDict[year])
 
 	return x_vals, y_vals
 
+
 #Years range looks like (2008, 2017)
-#TODO: update this to use re.match or whatever instead of re.sub so we dont have the year 20170706 :)
+#The actual journals vis uses this once, but in the future its stored in the db and retrievable that way
 def get_years_range(query):
 	years_list = []
 	pmid_list = query.split('+') #list of string pmids
@@ -83,29 +89,23 @@ def get_years_range(query):
 					# we need an int no matter what...
 					y = int(d[0:4])
 
-			#y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
-			#y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
-
 			#if its ONLY numbers like 20170607, we're gonna gamble and just put the first 4.
 			years_list.append(int(y)) #append year as an int
 
-		#print("------------------------")
 	sorted_years = (sorted(years_list))
+	#This is just adjusting the years range so that the tickmarks on the journals vis look pretty
 	if sorted_years[-1] - sorted_years[0] < 8: #if the years range is less than eight, need to adjust that
 		start = sorted_years[0] - 8 #minus 9 from start year
 		end = sorted_years[-1]
 		years_range = (str(start), str(end))
 	else:
 		years_range = (str(sorted_years[0]), str(sorted_years[-1])) #define years range with (oldest, newest)
-	#print("YEARS RANGE: " + str(years_range))
-
 	return years_range
 
 
+#Makes the json for the Journals visualization :)
 def journals_vis(years_range, query):
 	journals, dates = get_journals_and_dates(query)
-
-
 	#print("JOURNALS VISUALIZATION")
 	num_publications = len(journals) #UNIQUE publications only since duplicates have been flitered out
 	#print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")

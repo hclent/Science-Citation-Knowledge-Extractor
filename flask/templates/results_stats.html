@@ -65,17 +65,48 @@ d3.select("#venn").datum(sets).call(chart);
  <!-- BAR CHART -->
 <div id="myDiv" style="width: 680px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
-    var data = [{
-    x: {{x | safe}},
-    y: {{y | safe}},
-    type: 'bar'
-        }];
 
-            var layout = {
-              title: 'Citations by Year'
-            };
+    var paper1 = {
+    x: {{x0|safe}},
+    y: {{y0|safe}},
+    name: '{{n0|safe}}',
+    type: 'bar'};
+
+    var paper2 = {
+    x: {{x1|safe}},
+    y: {{y1|safe}},
+    name: '{{n1|safe}}',
+    type: 'bar'};
+
+    var paper3 = {
+    x: {{x2|safe}},
+    y: {{y2|safe}},
+    name: '{{n2|safe}}',
+    type: 'bar'};
+
+    var paper4 = {
+    x: {{x3|safe}},
+    y: {{y3|safe}},
+    name: '{{n3|safe}}',
+    type: 'bar'};
+
+    var paper5 = {
+    x: {{x4|safe}},
+    y: {{y4|safe}},
+    name: '{{n4|safe}}',
+    type: 'bar'};
 
 
-        Plotly.newPlot('myDiv', data, layout);
+    var data = [paper1, paper2, paper3, paper4, paper5];
+
+
+    var layout = {
+      title: 'Citations by Year',
+      barmode: 'group'
+    };
+
+
+    Plotly.newPlot('myDiv', data, layout);
+
 
   </script>

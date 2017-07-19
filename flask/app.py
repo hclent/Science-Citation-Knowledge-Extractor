@@ -222,6 +222,7 @@ def cogeembeddings():
 		logging.info(k_clusters)
 
 		filepath = embedding_lookup(query, k_clusters, window)
+		logging.info(filepath)
 		return render_template('coge_embeddings.html', filepath=filepath)
 	else:
 		filepath = 'coge_embed.json'
@@ -844,11 +845,16 @@ def res_stats(query):
 	sum_tokens = statistics[5]
 
 	#get x, y coordinates for pubs x year bar chart.
-	x, y = stats_barchart(query)
+	#make 5 papers
+	x0, x1, x2, x3, x4, y0, y1, y2, y3, y4, n0, n1, n2, n3, n4 = stats_barchart(query)
+
 	return render_template('results_stats.html', input_click_citations=input_click_citations,
 						   venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
-						   sum_sents=sum_sents, sum_tokens=sum_tokens, x=x, y=y)
+						   sum_sents=sum_sents, sum_tokens=sum_tokens,
+						   x0=x0, x1=x1, x2=x2, x3=x3, x4=x4,
+						   y0=y0, y1=y1, y2=y2, y3=y3, y4=y4,
+						   n0=n0, n1=n1, n2=n2, n3=n3, n4=n4)
 
 
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe

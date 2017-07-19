@@ -55,6 +55,9 @@ def multiple_pmid_input(user_input):
 	ids = clean.split() #list of pmids
 	return ids
 
+def flatten(listOfLists):
+    return list(chain.from_iterable(listOfLists))
+
 ################### DATABASE #####################################################
 #If the pmid is NOT in the db, we also need to getSelfText and write that info to db
 def scrape_and_write_Input(user_input):
@@ -132,7 +135,6 @@ def new_or_copy_db(citation): #citation is a dict
 		conn.execute(update)
 
 
-
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 #Write self_info to inputPmids db
 #Write allCitationsInfo to citations db
@@ -199,7 +201,7 @@ def run_IR_in_db(user_input):
 	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
-	if num_current > num_in_db: #TODO change this back to > after i've fixed authors problem
+	if int(num_current) > int(num_in_db): #TODO change this back to > after i've fixed authors problem
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
 		logging.info("num_in_db: ", num_in_db)
@@ -238,7 +240,6 @@ def run_IR_in_db(user_input):
 	return need_to_annotate
 
 
-
 #Data for populating statistics page in app
 def get_statistics(query):
 	total_pubs, unique_pubs, abstracts, whole, sentences, words =  db_query_statistics(query)
@@ -259,12 +260,31 @@ def statsSelfInfo(query):
 
 
 #take a query and generate x and y datapoints for pubs x year bar chart in "Stats" tab
+#I'm sorry this is so hacky and ugly :'(
 #TODO: sepperate counts (have a different bar) for each inputPaper
 def stats_barchart(query):
+	logging.info("STATISTICS: stacked bar chart initializing ... ")
 	pmid_list = query.split('+') #list of string pmids
 
-	x_all = [] #list of list
-	y_all = []
+	#maximum of 5 stacked barcharts
+	x0 = []
+	x1 = []
+	x2 = []
+	x3 = []
+	x4 = []
+
+	y0 = []
+	y1 = []
+	y2 = []
+	y3 = []
+	y4 = []
+
+	n0 = []
+	n1 = []
+	n2 = []
+	n3 = []
+	n4 = []
+
 	for user_input in pmid_list:
 		journals = []
 		dates = []
@@ -273,16 +293,65 @@ def stats_barchart(query):
 			journals.append(j)
 		for d in db_dates:
 			dates.append(d)
-		#TODO: only issue here is that we need the years range for the QUERY, and also 0 counts for any empties.
-		#maybe something like:
-		#years_range = getfromquerydb(qyer)
-		#x, y = paper_dates_barchart(journals, dates, years_range, user_input)
-		x, y = paper_dates_barchart(journals, dates, user_input)
-		x_all.append(x)
-		y_all.append(y)
-	return x_all, y_all
+		x, y = paper_dates_barchart(journals, dates, query)
+		logging.info(x)
+		logging.info(y)
 
-############ PROCESSING BIODOCS ############################################
+		#should at least have ONE paper...
+		#I'm SO sorry world for this terribly terribly hacky sollution :'(
+		if user_input == pmid_list[0]:
+			x0.append(x)
+			y0.append(y)
+			n0.append(user_input)
+		try:
+			if user_input == pmid_list[1]:
+				x1.append(x)
+				y1.append(y)
+				n1.append(user_input)
+		except Exception as p1:
+			pass
+		try:
+			if user_input == pmid_list[2]:
+				x2.append(x)
+				y2.append(y)
+				n2.append(user_input)
+		except Exception as p2:
+			pass
+		try:
+			if user_input == pmid_list[3]:
+				x3.append(x)
+				y3.append(y)
+				n3.append(user_input)
+		except Exception as p3:
+			pass
+		try:
+			if user_input == pmid_list[4]:
+				x4.append(x)
+				y4.append(y)
+				n4.append(user_input)
+		except Exception as p4:
+			pass
+
+	x0 = flatten(x0)
+	x1 = flatten(x1)
+	x2 = flatten(x2)
+	x3 = flatten(x3)
+	x4 = flatten(x4)
+	y0 = flatten(y0)
+	y1 = flatten(y1)
+	y2 = flatten(y2)
+	y3 = flatten(y3)
+	y4 = flatten(y4)
+	n0 = str(''.join(n0))
+	n1 = str(''.join(n1))
+	n2 = str(''.join(n2))
+	n3 = str(''.join(n3))
+	n4 = str(''.join(n4))
+
+	return x0, x1, x2, x3, x4, y0, y1, y2, y3, y4, n0, n1, n2, n3, n4
+
+
+############ PROCESSING DOCS --> BIODOCS ############################################
 #Take pmcid.txt and get an annotated document, as well as lemmas and named entities
 #Doesn't re-annotated documents that have already been annotated.
 #Updated to sqlalchemy
@@ -316,9 +385,6 @@ def do_multi_preprocessing(user_input):
 		update_annotations(b, user_input)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return biodoc_data
-
-
-
 
 ############ DATA VISUALIZATIONS #################################################
 
@@ -376,7 +442,6 @@ def force_update_journals(query):
 	conn.execute(update)
 	return range_years, unique_publications, unique_journals
 
-
 #Function called for actually making the journals vis.
 def print_journalvis(query, needed_to_annotate_check):
 	#update the cache!
@@ -395,15 +460,11 @@ def print_journalvis(query, needed_to_annotate_check):
 			range_years, unique_publications, unique_journals = force_update_journals(query)
 	return range_years, unique_publications, unique_journals
 
-
-
-#TODO: chcek for wc file
-#TODO: update wc cache if new citations to a query
+#TODO: possibly cache wordcloud results?
 def vis_wordcloud(neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
 	wcl = wordcloud(nesDict, int(w_number))
 	return wcl
-
 
 def vis_heatmapTitles(lemma_samples, years):
 	titles = []  # want citations instead of titles
@@ -417,7 +478,6 @@ def vis_heatmapTitles(lemma_samples, years):
 		titles.append(hyperlink[0])
 	return titles
 
-
 def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
 	neslist = [n[1] for n in nes_samples]
 	nesDict = frequency_dict(neslist, nes_categories)
@@ -426,7 +486,6 @@ def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
 	#sorted by year in vis_HeatmapTitles the sme way as doHeatmap
 	titles = vis_heatmapTitles(lemma_samples, years)
 	return x_docs, y_words, z_counts, titles
-
 
 #TODO: vis_heatmap and vis_clustermap bascially work the same.
 #TODO: share the x_docs, y_words, z_counts between the two, for faster work :)
@@ -442,7 +501,6 @@ def vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query):
 	logging.info("saving clustermap png")
 	saveName = makeClusterMap(seaData, query)
 	return saveName #return filename
-
 
 def vis_kmeans(lemma_samples, num_clusters):
 	#use query to get titles
@@ -462,7 +520,6 @@ def vis_kmeans(lemma_samples, num_clusters):
 	zipped_coordinates = zip(coordinates, titles)
 	x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = plotKmeans(zipped_coordinates, clusters) #format for Plotly scatterplot
 	return x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4
-
 
 #scifi visualization
 #are query papers eligible to be loaded as a corpus?
@@ -501,7 +558,6 @@ def inputEligible(query):
 	eligible_papers = list(zip(values, papers, path_to_paper, display_title))
 	return eligible_papers
 
-
 #visualization for scifi div
 def vis_scifi(corpus, query, eligible_papers):
 	corpus_vec, color = load_corpus(corpus, eligible_papers)
@@ -521,14 +577,12 @@ def vis_scifi(corpus, query, eligible_papers):
 
 ############ TOPIC MODELING ############################################
 
-
 #### L S A #####
 def run_lsa1(lsa_lemmas, k):
 	logging.info('Beginning Latent Semantic Analysis')
 	tfidf, tfidf_vectorizer = get_tfidf(lsa_lemmas)
 	jsonDict = do_LSA(tfidf, tfidf_vectorizer, k) #need to make this an option
 	return jsonDict
-
 
 def print_lsa(query, jsonDict, k):
 	logging.info('Printing LSA to JSON')
@@ -562,7 +616,6 @@ def print_lsa(query, jsonDict, k):
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonDict, outfile)
 
-
 #Loads the LSA json for vis
 #First checks if the file exists. If the file doesn't exist, it makes it.
 def load_lsa(query, k):
@@ -585,7 +638,6 @@ def load_lsa(query, k):
 		print_lsa(query, jsonDict, k)
 	return jsonDict
 
-
 ###### L D A ########
 def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number of words=5
 	logging.info('Beginning Latent Dirichlet Allocation')
@@ -593,7 +645,6 @@ def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number o
 	lda = fit_lda(tfidf, num_topics)
 	jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)
 	return jsonLDA
-
 
 #Save the json for @app.route('/reslda/')
 def print_lda(query, jsonLDA, k, w):
@@ -625,8 +676,6 @@ def print_lda(query, jsonLDA, k, w):
 	with open(completeName, 'w') as outfile:
 		json.dump(jsonLDA, outfile)
 
-
-
 def load_lda(query, k, w):
 	save_path = (app.config['PATH_TO_LDA'])
 	pmid_list = query.split('+')  # list of string pmids
@@ -647,13 +696,7 @@ def load_lda(query, k, w):
 		print_lda(query, jsonLDA, k, w)
 	return jsonLDA
 
-
 ##### E M B E D D I N G  ######
-
-def flatten(listOfLists):
-    return list(chain.from_iterable(listOfLists))
-
-
 #Input: query, top N desired bin, k clusters
 #Output: prints csv for force directed graph
 def run_embeddings(query, k_clusters, top_n):
@@ -712,7 +755,3 @@ def embedding_lookup(query, k_clusters, top_n):
 	return returnName
 
 
-
-
-
-############## GRAVEYARD ##########################################################

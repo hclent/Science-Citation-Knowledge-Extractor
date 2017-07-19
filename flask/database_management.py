@@ -293,7 +293,16 @@ def db_bar_chart(user_input):
 		db_journals.append(journal)
 
 		pubdate = row["pubdate"]
-		db_dates.append(pubdate)
+		year = re.search('\d{4}', pubdate)
+		if year:
+			keep_year = int(year.group(0))
+		else:
+			try:
+				keep_year = str(pubdate)
+			except Exception as e:
+				# we need an int no matter what...
+				keep_year = "2018"
+		db_dates.append(keep_year)
 	return db_journals, db_dates
 
 
@@ -500,6 +509,15 @@ def getJournalsVis(query):
 		unique_pubs = row["unique_pubs"]
 		unique_journals = row["unique_journals"]
 	return range_years, unique_pubs, unique_journals
+
+def db_get_years_range(query):
+	s = select([queries.c.range_years]). \
+		where(queries.c.query == query)
+	result = conn.execute(s)
+	for row in result:
+		range_years = row["range_years"]
+	return range_years
+
 
 
 #Grab number of unique (i.e. no repeats) citations for a query
