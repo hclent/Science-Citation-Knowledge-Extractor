@@ -293,7 +293,7 @@ def stats_barchart(query):
 			journals.append(j)
 		for d in db_dates:
 			dates.append(d)
-		x, y = paper_dates_barchart(journals, dates, query)
+		x, y = statistics_dates_barchart(journals, dates, query)
 		logging.info(x)
 		logging.info(y)
 
@@ -392,6 +392,7 @@ def do_multi_preprocessing(user_input):
 #Basically it forces an update of the journals vis & update to "queries" table of db.
 #We would want to force an update of the journals vis if there are new papers to a previously seen query
 def force_update_journals(query):
+	print("MADE IT TO FORCE UPDATE")
 	years_range = get_years_range(query)  # need range for ALL journals, not just last one
 	logging.info(years_range)
 	publication_data, range_info = journals_vis(years_range, query)  # range info = [('2008', '2016'), 165, 48]

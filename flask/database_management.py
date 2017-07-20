@@ -522,9 +522,11 @@ def db_get_years_range(query):
 
 #Grab number of unique (i.e. no repeats) citations for a query
 def db_unique_citations_number(query):
+	print("DB_UNIQUE_CITATIONS_NUMBER")
 	s = select([queries.c.unique_pubs]).\
 		where(queries.c.query == query)
 	result = conn.execute(s)
+	print(result)
 	for row in result:
 		unique_pubs = row["unique_pubs"]
 	return unique_pubs
@@ -576,7 +578,8 @@ def db_query_update_statistics(query):
 			if isinstance(token, int):
 				all_tokens.append(token)
 	sum_total = sum(total)
-	unique = (len(unique_pmcids))
+	unique_pubs = (len(unique_pmcids))
+	#definitely gets this far...
 	sum_abstracts = len(all_abstracts)
 	sum_whole = len(all_whole)
 	sum_sents = sum(all_sents)
@@ -584,7 +587,7 @@ def db_query_update_statistics(query):
 
 	up = queries.update().\
 		where(queries.c.query == query).\
-		values(dict(total_pubs=sum_total, unique_pubs=unique, num_abstracts=sum_abstracts,
+		values(dict(total_pubs=sum_total, unique_pubs=unique_pubs, num_abstracts=sum_abstracts,
 					num_whole_articles=sum_whole, num_sents=sum_sents, num_tokens=sum_tokens))
 	conn.execute(up)
 

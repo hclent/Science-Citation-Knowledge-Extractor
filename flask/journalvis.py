@@ -32,13 +32,12 @@ def get_journals_and_dates(query):
 
 #this gets journal info for the bar chart in "statistics"
 #TODO: make stacked barchart for each paper in query
-def paper_dates_barchart(journals, dates, query):
+def statistics_dates_barchart(journals, dates, query):
 	x_vals = []
 	y_vals = []
 
 	yearDict = defaultdict(lambda:0)
 	years_list = dates
-	#print(years_list)
 
 	try:
 		years_plus_range = db_get_years_range(query) #use the years range of the entire query
@@ -60,6 +59,29 @@ def paper_dates_barchart(journals, dates, query):
 				yearDict[year] +=1
 
 	#print(yearDict)
+	for year in sorted(yearDict):
+		x_vals.append(year)
+		y_vals.append(yearDict[year])
+
+	return x_vals, y_vals
+
+
+def journal_dates_barchart(journals, years_list, query):
+	x_vals = []
+	y_vals = []
+
+	yearDict = defaultdict(lambda: 0)
+
+	years_range = get_years_range(query)
+
+	# Associate journals with years
+	journal_year = list(zip(journals, years_list))  # ('Scientific Reports', '2016')
+
+	for year in range(int(years_range[0]), int(years_range[1]) + 1):
+		for pair in journal_year:
+			if year == int(pair[1]):
+				yearDict[year] += 1
+
 	for year in sorted(yearDict):
 		x_vals.append(year)
 		y_vals.append(yearDict[year])
@@ -111,7 +133,7 @@ def journals_vis(years_range, query):
 	#print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
 
 	years_list = []
-
+	#already changed to years by get_journals_and_dates above
 	#print(dates) #step1 : get years
 	#July 11, 2017: Updating the regex here to deal with DUMB PEOPLE WHO PUT 20170607 as the date in the metadata on pubmed
 	for d in dates:
@@ -190,9 +212,10 @@ def journals_vis(years_range, query):
 		publication_data.append(journal_data)
 
 	range_info = [years_range, num_publications, number_unique_journals]
+	#print(range_info)
 
 	## add a TOTAL SUM row to the top of the journals visualization
-	x, y = paper_dates_barchart(journals, dates, query)
+	x, y = journal_dates_barchart(journals, years_list, query)
 	total_sum = sum(y)
 	total_articles = [[year, count] for year, count in zip(x, y)]
 	total_name = "TOTAL"
@@ -208,6 +231,7 @@ def journals_vis(years_range, query):
 	#Example range info: [('2008', '2016'), 165, 48] means years 2008-2016, 165 publications, 48 unique journals
 
 	publication_data = json.dumps(publication_data)
+	#print(publication_data)
 
 	return publication_data, range_info
 
