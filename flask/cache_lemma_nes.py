@@ -30,6 +30,24 @@ logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
+def exists_lemma(user_input):
+	prefix = os.path.join((app.config['PATH_TO_CACHE']), str(user_input[0:3]))
+	suffix = os.path.join(prefix, str(user_input[3:6]))
+	lemma_completeName = os.path.join(suffix, ('lemma_samples_' + (str(user_input)) + '.pickle'))
+	status = os.path.isfile(lemma_completeName)
+	return status
+
+
+def exists_nes(user_input):
+	prefix = os.path.join((app.config['PATH_TO_CACHE']), str(user_input[0:3]))
+	suffix = os.path.join(prefix, str(user_input[3:6]))
+	nes_completeName = os.path.join(suffix, ('nes_' + (str(user_input)) + '.pickle'))
+	status = os.path.isfile(nes_completeName)
+	return status
+
+	
+
+
 #Revamped lemma_samples (data_samples) caching function!!!
 #Old method: save a pickled list of lists for each query
 #New method: saves a pickled list of list for one PMID.
@@ -299,6 +317,8 @@ def concat_lemma_nes_samples(query, need_to_update):
 		pass
 
 	logging.info("Execute concat_lemma_nes_samples: done in %0.3fs." % (time.time() - t1))
+
+
 
 
 

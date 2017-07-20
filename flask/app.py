@@ -9,7 +9,7 @@ from database_management import engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
 from processors import *
-from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples
+from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, exists_lemma, exists_nes
 
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
@@ -60,6 +60,7 @@ def results():
 			query = str(q.join(pmid_list))
 			logging.info("query: " + str(query))
 
+			needed_to_annotate_check = []
 
 			for user_input in pmid_list:
 				logging.info(str(user_input))
@@ -79,18 +80,23 @@ def results():
 				if check1 is None:
 					update_check = "yes"
 					flash('new pubmedid!')
-					#Using user_input for Information Retireval of citing pmcids and info about them
+
+					#Information Retireval of citing pmcids and info about them
 					run_IR_not_db(user_input)
-					logging.info("beginning multi-preprocessing")
+
 					#Annotate
+					logging.info("beginning multi-preprocessing")
 					biodoc_data = do_multi_preprocessing(user_input)
+					needed_to_annotate_check_to_annotate.append("yes")
 					logging.info("done with new document multi_preprocessing")
 					logging.info("writing the BIODOC LEMMAS")
+
 					#Populate cache (lemmas and nes)
 					biodoc_to_db(biodoc_data) #writes data_samples (lemmas) and NER to db
 					logging.info("* done writing the biodoc lemmas")
 					logging.info("* writing to cache: lemma_samples and nes_samples ")
-					print_lemma_nes_samples(user_input, biodoc_data)
+					need_to_annotate = "yes" #of course we need to annotate, its a new pmid!
+					print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
 					logging.info("* wrote lemme and nes samples to cache!!!")
 
 
@@ -101,15 +107,13 @@ def results():
 						#Lemma_samples and nes_samples for entire query here:
 						logging.info("concatting lemma nes samples for query")
 						#Populate cache
-						concat_lemma_nes_samples(query)
+						need_to_update = "yes" #of course we do, something is new!
+						concat_lemma_nes_samples(query, need_to_update)
 
 						#Update "queries" table of db here!!
+						logging.info("STARTING db_query_update_statistics")
 						db_query_update_statistics(query)
-
-						# logging.info(user_input+" is the last one (LDA)")
-						# jsonLDA = run_lda1(data_samples, 3, 5)
-						# print_lda(query, user_input, jsonLDA) #print lda topic model to json
-
+						logging.info("finishe db_query_update_statistics")
 
 
 				#if the entry IS in the db, no need to retrieve text from Entrez, just grab from db
@@ -118,27 +122,36 @@ def results():
 				if check1 is not None:
 					update_check = "no" #no by default
 
-					needed_to_annotate_check = []
 
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input)
 
+
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')
 						logging.info("need to annotate new documents")
+						#Annotate
 						biodoc_data = do_multi_preprocessing(user_input)
 						logging.info("done with new document multi_preprocessing")
 						#If need_to_annotate is "yes", will re-populate :)
+						#Make cache
 						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
 						logging.info("repopulated lemmas and nes cache")
 
-					#Don't need to re-populat cache
-					#TODO: maybe still double check if the lemma & nes files exist?? :s
+					#Make sure that the lemma and nes cache exists before moving on!!!
 					if need_to_annotate == 'no':
 						logging.info("dont need to annotate any new documents")
-						needed_to_annotate_check.append('no')
-						pass
+						if exists_lemma(user_input) and exists_nes(user_input):
+							logging.info("lemmas and nes cache exist so pass :)")
+							needed_to_annotate_check.append('no')
+						else:
+							logging.info("lemmas and nes cache didn't exist so gotta make them!!!")
+							biodoc_data = do_multi_preprocessing(user_input)
+							logging.info("done with new document multi_preprocessing")
+							nonexistant = "yes"
+							print_lemma_nes_samples(user_input, biodoc_data, nonexistant)
+							needed_to_annotate_check.append('yes')
 
 
 					## Now that we have all the data, do the topic model
@@ -155,13 +168,15 @@ def results():
 							update_check = "yes"
 
 						if 'yes' not in needed_to_annotate_check:
-							#update_check is "no" by default
-							pass
+							need_to_update = 'no'
+							concat_lemma_nes_samples(query, need_to_update) #this should check for file
+							db_query_update_statistics(query)
+							update_check = "no"
 
-                        #
-						# logging.info(user_input + " is the last one (LDA)")
-						# jsonLDA = run_lda1(data_samples, 3, 5)
-						# print_lda(query, user_input, jsonLDA)  # print
+						# Update "queries" table of db here!!
+						logging.info("STARTING db_query_update_statistics")
+						db_query_update_statistics(query)
+						logging.info("finishe db_query_update_statistics")
 
 
 				#Housekeeping
@@ -171,7 +186,8 @@ def results():
 
 
 		citations_with_links = db_unique_citations_retrieval(query) #unique
-		unique_publications = db_unique_citations_number(query)
+		# :( this s failing!!!!
+		#unique_publications = db_unique_citations_number(query) <-- not sure why this is here...
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
 	   			query=query, update_check=update_check)
 
@@ -497,9 +513,14 @@ def resjournals(query, update_check):
 
 	logging.info("YEARS RANGE: " +str(range_years))
 	#Need years for range
-	years_list = range_years.split('+')
-	s_year = years_list[0]
-	e_year = years_list[1]
+	### AHHHH if range is not in db yet, it will get it without the "+" as a tuple!
+	try:
+		years_list = range_years.split('+')
+		s_year = years_list[0]
+		e_year = years_list[1]
+	except Exception as e:
+		s_year = years_list[0]
+		e_year = years_list[1]
 
 	#only want to load the json for the LAST id in the query (so includes all)
 	pmid_list = query.split('+') #list of string pmids
@@ -845,7 +866,7 @@ def res_stats(query):
 	sum_tokens = statistics[5]
 
 	#get x, y coordinates for pubs x year bar chart.
-	#make 5 papers
+	#max 5 papers
 	x0, x1, x2, x3, x4, y0, y1, y2, y3, y4, n0, n1, n2, n3, n4 = stats_barchart(query)
 
 	return render_template('results_stats.html', input_click_citations=input_click_citations,
