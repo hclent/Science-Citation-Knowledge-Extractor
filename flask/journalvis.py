@@ -66,7 +66,7 @@ def statistics_dates_barchart(journals, dates, query, conn):
 	return x_vals, y_vals
 
 
-def journal_dates_barchart(journals, years_list, query):
+def journal_dates_barchart(journals, years_list, query, conn):
 	x_vals = []
 	y_vals = []
 

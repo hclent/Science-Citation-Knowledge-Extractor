@@ -158,16 +158,20 @@ def results():
 					if user_input == pmid_list[-1]:
 						logging.info("last pmid in the query")
 
+						#TODO: To be honest, I don't know why db_query_update_statistics is called inside the loop and outside...
+						#TODO: But the code is upset if db_query_update_statistics isn't IN the loop o_0
 						#If ANY user_inputs in the query needed to update, we must update the query's comprehensive cache.
 						if 'yes' in needed_to_annotate_check:
 							need_to_update = 'yes'
 							#will over-ride existing file :)
 							concat_lemma_nes_samples(query, need_to_update)
+							db_query_update_statistics(query, r_conn)
 							update_check = "yes"
 
 						if 'yes' not in needed_to_annotate_check:
 							need_to_update = 'no'
 							concat_lemma_nes_samples(query, need_to_update) #this should check for file
+							db_query_update_statistics(query, r_conn)
 							update_check = "no"
 
 						# Update "queries" table of db here!!
