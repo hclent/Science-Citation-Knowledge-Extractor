@@ -88,7 +88,6 @@ def getCitationIDs(pmid): #about the same speed as MainCrawl.py
 	return pmc_ids #list
 
 
-
 #Input: a single citation (pmcid)
 #Output: title, authors, journals, date, url
 def connectToNCBI(citation):
@@ -274,7 +273,6 @@ def getContentPMC(pmcids_list, pmid, conn):
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
 		# a record that this pmc is cited by the new input paper (will be done at this point though... I think?)
 		row = checkIfScraped(citation, pmid, conn)
-
 		if row == 'empty':
 
 			# if the pmcid in the database has our query pmid AND has no abstract check and article check,
@@ -282,21 +280,21 @@ def getContentPMC(pmcids_list, pmid, conn):
 			contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
 			logging.info("pmcid never seen before. needs to be scraped + annotated ")
 
-			prefix = (app.config['PATH_TO_CACHE']) + str(citation[0:3]) #folder for first 3 digits of pmcid
-			suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+			prefix = str(citation[0:3]) #folder for first 3 digits of pmcid
+			suffix = str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
 
 			try:
-				os.makedirs(prefix)  # creates folder named after first 3 digits of pmcid
+				os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix)) # creates folder named after first 3 digits of pmcid
 			except OSError:
-				if os.path.isdir(prefix):
+				if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix)):
 					pass
 				else:
 					raise
 
 			try:
-				os.makedirs(suffix)  # creates folder named after second 3 digits of pmicd
+				os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)) # creates folder named after second 3 digits of pmicd
 			except OSError:
-				if os.path.isdir(suffix):
+				if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)):
 					pass
 				else:
 					raise
@@ -316,13 +314,15 @@ def getContentPMC(pmcids_list, pmid, conn):
 			contentDictList.append(contentDict)
 			#print
 			logging.info("* ready to print it")
-			completeName = os.path.join(suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
+			completeName = os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
+			#print(completeName)
 			sys.stdout = open(completeName, "w")
 			print(main_text)
 			i += 1
 			time.sleep(3)
 		else:
 			logging.info("the document isn't new. pass")
+			#TODO: check that we really have the document
 			pass
 	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 	return contentDictList
@@ -347,21 +347,6 @@ def getSelfText(pmid):
 		article = self_article_check[0] #str
 		return self_pmcid, abstract, article
 
-
-# self_pmcid, self_abstract_check, self_article_check = getSelfText("18952863")
-# logging.info(self_pmcid)
-# logging.info(self_abstract_check)
-# logging.info(self_article_check)
-# getSelfText("18269575")
-# getSelfText("23530224")
-
-#pmc_ids = getCitationIDs("23530224")
-#print(pmc_ids)
-#pmc_ids = ['3159747', '3122376', '3117012'] #middle PMC here is bad
-# pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls = getCitedInfo(pmc_ids)
-#all_abstract_check, all_article_check = getContentPMC(pmc_ids)
-# main_info = list(zip(pmc_titles, pmc_authors, pmc_journals, pmc_dates, pmc_urls, all_abstract_check, all_article_check))
-#
 
 ################### Notes ##############
 #Rarely, the XML will return this:

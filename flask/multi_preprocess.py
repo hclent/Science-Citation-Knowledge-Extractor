@@ -177,7 +177,7 @@ def multiprocess(docs):
 
 # Input: Pmid
 # Output: list of dictionaries for all annotated citing pmcids ["pmcid": 123, ]
-def retrieveBioDocs(pmid):
+def retrieveBioDocs(pmid, conn):
   #print("retrieving biodocs")
   biodocs = [] #list of strings
 
@@ -233,7 +233,7 @@ def loadBioDoc(biodocs):
 
     #IMPORTANT NOTE: MAY 10, 2017: "data_samples" being replaced with "lemmas" for clarity!!!!
     #biodict = {"pmcid": pmcid, "lemmas": [], "nes": [], "num_sentences": [], "num_tokens": [], "tags": []}
-    biodict = {"pmcid": pmcid, "jsonpath": jsonpath, "nes": [], "lemmas": []}
+    biodict = {"pmcid": pmcid, "jsonpath": jsonpath, "nes": [], "lemmas": []} # "tags": [] gets added
 
     token_count_list = []
 

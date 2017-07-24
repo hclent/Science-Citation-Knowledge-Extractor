@@ -89,7 +89,7 @@ def results():
 					#Annotate
 					logging.info("beginning multi-preprocessing")
 					biodoc_data = do_multi_preprocessing(user_input, r_conn)
-					needed_to_annotate_check_to_annotate.append("yes")
+					needed_to_annotate_check.append("yes")
 					logging.info("done with new document multi_preprocessing")
 					logging.info("writing the BIODOC LEMMAS")
 
