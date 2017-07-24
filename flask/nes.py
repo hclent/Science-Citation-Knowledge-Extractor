@@ -1,16 +1,13 @@
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
-from flask import Flask
 import seaborn as sns
 import pandas as pd
 import re, os, json, string
 from collections import defaultdict
 from processors import *
+from configapp import app
 from database_management import db_citations_mini_hyperlink, db_citations_mini_year
-
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
 
 #Make dictionary with NES counts {'gluten': 5, 'span': 9}
@@ -38,7 +35,7 @@ def wordcloud(nesDict, x):
 
 
 #makes the data for plotly heatmap
-def doHeatmap(nesDict, n, lemma_samples):
+def doHeatmap(nesDict, n, lemma_samples, conn):
     years = []  # so we can sort by years
     lemma_Dict = defaultdict(lambda: 0)
 
@@ -51,7 +48,7 @@ def doHeatmap(nesDict, n, lemma_samples):
     #X-AXIS ON VIS CAN BE SORTED BY YEAR AS WELL :D
     for document in lemma_samples:
         pmcid = document[0]
-        year = db_citations_mini_year(pmcid)
+        year = db_citations_mini_year(pmcid, conn)
         years.append(year)
 
 
@@ -67,7 +64,7 @@ def doHeatmap(nesDict, n, lemma_samples):
     #I know its a bit hacky but I couldn't get Plotly to behave with me so...
     for pmcid in sorted_pmcids:
         #print(pmcid)
-        label = db_citations_mini_hyperlink(pmcid)
+        label = db_citations_mini_hyperlink(pmcid, conn)
         keep_label = label[0] #there could be multiple records from db, so just take the first one
         #Step 1: check if its in the x list
         repeat_count = x.count(keep_label)

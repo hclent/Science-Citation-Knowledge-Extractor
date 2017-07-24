@@ -5,15 +5,11 @@ import gc, time, datetime, pickle, os.path, json
 import sys, csv
 from werkzeug.serving import run_simple
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
-from database_management import engine, connection, inputPapers #mine
+from configapp import app, engine, connection, inputPapers
 from content_management import * #mine
 from citation_venn import make_venn #mine
 from processors import *
 from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, exists_lemma, exists_nes
-
-
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
 
 #Create Form for handling user-entered pmid
@@ -28,18 +24,22 @@ class pmidForm(Form):
 @app.route("/cogecrawl/")
 def cogecrawl():
 	query = '18952863+18269575'
-	citations_with_links = db_unique_citations_retrieval(query) #unique
-	unique_publications = db_unique_citations_number(query)
+	coge_conn = connection()
+	citations_with_links = db_unique_citations_retrieval(query, coge_conn) #unique
+	unique_publications = db_unique_citations_number(query, coge_conn)
+	coge_conn.close()
 	return render_template("dashboard.html", citations_with_links=citations_with_links, unique_publications=unique_publications)
 
 
 #Getting Flask-WTFs to work with sqlite3 here
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
+#TODO: make the results/ url unique 
 @app.route('/results/', methods=["POST"])
 def results():
 	logging.info("In app route RESULTS")
 	form = pmidForm()
+	r_conn = connection() #results_connection to db
 	try:
 		if request.method == 'POST':
 			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
@@ -51,9 +51,11 @@ def results():
 			# Need 5 PMIDs or less
 			if len(pmid_list) > 5:
 				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
-				with open('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/static/coge_citations.pickle', 'rb')as f:
-					citations_with_links = pickle.load(f)
-				return render_template("dashboard.html", citations_with_links=citations_with_links)
+				citations_with_links = db_unique_citations_retrieval(query, r_conn)  # unique
+				unique_publications = db_unique_citations_number(query, r_conn)
+				conn.close()
+				return render_template("dashboard.html", citations_with_links=citations_with_links,
+									   unique_publications=unique_publications)
 
 
 			q = '+'
@@ -68,10 +70,10 @@ def results():
 
 				############################################
 				#Check database for pmid #Does the entry exists in the db already?
-				conn = connection()
+				#conn = connection()
 				s = inputPapers.select().\
 					where(inputPapers.c.pmid == user_input)
-				c = conn.execute(s)
+				c = r_conn.execute(s)
 				check1 = c.fetchone()
 				c.close()
 
@@ -82,19 +84,16 @@ def results():
 					flash('new pubmedid!')
 
 					#Information Retireval of citing pmcids and info about them
-					run_IR_not_db(user_input)
+					run_IR_not_db(user_input, r_conn)
 
 					#Annotate
 					logging.info("beginning multi-preprocessing")
-					biodoc_data = do_multi_preprocessing(user_input)
+					biodoc_data = do_multi_preprocessing(user_input, r_conn)
 					needed_to_annotate_check_to_annotate.append("yes")
 					logging.info("done with new document multi_preprocessing")
 					logging.info("writing the BIODOC LEMMAS")
 
 					#Populate cache (lemmas and nes)
-					biodoc_to_db(biodoc_data) #writes data_samples (lemmas) and NER to db
-					logging.info("* done writing the biodoc lemmas")
-					logging.info("* writing to cache: lemma_samples and nes_samples ")
 					need_to_annotate = "yes" #of course we need to annotate, its a new pmid!
 					print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
 					logging.info("* wrote lemme and nes samples to cache!!!")
@@ -112,7 +111,7 @@ def results():
 
 						#Update "queries" table of db here!!
 						logging.info("STARTING db_query_update_statistics")
-						db_query_update_statistics(query)
+						db_query_update_statistics(query, r_conn)
 						logging.info("finishe db_query_update_statistics")
 
 
@@ -125,14 +124,14 @@ def results():
 
 					flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
-					need_to_annotate = run_IR_in_db(user_input)
+					need_to_annotate = run_IR_in_db(user_input, r_conn)
 
 
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')
 						logging.info("need to annotate new documents")
 						#Annotate
-						biodoc_data = do_multi_preprocessing(user_input)
+						biodoc_data = do_multi_preprocessing(user_input, r_conn)
 						logging.info("done with new document multi_preprocessing")
 						#If need_to_annotate is "yes", will re-populate :)
 						#Make cache
@@ -147,7 +146,7 @@ def results():
 							needed_to_annotate_check.append('no')
 						else:
 							logging.info("lemmas and nes cache didn't exist so gotta make them!!!")
-							biodoc_data = do_multi_preprocessing(user_input)
+							biodoc_data = do_multi_preprocessing(user_input, r_conn)
 							logging.info("done with new document multi_preprocessing")
 							nonexistant = "yes"
 							print_lemma_nes_samples(user_input, biodoc_data, nonexistant)
@@ -164,18 +163,16 @@ def results():
 							need_to_update = 'yes'
 							#will over-ride existing file :)
 							concat_lemma_nes_samples(query, need_to_update)
-							db_query_update_statistics(query)
 							update_check = "yes"
 
 						if 'yes' not in needed_to_annotate_check:
 							need_to_update = 'no'
 							concat_lemma_nes_samples(query, need_to_update) #this should check for file
-							db_query_update_statistics(query)
 							update_check = "no"
 
 						# Update "queries" table of db here!!
 						logging.info("STARTING db_query_update_statistics")
-						db_query_update_statistics(query)
+						db_query_update_statistics(query, r_conn)
 						logging.info("finishe db_query_update_statistics")
 
 
@@ -185,7 +182,7 @@ def results():
 				session['engaged'] = 'engaged'
 
 
-		citations_with_links = db_unique_citations_retrieval(query) #unique
+		citations_with_links = db_unique_citations_retrieval(query, r_conn) #unique
 		# :( this s failing!!!!
 		#unique_publications = db_unique_citations_number(query) <-- not sure why this is here...
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
@@ -224,7 +221,7 @@ class corpusOptions(Form):
 
 ################ Default CoGe Data #############################
 
-#TODO: just load cache if its there
+#NB: cogeembeddings does not connect to db
 @app.route('/cogembeddings/', methods=["GET","POST"]) #default coge embeddings topic for iframe
 def cogeembeddings():
 	form = visOptions()
@@ -245,10 +242,12 @@ def cogeembeddings():
 		return render_template('coge_embeddings.html', filepath=filepath)
 
 
+#NB: cogelsa does not connect to db
 #TODO: new default
 @app.route('/cogelsa/', methods=["GET","POST"]) #default coge lsa for iframe
 def cogelsa():
 	form = visOptions()
+
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -279,6 +278,7 @@ def cogelsa():
 		return render_template('coge_lsa.html', form=form, jsonLSA=jsonLSA)
 
 
+#NB: cogelda does not connect to db
 #TODO: new default coge_lda
 @app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
 def cogelda():
@@ -311,21 +311,24 @@ def cogelda():
 		return render_template('coge_lda.html', form=form, jsonLDA=jsonLDA)
 
 
+#NBL cogejournals connects to db
 @app.route('/cogejournals/') #default coge journals for iframe
 def cogejournals():
+	j_conn = connection()
 	filename = "189/528/journals_18952863+18269575.json"
 	filepath = os.path.join((app.config['PATH_TO_JOURNALS']), filename)
 	with open(filepath) as load_data:
 		journals = json.load(load_data)
 	query = '18952863+18269575'
-	range_years, unique_pubs, unique_journals = getJournalsVis(query)
+	range_years, unique_pubs, unique_journals = getJournalsVis(query, j_conn)
 	years_list = range_years.split('+')
 	s_year = years_list[0]
 	e_year = years_list[1]
+	j_conn.close()
 	return render_template('coge_journals.html', journals=journals, unique_pubs=unique_pubs,
 						   unique_journals=unique_journals, s_year=s_year, e_year=e_year)
 
-
+#NB: wordcloud does NOT need db connection
 @app.route('/cogewordcloud/', methods=["GET","POST"]) #default coge NES Word Cloud for iframe
 def cogewordcloud():
 	form = nesOptions()
@@ -337,7 +340,6 @@ def cogewordcloud():
 		logging.info("the w value is "+str(w_number))
 
 		filename = "189/528/nes_18952863+18269575.pickle"
-		#nes_file = '/home/hclent/data/pmcids/189/528/nes_18952863+18269575.pickle'
 		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
@@ -358,12 +360,13 @@ def cogewordcloud():
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		return render_template('coge_wordcloud.html', wordcloud_data=wordcloud_data, popup=popup)
 
-
+#NB: uses db
 @app.route('/cogeheatmap/', methods=["GET","POST"]) #default coge NES heatmap for iframe
 def cogeheatmap():
 	form = nesOptions()
 	query = '18952863+18269575'
 	if request.method == 'POST':
+		hm_conn = connection()
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
@@ -379,26 +382,29 @@ def cogeheatmap():
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
-		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
+		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hm_conn)
 		len_x_docs = list(range(len(x_docs)))
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
+		hm_conn.close()
 		return render_template('coge_heatmap2.html', z_counts=z_counts, x_docs=x_docs, y_words=y_words, titles=titles, len_x_docs=len_x_docs, popup=popup)
 	else:
+		#display the default data :D
 		return render_template('coge_heatmap1.html')
 
-
+#NB: uses db
 @app.route('/cogeclustermap/', methods=["GET","POST"]) #default coge clustermap
 def cogeclustermap():
 	query = '18952863+18269575'
 	form = nesOptions()
 	if request.method == 'POST':
+		cm_conn = connection()
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is " + str(w_number))
 
 		filename1 = "189/528/nes_18952863+18269575.pickle"
-		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
+		nes_file = os.path.join((app.config['PATH_TO_CACHE']), filename1)
 		with open(nes_file, "rb") as f:
 			nes_samples = pickle.load(f)
 
@@ -407,20 +413,22 @@ def cogeclustermap():
 		with open(lemma_file, "rb") as f:
 			lemma_samples = pickle.load(f)
 
-		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query)
+		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query, cm_conn)
 		#Fix.... why bother returning full file path if html only looks in "static" dir?
 		image = "clustermaps/cm_"+str(query)+".png"
+		cm_conn.close()
 		return render_template('coge_clustermap.html', image=image)
 	else:
+		#show the default data :D
 		image = "clustermaps/cm_18952863+18269575.png"
 		return render_template('coge_clustermap.html', image=image)
 
-
+# NB: uses db
 @app.route('/cogekmeans/', methods=["GET","POST"]) #default coge k-means clustering for iframe
 def cogekmeans():
 	form = visOptions()
 	if request.method == 'POST':
-
+		k_conn = connection()
 		filename = "189/528/lemma_samples_18952863+18269575.pickle"
 		lemma_file = os.path.join((app.config['PATH_TO_CACHE']), filename)
 		with open(lemma_file, "rb") as f:
@@ -428,8 +436,8 @@ def cogekmeans():
 
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters)
-
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters, k_conn)
+		k_conn.close()
 		return render_template('coge_kmeans2.html', x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 							   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 							   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
@@ -437,32 +445,37 @@ def cogekmeans():
 							   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
 							   titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
+		#show the default data!!
 		return render_template('coge_kmeans.html')
 
 
-#TODO: code to auto fill in venn diagram?
+#NB: uses db
 @app.route('/coge_stats/') #default coge statistics for iframe
 def coge_stats():
+	s_conn = connection()
 	query = "18952863+18269575"
-	input_click_citations = statsSelfInfo(query)
-	statistics = get_statistics(query) #actually a lot of these are "None" right now. Will need to populate.
+	input_click_citations = statsSelfInfo(query, s_conn)
+	statistics = get_statistics(query, s_conn) #actually a lot of these are "None" right now. Will need to populate.
 	sum_total = statistics[0]
 	unique = statistics[1]
 	sum_abstracts = statistics[2]
 	sum_whole = statistics[3]
 	sum_sents = statistics[4]
 	sum_tokens = statistics[5]
+	s_conn.close()
 	return render_template('coge_stats.html', input_click_citations=input_click_citations,
 						   sum_total=sum_total, unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
 						   sum_sents=sum_sents, sum_tokens=sum_tokens)
 
 
+#NB: uses db
 @app.route('/coge_scifi/', methods=["GET","POST"]) #default coge scifi for iframe
 def coge_scifi():
 	form = corpusOptions()
 	path_to_eligible_paper = os.path.join((app.config['PATH_TO_CACHE']), '259/367/2593677.txt')
 	eligible_papers = [('paper1', '18952863', path_to_eligible_paper, '2008, Lyons')]
 	if request.method == 'POST':
+		csf_conn = connection()
 		logging.info("posted a thing in scifi!")
 		corpus = form.corpus.data
 		logging.info(corpus)
@@ -474,7 +487,7 @@ def coge_scifi():
 		if corpus == 'mouse':
 			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
 		if corpus == 'brain_speech':
-			title = 'The Brain and The Voice in Speech and Song by Mott Frederick Walker'
+			title = 'The Brain & The Voice in Speech & Song by Mott Frederick Walker'
 		if corpus == 'grecoroman':
 			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
 		if corpus == 'startrek':
@@ -495,21 +508,27 @@ def coge_scifi():
 			title = 'The Bible'
 		if corpus == 'paper1':
 			title =  'Lyons et al., 2008'
-		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
+		x, y, names, color = vis_scifi(corpus, query, eligible_papers, csf_conn)
+		csf_conn.close()
 		return render_template('coge_scifi2.html', x=x, y=y, title=title, color=color, names=names, eligible_papers=eligible_papers)
 	else:
 		flash('Some input paper(s) are not avaliable for TextCompare')
+		#Default data!
 		return render_template('coge_scifi.html', eligible_papers=eligible_papers)
 
 
 ############### Results visualizations #########################################
+
+
+#NB: needs db connection
 @app.route('/resjournals/<query>/<update_check>', methods=["GET", "POST"]) #user journals for iframe
 def resjournals(query, update_check):
 	#need to get last user_input
 	logging.info("in routine res-journals")
+	jr_conn = connection() #journal results connection
 
 	needed_to_annotate_check = [update_check]
-	range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check)
+	range_years, unique_publications, unique_journals = print_journalvis(query, needed_to_annotate_check, jr_conn)
 
 	logging.info("YEARS RANGE: " +str(range_years))
 	#Need years for range
@@ -535,12 +554,13 @@ def resjournals(query, update_check):
 	logging.info("complete file: " + str(completeName))
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
+	jr_conn.close()
 	return render_template('results_journals.html', journals=journals, s_year=s_year, e_year=e_year,
 						   unique_journals=unique_journals, unique_publications=unique_publications)
 
 
 
-#TODO: re-implement resembeddings for results!
+#NB: does NOT need a db connection
 @app.route('/resembed/<query>/<update_check>', methods=["GET", "POST"]) #user embeddings for iframe
 def resembeddings(query, update_check):
 	form = visOptions()
@@ -568,7 +588,7 @@ def resembeddings(query, update_check):
 	else:
 		k_clusters = 10
 		window = 100
-		logging.info("update_check: ", update_check)
+		logging.info("update_check: " + str(update_check))
 
 		pmid_list = query.split('+')  # list of string pmids
 		pmid = pmid_list[0]  # get the first
@@ -587,7 +607,7 @@ def resembeddings(query, update_check):
 		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath)
 
 
-
+#NB: does NOT need a db connection
 @app.route('/reslsa/<query>/<update_check>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query, update_check):
 	form = visOptions()
@@ -643,6 +663,7 @@ def reslsa(query, update_check):
 		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
 
 
+#NB: does NOT need a db connection
 @app.route('/reslda/<query>/<update_check>', methods=["GET", "POST"]) #user lda for iframe
 def reslda(query, update_check):
 	form = visOptions()
@@ -687,7 +708,7 @@ def reslda(query, update_check):
 		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check)
 
 
-
+#NB: does NOT need a db connection
 @app.route('/reswordcloud/<query>', methods=["GET", "POST"]) #user wordcloud for iframe
 def reswordcloud(query):
 	form = nesOptions()
@@ -735,9 +756,12 @@ def reswordcloud(query):
 		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup)
 
 
+#NB: needs a db connection
+#TODO: I have no idea where/when to close the connection
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_heatmap(query):
 	form = nesOptions()
+	hmr_conn = connection() #heatmap results database connection
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
@@ -759,8 +783,9 @@ def res_heatmap(query):
 		with open(lemma_file, "rb") as l:
 			lemma_samples = pickle.load(l)
 
-		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
+		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
 		popup = ' '
+		hmr_conn.close()
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
@@ -782,16 +807,18 @@ def res_heatmap(query):
 		with open(lemma_file, "rb") as l:
 			lemma_samples = pickle.load(l)
 
-		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
+		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
+		hmr_conn.close()
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 
 
-
+#NB: needs a db connection
 @app.route('/res_clustermap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_clustermap(query):
 	form = nesOptions()
 	if request.method == 'POST':
+		cmr_conn = connection() #clustermap results database connection
 		nes_categories = request.form.getlist('check')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
@@ -812,20 +839,23 @@ def res_clustermap(query):
 		with open(lemma_file, "rb") as l:
 			lemma_samples = pickle.load(l)
 
-		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query)
+		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query, cmr_conn)
 		image = '/clustermaps/' + saveName
-
+		cmr_conn.close()
 		return render_template('results_clustermap.html',image=image, query=query)
 	else:
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Choose N and categories to run clustermap.</div>'
+		#No default visualization
 		return render_template('results_clustermapH.html', query=query, popup=popup)
 
 
+
+#NB: needs a db connection
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
 def res_kmeans(query):
 	form = visOptions()
 	if request.method == 'POST':
-
+		kmr_conn = connection() #k-means results database connection
 		pmid_list = query.split('+') #list of string pmids
 		pmid = pmid_list[0]
 		prefix = pmid[0:3]
@@ -838,7 +868,8 @@ def res_kmeans(query):
 
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
-		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters)
+		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters, kmr_conn)
+		kmr_conn.close()
 		return render_template('res_kmeans1.html', query=query,
 		   x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
@@ -847,17 +878,19 @@ def res_kmeans(query):
 		   x4_coordinates=x4_coordinates, y4_coordinates=y4_coordinates, z4_coordinates=z4_coordinates,
 			titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
+		#Not running any default vis because its slow
 		return render_template('res_kmeans1.html', query=query)
 
 
-#TODO: update for stacked barchart
+
 @app.route('/res_stats/<query>', methods=["GET"]) #user statistics for iframe
 def res_stats(query):
+	sr_conn = connection() #statistics results db connection
 	pmid_list = query.split('+') #list of string pmids
-	venn_data = make_venn(pmid_list)
+	venn_data = make_venn(pmid_list, sr_conn)
 
-	input_click_citations = statsSelfInfo(query)
-	statistics = get_statistics(query)
+	input_click_citations = statsSelfInfo(query, sr_conn)
+	statistics = get_statistics(query, sr_conn)
 	sum_total = statistics[0]
 	unique = statistics[1]
 	sum_abstracts = statistics[2]
@@ -867,8 +900,8 @@ def res_stats(query):
 
 	#get x, y coordinates for pubs x year bar chart.
 	#max 5 papers
-	x0, x1, x2, x3, x4, y0, y1, y2, y3, y4, n0, n1, n2, n3, n4 = stats_barchart(query)
-
+	x0, x1, x2, x3, x4, y0, y1, y2, y3, y4, n0, n1, n2, n3, n4 = stats_barchart(query, sr_conn)
+	sr_conn.close()
 	return render_template('results_stats.html', input_click_citations=input_click_citations,
 						   venn_data=venn_data, sum_total=sum_total,
 						   unique=unique, sum_abstracts=sum_abstracts, sum_whole=sum_whole,
@@ -878,12 +911,16 @@ def res_stats(query):
 						   n0=n0, n1=n1, n2=n2, n3=n3, n4=n4)
 
 
+#NB: needs db connection
+#TODO: Idk when to close connection
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe
 def results_scifi(query):
 	form = corpusOptions()
 	pmid_list = query.split('+')  # list of string pmids
 	#decide eligible papers:
-	eligible_papers = inputEligible(query)
+	sfr_conn = connection() #scifi results db connection
+	eligible_papers = inputEligible(query, sfr_conn)
+
 	logging.info("eligible papers: " +str(eligible_papers))
 	if request.method == 'POST':
 		logging.info("posted a thing in scifi!")
@@ -925,16 +962,18 @@ def results_scifi(query):
 			title = str('PMID: ' + str(eligible_papers[3][1]))
 		if corpus == 'paper5':
 			title = str('PMID: ' + str(eligible_papers[4][1]))
-		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
+		x, y, names, color = vis_scifi(corpus, query, eligible_papers, sfr_conn)
+		sfr_conn.close()
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 	else:
 		logging.info("scifi analysis")
 		corpus = 'darwin'
 		title = 'On The Origin of Species'
-		x, y, names, color = vis_scifi(corpus, query, eligible_papers)
+		x, y, names, color = vis_scifi(corpus, query, eligible_papers, sfr_conn)
 		logging.info("done with x and y")
 		if len(eligible_papers) < len(pmid_list):
 			flash('Some input paper(s) are not avaliable for TextCompare')
+		sfr_conn.close()
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 
 #################### OTHER ####################################################

@@ -1,9 +1,5 @@
-from flask import Flask
 import time, os.path, pickle, logging, json
-
-#Does this need to be here? Because in app.py it will have the app as a global variable? idk
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
+from configapp import app
 
 
 
@@ -45,7 +41,7 @@ def exists_nes(user_input):
 	status = os.path.isfile(nes_completeName)
 	return status
 
-	
+
 
 
 #Revamped lemma_samples (data_samples) caching function!!!

@@ -5,16 +5,12 @@ import json
 import os.path
 from multiprocessing import Pool
 import logging
-from flask import Flask
+from configapp import app
 from database_management import db_citation_pmc_ids, pmcidAnnotated  #mine
 
 # source activate py34 #my conda python environment for this
 
 
-#TODO: set path to processors as a config var
-
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False)
 
 #Create log
 logging.basicConfig(filename='.multi_preprocess.log',level=logging.DEBUG)
@@ -31,8 +27,7 @@ logging.info('Stopword settings set')
 #It may take a minute or so to load the large model files.
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
-  #path = '/home/hclent/anaconda3/envs/odin/lib/python3.5/site-packages/processors/processors-server.jar'
-  path = '/home/hclent/anaconda3/envs/pyNLP/lib/python3.4/site-packages/processors/processors-server.jar'
+  path = (app.config['PATH_TO_JAR'])
   api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx100G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
@@ -58,12 +53,12 @@ fail to identify papers that are annotated in this function.
 However, there are some database connectivity issues when retrieveDocs() is called in content_management.
 These database connectivity issues, namely when the db is "locked", need more investigation
 '''
-def retrieveDocs(pmid):
+def retrieveDocs(pmid, conn):
   docs = [] #list of strings
   #connect to db for citing id's
-  db_pmcids = db_citation_pmc_ids(pmid)
+  db_pmcids = db_citation_pmc_ids(pmid, conn)
   for pmcid in db_pmcids:
-    annotated = pmcidAnnotated(pmcid)
+    annotated = pmcidAnnotated(pmcid, conn)
     if annotated == 'yes':
       pass
     if annotated == 'no':
@@ -186,9 +181,9 @@ def retrieveBioDocs(pmid):
   #print("retrieving biodocs")
   biodocs = [] #list of strings
 
-  db_pmcids = db_citation_pmc_ids(pmid)
+  db_pmcids = db_citation_pmc_ids(pmid, conn)
   for pmcid in db_pmcids:
-    annotated = pmcidAnnotated(pmcid)
+    annotated = pmcidAnnotated(pmcid, conn)
     if annotated == 'no':
       pass
     if annotated == 'empty':

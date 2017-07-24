@@ -8,13 +8,13 @@ def flatten(listOfLists):
     return list(chain.from_iterable(listOfLists))
 
 #gets journals and dates from the citations, and filters out repeat citaitons
-def get_journals_and_dates(query):
+def get_journals_and_dates(query, conn):
 	pmcids = []
 	journals = []
 	dates = []
 	pmid_list = query.split('+')  # list of string pmids
 	for pmid in pmid_list:
-		pmcid, js, ds = db_journals_and_dates(pmid)
+		pmcid, js, ds = db_journals_and_dates(pmid, conn)
 		pmcids.append(pmcid)
 		journals.append(js)
 		dates.append(ds)
@@ -31,8 +31,7 @@ def get_journals_and_dates(query):
 
 
 #this gets journal info for the bar chart in "statistics"
-#TODO: make stacked barchart for each paper in query
-def statistics_dates_barchart(journals, dates, query):
+def statistics_dates_barchart(journals, dates, query, conn):
 	x_vals = []
 	y_vals = []
 
@@ -40,10 +39,11 @@ def statistics_dates_barchart(journals, dates, query):
 	years_list = dates
 
 	try:
-		years_plus_range = db_get_years_range(query) #use the years range of the entire query
+		#first see if its in the db
+		years_plus_range = db_get_years_range(query, conn) #use the years range of the entire query
 		#print("got years range from db") #in db years_range looks like "2008+2017
 		years_range = years_plus_range.split('+')
-	except Exception as e:
+	except Exception as e: #if its not in the db, do it the manual way
 		years_range = get_years_range(query)
 		#print("calculate years_range by hand")
 
@@ -72,7 +72,7 @@ def journal_dates_barchart(journals, years_list, query):
 
 	yearDict = defaultdict(lambda: 0)
 
-	years_range = get_years_range(query)
+	years_range = get_years_range(query, conn)
 
 	# Associate journals with years
 	journal_year = list(zip(journals, years_list))  # ('Scientific Reports', '2016')
@@ -91,12 +91,12 @@ def journal_dates_barchart(journals, years_list, query):
 
 #Years range looks like (2008, 2017)
 #The actual journals vis uses this once, but in the future its stored in the db and retrievable that way
-def get_years_range(query):
+def get_years_range(query, conn):
 	years_list = []
 	pmid_list = query.split('+') #list of string pmids
 	#print(pmid_list)
 	for pmid in pmid_list:
-		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(pmid)
+		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(pmid, conn)
 
 		#print(db_dates) #step1 : get years
 		for d in db_dates:
@@ -126,8 +126,8 @@ def get_years_range(query):
 
 
 #Makes the json for the Journals visualization :)
-def journals_vis(years_range, query):
-	journals, dates = get_journals_and_dates(query)
+def journals_vis(years_range, query, conn):
+	journals, dates = get_journals_and_dates(query, conn)
 	#print("JOURNALS VISUALIZATION")
 	num_publications = len(journals) #UNIQUE publications only since duplicates have been flitered out
 	#print("THERE ARE " + str(num_publications)+ " PUBLICATIONS")
@@ -215,7 +215,7 @@ def journals_vis(years_range, query):
 	#print(range_info)
 
 	## add a TOTAL SUM row to the top of the journals visualization
-	x, y = journal_dates_barchart(journals, years_list, query)
+	x, y = journal_dates_barchart(journals, years_list, query, conn)
 	total_sum = sum(y)
 	total_articles = [[year, count] for year, count in zip(x, y)]
 	total_name = "TOTAL"

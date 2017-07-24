@@ -1,8 +1,9 @@
 from flask import Flask
 import time, datetime, re, json
 from collections import defaultdict
-from sqlalchemy import create_engine, MetaData, Table, select
+from sqlalchemy import select
 import logging
+from configapp import engine, connection, inputPapers, citations, queries
 
 
 '''
@@ -14,40 +15,17 @@ Tables in pmids_info.db
 
 '''
 
-def connect_db():
-	app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-	app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False)  # pass abs path
-	engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-	return engine
-
-
-def connection():
-	conn = engine.connect()
-	return conn
-
-
-def load_tables():
-	metadata = MetaData(bind=engine) #init metadata. will be empty
-	metadata.reflect(engine) #retrieve db info for metadata (tables, columns, types)
-	inputPapers = Table('inputPapers', metadata)
-	citations = Table('citations', metadata)
-	queries = Table('queries', metadata)
-	annotations = Table('annotations', metadata)
-	return inputPapers, citations, queries, annotations
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-engine = connect_db()
-conn = connection()
-inputPapers, citations, queries, annotations = load_tables()
 
 
 #################### SUPPORT FUNCTIONS FOR inputPapers TABLE ######################
 #Input: pmid
 #Output: apa citation of *THAT* pmid
 #Updated to use sqlalchemy
-def db_inputPapers_retrieval(user_input):
+def db_inputPapers_retrieval(user_input, conn):
 	s = select([inputPapers.c.title, inputPapers.c.author, inputPapers.c.journal, inputPapers.c.pubdate, inputPapers.c.url]).\
 		where(inputPapers.c.pmid == user_input)
 	result = conn.execute(s)
@@ -64,7 +42,7 @@ def db_inputPapers_retrieval(user_input):
 #Input: pmid
 #Output: number of citations
 #Updated to use sqlalchemy
-def db_input_citations_count(user_input):
+def db_input_citations_count(user_input, conn):
 	s = select([inputPapers.c.num_citations]).\
 		where(inputPapers.c.pmid == user_input)
 	result = conn.execute(s)
@@ -77,11 +55,12 @@ def db_input_citations_count(user_input):
 # Input: pmid that is cited
 # Output: dicts needed for statistics tab
 # Updated to use sqlalchemy
-def db_statistics(user_input):
+# Apparently this is used by the function db_query_update_statistics
+def db_statistics(user_input, conn):
 	pmidDict = defaultdict(int)
 	pmcDict = defaultdict(list)
 
-	num_citations = db_input_citations_count(user_input)
+	num_citations = db_input_citations_count(user_input, conn)
 	pmidDict[user_input] = num_citations
 
 	s = select([citations.c.pmcid, citations.c.abstract, citations.c.whole_article, citations.c.sents, citations.c.tokens]).\
@@ -102,7 +81,7 @@ def db_statistics(user_input):
 # from function getSelfText(user_input)
 # puts pmcid, abstract check, and article check into db from
 # Updated to sqlalchemy syntax
-def updateInputPapers(user_input, self_pmcid, abstract, article):
+def updateInputPapers(user_input, self_pmcid, abstract, article, conn):
 	up = inputPapers.update().\
 		where(inputPapers.c.pmid == user_input).\
 		values(dict(abstract=abstract, whole_article=article, pmcid=self_pmcid))
@@ -112,7 +91,7 @@ def updateInputPapers(user_input, self_pmcid, abstract, article):
 
 # convert pmid2pmcid
 # updated to sqlAlchemy
-def pmid2pmcid(user_input):
+def pmid2pmcid(user_input, conn):
 	s = select([inputPapers.c.pmcid]).\
 		where(inputPapers.c.pmid == user_input)
 	result = conn.execute(s)
@@ -123,7 +102,7 @@ def pmid2pmcid(user_input):
 
 
 #This is for TextCompare x-axis labels for eligible_papers (inputPapers)
-def db_pmid_axis_label(pmid):
+def db_pmid_axis_label(pmid, conn):
 	s = select([inputPapers.c.author, inputPapers.c.pubdate, inputPapers.c.url]).\
 		where(inputPapers.c.pmid == pmid)
 	result = conn.execute(s)
@@ -154,7 +133,7 @@ def db_pmid_axis_label(pmid):
 	return label
 
 
-def db_pmid_hyperlink_retrieval(pmid):
+def db_pmid_hyperlink_retrieval(pmid, conn):
 	s = select([inputPapers.c.title, inputPapers.c.author, inputPapers.c.journal, inputPapers.c.pubdate, inputPapers.c.url]).\
 		where(inputPapers.c.pmid == pmid)
 	result = conn.execute(s)
@@ -178,7 +157,7 @@ def db_pmid_hyperlink_retrieval(pmid):
 '''
 July 5, 2017: This randomly failed in deployment for a query that normally works. Couldn't find "title"
 '''
-def db_citations_hyperlink_retrieval(pmcid):
+def db_citations_hyperlink_retrieval(pmcid, conn):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.pmcid == pmcid)
 	result = conn.execute(s)
@@ -196,7 +175,7 @@ def db_citations_hyperlink_retrieval(pmcid):
 
 
 #Gets the YEAR only for a given pmcid for the heatmap vis
-def db_citations_mini_year(pmcid):
+def db_citations_mini_year(pmcid, conn):
 	s = select([citations.c.pubdate]).\
 		where(citations.c.pmcid == pmcid)
 	result = conn.execute(s)
@@ -218,7 +197,7 @@ def db_citations_mini_year(pmcid):
 
 
 #This is for the heatmap x-axis labels and TextCompare x-axis labels
-def db_citations_mini_hyperlink(pmcid):
+def db_citations_mini_hyperlink(pmcid, conn):
 	s = select([citations.c.author, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.pmcid == pmcid)
 	result = conn.execute(s)
@@ -253,7 +232,7 @@ def db_citations_mini_hyperlink(pmcid):
 #Output: list of apa citations of pmc-ids citing that pmid
 #Updated to sqlAlchemy
 #Journalsvis uses this. Maybe go back and change
-def db_citations_retrieval(user_input):
+def db_citations_retrieval(user_input, conn):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -282,7 +261,7 @@ def db_citations_retrieval(user_input):
 #Input: pmid
 #Output: list of apa citations of pmc-ids citing that pmid
 #Updated to sqlAlchemy
-def db_bar_chart(user_input):
+def db_bar_chart(user_input, conn):
 	s = select([citations.c.journal, citations.c.pubdate]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -309,7 +288,7 @@ def db_bar_chart(user_input):
 #for the "citations" tab.
 #put in a quiery
 #get back the unique list of [[citation, url],[citation, url],...[]]
-def db_unique_citations_retrieval(query):
+def db_unique_citations_retrieval(query, conn):
 	apa_citations = []
 	db_urls = []
 
@@ -338,35 +317,37 @@ def db_unique_citations_retrieval(query):
 #Input: pmid that is cited
 #Output: list of titles for citation_venn.py
 #updated to sqlAlchemy
-def db_citation_titles(user_input):
-	s = select([citations.c.title]).\
-		where(citations.c.citesPmid == user_input)
-	result = conn.execute(s)
-	db_titles = []
-	for row in result:
-		title = row["title"]
-		db_titles.append(title)
-	return db_titles
+# WARNING: DEPRECIATED :D
+# def db_citation_titles(user_input):
+# 	s = select([citations.c.title]).\
+# 		where(citations.c.citesPmid == user_input)
+# 	result = conn.execute(s)
+# 	db_titles = []
+# 	for row in result:
+# 		title = row["title"]
+# 		db_titles.append(title)
+# 	return db_titles
 
 
 #Input: pmid that is cited
 #Output: list of urls for heatmap and barchart hrefs
 #Updated to sqlAlchemy
-def db_citation_urls(user_input):
-	s = select([citations.c.url]).\
-		where(citations.c.citesPmid == user_input)
-	result = conn.execute(s)
-	db_urls = []
-	for row in result:
-		url = row["url"]
-		db_urls.append(url)
-	return db_urls
+#DEPRECIATED :D
+# def db_citation_urls(user_input):
+# 	s = select([citations.c.url]).\
+# 		where(citations.c.citesPmid == user_input)
+# 	result = conn.execute(s)
+# 	db_urls = []
+# 	for row in result:
+# 		url = row["url"]
+# 		db_urls.append(url)
+# 	return db_urls
 
 
 #Input: pmid that is cited
 #Output: list of pmc_ids for citation
 #Updated to sqlalchemy
-def db_citation_pmc_ids(user_input):
+def db_citation_pmc_ids(user_input, conn):
 	s = select([citations.c.pmcid]).\
 		where(citations.c.citesPmid == user_input)
 	result = conn.execute(s)
@@ -380,7 +361,7 @@ def db_citation_pmc_ids(user_input):
 #Input: pmid that is cited
 #Output: journals and dates of all citing pmcids
 #Updated to sqlAlchemy
-def db_journals_and_dates(pmid):
+def db_journals_and_dates(pmid, conn):
 	journals = []
 	dates = []
 	pmcids = []
@@ -403,7 +384,7 @@ def db_journals_and_dates(pmid):
 #input: pmcid
 #output: if the pmcid exists in the db, get the entry to copy for the new citing document
 #Updated to sqlAlchemy
-def checkForPMCID(citation):
+def checkForPMCID(citation, conn):
 	try:
 		s = citations.select().\
 			where(citations.c.pmcid == citation)
@@ -427,7 +408,7 @@ def checkForPMCID(citation):
 #Output: if abstract, whole_article etc have fields, return those
 #Output: else, result should return as a string "empty"
 #Updated to sqlalchemy
-def checkIfScraped(citation, user_input):
+def checkIfScraped(citation, user_input, conn):
 	s = select([citations.c.abstract, citations.c.whole_article]).\
 		where(citations.c.pmcid == citation).\
 		where(citations.c.citesPmid == user_input).\
@@ -448,7 +429,7 @@ def checkIfScraped(citation, user_input):
 #Output: if the pmcid is in the db AND not annotated --> 'no'
 #Output: if the pmcid is NOT in the db at all --> 'empty'
 #Updated to sqlAlchemy
-def pmcidAnnotated(pmcid):
+def pmcidAnnotated(pmcid, conn):
 	try:
 		s = select([citations.c.annotated]).\
 			where(citations.c.pmcid == pmcid)
@@ -472,7 +453,7 @@ def pmcidAnnotated(pmcid):
 
 
 #Updated to sqlalchemy
-def update_annotations(b, user_input):
+def update_annotations(b, user_input, conn):
 	pc = str(b["pmcid"])
 	s = b["num_sentences"]
 	t = b["num_tokens"]
@@ -486,7 +467,7 @@ def update_annotations(b, user_input):
 ######################## SUPPORT FUNCTIONS FOR queries TABLE #######################################
 #check if a query is in db
 #Updated to sqlAlchemy
-def checkForQuery(query):
+def checkForQuery(query, conn):
 	s = select([queries.c.query]).\
 		where(queries.c.query == query)
 	result = conn.execute(s)
@@ -500,7 +481,7 @@ def checkForQuery(query):
 
 #Get information for cached journal data vis
 #Updated to sqlalchemy
-def getJournalsVis(query):
+def getJournalsVis(query, conn):
 	s = select([queries.c.range_years, queries.c.unique_pubs, queries.c.unique_journals]).\
 		where(queries.c.query == query)
 	result = conn.execute(s)
@@ -510,7 +491,8 @@ def getJournalsVis(query):
 		unique_journals = row["unique_journals"]
 	return range_years, unique_pubs, unique_journals
 
-def db_get_years_range(query):
+
+def db_get_years_range(query, conn):
 	s = select([queries.c.range_years]). \
 		where(queries.c.query == query)
 	result = conn.execute(s)
@@ -521,18 +503,16 @@ def db_get_years_range(query):
 
 
 #Grab number of unique (i.e. no repeats) citations for a query
-def db_unique_citations_number(query):
-	print("DB_UNIQUE_CITATIONS_NUMBER")
+def db_unique_citations_number(query, conn):
 	s = select([queries.c.unique_pubs]).\
 		where(queries.c.query == query)
 	result = conn.execute(s)
-	print(result)
 	for row in result:
 		unique_pubs = row["unique_pubs"]
 	return unique_pubs
 
 
-def db_query_statistics(query):
+def db_query_statistics(query, conn):
 	s = select([queries.c.total_pubs, queries.c.unique_pubs,
 				queries.c.num_abstracts, queries.c.num_whole_articles, queries.c.num_sents, queries.c.num_tokens]).\
 		where(queries.c.query == query)
@@ -547,7 +527,7 @@ def db_query_statistics(query):
 	return total_pubs, unique_pubs, abstracts, whole, sentences, words
 
 #Update the queries table for statistics
-def db_query_update_statistics(query):
+def db_query_update_statistics(query, conn):
 	total = []
 	unique_pmcids = []
 	all_abstracts = []
@@ -558,7 +538,7 @@ def db_query_update_statistics(query):
 	pmid_list = query.split('+')
 
 	for pmid in pmid_list:
-		pmidDict, pmcDict = db_statistics(pmid)
+		pmidDict, pmcDict = db_statistics(pmid, conn)
 		#print(pmidDict)
 		total.append(pmidDict[pmid])
 		#print(pmcDict)

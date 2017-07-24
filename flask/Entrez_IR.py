@@ -2,8 +2,9 @@ from __future__ import print_function
 import time, sys, pickle, datetime, os.path, logging, json, re
 import xml.etree.ElementTree as ET
 from time import sleep
-from database_management import checkForPMCID, checkIfScraped
 from Bio import Entrez
+from configapp import app
+from database_management import checkForPMCID, checkIfScraped
 
 
 #Entrez Information Retrieval
@@ -64,11 +65,9 @@ def getAlternativeId(pmid):
 		data = record[0]["PubmedData"]
 		ids = data["ArticleIdList"]
 		logging.info(ids)
-	#try:
 		pmc_id = ids[3] #PMC12345
 		pmcid = re.sub('PMC', '', pmc_id) #12345 without "PMC"
 		logging.info("pmcid for input paper" + str(pmcid))
-		#print(pmcid)
 		return pmcid
 	except Exception as e:
 		logging.info(e)
@@ -106,14 +105,14 @@ def connectToNCBI(citation):
 #Input: Citing pmcids
 #Output: Basic info about these pmcids -- list of dictionaries
 #Update: Changed from list of lists to dictionary so that the code doesn't rely on indexing
-def getCitedInfo(pmcid_list, pmid):
+def getCitedInfo(pmcid_list, pmid, conn):
 	t0 = time.time()
 	i = 1
 	allCitations = []
 	for citation in pmcid_list:
 		logging.info("citation no. " + str(i) + " ...")
 		#first check the db to see if this citation already exists
-		rows = checkForPMCID(citation) #Now returns all rows with that pmcid (if any)
+		rows = checkForPMCID(citation, conn) #Now returns all rows with that pmcid (if any)
 		if rows != 'empty':
 			logging.info("the pmcid already exists in db")
 			# if row(s) exists, need to check what pmids they are citing
@@ -264,7 +263,7 @@ def parsePMC(xml_string):
 #Input: the list of pmcids citing some pmid
 #For each citing pmc_id, this function gest the xml, which is then parsed by parsePMC()
 #Output: Those texts for each pmcid saved as pmcid.txt to the folder pmcid[:3]/pmicd[3:6] for better organization
-def getContentPMC(pmcids_list, pmid):
+def getContentPMC(pmcids_list, pmid, conn):
 	t0 = time.time()
 	i = 1
 
@@ -274,7 +273,7 @@ def getContentPMC(pmcids_list, pmid):
 		#print(citation)
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
 		# a record that this pmc is cited by the new input paper (will be done at this point though... I think?)
-		row = checkIfScraped(citation, pmid)
+		row = checkIfScraped(citation, pmid, conn)
 
 		if row == 'empty':
 
@@ -283,7 +282,7 @@ def getContentPMC(pmcids_list, pmid):
 			contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
 			logging.info("pmcid never seen before. needs to be scraped + annotated ")
 
-			prefix = '/home/hclent/data/pmcids/' + str(citation[0:3]) #folder for first 3 digits of pmcid
+			prefix = (app.config['PATH_TO_CACHE']) + str(citation[0:3]) #folder for first 3 digits of pmcid
 			suffix = prefix + '/' + str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
 
 			try:

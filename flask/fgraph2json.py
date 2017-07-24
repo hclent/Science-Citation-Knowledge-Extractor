@@ -1,12 +1,9 @@
 import json, re, os.path, logging
 from operator import itemgetter
-from flask import Flask
+from configapp import app
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
 
 #Input: zipped results of fasttext.py

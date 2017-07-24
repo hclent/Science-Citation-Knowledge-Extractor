@@ -2,6 +2,7 @@ from processors import * #pyProcessors
 from flask import Flask
 import os.path, time, re, logging, pickle, json, codecs, arrow
 import operator
+from configapp import app, engine, connection, inputPapers, citations, queries
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
@@ -18,9 +19,6 @@ from cache_lemma_nes import load_lemma_cache #mine
 
 
 ############## CONFIG ######################################
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
-
 
 ################## LOGGING #######################################################
 
@@ -60,18 +58,18 @@ def flatten(listOfLists):
 
 ################### DATABASE #####################################################
 #If the pmid is NOT in the db, we also need to getSelfText and write that info to db
-def scrape_and_write_Input(user_input):
+def scrape_and_write_Input(user_input, conn):
 	logging.info('retrieve Self text, and write to db')
 	self_pmcid, self_abstract_check, self_article_check = getSelfText(user_input) #Entrez_IR function
 	logging.info("PMICD: ")
 	logging.info(self_pmcid)
-	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check)  # put getSelfText into database
+	updateInputPapers(user_input, self_pmcid, self_abstract_check, self_article_check, conn)  # put getSelfText into database
 
 #input: user_input pmid
 #output: list of dicts with annotation checks [{"pmcid": 123, "annotated": yes}]
-def annotation_check(user_input):
+def annotation_check(user_input, conn):
 	a_check = []
-	pmc_ids = db_citation_pmc_ids(user_input) #Used to use getCitationIDs(user_input) here but updated to using my own db
+	pmc_ids = db_citation_pmc_ids(user_input, conn) #Used to use getCitationIDs(user_input) here but updated to using my own db
 	for citation in pmc_ids:
 		#print(citation)
 		annotationDict = {"pmcid": citation, "annotated": []}
@@ -93,7 +91,7 @@ def annotation_check(user_input):
 #Used by both IR_not_in_db and IR_in_db to 1) add new pmcids to cited db and 2) duplicate entries when necessary
 #Input is the "citation" (dict) result of the result "allCitationsInfo = getCitedInfo(pmc_ids, user_input)" in for loop
 #Updated to sqlalchemy
-def new_or_copy_db(citation): #citation is a dict
+def new_or_copy_db(citation, conn): #citation is a dict
 	if "annotated" in citation:
 		logging.info("this entry has already been annotated before. just copy.")
 		date = str(arrow.now().format('YYYY-MM-DD'))
@@ -141,7 +139,7 @@ def new_or_copy_db(citation): #citation is a dict
 #Update citations db with abstract_check and whole_article_check
 #Doesn't re-retrieve information for citations previously scraped (does update db if necessary)
 # Updated to sqlalchemy
-def run_IR_not_db(user_input):
+def run_IR_not_db(user_input, conn):
 	logging.info('PMID is NOT in the inputPapers database')
 	self_info = getMainInfo(user_input)
 	pmc_ids = getCitationIDs(user_input)
@@ -163,20 +161,20 @@ def run_IR_not_db(user_input):
 		conn.execute(update)
 
 	#Retrieve the input paper if avaliable and update db
-	scrape_and_write_Input(user_input)
+	scrape_and_write_Input(user_input, conn)
 
 	#Now retrieve citations
 	logging.info("Get basic info about the citations")
 	# Previously unseen pmcids only in allCitationsInfo.
 	# Previously seen pmcids are copied to db for new pmid in getCitedInfo
-	allCitationsInfo = getCitedInfo(pmc_ids, user_input) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
+	allCitationsInfo = getCitedInfo(pmc_ids, user_input, conn) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
 	logging.info("Write basic citation info to citations db")
 	for citation in allCitationsInfo:
 		logging.info(citation)
-		new_or_copy_db(citation)
+		new_or_copy_db(citation, conn)
 
 	#Get content and update citations db
-	contentDictList = getContentPMC(pmc_ids, user_input)
+	contentDictList = getContentPMC(pmc_ids, user_input, conn)
 	for citation in contentDictList:
 		pmcid = str(citation["pmcid"])
 		citesPmid = str(citation["citesPmid"])
@@ -194,10 +192,10 @@ def run_IR_not_db(user_input):
 # If ther are new citing papers, get those and update the db appropriately
 # Else if there are no new papers, don't need to do anything.
 # Updated to sqlalchemy
-def run_IR_in_db(user_input):
+def run_IR_in_db(user_input, conn):
 	logging.info('PMID is in the database')
 	# Check for new papers:
-	num_in_db = db_input_citations_count(user_input) #checks MY db
+	num_in_db = db_input_citations_count(user_input, conn) #checks MY db
 	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
@@ -213,14 +211,14 @@ def run_IR_in_db(user_input):
 		conn.execute(update)
 
 		#now get the new citation info
-		allCitationsInfo = getCitedInfo(pmc_ids, user_input)  # output: list of dictionaries [{pmid: 1234, author: human, ...}] #skips duplicates
+		allCitationsInfo = getCitedInfo(pmc_ids, user_input, conn)  # output: list of dictionaries [{pmid: 1234, author: human, ...}] #skips duplicates
 		logging.info("Write basic citation info to citations db for new papers")
 		for citation in allCitationsInfo:
-			new_or_copy_db(citation)
+			new_or_copy_db(citation, conn)
 
 		#Get content and update citations db
 		logging.info("now get the content for the new stuff")
-		contentDictList = getContentPMC(pmc_ids, user_input)
+		contentDictList = getContentPMC(pmc_ids, user_input, conn)
 		for citation in contentDictList:
 			pmcid = str(citation["pmcid"])
 			citesPmid = str(citation["citesPmid"])
@@ -241,18 +239,18 @@ def run_IR_in_db(user_input):
 
 
 #Data for populating statistics page in app
-def get_statistics(query):
-	total_pubs, unique_pubs, abstracts, whole, sentences, words =  db_query_statistics(query)
+def get_statistics(query, conn):
+	total_pubs, unique_pubs, abstracts, whole, sentences, words =  db_query_statistics(query, conn)
 	statistics = [total_pubs, unique_pubs, abstracts, whole, sentences, words]
 	return statistics
 
 
 #use query to get info about input papers
-def statsSelfInfo(query):
+def statsSelfInfo(query, conn):
     input_click_citations = []
     pmid_list = query.split('+')  # list of string pmids
     for user_input in pmid_list:
-        apa = db_inputPapers_retrieval(user_input)
+        apa = db_inputPapers_retrieval(user_input, conn)
         url = "https://www.ncbi.nlm.nih.gov/pubmed/"+str(user_input)
         href_label = (apa, url) #store apa and url as a tuple
         input_click_citations.append(href_label) #then append to list
@@ -261,8 +259,7 @@ def statsSelfInfo(query):
 
 #take a query and generate x and y datapoints for pubs x year bar chart in "Stats" tab
 #I'm sorry this is so hacky and ugly :'(
-#TODO: sepperate counts (have a different bar) for each inputPaper
-def stats_barchart(query):
+def stats_barchart(query, conn):
 	logging.info("STATISTICS: stacked bar chart initializing ... ")
 	pmid_list = query.split('+') #list of string pmids
 
@@ -288,12 +285,12 @@ def stats_barchart(query):
 	for user_input in pmid_list:
 		journals = []
 		dates = []
-		db_journals, db_dates = db_bar_chart(user_input)
+		db_journals, db_dates = db_bar_chart(user_input, conn)
 		for j in db_journals:
 			journals.append(j)
 		for d in db_dates:
 			dates.append(d)
-		x, y = statistics_dates_barchart(journals, dates, query)
+		x, y = statistics_dates_barchart(journals, dates, query, conn)
 		logging.info(x)
 		logging.info(y)
 
@@ -356,14 +353,14 @@ def stats_barchart(query):
 #Doesn't re-annotated documents that have already been annotated.
 #Updated to sqlalchemy
 #This is only called when there are new documents to annotate :)
-def do_multi_preprocessing(user_input):
+def do_multi_preprocessing(user_input, conn):
 	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
 	t1 = time.time()
-	docs = retrieveDocs(user_input)
+	docs = retrieveDocs(user_input, conn)
 	multiprocess(docs) #if docs is empty [], this function just passes :)
 
 	#Now update annotated_check
-	a_check = annotation_check(user_input)
+	a_check = annotation_check(user_input, conn)
 
 	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
 		logging.info("updating the annotation checks in the db")
@@ -377,12 +374,12 @@ def do_multi_preprocessing(user_input):
 		conn.execute(update)
 
 	#Now extract information from annotated documents
-	biodocs = retrieveBioDocs(user_input)
+	biodocs = retrieveBioDocs(user_input, conn)
 	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
 	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
 	#update db with sents and tokens
 	for b in biodoc_data:
-		update_annotations(b, user_input)
+		update_annotations(b, user_input, conn)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return biodoc_data
 
@@ -391,11 +388,10 @@ def do_multi_preprocessing(user_input):
 #This code is called in the function below (print_journalvis)
 #Basically it forces an update of the journals vis & update to "queries" table of db.
 #We would want to force an update of the journals vis if there are new papers to a previously seen query
-def force_update_journals(query):
-	print("MADE IT TO FORCE UPDATE")
-	years_range = get_years_range(query)  # need range for ALL journals, not just last one
+def force_update_journals(query, conn):
+	years_range = get_years_range(query, conn)  # need range for ALL journals, not just last one
 	logging.info(years_range)
-	publication_data, range_info = journals_vis(years_range, query)  # range info = [('2008', '2016'), 165, 48]
+	publication_data, range_info = journals_vis(years_range, query, conn)  # range info = [('2008', '2016'), 165, 48]
 	logging.info(range_info)
 	journal_years = range_info[0]
 	logging.info(journal_years)
@@ -437,37 +433,37 @@ def force_update_journals(query):
 		json.dump(publication_data, outfile)
 	date = str(arrow.now().format('YYYY-MM-DD'))
 
-	update = queries.insert(). \
+	update = queries.insert().\
 		values(dict(datestamp=date, query=query, range_years=range_years, unique_pubs=unique_publications,
 					unique_journals=unique_journals))
 	conn.execute(update)
 	return range_years, unique_publications, unique_journals
 
 #Function called for actually making the journals vis.
-def print_journalvis(query, needed_to_annotate_check):
+def print_journalvis(query, needed_to_annotate_check, conn):
 	#update the cache!
 	if 'yes' in needed_to_annotate_check: #update the DB ()
 		logging.info("Journals: NEW docs, so need to force update")
-		range_years, unique_publications, unique_journals = force_update_journals(query)
+		range_years, unique_publications, unique_journals = force_update_journals(query, conn)
 	# #if nothing was annotated, check the existing file. If there isn't one, pass
 	if 'yes' not in needed_to_annotate_check: ## check the record.
 		#check for file and get stuff from db
-		record = checkForQuery(query)
+		record = checkForQuery(query, conn)
 		if record == 'yes':  # if its in the db, just get the important things from the db!!
 			logging.info("Journals: NO new docs, retrive from db")
-			range_years, unique_publications, unique_journals = getJournalsVis(query)
+			range_years, unique_publications, unique_journals = getJournalsVis(query, conn)
 		if record == 'empty':
 			logging.info("Journals: QUERY not in db table queries! Force update.")
-			range_years, unique_publications, unique_journals = force_update_journals(query)
+			range_years, unique_publications, unique_journals = force_update_journals(query, conn)
 	return range_years, unique_publications, unique_journals
 
-#TODO: possibly cache wordcloud results?
+
 def vis_wordcloud(neslist, nes_categories, w_number):
 	nesDict = frequency_dict(neslist, nes_categories)
 	wcl = wordcloud(nesDict, int(w_number))
 	return wcl
 
-def vis_heatmapTitles(lemma_samples, years):
+def vis_heatmapTitles(lemma_samples, years, conn):
 	titles = []  # want citations instead of titles
 
 	zipped = zip(years, lemma_samples)
@@ -475,17 +471,17 @@ def vis_heatmapTitles(lemma_samples, years):
 	pmcids = [l[1][0] for l in sorted_data]
 
 	for id in pmcids:
-		hyperlink = db_citations_hyperlink_retrieval(id)
+		hyperlink = db_citations_hyperlink_retrieval(id, conn)
 		titles.append(hyperlink[0])
 	return titles
 
-def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
+def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, conn):
 	neslist = [n[1] for n in nes_samples]
 	nesDict = frequency_dict(neslist, nes_categories)
 	#everything is sorted by year inside doHeatmap
-	x_docs, y_words, z_counts, years = doHeatmap(nesDict, w_number, lemma_samples)
+	x_docs, y_words, z_counts, years = doHeatmap(nesDict, w_number, lemma_samples, conn)
 	#sorted by year in vis_HeatmapTitles the sme way as doHeatmap
-	titles = vis_heatmapTitles(lemma_samples, years)
+	titles = vis_heatmapTitles(lemma_samples, years, conn)
 	return x_docs, y_words, z_counts, titles
 
 #TODO: vis_heatmap and vis_clustermap bascially work the same.
@@ -494,22 +490,22 @@ def vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number):
 #TODO: fix the way papers are saved here, so we have the nested directories for faster lookup
 #TODO: check for clustermap file
 #TODO: update clustermap cache if new citations to a query
-def vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query):
+def vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query, conn):
 	logging.info("starting clustermap")
-	x, y, z, years = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number)
+	x, y, z, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, conn)
 	logging.info("making clustermap data")
 	seaData = make_seaborn_data(x, y, z)
 	logging.info("saving clustermap png")
 	saveName = makeClusterMap(seaData, query)
 	return saveName #return filename
 
-def vis_kmeans(lemma_samples, num_clusters):
+def vis_kmeans(lemma_samples, num_clusters, conn):
 	#use query to get titles
 	titles = [] #want citations instead of titles
 
 	pmcids = [l[0] for l in lemma_samples]
 	for id in pmcids:
-		hyperlink = db_citations_hyperlink_retrieval(id)
+		hyperlink = db_citations_hyperlink_retrieval(id, conn)
 		titles.append(hyperlink[0])
 
 	# ignore the pmcid's in l[0], ignore tags in l[2] and just grab the lemmas
@@ -528,7 +524,7 @@ def vis_kmeans(lemma_samples, num_clusters):
 #step 2: check to make sure that file actually exists
 #Get the data for it
 #NB: This code assumes if pmid has pmcid, then it has been scraped
-def inputEligible(query):
+def inputEligible(query, conn):
 	papers = []
 	values = ['paper1', 'paper2', 'paper3', 'paper4', 'paper5']
 	path_to_paper = []
@@ -537,7 +533,7 @@ def inputEligible(query):
 
 	for pmid in pmid_list:
 	#We are assuming that if there is a pmcid for the pmid, that means it was in PubmedCentral and we scraped it
-		pmcid = pmid2pmcid(pmid)
+		pmcid = pmid2pmcid(pmid, conn)
 		if pmcid != "NA":
 			#print(pmcid)
 			#print(pmid + " = " + pmcid)
@@ -552,7 +548,7 @@ def inputEligible(query):
 				#print(filename) #NA won't exist
 				papers.append(pmid)
 				path_to_paper.append(filename)
-				display = db_pmid_axis_label(pmid)
+				display = db_pmid_axis_label(pmid, conn)
 				keep_display = display[0]
 				display_title.append(keep_display)
 
@@ -560,7 +556,7 @@ def inputEligible(query):
 	return eligible_papers
 
 #visualization for scifi div
-def vis_scifi(corpus, query, eligible_papers):
+def vis_scifi(corpus, query, eligible_papers, conn):
 	corpus_vec, color = load_corpus(corpus, eligible_papers)
 	eligible_cosines = get_cosine_eligible(corpus_vec, eligible_papers)
 	logging.info("eligible_cosines: done")
@@ -569,9 +565,9 @@ def vis_scifi(corpus, query, eligible_papers):
 	cosine_list = get_cosine_list(corpus_vec, data_vecs_list)
 	logging.info("cosine_list: done")
 	#cosine list is the cosine sim score for each document
-	sorted_combos = add_urls(cosine_list, color, pmcids_list)
+	sorted_combos = add_urls(cosine_list, color, pmcids_list, conn)
 	logging.info("sorted combos: done")
-	all_sorted_combos = add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines)
+	all_sorted_combos = add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines, conn)
 	logging.info("all_sorted_combos: done")
 	x, y, names, color_list = prepare_for_histogram(all_sorted_combos)
 	return x, y, names, color_list
@@ -700,6 +696,7 @@ def load_lda(query, k, w):
 ##### E M B E D D I N G  ######
 #Input: query, top N desired bin, k clusters
 #Output: prints csv for force directed graph
+#NB: does not connect to DB!
 def run_embeddings(query, k_clusters, top_n):
 	logging.info("in run_embeddings function")#
 	logging.info(query)

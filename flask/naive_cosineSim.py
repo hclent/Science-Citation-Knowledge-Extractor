@@ -149,14 +149,14 @@ def get_cosine_eligible(corpus_vec, eligible_papers):
 
 #take the list cosines and match scores with the url to the paper
 #Updated with new titles, making sure there's no repeats :)
-def add_urls(cosine_list, color, pmcids_list):
+def add_urls(cosine_list, color, pmcids_list, conn):
 
     histogram_labels = [] #this is what will be in the visualization
     apa_labels = []
 
     alphabet = list(string.ascii_lowercase)
     for pmcid in pmcids_list:
-        label = db_citations_mini_hyperlink(pmcid)
+        label = db_citations_mini_hyperlink(pmcid, conn)
         keep_label = label[0]  # there could be multiple records from db, so just take the first one
         # Step 1: check if its in the x list
         repeat_count = histogram_labels.count(keep_label)
@@ -168,7 +168,7 @@ def add_urls(cosine_list, color, pmcids_list):
             pass
         histogram_labels.append(keep_label)
         #get the hyperlink apa_lables
-        hyperlink_list = db_citations_hyperlink_retrieval(pmcid)
+        hyperlink_list = db_citations_hyperlink_retrieval(pmcid, conn)
         keep_hyperlink = hyperlink_list[0]
         apa_labels.append(keep_hyperlink)
 
@@ -182,7 +182,7 @@ def add_urls(cosine_list, color, pmcids_list):
 
 
 #eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
-def add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines):
+def add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines, conn):
     labels_thus_far = [c[1] for c in sorted_combos]
 
     alphabet = list(string.ascii_lowercase)
@@ -193,7 +193,7 @@ def add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines):
         click_label = []
         for e in eligible_papers:
             pmid = e[1]
-            label = db_pmid_axis_label(pmid)
+            label = db_pmid_axis_label(pmid, conn)
             keep_label = label[0] #there might be multiple, just get first
 
             #check if the label is unique from others. plotly deletes duplicate lables :/
@@ -204,7 +204,7 @@ def add_eligible_cosines(sorted_combos, eligible_papers, eligible_cosines):
             elif repeat_count == 0:
                 pass
 
-            hyperlink = db_pmid_hyperlink_retrieval(pmid)
+            hyperlink = db_pmid_hyperlink_retrieval(pmid, conn)
             keep_hyperlink = hyperlink[0]
 
             histogram_labels.append(keep_label)
