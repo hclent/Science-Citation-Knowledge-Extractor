@@ -563,6 +563,7 @@ def resjournals(query, update_check):
 
 
 #NB: does NOT need a db connection
+#TODO: WHY IS IT NOT FINDING THE FILE???
 @app.route('/resembed/<query>/<update_check>', methods=["GET", "POST"]) #user embeddings for iframe
 def resembeddings(query, update_check):
 	form = visOptions()
@@ -581,7 +582,6 @@ def resembeddings(query, update_check):
 
 			try:
 				not_updated_recently = check_update_embedding(query, k_clusters, window)
-
 				if not_updated_recently is True:
 					#check to see when file was last updated
 					run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
@@ -594,10 +594,12 @@ def resembeddings(query, update_check):
 
 			#If the file doesnt exist at all
 			except Exception as e:
+				logging.info("No file exists ... ")
 				run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
+				logging.info("Made file now time to load ...")
 				filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(
 					k_clusters) + '_' + str(window) + '.json'
-				filepath = os.path.join((app.config['PATH_TO_FGRAPHS']), filename)
+				filepath = os.path.join('fgraphs', filename)
 
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)

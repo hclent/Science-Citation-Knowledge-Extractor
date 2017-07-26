@@ -576,13 +576,11 @@ def vis_scifi(corpus, query, eligible_papers, conn):
 #Check to see how long its been since the file was modified
 def minutes_since_file_mod(filename):
 	file_mod_time = os.stat(filename).st_mtime
-	logging.info("FILE MOD TIME: " + str(file_mod_time))
 	# Time in seconds since epoch for time, in which logfile can be unmodified.
 	should_time = time.time() - (30 * 60)
-	logging.info("FILE SHOULD TIME: " + str(should_time))
 	# Time in minutes since last modification of file
 	last_time = (time.time() - file_mod_time) / 60
-	logging.info("FILE LAST TIME MOD (MIN): " + str(last_time))
+	logging.info("file last modified " + str(last_time)+ "min ago")
 	if last_time < 30.00:
 		need_to_rerun = False
 	else:
@@ -756,13 +754,10 @@ def check_update_lda(query, k, w):
 #NB: does not connect to DB!
 def run_embeddings(query, k_clusters, top_n):
 	logging.info("in run_embeddings function")#
-	logging.info(query)
 	words, tags = get_words_tags(query) #list of words/tags per doc
 	transformed_sentence = transform_text(words, tags)
 	npDict = chooseTopNPs(transformed_sentence)
-	logging.info("done with npDict")
-	logging.info(type(top_n))
-	logging.info(type(k_clusters))
+	logging.info("done with npDict for embeddings")
 	if top_n == 100:
 		logging.info("w=1-100")
 		top = list(npDict.most_common(top_n))
@@ -783,8 +778,8 @@ def run_embeddings(query, k_clusters, top_n):
 		top = [item for item in top_nps400  if item not in top_nps300]
 	else:
 		top = list(npDict.most_common(top_n))
-	logging.info("done with top NPs")
-	logging.info("loaded model all the way!")
+	logging.info("done collecting with top NPs")
+	logging.info("loaded vector model!")
 	matrix = getNPvecs(top, fasttext_model) #loaded as global variable
 	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
@@ -809,7 +804,6 @@ def embedding_lookup(query, k_clusters, top_n):
 		run_embeddings(query, k_clusters, top_n)
 	return returnName
 
-
 def check_update_embedding(query, k_clusters, top_n):
 	save_path = (app.config['PATH_TO_FGRAPHS'])
 	pmid_list = query.split('+')  # list of string pmids
@@ -819,11 +813,12 @@ def check_update_embedding(query, k_clusters, top_n):
 	filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(
 		top_n) + '.json'
 	completeName = os.path.join(save_path, filename)
+	need_to_rerun = minutes_since_file_mod(completeName)
 	if need_to_rerun is True:
-		logging.info("LDA: File DOES need to be updated now!!!")
+		logging.info("Fgraph: File DOES need to be updated now!!!")
 		return True
 	elif need_to_rerun is False:
-		logging.info("LDA: The file was like JUST updated so no need to update ")
+		logging.info("Fgraph: The file was like JUST updated so no need to update ")
 		return False
 	else:
 		return True #just update it idk
