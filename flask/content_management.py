@@ -1,8 +1,7 @@
 from processors import * #pyProcessors
 from flask import Flask
-import os.path, time, re, logging, pickle, json, codecs, arrow
-import operator
-from configapp import app, engine, connection, inputPapers, citations, queries
+import os.path, time, datetime, re, logging, pickle, json, codecs, arrow, operator
+from configapp import app, engine, connection, inputPapers, citations, queries #mine
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
@@ -574,6 +573,23 @@ def vis_scifi(corpus, query, eligible_papers, conn):
 
 ############ TOPIC MODELING ############################################
 
+#Check to see how long its been since the file was modified
+def minutes_since_file_mod(filename):
+	file_mod_time = os.stat(filename).st_mtime
+	logging.info("FILE MOD TIME: " + str(file_mod_time))
+	# Time in seconds since epoch for time, in which logfile can be unmodified.
+	should_time = time.time() - (30 * 60)
+	logging.info("FILE SHOULD TIME: " + str(should_time))
+	# Time in minutes since last modification of file
+	last_time = (time.time() - file_mod_time) / 60
+	logging.info("FILE LAST TIME MOD (MIN): " + str(last_time))
+	if last_time < 30.00:
+		need_to_rerun = False
+	else:
+		need_to_rerun = True
+	return need_to_rerun
+
+
 #### L S A #####
 def run_lsa1(lsa_lemmas, k):
 	logging.info('Beginning Latent Semantic Analysis')
@@ -634,6 +650,25 @@ def load_lsa(query, k):
 		jsonDict = run_lsa1(lemmas_for_lsa, k)
 		print_lsa(query, jsonDict, k)
 	return jsonDict
+
+
+def check_update_lsa(query, k):
+	save_path = (app.config['PATH_TO_LSA'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+	filename = str(prefix) + '/' + str(suffix) + '/' + "lsa_" + str(query) + "_" + str(k) + ".json"
+	completeName = os.path.join(save_path, filename)
+	need_to_rerun = minutes_since_file_mod(completeName)
+	if need_to_rerun is True:
+		logging.info("File DOES need to be updated now!!!")
+		return True
+	if need_to_rerun is False:
+		logging.info("The file was like JUST updated so no need to update ")
+		return False
+
+
 
 ###### L D A ########
 def run_lda1(lda_lemmas, num_topics, n_top_words): #set at defulat k=3, number of words=5

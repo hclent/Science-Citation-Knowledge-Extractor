@@ -4,12 +4,12 @@ from wtforms import TextField, SelectField
 import gc, time, datetime, pickle, os.path, json
 import sys, csv
 from werkzeug.serving import run_simple
+from processors import *
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
-from configapp import app, engine, connection, inputPapers
+from configapp import app, engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
-from processors import *
-from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, exists_lemma, exists_nes
+from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, exists_lemma, exists_nes #mine
 
 
 #Create Form for handling user-entered pmid
@@ -207,8 +207,7 @@ class visOptions(Form):
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7'),
 											  (100, 'w=1-100'),(200, 'w=101-200'),(300, 'w=201-300'),(400, 'w=301-400')])
 
-
-#Form for NEs tab
+#Form for KeyWords tab
 class nesOptions(Form):
 	w_words = SelectField('w_words', choices=[(2, 'N'),(3, '3'),(10, '10'), (25, '25'), (50, '50'),(100, '100'),(200, '200'),
 											  (300, '300')])
@@ -527,7 +526,6 @@ def coge_scifi():
 #NB: needs db connection
 @app.route('/resjournals/<query>/<update_check>', methods=["GET", "POST"]) #user journals for iframe
 def resjournals(query, update_check):
-	#need to get last user_input
 	logging.info("in routine res-journals")
 	jr_conn = connection() #journal results connection
 
@@ -542,8 +540,8 @@ def resjournals(query, update_check):
 		s_year = years_list[0]
 		e_year = years_list[1]
 	except Exception as e:
-		s_year = years_list[0]
-		e_year = years_list[1]
+		s_year = range_years[0]
+		e_year = range_years[1]
 
 	#only want to load the json for the LAST id in the query (so includes all)
 	pmid_list = query.split('+') #list of string pmids
@@ -580,6 +578,7 @@ def resembeddings(query, update_check):
 		suffix = pmid[3:6]
 
 		if update_check == 'yes':
+            #check to see when file was last updated
 			run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
 			filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(
 				k_clusters) + '_' + str(window) + '.json'
@@ -628,19 +627,37 @@ def reslsa(query, update_check):
 
 		if update_check == 'yes':
 			logging.info("LSA: RERUN")
+			try:
+				if check_update_lsa(query, k) is True:
 
-			#load data for analysis
-			lemma_samples = load_lemma_cache(query)
-			lsa_lemmas = [l[1] for l in lemma_samples]
+					#load data for analysis
+					lemma_samples = load_lemma_cache(query)
+					lsa_lemmas = [l[1] for l in lemma_samples]
 
-			num_pubs = len(lsa_lemmas)
-			if num_pubs < k:
-				logging.info("k value is larger than number of publications")
+					num_pubs = len(lsa_lemmas)
+					if num_pubs < k:
+						logging.info("k value is larger than number of publications")
 
-			#run analysis
-			jsonDict = run_lsa1(lsa_lemmas, k)
-			#save it
-			print_lsa(query, jsonDict, k)
+					#run analysis
+					jsonDict = run_lsa1(lsa_lemmas, k)
+					#save it
+					print_lsa(query, jsonDict, k)
+				elif check_update_lsa(query, k) is False:
+					jsonDict = load_lsa(query, k)
+			#If there is NO file at all, check_update_lsa will just entirely fail. 
+			except Exception as e:
+				lemma_samples = load_lemma_cache(query)
+				lsa_lemmas = [l[1] for l in lemma_samples]
+
+				num_pubs = len(lsa_lemmas)
+				if num_pubs < k:
+					logging.info("k value is larger than number of publications")
+
+				# run analysis
+				jsonDict = run_lsa1(lsa_lemmas, k)
+				# save it
+				print_lsa(query, jsonDict, k)
+
 
 			logging.info("did it all!")
 		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
@@ -651,7 +668,7 @@ def reslsa(query, update_check):
 		if update_check == 'yes':
 			#force update
 			##load the lemmas
-			k=7
+			k=5
 			lemma_samples = load_lemma_cache(query)
 
 			lsa_lemmas = [l[1] for l in lemma_samples]
