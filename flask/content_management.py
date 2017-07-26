@@ -662,11 +662,13 @@ def check_update_lsa(query, k):
 	completeName = os.path.join(save_path, filename)
 	need_to_rerun = minutes_since_file_mod(completeName)
 	if need_to_rerun is True:
-		logging.info("File DOES need to be updated now!!!")
+		logging.info("LSA: File DOES need to be updated now!!!")
 		return True
-	if need_to_rerun is False:
-		logging.info("The file was like JUST updated so no need to update ")
+	elif need_to_rerun is False:
+		logging.info("LSA: The file was like JUST updated so no need to update ")
 		return False
+	else:
+		return True
 
 
 
@@ -728,6 +730,26 @@ def load_lda(query, k, w):
 		print_lda(query, jsonLDA, k, w)
 	return jsonLDA
 
+
+def check_update_lda(query, k, w):
+	save_path = (app.config['PATH_TO_LDA'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+	filename = str(prefix) + '/' + str(suffix) + '/' + "lda_" + str(query) + "_" + str(k) + "_" + str(w) + ".json"
+	completeName = os.path.join(save_path, filename)
+	need_to_rerun = minutes_since_file_mod(completeName)
+	if need_to_rerun is True:
+		logging.info("LDA: File DOES need to be updated now!!!")
+		return True
+	elif need_to_rerun is False:
+		logging.info("LDA: The file was like JUST updated so no need to update ")
+		return False
+	else:
+		return True #just update it idk
+
+
 ##### E M B E D D I N G  ######
 #Input: query, top N desired bin, k clusters
 #Output: prints csv for force directed graph
@@ -786,5 +808,24 @@ def embedding_lookup(query, k_clusters, top_n):
 		logging.info("failed to load/find an existing fgraph. Make a new one.")
 		run_embeddings(query, k_clusters, top_n)
 	return returnName
+
+
+def check_update_embedding(query, k_clusters, top_n):
+	save_path = (app.config['PATH_TO_FGRAPHS'])
+	pmid_list = query.split('+')  # list of string pmids
+	pmid = pmid_list[0]  # get the first
+	prefix = pmid[0:3]
+	suffix = pmid[3:6]
+	filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(k_clusters) + '_' + str(
+		top_n) + '.json'
+	completeName = os.path.join(save_path, filename)
+	if need_to_rerun is True:
+		logging.info("LDA: File DOES need to be updated now!!!")
+		return True
+	elif need_to_rerun is False:
+		logging.info("LDA: The file was like JUST updated so no need to update ")
+		return False
+	else:
+		return True #just update it idk
 
 

@@ -578,11 +578,26 @@ def resembeddings(query, update_check):
 		suffix = pmid[3:6]
 
 		if update_check == 'yes':
-            #check to see when file was last updated
-			run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
-			filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(
-				k_clusters) + '_' + str(window) + '.json'
-			filepath = os.path.join((app.config['PATH_TO_FGRAPHS']), filename)
+
+			try:
+				not_updated_recently = check_update_embedding(query, k_clusters, window)
+
+				if not_updated_recently is True:
+					#check to see when file was last updated
+					run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
+					filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(
+						k_clusters) + '_' + str(window) + '.json'
+					filepath = os.path.join((app.config['PATH_TO_FGRAPHS']), filename)
+
+				elif not_updated_recently is False:
+					filepath = embedding_lookup(query, k_clusters, window)
+
+			#If the file doesnt exist at all
+			except Exception as e:
+				run_embeddings(query, k_clusters, window)  # 50 words in 6 clusters
+				filename = str(prefix) + '/' + str(suffix) + '/' + 'fgraph_' + str(query) + '_' + str(
+					k_clusters) + '_' + str(window) + '.json'
+				filepath = os.path.join((app.config['PATH_TO_FGRAPHS']), filename)
 
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)
@@ -628,7 +643,9 @@ def reslsa(query, update_check):
 		if update_check == 'yes':
 			logging.info("LSA: RERUN")
 			try:
-				if check_update_lsa(query, k) is True:
+				not_updated_recently = check_update_lsa(query, k)
+
+				if not_updated_recently is True:
 
 					#load data for analysis
 					lemma_samples = load_lemma_cache(query)
@@ -642,9 +659,9 @@ def reslsa(query, update_check):
 					jsonDict = run_lsa1(lsa_lemmas, k)
 					#save it
 					print_lsa(query, jsonDict, k)
-				elif check_update_lsa(query, k) is False:
+				elif not_updated_recently is False:
 					jsonDict = load_lsa(query, k)
-			#If there is NO file at all, check_update_lsa will just entirely fail. 
+			#If there is NO file at all, check_update_lsa will just entirely fail.
 			except Exception as e:
 				lemma_samples = load_lemma_cache(query)
 				lsa_lemmas = [l[1] for l in lemma_samples]
@@ -697,11 +714,22 @@ def reslda(query, update_check):
 		w = int(num_words)
 
 		if update_check == 'yes':
-			lemma_samples = load_lemma_cache(query)
-			lda_lemmas = [l[1] for l in lemma_samples]
-			jsonLDA = run_lda1(lda_lemmas, k, w)
-			print_lda(query, jsonLDA, k, w)
 
+			try:
+				not_updated_recently = check_update_lda(query, k, w)
+				if not_updated_recently is True:
+					lemma_samples = load_lemma_cache(query)
+					lda_lemmas = [l[1] for l in lemma_samples]
+					jsonLDA = run_lda1(lda_lemmas, k, w)
+					print_lda(query, jsonLDA, k, w)
+				#If it was JUST updated a few seconds ago, we don't need to update it again yo
+				elif not_updated_recently is False:
+					jsonLDA = load_lda(query, k, w)
+			except Exception as e:
+				lemma_samples = load_lemma_cache(query)
+				lda_lemmas = [l[1] for l in lemma_samples]
+				jsonLDA = run_lda1(lda_lemmas, k, w)
+				print_lda(query, jsonLDA, k, w)
 
 		if update_check == 'no':
 			jsonLDA = load_lda(query, k, w)
