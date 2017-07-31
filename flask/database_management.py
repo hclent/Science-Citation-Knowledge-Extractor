@@ -277,10 +277,12 @@ def db_bar_chart(user_input, conn):
 			keep_year = int(year.group(0))
 		else:
 			try:
-				keep_year = str(pubdate)
+				keep_year = int(pubdate[0:4])
 			except Exception as e:
-				# we need an int no matter what...
+				#we need a year no matter what
 				keep_year = "2018"
+
+
 		db_dates.append(keep_year)
 	return db_journals, db_dates
 
@@ -559,7 +561,6 @@ def db_query_update_statistics(query, conn):
 				all_tokens.append(token)
 	sum_total = sum(total)
 	unique_pubs = (len(unique_pmcids))
-	#definitely gets this far...
 	sum_abstracts = len(all_abstracts)
 	sum_whole = len(all_whole)
 	sum_sents = sum(all_sents)

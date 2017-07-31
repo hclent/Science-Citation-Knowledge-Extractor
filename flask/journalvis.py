@@ -47,7 +47,7 @@ def statistics_dates_barchart(journals, dates, query, conn):
 		years_range = get_years_range(query)
 		#print("calculate years_range by hand")
 
-	#print(years_range)
+	print(years_range)
 
 	# Associate journals with years
 	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
@@ -109,9 +109,13 @@ def get_years_range(query, conn):
 					y = int(d[0:4])
 				except Exception as e:
 					# we need an int no matter what...
-					y = int(d[0:4])
+					if d == "None":
+						y = 2018 # The future... hopefully people will see thats impossible
+					else:
+						y = int(d[0:4])
 
 			#if its ONLY numbers like 20170607, we're gonna gamble and just put the first 4.
+			#Ugh some pe
 			years_list.append(int(y)) #append year as an int
 
 	sorted_years = (sorted(years_list))
@@ -145,8 +149,11 @@ def journals_vis(years_range, query, conn):
 			try:
 				y = int(d[0:4])
 			except Exception as e:
-				# we need an int no matter what...
-				y = int(d[0:4])
+				if d == "None":
+					y = 2018
+				else:
+					# we need an int no matter what...
+					y = int(d[0:4])
 
 		# y = re.sub('.[A-Z]{1}[a-z]{2}(.?\d{1,2})?', '', d) #delete month and day
 		# y = re.sub('\D', '', y) #delete any extra letters that escaped for some reason
