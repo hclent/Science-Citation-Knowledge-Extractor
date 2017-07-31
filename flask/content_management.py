@@ -141,50 +141,57 @@ def new_or_copy_db(citation, conn): #citation is a dict
 def run_IR_not_db(user_input, conn):
 	logging.info('PMID is NOT in the inputPapers database')
 	self_info = getMainInfo(user_input)
-	pmc_ids = getCitationIDs(user_input)
-	num_citations = len(pmc_ids)
-	logging.info("Writing self_info to inputPapers db")
-	#write self_info to "inputPapers" db
-	for tup in self_info:
-		title = tup[0]
-		s = ', '
-		author = str(s.join(tup[1]))
-		journal = tup[2]
-		pubdate = tup[3]
-		url = tup[4]
-		date = str(arrow.now().format('YYYY-MM-DD'))
+	try:
+		pmc_ids = getCitationIDs(user_input)
+		num_citations = len(pmc_ids)
+		logging.info("Writing self_info to inputPapers db")
+		#write self_info to "inputPapers" db
+		for tup in self_info:
+			title = tup[0]
+			s = ', '
+			author = str(s.join(tup[1]))
+			journal = tup[2]
+			pubdate = tup[3]
+			url = tup[4]
+			date = str(arrow.now().format('YYYY-MM-DD'))
 
-		update = inputPapers.insert().\
-			values(dict(datestamp=date, pmid=user_input, title=title, author=author, journal=journal, pubdate=pubdate,
-						url=url, num_citations=num_citations))
-		conn.execute(update)
+			update = inputPapers.insert().\
+				values(dict(datestamp=date, pmid=user_input, title=title, author=author, journal=journal, pubdate=pubdate,
+							url=url, num_citations=num_citations))
+			conn.execute(update)
 
-	#Retrieve the input paper if avaliable and update db
-	scrape_and_write_Input(user_input, conn)
+		#Retrieve the input paper if avaliable and update db
+		scrape_and_write_Input(user_input, conn)
 
-	#Now retrieve citations
-	logging.info("Get basic info about the citations")
-	# Previously unseen pmcids only in allCitationsInfo.
-	# Previously seen pmcids are copied to db for new pmid in getCitedInfo
-	allCitationsInfo = getCitedInfo(pmc_ids, user_input, conn) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
-	logging.info("Write basic citation info to citations db")
-	for citation in allCitationsInfo:
-		logging.info(citation)
-		new_or_copy_db(citation, conn)
+		#Now retrieve citations
+		logging.info("Get basic info about the citations")
+		# Previously unseen pmcids only in allCitationsInfo.
+		# Previously seen pmcids are copied to db for new pmid in getCitedInfo
+		allCitationsInfo = getCitedInfo(pmc_ids, user_input, conn) #output: list of dictionaries [{pmid: 1234, author: human, ...}]
+		logging.info("Write basic citation info to citations db")
+		for citation in allCitationsInfo:
+			logging.info(citation)
+			new_or_copy_db(citation, conn)
 
-	#Get content and update citations db
-	contentDictList = getContentPMC(pmc_ids, user_input, conn)
-	for citation in contentDictList:
-		pmcid = str(citation["pmcid"])
-		citesPmid = str(citation["citesPmid"])
-		abstract = str(citation["all_abstract_check"][0])
-		whole_article = str(citation["all_article_check"][0])
+		#Get content and update citations db
+		contentDictList = getContentPMC(pmc_ids, user_input, conn)
+		for citation in contentDictList:
+			pmcid = str(citation["pmcid"])
+			citesPmid = str(citation["citesPmid"])
+			abstract = str(citation["all_abstract_check"][0])
+			whole_article = str(citation["all_article_check"][0])
 
-		up = citations.update().\
-			where(citations.c.pmcid == pmcid).\
-			where(citations.c.citesPmid == citesPmid).\
-			values(dict(abstract=abstract, whole_article=whole_article))
-		conn.execute(up)
+			up = citations.update().\
+				where(citations.c.pmcid == pmcid).\
+				where(citations.c.citesPmid == citesPmid).\
+				values(dict(abstract=abstract, whole_article=whole_article))
+			conn.execute(up)
+		return num_citations
+	except Exception as e:
+		logging.info("probably no papers!")
+		#Return False if no papers!
+		num_citations = 0
+		return num_citations
 
 
 # If pmid (user input) in the inputPapers database, check for new papers
@@ -198,11 +205,11 @@ def run_IR_in_db(user_input, conn):
 	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
-	if int(num_current) > int(num_in_db): #TODO change this back to > after i've fixed authors problem
+	if int(num_current) == int(num_in_db): #TODO change this back to > after i've fixed authors problem
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
-		logging.info("num_in_db: ", num_in_db)
-		logging.info("num_current: ", num_current)
+		logging.info("num_in_db: " +  str(num_in_db))
+		logging.info("num_current: " + str(num_current))
 		#update number of citations in inputPaper db
 		update = inputPapers.update().\
 			where(inputPapers.c.pmid == user_input).\

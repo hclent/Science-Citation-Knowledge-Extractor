@@ -51,9 +51,9 @@ def results():
 			# Need 5 PMIDs or less
 			if len(pmid_list) > 5:
 				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
-				citations_with_links = db_unique_citations_retrieval(query, r_conn)  # unique
-				unique_publications = db_unique_citations_number(query, r_conn)
-				conn.close()
+				citations_with_links = db_unique_citations_retrieval('18952863+18269575', r_conn)  # unique
+				unique_publications = db_unique_citations_number('18952863+18269575', r_conn)
+				r_conn.close()
 				return render_template("dashboard.html", citations_with_links=citations_with_links,
 									   unique_publications=unique_publications)
 
@@ -84,19 +84,30 @@ def results():
 					flash('new pubmedid!')
 
 					#Information Retireval of citing pmcids and info about them
-					run_IR_not_db(user_input, r_conn)
+					#TODO: Check that there actually ARE citations cuz if not, need to tell them!
+					number_of_citations = run_IR_not_db(user_input, r_conn)
+					logging.info(number_of_citations)
 
-					#Annotate
-					logging.info("beginning multi-preprocessing")
-					biodoc_data = do_multi_preprocessing(user_input, r_conn)
-					needed_to_annotate_check.append("yes")
-					logging.info("done with new document multi_preprocessing")
-					logging.info("writing the BIODOC LEMMAS")
+					if number_of_citations == 0:
+						flash('PubMed has no citations for PMID: ' + str(user_input) + '. Please try again with a different PMID')
+						citations_with_links = db_unique_citations_retrieval('18952863+18269575', r_conn)  # unique
+						unique_publications = db_unique_citations_number('18952863+18269575', r_conn)
+						r_conn.close()
+						return render_template("dashboard.html", citations_with_links=citations_with_links,
+											   unique_publications=unique_publications)
 
-					#Populate cache (lemmas and nes)
-					need_to_annotate = "yes" #of course we need to annotate, its a new pmid!
-					print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
-					logging.info("* wrote lemme and nes samples to cache!!!")
+					else:
+						#Annotate
+						logging.info("beginning multi-preprocessing")
+						biodoc_data = do_multi_preprocessing(user_input, r_conn)
+						needed_to_annotate_check.append("yes")
+						logging.info("done with new document multi_preprocessing")
+						logging.info("writing the BIODOC LEMMAS")
+
+						#Populate cache (lemmas and nes)
+						need_to_annotate = "yes" #of course we need to annotate, its a new pmid!
+						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
+						logging.info("* wrote lemme and nes samples to cache!!!")
 
 
 					#After all citations have been processed, now we can do the analyses:
@@ -187,13 +198,13 @@ def results():
 
 
 		citations_with_links = db_unique_citations_retrieval(query, r_conn) #unique
-		# :( this s failing!!!!
-		#unique_publications = db_unique_citations_number(query) <-- not sure why this is here...
+		r_conn.close()
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
 	   			query=query, update_check=update_check)
 
 	except Exception as e:
 		return(str(e))
+		r_conn.close()
 
 
 
@@ -563,7 +574,6 @@ def resjournals(query, update_check):
 
 
 #NB: does NOT need a db connection
-#TODO: WHY IS IT NOT FINDING THE FILE???
 @app.route('/resembed/<query>/<update_check>', methods=["GET", "POST"]) #user embeddings for iframe
 def resembeddings(query, update_check):
 	form = visOptions()
@@ -808,7 +818,6 @@ def reswordcloud(query):
 
 
 #NB: needs a db connection
-#TODO: I have no idea where/when to close the connection
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_heatmap(query):
 	form = nesOptions()
@@ -963,7 +972,6 @@ def res_stats(query):
 
 
 #NB: needs db connection
-#TODO: Idk when to close connection
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe
 def results_scifi(query):
 	form = corpusOptions()
