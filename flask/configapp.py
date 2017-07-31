@@ -8,10 +8,14 @@ app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
+#logging.basicConfig()
+#logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 def connect_db():
-	engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+	engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], pool_size=20, pool_recycle=3600)
 	return engine
 
+#pool_pre_ping does not work
 
 def connection():
 	conn = engine.connect()
