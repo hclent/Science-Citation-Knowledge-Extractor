@@ -47,11 +47,9 @@ def statistics_dates_barchart(journals, dates, query, conn):
 		years_range = get_years_range(query)
 		#print("calculate years_range by hand")
 
-	print(years_range)
 
 	# Associate journals with years
 	journal_year = list(zip(journals, years_list)) #('Scientific Reports', '2016')
-	#print(journal_year)
 
 	for year in range(int(years_range[0]), int(years_range[1]) + 1):
 		for pair in journal_year:

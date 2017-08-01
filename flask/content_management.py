@@ -205,7 +205,7 @@ def run_IR_in_db(user_input, conn):
 	pmc_ids = getCitationIDs(user_input) #checks ENTREZ DB
 	num_current = len(pmc_ids)
 	#If there are new papers,
-	if int(num_current) == int(num_in_db): #TODO change this back to > after i've fixed authors problem
+	if int(num_current) > int(num_in_db): #TODO change this back to > after i've fixed authors problem
 		need_to_annotate = 'yes'
 		#print("there are new citations!", (num_current, num_in_db))
 		logging.info("num_in_db: " +  str(num_in_db))
