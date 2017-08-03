@@ -5,6 +5,8 @@ import gc, time, datetime, pickle, os.path, json
 import sys, csv
 from werkzeug.serving import run_simple
 from processors import *
+import urllib.request
+import urllib.parse
 sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
 from configapp import app, engine, connection, inputPapers #mine
 from content_management import * #mine
@@ -34,7 +36,7 @@ def cogecrawl():
 #Getting Flask-WTFs to work with sqlite3 here
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
-@app.route('/results/', methods=["GET","POST"])
+@app.route('/results/', methods=["GET"])
 def results():
 	logging.info("In app route RESULTS")
 	form = pmidForm()
@@ -47,6 +49,15 @@ def results():
 			entry = (request.args.getlist('pmid'))[0] #str
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			logging.info(pmid_list)
+
+			#TODO: use celery to allow SCKE to email someone this link when analysis is complete
+			url_data = {}
+			url_data['pmid'] = entry
+			url_values = urllib.parse.urlencode(url_data)
+			scke_url = (app.config['SCKE_URL_RESULTS'])
+			full_url = scke_url + '?' + url_values
+			logging.info(full_url)
+
 
 
 			# If the user inputs more than 5 PMIDs, return the home page and flash a warning
