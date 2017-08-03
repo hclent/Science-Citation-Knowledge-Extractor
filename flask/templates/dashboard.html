@@ -8,13 +8,16 @@
 <!-- User input is saved to the database pmids_info.db -->
 <!-- Submit button also initiates loading model -->
 <div>
-<form action="https://geco.iplantcollaborative.org/hclent/bionlp/results/" class="form-inline" method="post">
-  <div class="form-group">
+    
+ <form action="https://geco.iplantcollaborative.org/hclent/bionlp/results/" class="form-inline" method="get">
+    <div class="form-group">
     <label for="PubmedID">Pubmed ID(s)</label>
     <input type="text" class="form-control" id="PubmedID" placeholder="18952863, 18269575" name="pmid" value="{{request.form.pmid}}">
   </div>
   <button type="submit" id= "myButton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Submit</button>
 </form>
+
+
 </div> 
 
 

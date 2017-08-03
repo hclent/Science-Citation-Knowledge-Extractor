@@ -34,15 +34,17 @@ def cogecrawl():
 #Getting Flask-WTFs to work with sqlite3 here
 #This function uses user entry to run the Entrez_IR.py 
 #User entered pmid is entered into sqlite3 database
-#TODO: make the results/ url unique 
-@app.route('/results/', methods=["POST"])
+@app.route('/results/', methods=["GET","POST"])
 def results():
 	logging.info("In app route RESULTS")
 	form = pmidForm()
 	r_conn = connection() #results_connection to db
 	try:
-		if request.method == 'POST':
-			entry = form.pmid.data #THIS IS THE USER INPUT FROM THE FORM #referencing 'class pmidForm'
+		if request.method == 'GET':
+			logging.info("Request method is GET")
+
+			#entry = form.pmid.data #If method is POST #str
+			entry = (request.args.getlist('pmid'))[0] #str
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			logging.info(pmid_list)
 
