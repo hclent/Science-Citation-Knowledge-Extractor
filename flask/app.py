@@ -102,7 +102,7 @@ def results():
 					logging.info(number_of_citations)
 
 					if number_of_citations == 0:
-						flash('PubMed has no citations for PMID: ' + str(user_input) + '. Please try again with a different PMID or without this PMID in your query.')
+						flash('PubMed has no citations for PMID: ' + str(user_input) + '. Please try again with a different PMID or without this PMID in your query. If you had other PMIDs in your query before this, those are fine :)')
 						citations_with_links = db_unique_citations_retrieval('18952863+18269575', r_conn)  # unique
 						unique_publications = db_unique_citations_number('18952863+18269575', r_conn)
 						r_conn.close()
@@ -806,7 +806,7 @@ def reswordcloud(query):
 
 		nes_list = [n[1] for n in nes_samples]
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
-		popup = ' '
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
@@ -858,7 +858,7 @@ def res_heatmap(query):
 			lemma_samples = pickle.load(l)
 
 		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
-		popup = ' '
+		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		hmr_conn.close()
 		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
 	else:
@@ -915,6 +915,7 @@ def res_clustermap(query):
 
 		saveName = vis_clustermap(lemma_samples, nes_samples, nes_categories, w_number, query, cmr_conn)
 		image = '/clustermaps/' + saveName
+
 		cmr_conn.close()
 		return render_template('results_clustermap.html',image=image, query=query)
 	else:
