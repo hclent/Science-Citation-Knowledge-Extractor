@@ -1,5 +1,5 @@
 {
-  "name": "pubcrawl",
+  "name": "SCKE",
   "version": "0.0.0",
   "homepage": " ",
   "license": " ",
@@ -13,8 +13,9 @@
   ],
   "dependencies": {
     "d3": "~3.4.8",
-    "d3.v4": "~4.8.0",
+    "d3.v4": "https://github.com/d3/d3.git#4.8.0",
     "bootstrap": "~3.2.0",
+    "bootstrap-select": "1.12.4",
     "plotly": "https://github.com/plotly/plotly.js.git",
     "d3-cloud": "https://github.com/jasondavies/d3-cloud.git",
     "venn.js": "https://github.com/benfred/venn.js.git"
