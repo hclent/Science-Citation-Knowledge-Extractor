@@ -1,5 +1,8 @@
 <!doctype html>
 <html lang="en">
+
+
+
 <!-- Basic site information: encoding, stylesheet, and icon  -->
 <head>
 	<meta charset = "utf-8">
@@ -12,15 +15,10 @@
 	<link href= "{{ url_for('static', 
 	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
-	 <!--<link href= "{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet"> -->
-
 	<!-- url image icon goes here -->
-	<link rel="shortcut icon" href="{{url_for('static', 
-	filename='pikachu.ico') }}">
+	<!--<link rel="shortcut icon" href="{{url_for('static', filename='pikachu.ico') }}">-->
+
 </head>
-
-
-
 
 <header>
 <!-- Header -->
@@ -48,22 +46,42 @@
 	 <ul class="nav navbar-nav navbar-right">
 			<!-- modals -->
 			<!-- small modal with button -->
-				<button type="button" class="btn btn-success" data-toggle="modal" data-target=".bs-example-modal-sm">About</button>
 
-				<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
-				  <div class="modal-dialog modal-sm">
-				    <div class="modal-content">
-				           This is a tool that helps researchers understand how
+		<button type="button" class="btn btn-success" data-toggle="modal" data-target=".bs-example-modal-lg">About SCKE</button>
+
+		<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		  <div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+			   <div class="modal-header">
+				  <h4>SCKE: Science Citation Knowledge Extractor</h4>
+				  </div>
+				    <div class="modal-body">
+				           SCKE is an open source tool that helps biomedical researchers understand how
 						   their work is being used by others, by analyzing the content
 						   in papers that cite them. This tool uses natural language processing
-						   and machine learning to create topic models, that explain the prominent
-						   concepts and themes in the citing documents.   
+						   and machine learning to extract the prominent
+						   themes and concepts discussed in the citing documents.
+						   By seeing what kinds of topics are discussed by citing articles, researchers can
+						better understand how their work influences their peers and various disciplines in science.
+						Additionally, SCKE allows biomedical researchers to explore other statistics about the
+						publications that site them, such as where citations are published (Journals), the distribution
+						of keywords (Keywords), the similarity of papers to each other (Clustering), the similarity of
+						papers to other famous works (TextCompare), and general statistics about the citations (Statistics).
+
 				    </div>
-				  </div>
+
+				<div class="modal-footer">
+					<span class="form-control-static pull-left">
+						<a href="https://github.com/hclent/Webdev-for-bioNLP-lit-tool">See the github repository for more details</a>
+					</span>
 				</div>
+			</div>
+		  </div>
+		</div>
+
+	 </ul>
 
 
-     </ul>
 </div>
 </header>
 
@@ -101,11 +119,6 @@
 
 	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}">
 	</script>
-
-
- <!--<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
-
 
 
 </body>
