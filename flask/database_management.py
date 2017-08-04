@@ -182,15 +182,20 @@ def db_citations_mini_year(pmcid, conn):
 	years = []
 	for row in result:
 		pubdate = row["pubdate"] #need to just get year
-		year = re.search('\d{4}', pubdate)
-		if year:
-			keep_year = int(year.group(0))
-		else:
-			try:
-				keep_year = str(pubdate)
-			except Exception as e:
-				#we need an int no matter what...
-				keep_year = "0000"
+		try:
+			year = re.search('\d{4}', str(pubdate))
+			if year:
+				keep_year = int(year.group(0))
+			else:
+				try:
+					keep_year = str(pubdate)
+				except Exception as e:
+					#we need an int no matter what...
+					keep_year = "0000"
+		except Exception as e:
+			logging.info(str(pubdate) + " made regex unhappy!")
+			logging.info(type(pubdate))
+			keep_year = '0000'
 		years.append(keep_year) #there could be more than one result
 	use_year = years[0] #but we'll just use the first result
 	return use_year
