@@ -102,7 +102,7 @@ def results():
 					logging.info(number_of_citations)
 
 					if number_of_citations == 0:
-						flash('PubMed has no citations for PMID: ' + str(user_input) + '. Please try again with a different PMID')
+						flash('PubMed has no citations for PMID: ' + str(user_input) + '. Please try again with a different PMID or without this PMID in your query.')
 						citations_with_links = db_unique_citations_retrieval('18952863+18269575', r_conn)  # unique
 						unique_publications = db_unique_citations_number('18952863+18269575', r_conn)
 						r_conn.close()
@@ -578,6 +578,7 @@ def resjournals(query, update_check):
 	savePath = (app.config['PATH_TO_JOURNALS'])
 	completeName = os.path.join(savePath, filename)
 	logging.info("complete file: " + str(completeName))
+
 	with open(completeName) as load_data:
 		journals = json.load(load_data)
 	jr_conn.close()

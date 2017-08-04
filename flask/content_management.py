@@ -457,7 +457,21 @@ def print_journalvis(query, needed_to_annotate_check, conn):
 		record = checkForQuery(query, conn)
 		if record == 'yes':  # if its in the db, just get the important things from the db!!
 			logging.info("Journals: NO new docs, retrive from db")
-			range_years, unique_publications, unique_journals = getJournalsVis(query, conn)
+			try:
+				pmid_list = query.split('+')  # list of string pmids
+				pmid = pmid_list[0]
+				prefix = pmid[0:3]
+				suffix = pmid[3:6]
+
+				filename = str(prefix) + '/' + str(suffix) + '/' + "journals_" + str(query) + ".json"
+				savePath = (app.config['PATH_TO_JOURNALS'])
+				completeName = os.path.join(savePath, filename)
+				if os.path.isfile(completeName):
+					range_years, unique_publications, unique_journals = getJournalsVis(query, conn)
+				else: #if the file doesn't exist for some reason, make it
+					range_years, unique_publications, unique_journals = force_update_journals(query, conn)
+			except Exception as e:
+				range_years, unique_publications, unique_journals = force_update_journals(query, conn)
 		if record == 'empty':
 			logging.info("Journals: QUERY not in db table queries! Force update.")
 			range_years, unique_publications, unique_journals = force_update_journals(query, conn)
