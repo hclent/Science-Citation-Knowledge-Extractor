@@ -361,7 +361,7 @@ def cogewordcloud():
 	form = nesOptions()
 	if request.method == 'POST':
 
-		nes_categories = request.form.getlist('check')
+		nes_categories = request.form.getlist('n_categories')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
@@ -394,7 +394,9 @@ def cogeheatmap():
 	query = '18952863+18269575'
 	if request.method == 'POST':
 		hm_conn = connection()
-		nes_categories = request.form.getlist('check')
+		# nes_categories = request.form.getlist('check')
+		#TODO: need to get complete list of stuff
+		nes_categories = request.form.getlist('n_categories')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
@@ -425,7 +427,7 @@ def cogeclustermap():
 	form = nesOptions()
 	if request.method == 'POST':
 		cm_conn = connection()
-		nes_categories = request.form.getlist('check')
+		nes_categories = request.form.getlist('n_categories')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is " + str(w_number))
@@ -789,7 +791,7 @@ def reswordcloud(query):
 	form = nesOptions()
 	if request.method == 'POST':
 
-		nes_categories = request.form.getlist('check')
+		nes_categories = request.form.getlist('n_categories')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
@@ -837,7 +839,7 @@ def res_heatmap(query):
 	form = nesOptions()
 	hmr_conn = connection() #heatmap results database connection
 	if request.method == 'POST':
-		nes_categories = request.form.getlist('check')
+		nes_categories = request.form.getlist('n_categories')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))
@@ -893,7 +895,7 @@ def res_clustermap(query):
 	form = nesOptions()
 	if request.method == 'POST':
 		cmr_conn = connection() #clustermap results database connection
-		nes_categories = request.form.getlist('check')
+		nes_categories = request.form.getlist('n_categories')
 		logging.info(nes_categories)
 		w_number = form.w_words.data
 		logging.info("the w value is "+str(w_number))

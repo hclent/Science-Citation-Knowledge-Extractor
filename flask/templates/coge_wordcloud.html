@@ -4,31 +4,36 @@
     <script src="{{ url_for('static', filename='js/third-party/d3/d3.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/third-party/d3-cloud/build/d3.layout.cloud.js') }}"></script>
 
+  <!--Jquery scripts-->
+    <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
+
+    <!--bootstrap-select scripts -->
+    <link href= "{{ url_for('static',
+	filename='js/third-party/bootstrap-select/dist/css/bootstrap-select.min.css')}}" rel="stylesheet">
+
+    <script src="{{ url_for('static', filename='js/third-party/bootstrap-select/dist/js/bootstrap-select.js') }}"></script>
+
+    <script type="text/javascript">
+        $('.selectpicker').selectpicker();
+    </script>
+
+
     <!--bootstrap scripts -->
     <link href= "{{ url_for('static',
 	filename='js/third-party/bootstrap/dist/css/bootstrap.min.css')}}" rel="stylesheet">
 
-    <script src="{{ url_for('static', filename='js/third-party/jquery/dist/jquery.min.js') }}"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-
-
-<style>
-.form-check-inline { margin-right: 5px }
-</style>
-
+    <script type="text/javascript" src="{{ url_for('static', filename='js/third-party/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 
 </head>
 
 <body>
 {{popup| safe}}
 
-<form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" method="post">
+<form class="form-inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogewordcloud/" method="post">
 
-     <label for="options">Filter with words occurring N or more times, from these categories:  </label>
-    <div id="options">
-     <div>
-
-          <div class="col-xs-1">
+     <div id="options">
+         <label>Show words occurring </label>
+          <div class="form-group">
           <select class="form-control" id="w_words" name="w_words">
           <option value="3">3</option>
           <option value="5">5</option>
@@ -41,44 +46,23 @@
           </select>
           </div>
 
+         <label> or more times from categories </label>
+        <select class="form-control selectpicker" multiple data-width="100px" id="n_categories" name="n_categories">
+          <option value="BioProcess">Bioprocess</option>
+          <option value="CellLine">Cell-lines</option>
+          <option value="Cellular_component">Cellular components</option>
+            <option value="Family">Family</option>
+            <option value="Gene_or_gene_product">Gene or gene products</option>
+            <option value="Organ">Organs</option>
+            <option value="Simple_chemical">Simple chemicals</option>
+            <option value="Site">Sites</option>
+            <option value="Species">Species</option>
+            <option value="TissueType">Tissue-types</option>
 
-        <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="BioProcess">Bioprocess</label>
+        </select>
 
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="CellLine">Cell-lines</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Cellular_component">Cellular components</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Family">Family</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Gene_or_gene_product">Gene or gene product</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Organ">Organ</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Simple_chemical">Simple Chemical</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Site">Site</label>
-
-     <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="Species">Species</label>
-
-            <label class="form-check-inline">
-          <input class="form-check-input" type="checkbox" name="check" value="TissueType">Tissue-type</label>
-    </div>
-
-  <button type="submit" id="wcButton" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">Update</button>
-
-
-</div>
-    </label>
-
+  <button type="submit" id="heatmap" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal">Update</button>
+     </div> <!-- end "options" -->
 
 </form>
 
