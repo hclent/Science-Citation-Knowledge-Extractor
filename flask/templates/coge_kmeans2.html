@@ -18,8 +18,8 @@
 <p>   </p>
 
 <div id="controls">
-<form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogekmeans/" method="post">
-<label for="buttongroup">clusters:</label>
+<form class="form-inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/cogekmeans/" method="post">
+<label for="buttongroup">Number of clusters:</label>
 	<div id="buttongroup">
 		<div class="col-xs-1">
 		<select class="form-control" id="k_val" name="k_val">
@@ -77,7 +77,8 @@ var myPlot = document.getElementById('myDiv'),
  	x: {{x0_coordinates}},
     y: {{y0_coordinates}},
     z: {{z0_coordinates}},
-	name: {{titles0 | safe}},
+	name: "Cluster1",
+	point_title: {{titles0 | safe}},
 	mode: 'markers',
 	marker: {
 		size: 12,
@@ -92,7 +93,8 @@ var myPlot = document.getElementById('myDiv'),
     x: {{x1_coordinates}},
     y: {{y1_coordinates}},
     z: {{z1_coordinates}},
-	name: {{titles1 | safe}},
+	name: "Cluster2",
+	point_title: {{titles1 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(127, 127, 127)',
@@ -108,7 +110,8 @@ var myPlot = document.getElementById('myDiv'),
     x: {{x2_coordinates}},
     y: {{y2_coordinates}},
     z: {{z2_coordinates}},
-	name: {{titles2 | safe}},
+	name: "Cluster3",
+	point_title: {{titles2 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(204, 204, 204)',
@@ -124,7 +127,8 @@ var myPlot = document.getElementById('myDiv'),
 	 x: {{x3_coordinates}},
     y: {{y3_coordinates}},
     z: {{z3_coordinates}},
-	name: {{titles3 | safe}},
+	name: "Cluster4",
+	point_title: {{titles3 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(137, 140, 43)',
@@ -140,7 +144,8 @@ var myPlot = document.getElementById('myDiv'),
     x: {{x4_coordinates}},
     y: {{y4_coordinates}},
     z: {{z4_coordinates}},
-	name: {{titles4 | safe}},
+	name: "Cluster5",
+	point_title: {{titles4 | safe}},
 	mode: 'markers',
 	marker: {
 		color: 'rgb(242, 65, 80)',
@@ -167,7 +172,7 @@ Plotly.newPlot('myDiv', data, layout);
 		var selected_point = data.points[i];
 		var point_number = data.points[i].pointNumber;
 		var point_data = selected_point['data'];
-		var point_title = point_data['name'][point_number];
+		var point_title = point_data['point_title'][point_number];
 		//var point_title = data.points[i]['data']['name'][data.points[i].pointNumber];
 
 		clickInfo.innerHTML = point_title;
