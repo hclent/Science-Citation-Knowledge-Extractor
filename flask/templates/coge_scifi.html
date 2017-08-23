@@ -43,8 +43,9 @@
               </div>
               <div class="modal-body">
                 In order to compare documents with their percent similarity, we transform
-                documents into vectors with a naive implementation of doc2vec and then compute
-                the cosine similiarity. 
+                documents into vectors with a naive implementation of the doc2vec  algorithm. and then compute
+                  After the documents are converted into vectors, we take the cosine similarity between each text and
+                  the vector of the selected TextCompare document (e.g. Origin of The Species).
               </div>
             </div>
           </div>
@@ -52,7 +53,7 @@
 
 </div>
 
-<form class="form-inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/coge_scifi/" method="post">
+<form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/coge_scifi/" method="post">
 <div class="form-group">
   <label for="buttongroup">Select a text to compare:</label>
   <div id="buttongroup">
@@ -71,7 +72,6 @@
         <option name="sherlock" value="sherlock">Sherlock Holmes</option>
     <option name="austen" value="austen">Pride and Prejudice</option>
     <option name="bible" value="bible">The Bible</option>
-
          {% for user_input in eligible_papers %}
              <option name="{{user_input[0]}}" value="{{user_input[0]}}">{{user_input[3]}}</option>
 		  	{% endfor %}
@@ -87,7 +87,7 @@
   </div>
 </form>
 
-<div id="myDiv" style="width: 680px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+<div id="myDiv" style="width: 690px; height: 650px;"><!-- Plotly chart will be drawn inside this DIV --></div>
 <div id="clickInfo"> </div>
 
 

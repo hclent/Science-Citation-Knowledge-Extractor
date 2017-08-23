@@ -14,6 +14,37 @@
 
 
 <body>
+
+<div id="aboutTextCompare">
+
+            <!-- Button trigger modal -->
+        <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#textCompare">
+          How are these scores calculated?
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="textCompare" tabindex="-1" role="dialog" aria-labelledby="textCompareLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="textCompareLabel">About TextCompare</h4>
+              </div>
+              <div class="modal-body">
+                In order to compare documents with their percent similarity, we transform
+                documents into vectors with a naive implementation of the doc2vec  algorithm. and then compute
+                  After the documents are converted into vectors, we take the cosine similarity between each text and
+                  the vector of the selected TextCompare document (e.g. Origin of The Species).
+              </div>
+            </div>
+          </div>
+        </div>
+
+</div>
+
+
+
+
 <form class="form inline" action="https://geco.iplantcollaborative.org/hclent/bionlp/coge_scifi/" method="post">
 <div class="form-group">
   <label for="buttongroup">Select a text to compare:</label>
@@ -36,7 +67,6 @@
          {% for user_input in eligible_papers %}
              <option name="{{user_input[0]}}" value="{{user_input[0]}}">{{user_input[3]}}</option>
 		  	{% endfor %}
-
        </select>
        </div>
 
@@ -50,11 +80,10 @@
   <div id="myDiv" style="width: 680px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
 <div id="clickInfo"> </div>
 
-
   <script>
+
     var myPlot = document.getElementById('myDiv'),
 	clickInfo = document.getElementById('clickInfo'),
-
     data = [{
     x: {{ x | safe }},
     y: {{ y | safe }} ,
@@ -68,7 +97,9 @@
 
             layout = {
               title: 'Cosine Similarity to {{title}} (%)',
-              b: 150,
+                margin: {
+                    b: 160
+                }
             };
 
 
@@ -88,7 +119,6 @@
 		clickInfo.innerHTML = point_title;
 	}
 });  //end plotly_click
-
   </script>
 
  <!-- Progress modal -->
