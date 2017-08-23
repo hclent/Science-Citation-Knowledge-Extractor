@@ -101,7 +101,7 @@ data = JSON.parse( myjson );
       .text(truncate(data[j]['name'],30,"..."))
       .style("fill", function(d) { return c(j); })
       .on("mouseover", mouseover)
-      .on("mouseout", mouseout);
+      .on("mouseout", mouseout); 
   };
   function mouseover(p) {
     var g = d3.select(this).node().parentNode;

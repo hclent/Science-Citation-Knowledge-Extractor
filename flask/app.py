@@ -150,6 +150,8 @@ def results():
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input, r_conn)
 
+					# TODO: if there's nothing to annotate, still double check that all things are there
+					# TODO: if papers or annotations are missing, then fix that!
 
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')
@@ -161,6 +163,7 @@ def results():
 						#Make cache
 						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
 						logging.info("repopulated lemmas and nes cache")
+
 
 					#Make sure that the lemma and nes cache exists before moving on!!!
 					if need_to_annotate == 'no':
@@ -514,17 +517,17 @@ def coge_scifi():
 		if corpus == 'yeast':
 			title = 'Yeast by Thomas Henry Huxley'
 		if corpus == 'mouse':
-			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
+			title = 'The Dancing Mouse, a Study in Animal Behavior'
 		if corpus == 'brain_speech':
-			title = 'The Brain & The Voice in Speech & Song by Mott Frederick Walker'
+			title = 'The Brain & The Voice in Speech & Song'
 		if corpus == 'grecoroman':
-			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
+			title = 'Outlines of Greek and Roman Medicine'
 		if corpus == 'startrek':
 			title = 'Star Trek: The Next Generation'
 		if corpus == 'mars':
-			title = 'Guilliver of Mars by Edwin Arnold'
+			title = 'Guilliver of Mars'
 		if corpus == 'last_evolution':
-			title = 'The Last Evolution by John W. Campbell'
+			title = 'The Last Evolution by John W Campbell'
 		if corpus == 'youth':
 			title = 'Youth by Isaac Asimov'
 		if corpus == 'frankenstein':
@@ -1007,17 +1010,17 @@ def results_scifi(query):
 		if corpus == 'yeast':
 			title = 'Yeast by Thomas Henry Huxley'
 		if corpus == 'mouse':
-			title = 'The Dancing Mouce, a Study in Anerimal Behavior by Robert Yerkes'
+			title = 'The Dancing Mouse, a Study in Animal Behavior'
 		if corpus == 'brain_speech':
-			title = 'The Brain and The Voice in Speech and Song by Mott Frederick Walker'
+			title = 'The Brain and The Voice in Speech and Song'
 		if corpus == 'grecoroman':
-			title = 'Outlines of Greek and Roman Medicine by James Sands Elliott'
+			title = 'Outlines of Greek and Roman Medicine'
 		if corpus == 'startrek':
 			title = 'Star Trek: The Next Generation'
 		if corpus == 'mars':
-			title = 'Guilliver of Mars by Edwin Arnold'
+			title = 'Guilliver of Mars'
 		if corpus == 'last_evolution':
-			title = 'The Last Evolution by John W. Campbell'
+			title = 'The Last Evolution by John W Campbell'
 		if corpus == 'youth':
 			title = 'Youth by Isaac Asimov'
 		if corpus == 'frankenstein':
