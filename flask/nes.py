@@ -46,13 +46,19 @@ def doHeatmap(nesDict, n, lemma_samples, conn):
 
     #STEP 1: SORT THE LEMMA_SAMPLES BY YEAR SO THAT
     #X-AXIS ON VIS CAN BE SORTED BY YEAR AS WELL :D
+    #TODO: somehow "NA" is being found as a year and breaking this :'(
     for document in lemma_samples:
         pmcid = document[0]
         year = db_citations_mini_year(pmcid, conn)
+        # if year == "NA":
+        #     print(pmcid)
+        #     print(year)
         years.append(year)
 
-
+    # print("THESE ARE THE YEARS FROM NES FOR THE HEATMAP LABELS AND SORTING.")
+    # print(years)
     #Sort lemma_samples by year, that way the vis goes from early years - later years
+    #TODO: SOMETIMES getting an error here but its inconsisent. I think "NA" is being found in years?
     zipped = zip(years, lemma_samples)
     sorted_data = list(sorted(zipped, key=lambda z: int(z[0])))
     sorted_lemmas = [l[1][1] for l in sorted_data] #just the lemmas in lemma_samples
