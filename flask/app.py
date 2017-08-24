@@ -97,10 +97,10 @@ def results():
 					flash('new pubmedid!')
 
 					#Information Retireval of citing pmcids and info about them
-					#TODO: Check that there actually ARE citations cuz if not, need to tell them!
 					number_of_citations = run_IR_not_db(user_input, r_conn)
 					logging.info(number_of_citations)
 
+					#Throws an exception if there are no citations for something
 					if number_of_citations == 0:
 						flash('PubMed has no citations for PMID: ' + str(user_input) + '. Please try again with a different PMID or without this PMID in your query. If you had other PMIDs in your query before this, those are fine :)')
 						citations_with_links = db_unique_citations_retrieval('18952863+18269575', r_conn)  # unique
@@ -150,8 +150,11 @@ def results():
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input, r_conn)
 
+
 					# TODO: if there's nothing to annotate, still double check that all things are there
 					# TODO: if papers or annotations are missing, then fix that!
+					# check_for_texts(user_input, r_conn)
+					#TODO: this isn't working boo hoo :'(
 
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')
@@ -1054,6 +1057,36 @@ def results_scifi(query):
 			flash('Some input paper(s) are not avaliable for TextCompare')
 		sfr_conn.close()
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
+
+
+################# CYVERSE ###########################
+@app.route('/cyversejournals/')
+def cyverse_journals():
+	query = '26752627+23749752+22645531+27803802'
+	s_year = '2007'
+	e_year = '2017'
+	savePath = (app.config['PATH_TO_STATIC'])
+	completeName = os.path.join(savePath, 'cyverse_journals.json')
+
+	# pmid_list = query.split('+')  # list of string pmids
+	# pmid = pmid_list[0]
+	# prefix = pmid[0:3]
+	# suffix = pmid[3:6]
+    #
+	# filename = str(prefix) + '/' + str(suffix) + '/' + "journals_" + str(query) + ".json"
+	# savePath = (app.config['PATH_TO_JOURNALS'])
+	# completeName = os.path.join(savePath, filename)
+    #
+	with open(completeName) as load_data:
+		journals = json.load(load_data)
+
+	unique_journals = 53
+	unique_publications = 100
+
+	return render_template('cyverse_journals.html', journals=journals, s_year=s_year, e_year=e_year,
+						   unique_journals=unique_journals, unique_publications=unique_publications)
+
+
 
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
