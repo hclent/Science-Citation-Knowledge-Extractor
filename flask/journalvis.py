@@ -96,7 +96,7 @@ def get_years_range(query, conn):
 	for pmid in pmid_list:
 		apa_citations, db_journals, db_dates, db_urls = db_citations_retrieval(pmid, conn)
 
-		#print(db_dates) #step1 : get years
+		#step1 : get years
 		for d in db_dates:
 
 			year = re.search('\d{4}', d)
