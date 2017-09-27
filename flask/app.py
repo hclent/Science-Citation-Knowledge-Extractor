@@ -1059,35 +1059,6 @@ def results_scifi(query):
 		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 
 
-################# CYVERSE ###########################
-@app.route('/cyversejournals/')
-def cyverse_journals():
-	query = '26752627+23749752+22645531+27803802'
-	s_year = '2007'
-	e_year = '2017'
-	savePath = (app.config['PATH_TO_STATIC'])
-	completeName = os.path.join(savePath, 'cyverse_journals.json')
-
-	# pmid_list = query.split('+')  # list of string pmids
-	# pmid = pmid_list[0]
-	# prefix = pmid[0:3]
-	# suffix = pmid[3:6]
-    #
-	# filename = str(prefix) + '/' + str(suffix) + '/' + "journals_" + str(query) + ".json"
-	# savePath = (app.config['PATH_TO_JOURNALS'])
-	# completeName = os.path.join(savePath, filename)
-    #
-	with open(completeName) as load_data:
-		journals = json.load(load_data)
-
-	unique_journals = 53
-	unique_publications = 100
-
-	return render_template('cyverse_journals.html', journals=journals, s_year=s_year, e_year=e_year,
-						   unique_journals=unique_journals, unique_publications=unique_publications)
-
-
-
 #################### OTHER ####################################################
 @app.route('/testingstuff/')
 def testingstuff():
