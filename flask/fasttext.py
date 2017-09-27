@@ -75,6 +75,8 @@ def transform_text(words, tags):
     join_char = " " #instead of ("_")
     for i, w in enumerate(words):
         if tags[i].startswith("NN"):
+            #print(w)
+            #print(i)
             np_stack.append(w)
         else:
             if len(np_stack) > 0:
