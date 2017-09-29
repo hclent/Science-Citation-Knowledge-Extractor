@@ -40,6 +40,7 @@ def connect_to_Processors(port_num):
 
 #This is really slow to load :/ Maybe shouldn't be a global var?
 # Don't want to re-load for each analysis though...
+#TODO: re-load this afer journals stuff
 fasttext_model = load_model(app.config['PATH_TO_FASTTEXT_MODEL'])
 
 ################### INPUT #########################################################
@@ -67,6 +68,7 @@ def scrape_and_write_Input(user_input, conn):
 #input: user_input pmid
 #output: list of dicts with annotation checks [{"pmcid": 123, "annotated": yes}]
 def annotation_check(user_input, conn):
+	logging.info("checking annotation status in db")
 	a_check = []
 	pmc_ids = db_citation_pmc_ids(user_input, conn) #Used to use getCitationIDs(user_input) here but updated to using my own db
 	for citation in pmc_ids:
@@ -131,6 +133,70 @@ def new_or_copy_db(citation, conn): #citation is a dict
 						citesPmid=citesPmid, url=url))
 		conn.execute(update)
 
+############ PROCESSING DOCS --> BIODOCS ############################################
+# Take pmcid.txt and get an annotated document, as well as lemmas and named entities
+# Doesn't re-annotated documents that have already been annotated.
+# Updated to sqlalchemy
+# This is only called when there are new documents to annotate :)
+def do_multi_preprocessing(user_input, conn):
+	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
+	t1 = time.time()
+	docs = retrieveDocs(user_input, conn)
+	multiprocess(docs)  # if docs is empty [], this function just passes :)
+
+	# Now update annotated_check
+	a_check = annotation_check(user_input, conn)
+
+	for a in a_check:  # {"pmcid": pmcid, "annotated": ['yes']}
+		logging.info("updating the annotation checks in the db")
+		pmcid = str(a["pmcid"])
+		annotated = str(a["annotated"][0])
+
+		update = citations.update(). \
+			where(citations.c.pmcid == pmcid). \
+			where(citations.c.citesPmid == user_input). \
+			values(annotated=annotated)
+		conn.execute(update)
+
+	# Now extract information from annotated documents
+	biodocs = retrieveBioDocs(user_input, conn)
+	biodoc_data = loadBioDoc(biodocs)  # list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	# No problem getting biodocs or biodoc_data ... problem comes with updating db...
+	# update db with sents and tokens
+	for b in biodoc_data:
+		update_annotations(b, user_input, conn)
+	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	return biodoc_data
+
+def force_do_multi_preprocessing(docs, user_input, conn): #list [{doct dict info}]
+	t1 = time.time()
+	multiprocess(docs)  # if docs is empty [], this function just passes :)
+
+	# Now update annotated_check
+	a_check = annotation_check(user_input, conn)
+
+	for a in a_check:  # {"pmcid": pmcid, "annotated": ['yes']}
+		logging.info("updating the annotation checks in the db")
+		pmcid = str(a["pmcid"])
+		annotated = str(a["annotated"][0])
+
+		update = citations.update(). \
+			where(citations.c.pmcid == pmcid). \
+			where(citations.c.citesPmid == user_input). \
+			values(annotated=annotated)
+		conn.execute(update)
+
+	# Now extract information from annotated documents
+	biodocs = retrieveBioDocs(user_input, conn)
+	biodoc_data = loadBioDoc(biodocs)  # list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
+	# No problem getting biodocs or biodoc_data ... problem comes with updating db...
+	# update db with sents and tokens
+	for b in biodoc_data:
+		update_annotations(b, user_input, conn)
+	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
+	pass
+
+###############################################################################
 
 #If pmid (user input) NOT in the db, get main_info AND scrape XML for abstracts and texts
 #Write self_info to inputPmids db
@@ -244,6 +310,53 @@ def run_IR_in_db(user_input, conn):
 	return need_to_annotate
 
 
+#Make sure that we have all of the txt's and jsons for previously run queries that are in the db
+def check_for_texts(user_input, conn):
+	docs = [] #we may have to re-annotate some stuff that the db says we have, but we don't really!
+
+	logging.info("Checking for the texts ... ")
+	#1: get all of the pmcids that cite user_input
+	pmcids_in_db = db_citation_pmc_ids(user_input, conn)
+	#2: check for files
+	for pmcid in pmcids_in_db:
+		logging.info(pmcid)
+		prefix = pmcid[0:3]
+		suffix = pmcid[3:6]
+		txtfilename = prefix + '/' + suffix + '/' + pmcid + '.txt'
+		jsonfilename = prefix + '/' + suffix + '/' + pmcid + '.json'
+
+		#check for txt files
+		if os.path.isfile(os.path.join((app.config['PATH_TO_CACHE']), txtfilename)):
+			logging.info("ze txt file exists ...")
+			pass
+		# if doesn't exist, then re-scrape
+		else:
+			logging.info("A txt from the db does not exist!!! must re-retrieve")
+			forceGetContentPMC(pmcid, user_input, conn)
+
+		#check for json files
+		if os.path.isfile(os.path.join((app.config['PATH_TO_CACHE']), jsonfilename)):
+			logging.info("ze json file exists ...")
+			pass
+		else:
+			logging.info("A json from the db does not exist!!! must re-annotate")
+			filename = os.path.join((app.config['PATH_TO_CACHE']), txtfilename) #pass it the text file to annotate
+			docdict = {"pmcid": pmcid, "filepath": filename}
+			docs.append(docdict)
+
+		if len(docs) > 0:
+			# Force it to update here. The db might say it exists but we must now force it to annotate!
+			force_do_multi_preprocessing(docs, user_input, conn)
+
+
+
+
+
+
+
+
+
+
 #Data for populating statistics page in app
 def get_statistics(query, conn):
 	total_pubs, unique_pubs, abstracts, whole, sentences, words =  db_query_statistics(query, conn)
@@ -354,41 +467,6 @@ def stats_barchart(query, conn):
 	return x0, x1, x2, x3, x4, y0, y1, y2, y3, y4, n0, n1, n2, n3, n4
 
 
-############ PROCESSING DOCS --> BIODOCS ############################################
-#Take pmcid.txt and get an annotated document, as well as lemmas and named entities
-#Doesn't re-annotated documents that have already been annotated.
-#Updated to sqlalchemy
-#This is only called when there are new documents to annotate :)
-def do_multi_preprocessing(user_input, conn):
-	logging.info('Beginning multiprocessing for NEW (unprocessed) docs')
-	t1 = time.time()
-	docs = retrieveDocs(user_input, conn)
-	multiprocess(docs) #if docs is empty [], this function just passes :)
-
-	#Now update annotated_check
-	a_check = annotation_check(user_input, conn)
-
-	for a in a_check: #{"pmcid": pmcid, "annotated": ['yes']}
-		logging.info("updating the annotation checks in the db")
-		pmcid = str(a["pmcid"])
-		annotated = str(a["annotated"][0])
-
-		update = citations.update().\
-			where(citations.c.pmcid == pmcid).\
-			where(citations.c.citesPmid == user_input).\
-			values(annotated=annotated)
-		conn.execute(update)
-
-	#Now extract information from annotated documents
-	biodocs = retrieveBioDocs(user_input, conn)
-	biodoc_data = loadBioDoc(biodocs) #list of dictionaries[{pmid, lemmas, nes, sent_count, token_count}]
-	#No problem getting biodocs or biodoc_data ... problem comes with updating db...
-	#update db with sents and tokens
-	for b in biodoc_data:
-		update_annotations(b, user_input, conn)
-	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	return biodoc_data
-
 ############ DATA VISUALIZATIONS #################################################
 
 #This code is called in the function below (print_journalvis)
@@ -397,6 +475,7 @@ def do_multi_preprocessing(user_input, conn):
 def force_update_journals(query, conn):
 	years_range = get_years_range(query, conn)  # need range for ALL journals, not just last one
 	logging.info(years_range)
+	#years_range = ('2011', '2017')
 	publication_data, range_info = journals_vis(years_range, query, conn)  # range info = [('2008', '2016'), 165, 48]
 	logging.info(range_info)
 	journal_years = range_info[0]
@@ -805,8 +884,14 @@ def run_embeddings(query, k_clusters, top_n):
 	logging.info("getting the matrix!")
 	kmeans = KMeans(n_clusters=k_clusters, random_state=2).fit(matrix)
 	results = list(zip(kmeans.labels_, top))
+
+	# for i in range(1, k_clusters+1):
+	# 	topic = [tup for tup in results if tup[0] == i]
+	# 	print(topic)
+	# 	print("#" * 20)
 	embedding_json(results, query, k_clusters, top_n) #this saves it as a file
 	logging.info("made json for embedding topic model")
+
 
 def embedding_lookup(query, k_clusters, top_n):
 	save_path = (app.config['PATH_TO_FGRAPHS'])

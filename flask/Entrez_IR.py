@@ -273,18 +273,19 @@ def getContentPMC(pmcids_list, pmid, conn):
 		# if the pmc is already in the database for another pmid, then don't rescrape, but DO add to
 		# a record that this pmc is cited by the new input paper (will be done at this point though... I think?)
 		row = checkIfScraped(citation, pmid, conn)
-		if row == 'empty':
 
-			# if the pmcid in the database has our query pmid AND has no abstract check and article check,
-			# get the XML record, parse the xml, and do the abstract and main text checks
+		prefix = str(citation[0:3])  # folder for first 3 digits of pmcid
+		suffix = str(citation[3:6])  # folder for second 3 digits of pmcid nested in prefix
+
+		if row == 'empty':
 			contentDict = {"pmcid": citation, "citesPmid": pmid, "all_abstract_check": [], "all_article_check": []}
 			logging.info("pmcid never seen before. needs to be scraped + annotated ")
-
-			prefix = str(citation[0:3]) #folder for first 3 digits of pmcid
-			suffix = str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+			logging.info(str(i) + " paper")
 
 			try:
-				os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix)) # creates folder named after first 3 digits of pmcid
+				os.makedirs(
+					os.path.join((app.config['PATH_TO_CACHE']),
+								 prefix))  # creates folder named after first 3 digits of pmcid
 			except OSError:
 				if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix)):
 					pass
@@ -292,40 +293,81 @@ def getContentPMC(pmcids_list, pmid, conn):
 					raise
 
 			try:
-				os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)) # creates folder named after second 3 digits of pmicd
+				os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix,
+										 suffix))  # creates folder named after second 3 digits of pmicd
 			except OSError:
 				if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)):
 					pass
 				else:
 					raise
 
-			logging.info(str(i)+" paper")
-			logging.info("CITATION: " +str(citation))
+			logging.info("CITATION: " + str(citation))
 			handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
-			xml_record = handle.read() #xml str
-			#print(xml_record)
+			xml_record = handle.read()  # xml str
+			# print(xml_record)
 			logging.info("* got xml record")
 			main_text, abstract_check, whole_article_check = parsePMC(xml_record)
-			for yn in abstract_check: #'yn' = 'yes no'
+			for yn in abstract_check:  # 'yn' = 'yes no'
 				contentDict["all_abstract_check"].append(yn)
 			for yn in whole_article_check:
 				contentDict["all_article_check"].append(yn)
-			#append yes/no content dicts to list
+			# append yes/no content dicts to list
 			contentDictList.append(contentDict)
-			#print
+
+			# print
 			logging.info("* ready to print it")
-			completeName = os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
-			#print(completeName)
+			completeName = os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix,
+										(str(citation) + '.txt'))  # pmcid.txt #save to suffix path
+			# print(completeName)
 			sys.stdout = open(completeName, "w")
 			print(main_text)
-			i += 1
 			time.sleep(3)
+			i += 1
 		else:
-			logging.info("the document isn't new. pass")
-			#TODO: check that we really have the document
+			#if the db says we have the document, pass
 			pass
-	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
+	logging.info("got all document txts: done in %0.3fs." % (time.time() - t0))
 	return contentDictList
+
+
+#If the file doesn't exist, we will force it to be retrieved and written :)
+def forceGetContentPMC(citation, pmid, conn):
+	t0 = time.time()
+	logging.info("The pmcid was seen by the db but the txt file is missing! Need to re-scrape ")
+
+	prefix = str(citation[0:3]) #folder for first 3 digits of pmcid
+	suffix = str(citation[3:6]) #folder for second 3 digits of pmcid nested in prefix
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix)) # creates folder named after first 3 digits of pmcid
+	except OSError as e:
+		logging.info(e)
+		if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix)):
+			pass
+		else:
+			raise
+
+	try:
+		os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)) # creates folder named after second 3 digits of pmicd
+	except OSError:
+		if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)):
+			pass
+		else:
+			raise
+
+	logging.info("CITATION: " +str(citation))
+	handle = Entrez.efetch(db="pmc", id=citation, rettype='full', retmode="xml")
+	xml_record = handle.read()
+	logging.info("* got xml record")
+	main_text, abstract_check, whole_article_check = parsePMC(xml_record)
+
+	#No need to update the db :) 
+
+	completeName = os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
+	sys.stdout = open(completeName, "w")
+	print(main_text)
+	time.sleep(3)
+	logging.info("got documents: done in %0.3fs." % (time.time() - t0))
 
 
 
