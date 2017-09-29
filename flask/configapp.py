@@ -1,5 +1,5 @@
 from flask import Flask
-from celery import Celery
+#from celery import Celery
 import logging
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy import exc, event, select
