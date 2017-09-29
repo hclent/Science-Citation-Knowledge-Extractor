@@ -153,7 +153,7 @@ def results():
 
 					# TODO: if there's nothing to annotate, still double check that all things are there
 					# TODO: if papers or annotations are missing, then fix that!
-					# check_for_texts(user_input, r_conn)
+					check_for_texts(user_input, r_conn)
 					#TODO: this isn't working boo hoo :'(
 
 					if need_to_annotate == 'yes':
