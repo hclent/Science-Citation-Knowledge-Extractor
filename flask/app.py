@@ -151,10 +151,13 @@ def results():
 					need_to_annotate = run_IR_in_db(user_input, r_conn)
 
 
-					# TODO: if there's nothing to annotate, still double check that all things are there
-					# TODO: if papers or annotations are missing, then fix that!
-					check_for_texts(user_input, r_conn)
-					#TODO: this isn't working boo hoo :'(
+					# if there's nothing to annotate, still double check that all things are there
+					# if papers or annotations are missing, then fix that!
+					needed_to_rescrape = check_for_texts(user_input, r_conn) #returns yes or no
+					logging.info("needed_to_rescrape: " + str(needed_to_rescrape))
+					needed_to_annotate_check.append(needed_to_rescrape) #if we needed to re-scrape anything, lets say we need to update
+					if needed_to_rescrape == 'yes':
+						logging.info("updated needed_to_annotate_check ")
 
 					if need_to_annotate == 'yes':
 						needed_to_annotate_check.append('yes')

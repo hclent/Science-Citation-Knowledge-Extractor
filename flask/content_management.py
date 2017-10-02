@@ -2,6 +2,7 @@ from processors import * #pyProcessors
 from flask import Flask
 import os.path, time, datetime, re, logging, pickle, json, codecs, arrow, operator
 from configapp import app, engine, connection, inputPapers, citations, queries #mine
+from cache_lemma_nes import print_lemma_nes_samples
 from database_management import * #mine
 from Entrez_IR import * #mine
 from multi_preprocess import * #mine
@@ -168,6 +169,8 @@ def do_multi_preprocessing(user_input, conn):
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
 	return biodoc_data
 
+#This is used to force multi-preprocessing in the case that our database says we have a biodoc, but
+# the json file can't be found in the filesystem because it was deleted or doesn't exist.
 def force_do_multi_preprocessing(docs, user_input, conn): #list [{doct dict info}]
 	t1 = time.time()
 	multiprocess(docs)  # if docs is empty [], this function just passes :)
@@ -194,7 +197,8 @@ def force_do_multi_preprocessing(docs, user_input, conn): #list [{doct dict info
 	for b in biodoc_data:
 		update_annotations(b, user_input, conn)
 	logging.info("Execute everything: done in %0.3fs." % (time.time() - t1))
-	pass
+	return biodoc_data
+
 
 ###############################################################################
 
@@ -314,6 +318,8 @@ def run_IR_in_db(user_input, conn):
 def check_for_texts(user_input, conn):
 	docs = [] #we may have to re-annotate some stuff that the db says we have, but we don't really!
 
+	needed_to_rescrape = []
+
 	logging.info("Checking for the texts ... ")
 	#1: get all of the pmcids that cite user_input
 	pmcids_in_db = db_citation_pmc_ids(user_input, conn)
@@ -332,6 +338,7 @@ def check_for_texts(user_input, conn):
 		# if doesn't exist, then re-scrape
 		else:
 			logging.info("A txt from the db does not exist!!! must re-retrieve")
+			needed_to_rescrape.append('yes')
 			forceGetContentPMC(pmcid, user_input, conn)
 
 		#check for json files
@@ -343,10 +350,18 @@ def check_for_texts(user_input, conn):
 			filename = os.path.join((app.config['PATH_TO_CACHE']), txtfilename) #pass it the text file to annotate
 			docdict = {"pmcid": pmcid, "filepath": filename}
 			docs.append(docdict)
-
+			needed_to_rescrape.append('yes')
 		if len(docs) > 0:
 			# Force it to update here. The db might say it exists but we must now force it to annotate!
-			force_do_multi_preprocessing(docs, user_input, conn)
+			biodoc_data = force_do_multi_preprocessing(docs, user_input, conn)
+			print_lemma_nes_samples(user_input, biodoc_data, 'yes')
+	if 'yes' in needed_to_rescrape:
+		logging.info("returning YES need to update collection cache")
+		return 'yes'
+	if 'yes' not in needed_to_rescrape:
+		logging.info("returning NO, don't need to update collection cache")
+		return 'no'
+
 
 
 
