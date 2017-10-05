@@ -98,7 +98,7 @@
 
 <body>
 <div class="viewport"></div>
-<div><svg class="fdg" width="600" height="600"></svg></div>
+<div><svg class="fdg" width="1000" height="1000"></svg></div>
 
 <div style="clear:both;"></div>
 
@@ -166,14 +166,14 @@
 var svg = d3.select(".fdg"),
     width = +svg.attr("width"),
     height = +svg.attr("height"),
-    max_radius = 7;
+    max_radius = 9;
 
 var color = d3.scaleOrdinal(d3.schemeCategory20);
 
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function (d) { return d.id; }).distance(100)) //.distance() is the same as linkDistance()
-    .force("charge", d3.forceManyBody().strength(-5))
-    .force("center", d3.forceCenter(width / 1.5, height / 1.5));
+    .force("charge", d3.forceManyBody().strength(-19)) //default is like -5, i like -15 //repulsion because its negative
+    .force("center", d3.forceCenter(width / 2, height / 2));
 
 d3.json("{{ url_for('static', filename=filepath) }}", function(error, graph) {
  if (error) throw error;

@@ -105,7 +105,7 @@ myjson = {{ wordcloud_data|tojson }};
 var frequency_list = JSON.parse( myjson );
 
 
-  d3.layout.cloud().size([800, 800])
+  d3.layout.cloud().size([1400, 788])
       .words(frequency_list)
       .rotate(function() { return ~~(Math.random() * 2) * 90; })
       .font("Impact")
@@ -115,10 +115,10 @@ var frequency_list = JSON.parse( myjson );
 
   function draw(words) {
     d3.select("body").append("svg")
-        .attr("width", 800) //makes size of svg
-        .attr("height", 800)
+        .attr("width", 1400) //makes size of svg
+        .attr("height", 788)
       .append("g")
-        .attr("transform", "translate(400,400)")//(L-R, up-down) (150,150 default) with 300,300 svg
+        .attr("transform", "translate(700,400)")//(L-R, up-down) (150,150 default) with 300,300 svg
       .selectAll("text")
         .data(words)
       .enter().append("text")
