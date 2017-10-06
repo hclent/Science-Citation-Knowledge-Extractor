@@ -33,8 +33,8 @@ function truncate(str, maxLength, suffix) {
 //var mystart = {{ start |safe}}
 //var myend = {{ end |safe}}
 
-var margin = {top: 20, right: 250, bottom: 0, left: 20},
-  width = 800,
+var margin = {top: 20, right: 500, bottom: 0, left: 20},
+  width = 900,
   height = 1300;
 var start_year = {{ s_year |safe}},
   end_year = {{ e_year |safe}};
@@ -98,10 +98,10 @@ data = JSON.parse( myjson );
       .attr("y", j*20+25)
       .attr("x",width+20)
       .attr("class","label")
-      .text(truncate(data[j]['name'],30,"..."))
+      .text(truncate(data[j]['name'],300,"..."))
       .style("fill", function(d) { return c(j); })
       .on("mouseover", mouseover)
-      .on("mouseout", mouseout); 
+      .on("mouseout", mouseout);
   };
   function mouseover(p) {
     var g = d3.select(this).node().parentNode;
