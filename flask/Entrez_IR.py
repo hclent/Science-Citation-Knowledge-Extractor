@@ -340,6 +340,7 @@ def forceGetContentPMC(citation, pmid, conn):
 
 	try:
 		os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix)) # creates folder named after first 3 digits of pmcid
+		logging.info("made dir: " + str(prefix))
 	except OSError as e:
 		logging.info(e)
 		if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix)):
@@ -349,7 +350,9 @@ def forceGetContentPMC(citation, pmid, conn):
 
 	try:
 		os.makedirs(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)) # creates folder named after second 3 digits of pmicd
-	except OSError:
+		logging.info("made dir: " + str(suffix))
+	except OSError as e:
+		logging.info(e)
 		if os.path.isdir(os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix)):
 			pass
 		else:
@@ -361,7 +364,7 @@ def forceGetContentPMC(citation, pmid, conn):
 	logging.info("* got xml record")
 	main_text, abstract_check, whole_article_check = parsePMC(xml_record)
 
-	#No need to update the db :) 
+	#No need to update the db :)
 
 	completeName = os.path.join((app.config['PATH_TO_CACHE']), prefix, suffix, (str(citation)+'.txt'))  #pmcid.txt #save to suffix path
 	sys.stdout = open(completeName, "w")
