@@ -320,12 +320,15 @@ def check_for_texts(user_input, conn):
 
 	needed_to_rescrape = []
 
+	i = 0
+
 	logging.info("Checking for the texts ... ")
 	#1: get all of the pmcids that cite user_input
 	pmcids_in_db = db_citation_pmc_ids(user_input, conn)
+	logging.info("number of pmc's found in db: " + str(len(pmcids_in_db)))
 	#2: check for files
 	for pmcid in pmcids_in_db:
-		logging.info(pmcid)
+		logging.info(str(i) + ": " + pmcid)
 		prefix = pmcid[0:3]
 		suffix = pmcid[3:6]
 		txtfilename = prefix + '/' + suffix + '/' + pmcid + '.txt'
@@ -351,10 +354,14 @@ def check_for_texts(user_input, conn):
 			docdict = {"pmcid": pmcid, "filepath": filename}
 			docs.append(docdict)
 			needed_to_rescrape.append('yes')
-		if len(docs) > 0:
-			# Force it to update here. The db might say it exists but we must now force it to annotate!
-			biodoc_data = force_do_multi_preprocessing(docs, user_input, conn)
-			print_lemma_nes_samples(user_input, biodoc_data, 'yes')
+
+		i+=1
+
+	print("docs that need to be annotated: " + str(docs))
+	if len(docs) > 0:
+		# Force it to update here. The db might say it exists but we must now force it to annotate!
+		biodoc_data = force_do_multi_preprocessing(docs, user_input, conn)
+		print_lemma_nes_samples(user_input, biodoc_data, 'yes') # 'yes' forces update
 	if 'yes' in needed_to_rescrape:
 		logging.info("returning YES need to update collection cache")
 		return 'yes'
