@@ -1,8 +1,9 @@
 from processors import *
 import numpy as np
-import pickle
+import pickle, os
 from collections import defaultdict, Counter, Iterable
 from gensim.models import Word2Vec
+from configapp import app
 
 
 '''
@@ -35,9 +36,13 @@ def get_words_tags(query):
     pmid_list = query.split('+')
     first_pmid = pmid_list[0]
 
-    path_to_lemma_samples = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
-        first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
 
+    #path_to_lemma_samples = '/home/hclent/data/pmcids/' + str(first_pmid[0:3]) + '/' + str(
+    #    first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+    name = str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
+
+    #TODO: FIX THIS LINK FOR FRGAPH VIS TO ACCESS NECESSARY DATA
+    path_to_lemma_samples = os.path.join((app.config['PATH_TO_CACHE']), name)
     with open(path_to_lemma_samples, "rb") as file:
         lemma_samples = pickle.load(file)
 
