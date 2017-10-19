@@ -2,6 +2,7 @@ from __future__ import print_function
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import json, logging
+#from cache_lemma_nes import load_lemma_cache
 
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
@@ -11,7 +12,7 @@ logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S
 def get_tfidf(data): #data should be a list of strings for the documents (lemmas_for_lda)
   list_data_strings = [' '.join(map(str, d)) for d in data] #map to string. strings are necessary for the TFIDF
   logging.info("* Preparing to vectorize data ...")
-  tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 4), norm='l2')
+  tfidf_vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(2, 3), norm='l2')
   logging.info("* Fitting data to vector ...")
   tfidf = tfidf_vectorizer.fit_transform(list_data_strings)
   logging.info("* Successfully fit data to the vector !!! ")
@@ -38,6 +39,7 @@ def print_top_words(model, feature_names, n_top_words):
     #print(", ".join([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]]))
     topic_list = ([feature_names[i] for i in topic.argsort()[:-n_top_words - 1:-1]])
     for term in topic_list:
+      ######################################
       # print(term)
       # if term in ngram_list:
       #   print("TERM IS IN NGRAM_LIST")
@@ -64,3 +66,14 @@ def topics_lda(tf_vectorizer, lda, n_top_words):
   tf_feature_names = tf_vectorizer.get_feature_names()
   jsonLDA = print_top_words(lda, tf_feature_names, n_top_words)
   return jsonLDA
+
+
+#RUN
+# query = '18952863+18269575'
+# lemma_samples = load_lemma_cache(query)
+# lda_lemmas = [l[1] for l in lemma_samples]
+# tfidf, tfidf_vectorizer = get_tfidf(lda_lemmas)
+# lda = fit_lda(tfidf, 20)
+# feature_names = tfidf_vectorizer.get_feature_names()
+# print_top_words(lda, feature_names, 30)
+#jsonLDA = topics_lda(tfidf_vectorizer, lda, n_top_words)

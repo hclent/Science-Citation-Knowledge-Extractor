@@ -44,7 +44,7 @@ def statistics_dates_barchart(journals, dates, query, conn):
 		#print("got years range from db") #in db years_range looks like "2008+2017
 		years_range = years_plus_range.split('+')
 	except Exception as e: #if its not in the db, do it the manual way
-		years_range = get_years_range(query)
+		years_range = get_years_range(query, conn)
 		#print("calculate years_range by hand")
 
 
