@@ -1,15 +1,11 @@
 from flask import Flask
-#from celery import Celery
-import logging
+import logging, os
 from sqlalchemy import create_engine, MetaData, Table
 from sqlalchemy import exc, event, select
 
 app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static')
 app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
 
-# TODO: make sure celery is configured correctly
-# celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-# celery.conf.update(app.config)
 
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
 logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -35,8 +31,6 @@ def load_tables():
 	return inputPapers, citations, queries, annotations
 
 
-
-
 logging.info("DB INITIALIZING ... ")
 engine = connect_db()
 inputPapers, citations, queries, annotations = load_tables()
@@ -46,6 +40,7 @@ logging.info("DB INITIALIZEED !!! ")
 @event.listens_for(engine, "engine_connect")
 def ping_connection(connection, branch):
 	if branch:
+		logging.info(str(branch) + "is a branch. sub-connection of a connection. don't pre-ping")
 		# "branch" refers to a sub-connection of a connection,
 		# we don't want to bother pinging on these.
 		return
@@ -60,13 +55,16 @@ def ping_connection(connection, branch):
 		# the SELECT of a scalar value without a table is
 		# appropriately formatted for the backend
 		connection.scalar(select([1]))
+		logging.info("connection scalar: " + str(connection.scalar(select([1]))))
 	except exc.DBAPIError as err:
+		logging.info(err)
 		# catch SQLAlchemy's DBAPIError, which is a wrapper
 		# for the DBAPI's exception.  It includes a .connection_invalidated
 		# attribute which specifies if this connection is a "disconnect"
 		# condition, which is based on inspection of the original exception
 		# by the dialect in use.
 		if err.connection_invalidated:
+			logging.info("error" + str(err.connection_invalidated))
 			# run the same SELECT again - the connection will re-validate
 			# itself and establish a new connection.  The disconnect detection
 			# here also causes the whole connection pool to be invalidated
@@ -77,31 +75,3 @@ def ping_connection(connection, branch):
 	finally:
 		# restore "close with result"
 		connection.should_close_with_result = save_should_close_with_result
-
-
-#TODO: Celery tasks for asynch jobs, modal message updates, & sending e-mails
-# @celery.task
-# def greeting():
-# 	print("hello i have no idea what i'm doing")
-#
-# task = greeting.apply_async(countdown=10)
-
-# @celery.task(bind=True)
-# def long_task(self):
-# 	"""Background task that runs a long function with progress reports."""
-# 	verb = ['Starting up', 'Booting', 'Repairing', 'Loading', 'Checking']
-# 	adjective = ['master', 'radiant', 'silent', 'harmonic', 'fast']
-# 	noun = ['solar array', 'particle reshaper', 'cosmic ray', 'orbiter', 'bit']
-# 	message = ''
-# 	total = random.randint(10, 50)
-# 	for i in range(total):
-# 		if not message or random.random() < 0.25:
-# 			message = '{0} {1} {2}...'.format(random.choice(verb),
-# 											  random.choice(adjective),
-# 											  random.choice(noun))
-# 		self.update_state(state='PROGRESS',
-# 						  meta={'current': i, 'total': total,
-# 								'status': message})
-# 		time.sleep(1)
-# 	return {'current': 100, 'total': 100, 'status': 'Task completed!',
-# 			'result': 42}
