@@ -357,7 +357,7 @@ def check_for_texts(user_input, conn):
 
 		i+=1
 
-	print("docs that need to be annotated: " + str(docs))
+	logging.info("docs that need to be annotated: " + str(docs))
 	if len(docs) > 0:
 		# Force it to update here. The db might say it exists but we must now force it to annotate!
 		biodoc_data = force_do_multi_preprocessing(docs, user_input, conn)
