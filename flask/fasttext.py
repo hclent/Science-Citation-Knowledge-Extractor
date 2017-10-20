@@ -1,6 +1,6 @@
 from processors import *
 import numpy as np
-import pickle, os
+import pickle, os, re
 from collections import defaultdict, Counter, Iterable
 from gensim.models import Word2Vec
 from configapp import app
@@ -25,11 +25,30 @@ Step 5:
 '''
 
 
+vis_stop_words = ['university', '%', 'table', 'figure', '\\u', '\\\\', '\\', 'author', 'publication', 'appendix',
+                      'table', 'author', 'skip', 'main', '.', 'title', 'u2009', 'publisher', 'article',
+                      'www.plantphysiol.org', 'copyright', 'san diego', 'california',  '. . . .', '. .', ',', '.....',
+                      "\"", "1", ";", "3", '.', ' . ',
+                      "one", "also", "=", "2", "4" "number", 'j.', 'm.', 's.', 'many', 'b', '6', '10', 'however',
+                      'well', 'c', 'p.', '*', "'s", ':', "'", '0', '4', '-', 'three', 'may', 'non', 'could',
+                      'would', 'two', 'one', '.',
+                      'e.g.', 'doi', 'case', 'follow', 'describe', 'name', 'see', 'among', 'single', 'several',
+                      'run', 'additional','number', 'show', 'include', 'use', 'multiple', 'important', 'individual', 'like',
+                      'exist', 'related', 'gateway', 'control', 'suggest', 'high', 'allow', 'first', 'list', 'define', 'set',
+                      'new', 'different', 'thus', 'small', 'year', 'due', 'i.e.', '...', 'low', 'per', 'big', 'via',
+                      '. . . . .', 'full', 'another', 'second', '100', 'google', 'u2003', 'character', 'state', 'ieee',
+                      'july', 'vol', 'username', 'password', 'email', 'address', 'e01797', 'swetnam', '1 0/27', '1 0/21', 'sen.',
+                      'license', 'biorxiv', 'preprint', 'textgoogle', 'crossrefpubmedgoogle', 'john', 'wiley', 'peerj', 'apr.', 'view', 'scopus',
+                      'crossrefpubmedweb', 'sciencegoogle', 'scholar', '|', 'journal', 'apus', 'aug', 'publ', 'jan.', 'jan', 'sep',
+                      'springer', 'rights', 'elsevier', 'b.v.', 'appl19', 'biol', 'oxford', 'press', 'viewerdownload', 'powerpoint',
+                      'librarycopyright', 'letter', 'interest', 'tip', 'note', 'april', 'volume', 'isbn', "{", "}" "[", "]", 'n', 'user' ]
+
+
+
 def flatten(listOfLists):
     return list(chain.from_iterable(listOfLists))
 
 
-#TODO: update this to use the config file to point to lemma samples
 #Input: query
 #Output, list of words, and corresponding list of tags
 def get_words_tags(query):
@@ -41,7 +60,6 @@ def get_words_tags(query):
     #    first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
     name = str(first_pmid[0:3]) + '/' + str(first_pmid[3:6]) + '/lemma_samples_' + str(query) + ".pickle"
 
-    #TODO: FIX THIS LINK FOR FRGAPH VIS TO ACCESS NECESSARY DATA
     path_to_lemma_samples = os.path.join((app.config['PATH_TO_CACHE']), name)
     with open(path_to_lemma_samples, "rb") as file:
         lemma_samples = pickle.load(file)
@@ -53,8 +71,18 @@ def get_words_tags(query):
     tags = [l[2] for l in lemma_samples]
     flat_tags = flatten(tags)
 
-    word_length = len(flat_words)
-    tag_length = len(flat_tags)
+    keep_words = []
+    keep_tags = []
+
+    for c in list(zip(flat_words, flat_tags)):
+        w = c[0]
+        tag = c[1]
+        if w not in vis_stop_words and not re.match('^(http|u\d{4})', w):
+            keep_words.append(w)
+            keep_tags.append(tag)
+
+    word_length = len(keep_words)
+    tag_length = len(keep_tags)
 
     # It SHOULD NOT happen that the tags and words are not the same length...
     # But JUST IN CASE.... force them to have the same length
@@ -62,12 +90,12 @@ def get_words_tags(query):
         #print("they aren't the same :(( ")
         if word_length > tag_length:
             #shorten word_length
-            flat_words = flat_words[:tag_length]
+            keep_words = keep_words [:tag_length]
         elif tag_length > word_length:
             #shorten tag_length
-            flat_tags = flat_tags[:word_length]
+            keep_tags = keep_tags[:word_length]
 
-    return flat_words, flat_tags
+    return keep_words, keep_tags
 
 
 
@@ -91,7 +119,8 @@ def transform_text(words, tags):
                 np_stack = []
             # append current token
             transformed_tokens.append(w)
-    return transformed_tokens
+    keep_transformed_tokens = [w for w in transformed_tokens if len(w.split()) < 4]
+    return keep_transformed_tokens
 
 
 
