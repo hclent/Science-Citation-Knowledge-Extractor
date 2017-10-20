@@ -236,7 +236,7 @@ def results():
 class visOptions(Form):
 	k_val = SelectField('k_val', choices=[(2,'k=2'),(3,'k=3'),(4,'k=4'),(5,'k=5'),(6, 'k=6'),
 										  (7, 'k=7'),(8, 'k=8'),(9, 'k=9'),(10,'k=10'),
-										  (11, 'k=11'),(12, 'k=12'),(13, 'k=13')])
+										  (15, 'k=15'),(20, 'k=20')])
 	w_words = SelectField('w_words', choices=[(4, 'w=4'),(5, 'w=5'),(6, 'w=6'), (7, 'w=7'),
 											  (100, 'w=1-100'),(200, 'w=101-200'),(300, 'w=201-300'),(400, 'w=301-400')])
 
@@ -641,7 +641,7 @@ def resembeddings(query, update_check):
 
 		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath)
 	else:
-		k_clusters = 10
+		k_clusters = 20
 		window = 100
 		logging.info("update_check: " + str(update_check))
 
