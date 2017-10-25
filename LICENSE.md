@@ -1,7 +1,7 @@
 The Science Citation Knowledge Extractor (SCKE) is an open source tool that helps biomedical researchers understand how
  their work is being used by others, by analyzing the content in papers that cite them.
 
-Copyright (C) 2017 Heather Lent
+Copyright (C) 2017 Heather Lent, Eric Lyons, Gus Hahn-Powell
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
