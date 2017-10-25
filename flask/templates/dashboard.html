@@ -9,7 +9,7 @@
 <!-- Submit button also initiates loading model -->
 <div>
 
- <form action="https://geco.iplantcollaborative.org/hclent/bionlp/results/" class="form-inline" method="get">
+ <form action="{{results_url}}" class="form-inline" method="get">
     <div class="form-group">
     <label for="PubmedID">Pubmed ID(s)</label>
     <input type="text" class="form-control" id="PubmedID" placeholder="18952863, 18269575" name="pmid" value="{{request.form.pmid}}">

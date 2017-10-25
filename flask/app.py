@@ -19,8 +19,14 @@ from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, e
 class pmidForm(Form):
 	pmid = TextField('PubmedID')
 
+#Home page
+@app.route("/home/")
+def home():
+	results_url = (app.config['RESULTS_URL'])
+	return render_template("home.html", results_url=results_url)
 
-#Main page
+
+#Example pages for CoGe
 #Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
 @app.route("/cogecrawl/")
@@ -30,7 +36,9 @@ def cogecrawl():
 	citations_with_links = db_unique_citations_retrieval(query, coge_conn) #unique
 	unique_publications = db_unique_citations_number(query, coge_conn)
 	coge_conn.close()
-	return render_template("dashboard.html", citations_with_links=citations_with_links, unique_publications=unique_publications)
+	results_url = (app.config['RESULTS_URL'])
+	return render_template("dashboard.html", citations_with_links=citations_with_links, unique_publications=unique_publications,
+						   results_url=results_url)
 
 
 #Getting Flask-WTFs to work with sqlite3 here
@@ -41,6 +49,20 @@ def results():
 	logging.info("In app route RESULTS")
 	form = pmidForm()
 	r_conn = connection() #results_connection to db
+
+	## Relative URLS
+	results_url = (app.config['RESULTS_URL'])
+	journals_url = (app.config['JOURNALS_URL'])
+	wordcloud_url = (app.config['WORDCLOUD_URL'])
+	heatmap_url = (app.config['HEATMAP_URL'])
+	clustermap_url = (app.config['CLUSTERMAP_URL'])
+	embed_url = (app.config['EMBED_URL'])
+	lda_url = (app.config['LDA_URL'])
+	lsa_url = (app.config['LSA_URL'])
+	kmeans_url = (app.config['KMEANS_URL'])
+	statistics_url = (app.config['STATISTICS_URL'])
+	textcompare_url = (app.config['TC_URL'])
+
 	try:
 		if request.method == 'GET':
 			logging.info("Request method is GET")
@@ -50,14 +72,13 @@ def results():
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			logging.info(pmid_list)
 
-			#TODO: use celery to allow SCKE to email someone this link when analysis is complete
+			#URL TO RE-VISIT THIS ANALYSIS
 			url_data = {}
 			url_data['pmid'] = entry
 			url_values = urllib.parse.urlencode(url_data)
 			scke_url = (app.config['SCKE_URL_RESULTS'])
 			full_url = scke_url + '?' + url_values
 			logging.info(full_url)
-
 
 
 			# If the user inputs more than 5 PMIDs, return the home page and flash a warning
@@ -222,7 +243,10 @@ def results():
 		citations_with_links = db_unique_citations_retrieval(query, r_conn) #unique
 		r_conn.close()
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
-	   			query=query, update_check=update_check)
+	   			query=query, update_check=update_check, results_url=results_url, journals_url = journals_url,
+				wordcloud_url = wordcloud_url, heatmap_url = heatmap_url, clustermap_url = clustermap_url,
+				embed_url = embed_url, lda_url = lda_url, lsa_url = lsa_url, kmeans_url = kmeans_url,
+				statistics_url = statistics_url, textcompare_url = textcompare_url)
 
 	except Exception as e:
 		return(str(e))
@@ -315,7 +339,6 @@ def cogelsa():
 
 
 #NB: cogelda does not connect to db
-#TODO: new default coge_lda
 @app.route('/cogelda/', methods=["GET","POST"]) #default coge lda for iframe
 def cogelda():
 	form = visOptions()
@@ -562,6 +585,7 @@ def coge_scifi():
 @app.route('/resjournals/<query>/<update_check>', methods=["GET", "POST"]) #user journals for iframe
 def resjournals(query, update_check):
 	logging.info("in routine res-journals")
+
 	jr_conn = connection() #journal results connection
 
 	needed_to_annotate_check = [update_check]
@@ -602,6 +626,9 @@ def resjournals(query, update_check):
 @app.route('/resembed/<query>/<update_check>', methods=["GET", "POST"]) #user embeddings for iframe
 def resembeddings(query, update_check):
 	form = visOptions()
+
+	embed_url = (app.config['EMBED_URL'])
+
 	if request.method == 'POST':
 		window = int(form.w_words.data)
 		logging.info(window)
@@ -639,7 +666,7 @@ def resembeddings(query, update_check):
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)
 
-		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath)
+		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath, embed_url=embed_url)
 	else:
 		k_clusters = 20
 		window = 100
@@ -659,13 +686,16 @@ def resembeddings(query, update_check):
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)
 
-		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath)
+		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath, embed_url=embed_url)
 
 
 #NB: does NOT need a db connection
 @app.route('/reslsa/<query>/<update_check>', methods=["GET", "POST"]) #user lsa for iframe
 def reslsa(query, update_check):
 	form = visOptions()
+
+	lsa_url = (app.config['LSA_URL'])
+
 	if request.method == 'POST':
 		k_clusters = form.k_val.data  # 2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -714,7 +744,7 @@ def reslsa(query, update_check):
 
 
 			logging.info("did it all!")
-		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check, lsa_url=lsa_url)
 	else:
 		logging.info("LSA: DEFAULT (results)")
 		logging.info("LSA ID: " +str(query))
@@ -735,13 +765,16 @@ def reslsa(query, update_check):
 			k=7
 			jsonDict = load_lsa(query, k)
 
-		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check)
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check, lsa_url=lsa_url)
 
 
 #NB: does NOT need a db connection
 @app.route('/reslda/<query>/<update_check>', methods=["GET", "POST"]) #user lda for iframe
 def reslda(query, update_check):
 	form = visOptions()
+
+	lda_url = (app.config['LDA_URL'])
+
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
 		logging.info("the k value is " + str(k_clusters))
@@ -772,7 +805,7 @@ def reslda(query, update_check):
 			jsonLDA = load_lda(query, k, w)
 
 
-		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check)
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check, lda_url=lda_url)
 	else:
 		#need to get last user_input
 		#use id to do stuff
@@ -791,13 +824,16 @@ def reslda(query, update_check):
 		if update_check == 'no':
 			jsonLDA = load_lda(query, k, w)
 
-		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check)
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check, lda_url=lda_url)
 
 
 #NB: does NOT need a db connection
 @app.route('/reswordcloud/<query>', methods=["GET", "POST"]) #user wordcloud for iframe
 def reswordcloud(query):
 	form = nesOptions()
+
+	wordcloud_url = (app.config['WORDCLOUD_URL'])
+
 	if request.method == 'POST':
 
 		nes_categories = request.form.getlist('n_categories')
@@ -818,7 +854,7 @@ def reswordcloud(query):
 		nes_list = [n[1] for n in nes_samples]
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
-		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup)
+		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup, wordlcoud_url=wordcloud_url)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		logging.info(nes_categories)
@@ -839,13 +875,16 @@ def reswordcloud(query):
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 
-		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup)
+		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup, wordcloud_url=wordcloud_url)
 
 
 #NB: needs a db connection
 @app.route('/res_heatmap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_heatmap(query):
 	form = nesOptions()
+
+	heatmap_url = (app.config['HEATMAP_URL'])
+
 	hmr_conn = connection() #heatmap results database connection
 	if request.method == 'POST':
 		nes_categories = request.form.getlist('n_categories')
@@ -871,7 +910,7 @@ def res_heatmap(query):
 		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		hmr_conn.close()
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles, heatmap_url=heatmap_url)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		w_number = 10
@@ -895,13 +934,16 @@ def res_heatmap(query):
 		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		hmr_conn.close()
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles, heatmap_url=heatmap_url)
 
 
 #NB: needs a db connection
 @app.route('/res_clustermap/<query>', methods=["GET", "POST"]) #user heatmap for iframe
 def res_clustermap(query):
 	form = nesOptions()
+
+	clustermap_url = (app.config['CLUSTERMAP_URL'])
+
 	if request.method == 'POST':
 		cmr_conn = connection() #clustermap results database connection
 		nes_categories = request.form.getlist('n_categories')
@@ -928,11 +970,11 @@ def res_clustermap(query):
 		image = '/clustermaps/' + saveName
 
 		cmr_conn.close()
-		return render_template('results_clustermap.html',image=image, query=query)
+		return render_template('results_clustermap.html',image=image, query=query, clustermap_url=clustermap_url)
 	else:
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Choose N and categories to run clustermap.</div>'
 		#No default visualization
-		return render_template('results_clustermapH.html', query=query, popup=popup)
+		return render_template('results_clustermapH.html', query=query, popup=popup, clustermap_url=clustermap_url)
 
 
 
@@ -940,6 +982,9 @@ def res_clustermap(query):
 @app.route('/res_kmeans/<query>', methods=["GET", "POST"]) #user k-means for iframe
 def res_kmeans(query):
 	form = visOptions()
+
+	kmeans_url = (app.config['KMEANS_URL'])
+
 	if request.method == 'POST':
 		kmr_conn = connection() #k-means results database connection
 		pmid_list = query.split('+') #list of string pmids
@@ -956,7 +1001,7 @@ def res_kmeans(query):
 		logging.info("the k value is " + str(k_clusters))
 		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters, kmr_conn)
 		kmr_conn.close()
-		return render_template('res_kmeans1.html', query=query,
+		return render_template('res_kmeans1.html', kmeans_url=kmeans_url, query=query,
 		   x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 		   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
@@ -965,7 +1010,7 @@ def res_kmeans(query):
 			titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
 		#Not running any default vis because its slow
-		return render_template('res_kmeans1.html', query=query)
+		return render_template('res_kmeans1.html', query=query, kmeans_url=kmeans_url)
 
 
 
@@ -1001,6 +1046,9 @@ def res_stats(query):
 @app.route('/results_scifi/<query>', methods=["GET","POST"]) #default coge scifi for iframe
 def results_scifi(query):
 	form = corpusOptions()
+
+	textcompare_url = (app.config['TC_URL'])
+
 	pmid_list = query.split('+')  # list of string pmids
 	#decide eligible papers:
 	sfr_conn = connection() #scifi results db connection
@@ -1049,7 +1097,7 @@ def results_scifi(query):
 			title = str('PMID: ' + str(eligible_papers[4][1]))
 		x, y, names, color = vis_scifi(corpus, query, eligible_papers, sfr_conn)
 		sfr_conn.close()
-		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
+		return render_template('results_scifi.html', textcompare_url=textcompare_url, x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 	else:
 		logging.info("scifi analysis")
 		corpus = 'darwin'
@@ -1059,14 +1107,10 @@ def results_scifi(query):
 		if len(eligible_papers) < len(pmid_list):
 			flash('Some input paper(s) are not avaliable for TextCompare')
 		sfr_conn.close()
-		return render_template('results_scifi.html', x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
+		return render_template('results_scifi.html',textcompare_url=textcompare_url, x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 
 
 #################### OTHER ####################################################
-@app.route('/testingstuff/')
-def testingstuff():
-	return render_template('test.html')
-
 
 #Handles 404 errors
 @app.errorhandler(404)
@@ -1076,11 +1120,10 @@ def page_not_found(e):
 
 #Configuration settings
 if __name__ == '__main__':
-	run_simple('0.0.0.0', 5000, app, use_reloader=True)
-	#app.run(host='0.0.0.0') if you are not running the app with uwsgi!
+	run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
+	#app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
 
 
-#TODO: Add unit tests and such for Git & Travis UI
-########### GRAVEYARD ##########################################################
+
 
 
