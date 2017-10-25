@@ -1,10 +1,10 @@
 # Science Citation Knowledge Extractor (SCKE)
-* UNDER ACTIVE CONSTRUCTION
-* COMING SOON!
 
-## BASICS
-* This will be the web interface for the bioNLP lit tool
-* Built with Python3 and Flask
+
+## About SCKE
+* SCKE is an open source tool that helps biomedical researchers understand how their work is being used by others, by analyzing the content in papers that cite them. This tool uses natural language processing and machine learning to extract the prominent themes and concepts discussed in the citing documents. By seeing what kinds of topics are discussed by citing articles, researchers can better understand how their work influences their peers and various disciplines in science. Additionally, SCKE allows biomedical researchers to explore other statistics about the publications that site them, such as where citations are published (Journals), the distribution of keywords (Keywords), the similarity of papers to each other (Clustering), the similarity of papers to other famous works (TextCompare), and general statistics about the citations (Statistics).
+* Built with `Python3` and `Flask` using `Biopython`, `py-processors`, `NLTK`, `Scikit-Learn`, `Numpy`, `Gensim`, `Fasttext`, `Plotly`, `D3`, and more.
+* SCKE proudly leverages the BioNLP Processor created by the Computational Language Understanding Lab. See [here](https://github.com/clulab/processors) for original code. See [here](https://github.com/myedibleenso/py-processors) for python wrappper library, `py-processors`.
 
 ## Instructions for using the site
 * Video to come :)
@@ -15,13 +15,10 @@
 
 * Python3 ([Anaconda](https://www.continuum.io/))
 * [MySQL server](https://www.mysql.com/)
-* [Apache Web Sever](https://en.wikipedia.org/wiki/Apache_HTTP_Server)
-    * Only necessary if you want to run it on a specific website domain.
-    * If you want to run the app on your `localhost`, then Apache is not neeeded.
 
 **Step 1: Retrieve the source code**
 
-1. `git clone` or `fork` this repository
+1. `git clone` to run this repository
 
 **Step 2: Setting up Python**
 
@@ -32,30 +29,34 @@ In order to set up the site, you will need the same Python environment that the 
 
 **Step 3: Creating a config file**
 
-Next you will need to create a `configscke.cfg` file, that tells the files in the app where to look for the database and cached data. For complete instructions, please see `CONFIGME.md`
+Next you will need to create a `configscke.cfg` file, that tells the files in the app where to look for the database and cached data. For complete instructions, please see the example `configExample.cfg`.
 
 **Step 4: Setting up MySQL database**
 
 1. Create a new database for scke data
-2. See table configuration notes in [database_management.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/database_management.py#L578)
+2. See table configuration notes in [database_management.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/database_management.py#L583)
 
-**Step 5: Run SCKE**
-Once you have set up Apache, made your new Python environment, created a config file, and set up the MySQL database, you are ready to run SCKE!
+**Step 5: Other files you might need**
+
+These files live on CyVerse's Discovery environment (link to come)
+
+1. The py-processors NLP Server jar
+    * This jar is used to annotate the texts. It is initialized to use 3G of memory but you can increase this in the `configscke.cfg` file.
+    * If you you are running SCKE with either large documents or on a large amount of documents 3G will not be enough memory for the jar file! We give SCKE 100G of memory to run it in production. If you experience problems, try bumpting the memory up to 5G, 10G, or 25G.
+2. Our trained `FastText` word vectors `.vec` file
+
+**Step 6: Run SCKE**
+
+Once you have cloned the repo, made your new Python environment, created a config file, and set up the MySQL database, you are almost ready to run SCKE!
 
 1. Activate your conda environment (`source activate scke`)
-2. Navigate to the `flask` directory of the repository (`cd flask`)
-
-**If you want to run this on a specific website**
-
-Run SCKE with the command: `uwsgi --socket YOUR_HOST:YOUR_PORT --protocol=https --manage-script-name --mount /test=/path/to/this/repo/flask/app.py --callable app -p 20`
-    * the `-p 20` is there to give the app extra workers
-    * an example of `YOUR_HOST:YOUR_PORT` could be `0.0.0.0:8888`
-
-
-**If you want to run this on localhost:**
-For running it on your localhost, you will need to:
-
-1. Modify [this line of app.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/app.py#L1052).
-    * Comment the line with `run_simple`
+2. Modify [this line of app.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/app.py#L1052).
+    * Comment out the line with `run_simple`
+        * `run_simple` is for running the app with Apache and uwsgi
     * Uncomment the line below it, with `app.run()`
-2. Run `python app.py` 
+3. Navigate to the `flask` directory of the repository (`cd flask`)
+4. Run `python app.py`
+
+**Step 7: Debugging?**
+
+If you have any problems, feel free to contact me! But first, take a look instead of your `.app.log` file to see where things might have gone amiss. 
