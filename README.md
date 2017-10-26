@@ -50,7 +50,7 @@ These files live on CyVerse's Discovery environment (link to come)
 Once you have cloned the repo, made your new Python environment, created a config file, and set up the MySQL database, you are almost ready to run SCKE!
 
 1. Activate your conda environment (`source activate scke`)
-2. Modify [this line of app.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/app.py#L1052).
+2. Modify [this line of app.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/app.py#L1110).
     * Comment out the line with `run_simple`
         * `run_simple` is for running the app with Apache and uwsgi
     * Uncomment the line below it, with `app.run()`
@@ -59,4 +59,4 @@ Once you have cloned the repo, made your new Python environment, created a confi
 
 **Step 7: Debugging?**
 
-If you have any problems, feel free to contact me! But first, take a look instead of your `.app.log` file to see where things might have gone amiss. 
+If you have any problems, feel free to contact me! But first, take a look instead of your `.app.log` file to see where things might have gone amiss.
