@@ -41,9 +41,9 @@
 </style>
 
 <body>
+<div class="alert alert-success" role="alert">Results don't make sense? If you are under a certain amount of citations, this algorithm is not for you. Instead, try the "Embeddings" topic model!</div>
 <h2> Latent Dirichlet Allocation </h2> <!--title goes here-->
-<p>   </p>
-<form class="form-inline" action="{{lda_url}}/{{query}}/{{update_check}}" method="post">
+<form class="form-inline" action="{{base_url}}/reslda/{{query}}/{{update_check}}" method="post">
 <div class="form-group">
     <label for="k_val"> k topics</label>
     <select class="form-control form-control-sm" id="k_val" name="k_val">
@@ -64,8 +64,6 @@
     </div>
   <button type="submit" id="ldabutton" class="btn btn-default" data-toggle="modal" data-target="#myModal">Update</button>
 </form>
-
-<div class="alert alert-success" role="alert">Results don't make sense? If you are under a certain amount of citations, this algorithm is not for you. Instead, try the "Embeddings" topic model!</div>
 
 <!-- Progress modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

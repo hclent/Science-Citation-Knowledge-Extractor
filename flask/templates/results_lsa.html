@@ -39,9 +39,11 @@
 
 </style>
 <body>
-<h2> Latent Semantic Analysis </h2> <!--title goes here-->
-<p>   </p>
-<form class="form inline" action="{{lsa_url}}/{{query}}/{{update_check}}" method="post">
+<div class="alert alert-success" role="alert">Results don't make sense? If you are under a certain amount of citations, this algorithm is not for you. Instead, try the "Embeddings" topic model!</div>
+
+<h2> Latent Semantic Analysis </h2>
+
+<form class="form inline" action="{{base_url}}/reslsa/{{query}}/{{update_check}}" method="post">
 <div class="form-group">
   <label for="buttongroup">topics:</label>
   <div id="buttongroup">
@@ -60,7 +62,6 @@
   </div>
 </form>
 
-<div class="alert alert-success" role="alert">Results don't make sense? If you are under a certain amount of citations, this algorithm is not for you. Instead, try the "Embeddings" topic model!</div>
 
 
  <!-- Progress modal -->

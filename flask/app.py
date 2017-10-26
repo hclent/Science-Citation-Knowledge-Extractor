@@ -22,8 +22,8 @@ class pmidForm(Form):
 #Home page
 @app.route("/home/")
 def home():
-	results_url = (app.config['RESULTS_URL'])
-	return render_template("home.html", results_url=results_url)
+	base_url = (app.config['BASE_URL'])
+	return render_template("home.html", base_url=base_url)
 
 
 #Example pages for CoGe
@@ -36,9 +36,9 @@ def cogecrawl():
 	citations_with_links = db_unique_citations_retrieval(query, coge_conn) #unique
 	unique_publications = db_unique_citations_number(query, coge_conn)
 	coge_conn.close()
-	results_url = (app.config['RESULTS_URL'])
+	base_url = (app.config['BASE_URL'])
 	return render_template("dashboard.html", citations_with_links=citations_with_links, unique_publications=unique_publications,
-						   results_url=results_url)
+						   base_url=base_url)
 
 
 #Getting Flask-WTFs to work with sqlite3 here
@@ -50,18 +50,7 @@ def results():
 	form = pmidForm()
 	r_conn = connection() #results_connection to db
 
-	## Relative URLS
-	results_url = (app.config['RESULTS_URL'])
-	journals_url = (app.config['JOURNALS_URL'])
-	wordcloud_url = (app.config['WORDCLOUD_URL'])
-	heatmap_url = (app.config['HEATMAP_URL'])
-	clustermap_url = (app.config['CLUSTERMAP_URL'])
-	embed_url = (app.config['EMBED_URL'])
-	lda_url = (app.config['LDA_URL'])
-	lsa_url = (app.config['LSA_URL'])
-	kmeans_url = (app.config['KMEANS_URL'])
-	statistics_url = (app.config['STATISTICS_URL'])
-	textcompare_url = (app.config['TC_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	try:
 		if request.method == 'GET':
@@ -243,10 +232,7 @@ def results():
 		citations_with_links = db_unique_citations_retrieval(query, r_conn) #unique
 		r_conn.close()
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
-	   			query=query, update_check=update_check, results_url=results_url, journals_url = journals_url,
-				wordcloud_url = wordcloud_url, heatmap_url = heatmap_url, clustermap_url = clustermap_url,
-				embed_url = embed_url, lda_url = lda_url, lsa_url = lsa_url, kmeans_url = kmeans_url,
-				statistics_url = statistics_url, textcompare_url = textcompare_url)
+	   			query=query, update_check=update_check, base_url=base_url)
 
 	except Exception as e:
 		return(str(e))
@@ -627,7 +613,7 @@ def resjournals(query, update_check):
 def resembeddings(query, update_check):
 	form = visOptions()
 
-	embed_url = (app.config['EMBED_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	if request.method == 'POST':
 		window = int(form.w_words.data)
@@ -666,7 +652,7 @@ def resembeddings(query, update_check):
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)
 
-		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath, embed_url=embed_url)
+		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath, base_url=base_url)
 	else:
 		k_clusters = 20
 		window = 100
@@ -686,7 +672,7 @@ def resembeddings(query, update_check):
 		if update_check == 'no':
 			filepath = embedding_lookup(query, k_clusters, window)
 
-		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath, embed_url=embed_url)
+		return render_template('results_embeddings.html', query=query, update_check=update_check, filepath=filepath, base_url=base_url)
 
 
 #NB: does NOT need a db connection
@@ -694,7 +680,7 @@ def resembeddings(query, update_check):
 def reslsa(query, update_check):
 	form = visOptions()
 
-	lsa_url = (app.config['LSA_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	if request.method == 'POST':
 		k_clusters = form.k_val.data  # 2,3,4,or 5
@@ -744,7 +730,7 @@ def reslsa(query, update_check):
 
 
 			logging.info("did it all!")
-		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check, lsa_url=lsa_url)
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check, base_url=base_url)
 	else:
 		logging.info("LSA: DEFAULT (results)")
 		logging.info("LSA ID: " +str(query))
@@ -765,7 +751,7 @@ def reslsa(query, update_check):
 			k=7
 			jsonDict = load_lsa(query, k)
 
-		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check, lsa_url=lsa_url)
+		return render_template('results_lsa.html', query=query, jsonDict=jsonDict, update_check=update_check, base_url=base_url)
 
 
 #NB: does NOT need a db connection
@@ -773,7 +759,7 @@ def reslsa(query, update_check):
 def reslda(query, update_check):
 	form = visOptions()
 
-	lda_url = (app.config['LDA_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	if request.method == 'POST':
 		k_clusters = form.k_val.data #2,3,4,or 5
@@ -805,7 +791,7 @@ def reslda(query, update_check):
 			jsonLDA = load_lda(query, k, w)
 
 
-		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check, lda_url=lda_url)
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check, base_url=base_url)
 	else:
 		#need to get last user_input
 		#use id to do stuff
@@ -824,7 +810,7 @@ def reslda(query, update_check):
 		if update_check == 'no':
 			jsonLDA = load_lda(query, k, w)
 
-		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check, lda_url=lda_url)
+		return render_template('results_lda.html', form=form, jsonLDA=jsonLDA, query=query, update_check=update_check, base_url=base_url)
 
 
 #NB: does NOT need a db connection
@@ -832,7 +818,7 @@ def reslda(query, update_check):
 def reswordcloud(query):
 	form = nesOptions()
 
-	wordcloud_url = (app.config['WORDCLOUD_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	if request.method == 'POST':
 
@@ -854,7 +840,7 @@ def reswordcloud(query):
 		nes_list = [n[1] for n in nes_samples]
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
-		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup, wordlcoud_url=wordcloud_url)
+		return render_template('results_wordcloud.html', query=query,  wordcloud_data=wordcloud_data, popup=popup, base_url=base_url)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		logging.info(nes_categories)
@@ -875,7 +861,7 @@ def reswordcloud(query):
 		wordcloud_data = vis_wordcloud(nes_list, nes_categories, w_number)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 
-		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup, wordcloud_url=wordcloud_url)
+		return render_template('results_wordcloud.html', query=query, wordcloud_data=wordcloud_data, popup=popup, base_url=base_url)
 
 
 #NB: needs a db connection
@@ -883,7 +869,7 @@ def reswordcloud(query):
 def res_heatmap(query):
 	form = nesOptions()
 
-	heatmap_url = (app.config['HEATMAP_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	hmr_conn = connection() #heatmap results database connection
 	if request.method == 'POST':
@@ -910,7 +896,7 @@ def res_heatmap(query):
 		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong>Displaying results for N= '+str(w_number)+' from categories: '+str(nes_categories)+'</div>'
 		hmr_conn.close()
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles, heatmap_url=heatmap_url)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles, base_url=base_url)
 	else:
 		nes_categories= ['BioProcess', 'CellLine', 'Cellular_component', 'Family', 'Gene_or_gene_product', 'Organ', 'Simple_chemical', 'Site', 'Species', 'TissueType']
 		w_number = 10
@@ -934,7 +920,7 @@ def res_heatmap(query):
 		x_docs, y_words, z_counts, titles = vis_heatmap(lemma_samples, nes_samples, nes_categories, w_number, hmr_conn)
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Default: N=10, from all categories.</div>'
 		hmr_conn.close()
-		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles, heatmap_url=heatmap_url)
+		return render_template('results_heatmap.html', query=query, z_counts=z_counts, x_docs=x_docs, y_words=y_words, popup=popup, titles=titles, base_url=base_url)
 
 
 #NB: needs a db connection
@@ -942,7 +928,7 @@ def res_heatmap(query):
 def res_clustermap(query):
 	form = nesOptions()
 
-	clustermap_url = (app.config['CLUSTERMAP_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	if request.method == 'POST':
 		cmr_conn = connection() #clustermap results database connection
@@ -970,11 +956,11 @@ def res_clustermap(query):
 		image = '/clustermaps/' + saveName
 
 		cmr_conn.close()
-		return render_template('results_clustermap.html',image=image, query=query, clustermap_url=clustermap_url)
+		return render_template('results_clustermap.html',image=image, query=query, base_url=base_url)
 	else:
 		popup = '<div class="alert alert-warning alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>[ ! ]</strong> Choose N and categories to run clustermap.</div>'
 		#No default visualization
-		return render_template('results_clustermapH.html', query=query, popup=popup, clustermap_url=clustermap_url)
+		return render_template('results_clustermapH.html', query=query, popup=popup, base_url=base_url)
 
 
 
@@ -983,7 +969,7 @@ def res_clustermap(query):
 def res_kmeans(query):
 	form = visOptions()
 
-	kmeans_url = (app.config['KMEANS_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	if request.method == 'POST':
 		kmr_conn = connection() #k-means results database connection
@@ -1001,7 +987,7 @@ def res_kmeans(query):
 		logging.info("the k value is " + str(k_clusters))
 		x0_coordinates, y0_coordinates, z0_coordinates, x1_coordinates, y1_coordinates, z1_coordinates, x2_coordinates, y2_coordinates, z2_coordinates, x3_coordinates, y3_coordinates, z3_coordinates, x4_coordinates, y4_coordinates, z4_coordinates, titles0, titles1, titles2, titles3, titles4 = vis_kmeans(lemma_samples, k_clusters, kmr_conn)
 		kmr_conn.close()
-		return render_template('res_kmeans1.html', kmeans_url=kmeans_url, query=query,
+		return render_template('res_kmeans1.html', base_url=base_url, query=query,
 		   x0_coordinates=x0_coordinates, y0_coordinates=y0_coordinates, z0_coordinates=z0_coordinates,
 		   x1_coordinates=x1_coordinates, y1_coordinates=y1_coordinates, z1_coordinates=z1_coordinates,
 		   x2_coordinates=x2_coordinates, y2_coordinates=y2_coordinates, z2_coordinates=z2_coordinates,
@@ -1010,7 +996,7 @@ def res_kmeans(query):
 			titles0=titles0, titles1=titles1, titles2=titles2, titles3=titles3, titles4=titles4)
 	else:
 		#Not running any default vis because its slow
-		return render_template('res_kmeans1.html', query=query, kmeans_url=kmeans_url)
+		return render_template('res_kmeans1.html', query=query, base_url=base_url)
 
 
 
@@ -1047,7 +1033,7 @@ def res_stats(query):
 def results_scifi(query):
 	form = corpusOptions()
 
-	textcompare_url = (app.config['TC_URL'])
+	base_url = (app.config['BASE_URL'])
 
 	pmid_list = query.split('+')  # list of string pmids
 	#decide eligible papers:
@@ -1097,7 +1083,7 @@ def results_scifi(query):
 			title = str('PMID: ' + str(eligible_papers[4][1]))
 		x, y, names, color = vis_scifi(corpus, query, eligible_papers, sfr_conn)
 		sfr_conn.close()
-		return render_template('results_scifi.html', textcompare_url=textcompare_url, x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
+		return render_template('results_scifi.html', base_url=base_url, x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 	else:
 		logging.info("scifi analysis")
 		corpus = 'darwin'
@@ -1107,7 +1093,7 @@ def results_scifi(query):
 		if len(eligible_papers) < len(pmid_list):
 			flash('Some input paper(s) are not avaliable for TextCompare')
 		sfr_conn.close()
-		return render_template('results_scifi.html',textcompare_url=textcompare_url, x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
+		return render_template('results_scifi.html',base_url=base_url, x=x, y=y, title=title, color=color, query=query, names=names, eligible_papers=eligible_papers)
 
 
 #################### OTHER ####################################################

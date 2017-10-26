@@ -7,7 +7,7 @@
 <!-- Pubmed ID Submit form button -->
 <!-- User input is saved to the database pmids_info.db -->
 <div>
-<form action="{{results_url}}" class="form-inline" method="get">
+<form action="{{base_url}}/results/" class="form-inline" method="get">
   <div class="form-group">
     <label for="PubmedID">Pubmed ID(s)</label>
     <input type="text" class="form-control" id="PubmedID" placeholder="18952863, 18269575" name="pmid" value="{{request.form.pmid}}">
@@ -49,7 +49,7 @@
 		<!--  Put journals here blegh --> 
 		<div role="tabpanel" class="tab-pane fade in active" id="journals">
 
-            <iframe  id="resjournals" src="{{journals_url}}/{{query}}/{{update_check}}" width="1100" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="resjournals" src="{{base_url}}/resjournals/{{query}}/{{update_check}}" width="1100" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</div>
@@ -81,9 +81,9 @@
     </div>
 
             <br>
-            <iframe  id="res_wordcloud" style="display:none" src="{{wordcloud_url}}/{{query}}" width="1500" height="1700" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
-            <iframe  id="res_heatmap" style="display:none" src="{{heatmap_url}}/{{query}}" width="975" height="800" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
-            <iframe  id="res_clustermap" style="display:none" src="{{clustermap_url}}/{{query}}" width="975" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="res_wordcloud" style="display:none" src="{{base_url}}/reswordcloud/{{query}}" width="1500" height="1700" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="res_heatmap" style="display:none" src="{{base_url}}/res_heatmap/{{query}}" width="975" height="800" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="res_clustermap" style="display:none" src="{{base_url}}/res_clustermap/{{query}}" width="975" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</div> 
@@ -115,14 +115,13 @@
 
             </div>
 
-            <br></br>
-                <!--template var at end of link -->
+            <br>
 
-           <iframe id="resembedding" style="display:none" src="{{embed_url}}/{{query}}/{{update_check}}" width="1400" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+           <iframe id="resembedding" style="display:none" src="{{base_url}}/resembed/{{query}}/{{update_check}}" width="1400" height="1600" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
-           <iframe id="reslsa" style="display:none" src="{{lsa_url}}/{{query}}/{{update_check}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+           <iframe id="reslsa" style="display:none" src="{{base_url}}/reslsa/{{query}}/{{update_check}}" width="1000" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
-          <iframe id="reslda" style="display:none" src="{{lda_url}}/{{query}}/{{update_check}}" width="1000" height="1300" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+          <iframe id="reslda" style="display:none" src="{{base_url}}/reslda/{{query}}/{{update_check}}" width="1000" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 
 		</ul>
@@ -132,7 +131,7 @@
 
 		<!--  kmeans clustering -->
 		<div role="tabpanel" class="tab-pane fade" id="cluster">
-      <iframe  id="res_kmeans"  src="{{kmeans_url}}/{{query}}" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+      <iframe  id="res_kmeans"  src="{{base_url}}/res_kmeans/{{query}}" width="1000" height="1000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 		</div>
 
 
@@ -154,14 +153,14 @@
 
         <!-- Stats -->
 <div role="tabpanel" class="tab-pane fade" id="statistics">
-          <iframe  id="res_stats"  src="{{statistics_url}}/{{query}}" width="1000" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+          <iframe  id="res_stats"  src="{{base_url}}/res_stats/{{query}}" width="1000" height="2000" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 		</div>
 
 
 	<!--  scifi -->
         <div role="tabpanel" class="tab-pane fade" id="scifi">
-            <iframe  id="res_scifi"  src="{{textcompare_url}}/{{query}}" width="1100" height="1100" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
+            <iframe  id="res_scifi"  src="{{base_url}}/results_scifi/{{query}}" width="1100" height="1100" marginwidth="0" marginheight="0" scrolling="no" frameBorder="0"></iframe>
 
 		</div>
 
