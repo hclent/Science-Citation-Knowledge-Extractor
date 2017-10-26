@@ -14,7 +14,7 @@ from database_management import checkForPMCID, checkIfScraped
 #and information about pubplications that cite this pmid via PubMedCentral ID's (pmcids)
 
 
-Entrez.email = "hclent1@gmail.com" 
+Entrez.email = "YOUR EMAIL HERE"
 Entrez.tool = "MyInfoRetrieval"
 
 #Create log
