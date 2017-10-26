@@ -1,7 +1,8 @@
-import string
+import string, os
 import naive_makeVecs as makeVecs #mine
 from database_management import db_citations_mini_hyperlink, db_citations_hyperlink_retrieval, db_pmid_axis_label, db_pmid_hyperlink_retrieval #mine
 from cache_lemma_nes import load_lemma_cache #mine
+from configapp import app
 
 
 #Load from pickled data_samples instead of filename
@@ -31,62 +32,62 @@ def cosineSimilarityScore(vector1, vector2):
 #only load eligible_papers into load_corpus
 def load_corpus(corpus, eligible_papers):
     if corpus == 'startrek':
-        raw = "/home/hclent/data/corpora/startrek/105.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), 'startrek.txt')
         corpus_vec = loadMessages(raw)
         color = 'rgb(63, 100, 168)'
     if corpus == 'darwin':
-        raw = "/home/hclent/data/corpora/darwin.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), 'darwin.txt')
         corpus_vec = loadMessages(raw)
         color = 'rgb(8, 114, 32)'
     if corpus == 'frankenstein':
-        raw = "/home/hclent/data/corpora/frankenstein.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "frankenstein.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(92, 59, 107)'
     if corpus == 'youth':
-        raw = "/home/hclent/data/corpora/youth.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "youth.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(63, 100, 168)'
     if corpus == 'austen':
-        raw = "/home/hclent/data/corpora/austen.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "austen.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(191, 110, 167)'
     #new
     if corpus == 'brain_speech':
-        raw = "/home/hclent/data/corpora/brain_speech.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "brain_speech.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(8, 114, 32)'
     if corpus == 'bible':
-        raw = "/home/hclent/data/corpora/bible.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "bible.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(92, 59, 107)'
     if corpus == 'grecoroman':
-        raw = "/home/hclent/data/corpora/grecoroman_med.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "grecoroman_med.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(8, 114, 32)'
     if corpus == 'last_evolution':
-        raw = "/home/hclent/data/corpora/last_evolution.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "last_evolution.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(63, 100, 168)'
     if corpus == 'mars':
-        raw = "/home/hclent/data/corpora/mars.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "mars.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(63, 100, 168)'
     if corpus == 'mouse':
-        raw = "/home/hclent/data/corpora/mouse.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "mouse.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(8, 114, 32)'
     if corpus == 'sherlock':
-        raw = "/home/hclent/data/corpora/sherlock.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "sherlock.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(92, 59, 107)'
     if corpus == 'yeast':
-        raw = "/home/hclent/data/corpora/yeast.txt"
+        raw = os.path.join((app.config['PATH_TO_CORPORA']), "yeast.txt")
         corpus_vec = loadMessages(raw)
         color = 'rgb(8, 114, 32)'
     # For loading the query papers
     # eligible_papers = [('paper1', '18952863', '/home/hclent/data/pmcids/259/367/2593677.txt')]
     if corpus == 'paper1':
-        raw = str(eligible_papers[0][2]) #'/home/hclent/data/pmcids/259/367/2593677.txt'
+        raw = str(eligible_papers[0][2]) #'~/data/pmcids/259/367/2593677.txt'
         corpus_vec = loadMessages(raw)
         color = 'rgb(8, 114, 32)'
     if corpus == 'paper2':
