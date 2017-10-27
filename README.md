@@ -18,14 +18,15 @@
 
 **Step 1: Retrieve the source code**
 
-1. `git clone` to run this repository
+1. `git clone` to download this repository
 
 **Step 2: Setting up Python**
 
 In order to set up the site, you will need the same Python environment that the site uses to run. Here are instructions for how to re-create this environment.
 
-1. Create a Python environment with the repository's `requirements.txt` libraries (e.g `conda create -n scke python=3.4 anaconda --file requirements.txt`)
-2. Activate the environment (`source activate scke`)
+1. Install ([Anaconda](https://www.continuum.io/)) for Python3
+2. Create a Python environment with the repository's `requirements.txt` libraries (e.g `conda create -n scke python=3.4 anaconda --file requirements.txt`)
+3. Activate the environment (`source activate scke`)
 
 **Step 3: Creating a config file**
 
@@ -44,12 +45,17 @@ Entrez is the API for accessing PubMed(Central). We use Entrez as part of the Bi
 
 **Step 6: Other files you will need**
 
-These files live on CyVerse's Discovery environment (link to come)
+These supplementary files are stored on CyVerse's [Discovery Environment](http://www.cyverse.org/discovery-environment)
 
-1. The py-processors NLP Server jar
-    * This jar is used to annotate the texts. It is initialized to use 3G of memory but you can increase this in the `configscke.cfg` file.
-    * If you you are running SCKE with either large documents or on a large amount of documents 3G will not be enough memory for the jar file! We give SCKE 100G of memory to run it in production. If you experience problems, try bumpting the memory up to 5G, 10G, or 25G.
-2. Our trained `FastText` word vectors `.vec` file
+1. Install [iCommands](https://pods.iplantcollaborative.org/wiki/display/DS/Using+iCommands)
+2. MORE STEPS TO COME
+
+The files in the Discovery Environment that you will need are:
+
+    * The py-processors NLP Server jar
+        * This jar is used to annotate the texts. It is initialized to use 3G of memory but you can increase by editing [this line of multi_preprocess.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/multi_preprocess.py#L30).
+        * If you you are running SCKE with either large documents or on a large amount of documents 3G will not be enough memory for the jar file! We give SCKE 100G of memory to run it in production. If you experience problems, try bumpting the memory up to 5G, 10G, or 25G.
+    * Our trained `FastText` word vectors `.vec` file
 
 **Step 7: Run SCKE**
 
