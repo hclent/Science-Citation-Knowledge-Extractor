@@ -65,7 +65,7 @@ def results():
 			url_data = {}
 			url_data['pmid'] = entry
 			url_values = urllib.parse.urlencode(url_data)
-			scke_url = (app.config['RESULTS_URL'])
+			scke_url = (app.config['BASE_URL'])
 			full_url = scke_url + '?' + url_values
 			logging.info(full_url)
 
