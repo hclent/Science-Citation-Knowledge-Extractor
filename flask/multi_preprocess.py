@@ -1,7 +1,6 @@
 from __future__ import print_function
 from processors import *
 import re, nltk, json, pickle, time
-import json
 import os.path
 from multiprocessing import Pool
 import logging
@@ -28,7 +27,7 @@ logging.info('Stopword settings set')
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
   path = (app.config['PATH_TO_JAR'])
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx100G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx3G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   logging.info('Annotated something random to initialize bioNLP Processor')
@@ -45,14 +44,7 @@ api = connect_to_Processors(4343)
 #Get all text files for that pmid
 #Returns list of dictionaries [{"pmcid": 1234, "filename": /path/to/file}, {}, {}, ...]
 #Only retrieve txts for documents that have not been annotated before
-'''
-May 17, 2017 note:
-This function calls "db_citation_pmc_ids" and " pmcidAnnotated" from database_management.py.
-If you close the cursor or connection in db_citation_pmc_ids, the pmcidAnnotated function will
-fail to identify papers that are annotated in this function.
-However, there are some database connectivity issues when retrieveDocs() is called in content_management.
-These database connectivity issues, namely when the db is "locked", need more investigation
-'''
+
 def retrieveDocs(pmid, conn):
   docs = [] #list of strings
   #connect to db for citing id's
