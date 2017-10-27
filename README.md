@@ -36,13 +36,13 @@ Next you will need to create a `configscke.cfg` file, that tells the files in th
 1. Create a new database for scke data
 2. See table configuration notes in [database_management.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/database_management.py#L583)
 
-**Step 5: Add your credentials for Entrez
+**Step 5: Add your credentials for Entrez**
 
 Entrez is the API for accessing PubMed(Central). We use Entrez as part of the Biopython package to scrape the citations. You should always tell Entrez who you are.
 
 1. Simply edit [this line of Entrez_IR.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/Entrez_IR.py#L17) with your email.
 
-**Step 5: Other files you will need**
+**Step 6: Other files you will need**
 
 These files live on CyVerse's Discovery environment (link to come)
 
@@ -51,7 +51,7 @@ These files live on CyVerse's Discovery environment (link to come)
     * If you you are running SCKE with either large documents or on a large amount of documents 3G will not be enough memory for the jar file! We give SCKE 100G of memory to run it in production. If you experience problems, try bumpting the memory up to 5G, 10G, or 25G.
 2. Our trained `FastText` word vectors `.vec` file
 
-**Step 6: Run SCKE**
+**Step 7: Run SCKE**
 
 Once you have cloned the repo, made your new Python environment, created a config file, and set up the MySQL database, you are almost ready to run SCKE!
 
@@ -63,6 +63,6 @@ Once you have cloned the repo, made your new Python environment, created a confi
 3. Navigate to the `flask` directory of the repository (`cd flask`)
 4. Run `python app.py`
 
-**Step 7: Debugging?**
+**Debugging?**
 
 If you have any problems, feel free to contact me! But first, take a look instead of your `.app.log` file to see where things might have gone amiss.
