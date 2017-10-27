@@ -36,7 +36,13 @@ Next you will need to create a `configscke.cfg` file, that tells the files in th
 1. Create a new database for scke data
 2. See table configuration notes in [database_management.py](https://github.com/hclent/Webdev-for-bioNLP-lit-tool/blob/master/flask/database_management.py#L583)
 
-**Step 5: Other files you might need**
+**Step 5: Add your credentials for Entrez
+
+Entrez is the API for accessing PubMed(Central). We use Entrez as part of the Biopython package to scrape the citations. You should always tell Entrez who you are.
+
+1. Simply edit [this line of Entrez_IR.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/Entrez_IR.py#L17) with your email.
+
+**Step 5: Other files you will need**
 
 These files live on CyVerse's Discovery environment (link to come)
 
