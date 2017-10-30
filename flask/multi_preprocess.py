@@ -27,7 +27,7 @@ logging.info('Stopword settings set')
 def connect_to_Processors(port_num):
   logging.warning('Connecting to the pyProcessors server may take a while')
   path = (app.config['PATH_TO_JAR'])
-  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx3G")
+  api = ProcessorsAPI(port=port_num, jar_path=path, keep_alive=True, jvm_mem="-Xmx10G")
   logging.info('Connected to pyProcessors')
   rando_doc = api.bionlp.annotate("The mitochondria is the powerhouse of the cell.")
   logging.info('Annotated something random to initialize bioNLP Processor')
