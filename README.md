@@ -20,6 +20,7 @@
 * Python3 ([Anaconda](https://www.continuum.io/))
 * [MySQL](https://www.mysql.com/)
 * Java
+* [Bower](https://bower.io/)
 
 **Step 1: Install MySql and configure database**
 
@@ -39,7 +40,11 @@ Clone (or fork!) the project and move into the main directory
 https://github.com/hclent/Science-Citation-Knowledge-Extractor.git`
 2. `cd Science-Citation-Knowledge-Extractor`.
 
-**Step 4: Download the supplementary files (You need these!)**
+**Step 4: Get the javascript with Bower**
+
+A lot of the Javascript is already provided in the repo, but there are still a few packages you will need. `bower install bower.json` to get them.
+
+**Step 5: Download the supplementary files (You need these!)**
 
 These supplementary files are stored on CyVerse's [Discovery Environment](http://www.cyverse.org/discovery-environment)
 
@@ -49,11 +54,11 @@ These supplementary files are stored on CyVerse's [Discovery Environment](http:/
 The files in the Discovery Environment that you will need are:
 
 * The py-processors  BioNLP Server jar, `processors-server.jar`
-    * This jar is used to annotate the texts. It is initialized to use 3G of memory but you can increase by editing [this line of multi_preprocess.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/multi_preprocess.py#L30).
-    * If you you are running SCKE with either large documents or on a large amount of documents 3G will not be enough memory for the jar file! We give SCKE 100G of memory to run it in production. If you experience problems, try bumpting the memory up to 5G, 10G, or 25G.
+    * This jar is used to annotate the texts. It is initialized to use 10G of memory but you can increase by editing [this line of multi_preprocess.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/multi_preprocess.py#L30).
+    * If you you are running SCKE with either large documents or on a large amount of documents 10G will not be enough memory for the jar file! We give SCKE 100G of memory to run it in production. If you experience problems, try bumpting the memory up to 25G, 50G, or more.
 * Our trained `FastText` word vectors file, `scke_lower.vec`
 
-Appart from the Discovery Environment, we also make use of `nltk`'s stopwords. You can download these easily by entering the python shelly and
+Appart from the Discovery Environment, we also make use of `nltk`'s stopwords. You can download these easily by entering the python shell and
 
 ```
 import nltk
@@ -61,7 +66,7 @@ nltk.download()
 ```
 A GUI will come up. Type `d stopwords`, download the stopwords, then `q` to quit and `exit()`.
 
-**Step 5: Setting up Python**
+**Step 6: Setting up Python**
 
 In order to set up the site, you will need the same Python environment that the site uses to run. Here are instructions for how to re-create our environment.
 
@@ -70,22 +75,22 @@ In order to set up the site, you will need the same Python environment that the 
 3. Activate the environment (`source activate scke`)
 4. Install the rest of the requirements in the environment with `pip install -r pip_requirements.txt`
 
-**Step 6: Creating and loading the config file**
+**Step 7: Creating and loading the config file**
 
 1. Next you will need to create a config file, that tells the files in the app where to look for the database and cached data, etc. For complete instructions, please see the example `configExample.cfg`.
 2. Make sure that [this line of](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/configapp.py#L7)`configapp.py` is pointing to the correct location of your config file!
     * NB: Also while you're updating this, [the line above it](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/configapp.py#L6) should also be pointing to the `static` directory.
 
-**Step 7: Add your credentials for Entrez**
+**Step 8: Add your credentials for Entrez**
 
 Entrez is the API for accessing PubMed(Central). We use Entrez as part of the Biopython package to scrape the citations. You should always tell Entrez who you are.
 
 1. Simply edit [this line of Entrez_IR.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/Entrez_IR.py#L17) with your email.
 
 
-**Step 8: Run SCKE**
+**Step 9: Run SCKE**
 
-Once you have cloned the repo, made your new Python environment, created a config file, installed Java, and set up the MySQL database, you are almost ready to run SCKE!
+Once you have accomplished steps 1-8, you are almost ready to run SCKE!
 
 1. Make sure your conda environment is active (`source activate scke`)
 2. Modify [this line of app.py](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/app.py#L1110).
