@@ -12,7 +12,6 @@ Tables in pmids_info.db
 2) citations: stores information about pmcids that cite input pmids
 3) queries: stores information about a particular input query e.g. paper1+paper2
 4) annotations: stores information about the annotated pmcids' lemmas and named entities categories
-
 '''
 
 
@@ -154,9 +153,6 @@ def db_pmid_hyperlink_retrieval(pmid, conn):
 #Output: apa citations for citing pmCids as hyperlinks
 #Updated to sqlAlchemy
 #UPDATED
-'''
-July 5, 2017: This randomly failed in deployment for a query that normally works. Couldn't find "title"
-'''
 def db_citations_hyperlink_retrieval(pmcid, conn):
 	s = select([citations.c.title, citations.c.author, citations.c.journal, citations.c.pubdate, citations.c.url]).\
 		where(citations.c.pmcid == pmcid)
@@ -581,11 +577,19 @@ def db_query_update_statistics(query, conn):
 
 '''
 Database setup for MySql:
-NOTE: I did not have the foresight to initialize the tables with utf8mb4 encoding,
-      thus I had to go back and
+Make sure that your database and its tables are initialized with utf8mb4 encoding!
+If you didn't do this you can 
+
       ALTER DATABASE scke CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+     
       & for each table
+     
        ALTER TABLE <tablename> CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+To create the database:
+mysql> create database scke
+
+To create the tables:
 
 CREATE TABLE inputPapers (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DATE, pmid VARCHAR(15), title VARCHAR(1000), author VARCHAR(10000), journal VARCHAR(500), pubdate VARCHAR(50), url VARCHAR(200), num_citations INT, abstract VARCHAR(10), whole_article VARCHAR(10), pmcid VARCHAR(20), KEY(post_id));
 
@@ -593,8 +597,6 @@ CREATE TABLE citations (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DAT
 
 CREATE TABLE queries (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DATE, query VARCHAR(500), range_years VARCHAR(20), total_pubs INT, unique_pubs INT, unique_journals INT, num_abstracts INT, num_whole_articles INT, num_sents INT, num_tokens INT, KEY(post_id));
 
-Annotations table depreciated
-CREATE TABLE annotations (post_id MEDIUMINT NOT NULL AUTO_INCREMENT, datestamp DATE, pmcid VARCHAR(20), lemmas LONGTEXT, bioprocess LONGTEXT, cell_lines LONGTEXT, cell_components LONGTEXT, family LONGTEXT, gene_product LONGTEXT, organ LONGTEXT, simple_chemical LONGTEXT, site LONGTEXT, species LONGTEXT, tissue_type LONGTEXT, KEY(post_id));
 
 '''
 
