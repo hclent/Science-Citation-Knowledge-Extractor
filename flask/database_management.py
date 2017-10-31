@@ -560,7 +560,7 @@ def db_query_update_statistics(query, conn):
 			token = value[3]
 			if isinstance(token, int):
 				all_tokens.append(token)
-	sum_total = sum(total)
+	total_pubs = sum(total)
 	unique_pubs = (len(unique_pmcids))
 	sum_abstracts = len(all_abstracts)
 	sum_whole = len(all_whole)
@@ -569,7 +569,7 @@ def db_query_update_statistics(query, conn):
 
 	up = queries.update().\
 		where(queries.c.query == query).\
-		values(dict(total_pubs=sum_total, unique_pubs=unique_pubs, num_abstracts=sum_abstracts,
+		values(dict(total_pubs=total_pubs, unique_pubs=unique_pubs, num_abstracts=sum_abstracts,
 					num_whole_articles=sum_whole, num_sents=sum_sents, num_tokens=sum_tokens))
 	conn.execute(up)
 

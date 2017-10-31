@@ -12,6 +12,7 @@ from configapp import app, engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
 from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, exists_lemma, exists_nes #mine
+from database_management import db_query_update_statistics
 
 
 #Create Form for handling user-entered pmid
@@ -122,6 +123,7 @@ def results():
 					else:
 						#Annotate
 						logging.info("beginning multi-preprocessing")
+						#TODO: make sure we have all of the txt files (if some were coppied and missing that's a problemo)
 						biodoc_data = do_multi_preprocessing(user_input, r_conn)
 						needed_to_annotate_check.append("yes")
 						logging.info("done with new document multi_preprocessing")
@@ -1008,12 +1010,28 @@ def res_stats(query):
 
 	input_click_citations = statsSelfInfo(query, sr_conn)
 	statistics = get_statistics(query, sr_conn)
-	sum_total = statistics[0]
-	unique = statistics[1]
-	sum_abstracts = statistics[2]
-	sum_whole = statistics[3]
-	sum_sents = statistics[4]
-	sum_tokens = statistics[5]
+	logging.info("#### LOOKING TO SEE IF STATISTICS IS EMPTY OR WHATEVER")
+	logging.info(statistics)
+	logging.info(type(statistics))
+	if None in statistics:
+		logging.info("There were some 'None's in our stastics! Let's get this right and make sure the db is populated...")
+		db_query_update_statistics(query, sr_conn) #do it again
+		logging.info("Done updating the db with the statistics")
+		statistics = get_statistics(query, sr_conn)
+		sum_total = statistics[0]
+		unique = statistics[1]
+		sum_abstracts = statistics[2]
+		sum_whole = statistics[3]
+		sum_sents = statistics[4]
+		sum_tokens = statistics[5]
+
+	else:
+		sum_total = statistics[0]
+		unique = statistics[1]
+		sum_abstracts = statistics[2]
+		sum_whole = statistics[3]
+		sum_sents = statistics[4]
+		sum_tokens = statistics[5]
 
 	#get x, y coordinates for pubs x year bar chart.
 	#max 5 papers
