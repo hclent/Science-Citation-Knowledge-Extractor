@@ -123,12 +123,18 @@ def results():
 					else:
 						#Annotate
 						logging.info("beginning multi-preprocessing")
-						#TODO: make sure we have all of the txt files (if some were coppied and missing that's a problemo)
 						biodoc_data = do_multi_preprocessing(user_input, r_conn)
 						needed_to_annotate_check.append("yes")
 						logging.info("done with new document multi_preprocessing")
-						logging.info("writing the BIODOC LEMMAS")
 
+						#Before moving on, lets double check that we have EVERYTHING.
+						#If some texts were coppied because they are in the database but actually missing, that's a problemo!
+						logging.info("Just checking that everything (texts and jsons) is there.... ")
+						needed_to_rescrape = check_for_texts(user_input, r_conn)  # returns yes or no
+						logging.info("needed_to_rescrape/re_annotate: " + str(needed_to_rescrape))
+						
+
+						logging.info("writing the BIODOC LEMMAS")
 						#Populate cache (lemmas and nes)
 						need_to_annotate = "yes" #of course we need to annotate, its a new pmid!
 						print_lemma_nes_samples(user_input, biodoc_data, need_to_annotate)
@@ -203,8 +209,6 @@ def results():
 					if user_input == pmid_list[-1]:
 						logging.info("last pmid in the query")
 
-						#TODO: To be honest, I don't know why db_query_update_statistics is called inside the loop and outside...
-						#TODO: But the code is upset if db_query_update_statistics isn't IN the loop o_0
 						#If ANY user_inputs in the query needed to update, we must update the query's comprehensive cache.
 						if 'yes' in needed_to_annotate_check:
 							need_to_update = 'yes'
@@ -1010,9 +1014,6 @@ def res_stats(query):
 
 	input_click_citations = statsSelfInfo(query, sr_conn)
 	statistics = get_statistics(query, sr_conn)
-	logging.info("#### LOOKING TO SEE IF STATISTICS IS EMPTY OR WHATEVER")
-	logging.info(statistics)
-	logging.info(type(statistics))
 	if None in statistics:
 		logging.info("There were some 'None's in our stastics! Let's get this right and make sure the db is populated...")
 		db_query_update_statistics(query, sr_conn) #do it again
