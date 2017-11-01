@@ -14,8 +14,8 @@ from database_management import checkForPMCID, checkIfScraped
 #and information about pubplications that cite this pmid via PubMedCentral ID's (pmcids)
 
 
-Entrez.email = "YOUR EMAIL HERE"
-Entrez.tool = "MyInfoRetrieval"
+Entrez.email = (app.config['YOUR_EMAIL'])
+Entrez.tool = "Science_Citation_Knowledge_Extractor"
 
 #Create log
 logging.basicConfig(filename='.app.log',level=logging.DEBUG)
