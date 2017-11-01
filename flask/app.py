@@ -1125,8 +1125,8 @@ def page_not_found(e):
 
 #Configuration settings
 if __name__ == '__main__':
-	run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
-	#app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
+	#run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
+	app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
 
 
 
