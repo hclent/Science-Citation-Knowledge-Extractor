@@ -2,7 +2,7 @@
 
 
 ## About SCKE
-* SCKE is an open source tool that helps biomedical researchers understand how their work is being used by others, by analyzing the content in papers that cite them. This tool uses natural language processing and machine learning to extract the prominent themes and concepts discussed in the citing documents. By seeing what kinds of topics are discussed by citing articles, researchers can better understand how their work influences their peers and various disciplines in science. Additionally, SCKE allows biomedical researchers to explore other statistics about the publications that site them, such as where citations are published (Journals), the distribution of keywords (Keywords), the similarity of papers to each other (Clustering), the similarity of papers to other famous works (TextCompare), and general statistics about the citations (Statistics).
+* SCKE is an open source tool that helps biomedical researchers understand how their work is being used by others, by analyzing the content in papers that cite them. This tool uses natural language processing and machine learning to extract the prominent themes and concepts discussed in the citing documents. By seeing what kinds of topics are discussed by citing articles, researchers can better understand how their work influences their peers and various disciplines in science. Additionally, SCKE allows biomedical researchers to explore other statistics about the publications that cite them, such as where citations are published (Journals), the distribution of keywords (Keywords), the similarity of papers to each other (Clustering), the similarity of papers to other famous works (TextCompare), and general statistics about the citations (Statistics).
 * Built with `Python3` and `Flask` using `Biopython`, `py-processors`, `NLTK`, `Scikit-Learn`, `Numpy`, `Gensim`, `Fasttext`, `Plotly`, `D3`, and more.
 * SCKE proudly leverages the BioNLP Processor created by the Computational Language Understanding Lab. See [here](https://github.com/clulab/processors) for original code. See [here](https://github.com/myedibleenso/py-processors) for python wrappper library, `py-processors`.
 
@@ -28,7 +28,11 @@ Where are your citers publishing their work? Could you be influencing authors wi
 ### Keywords
 Visualizations the key words in your papers with either a wordcloud, heatmap, or clustermap! Sort by categories of keywords: Bioprocess, Cell-lines, Cellular components, Family, Gene or gene products, Organs, Simple chemicals, Sites, Species, Tissue-types.
 
+#### wordcloud
+
 ![Wordcloud for Species and Families](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/static/images/screenies/wordcloud.png)
+
+#### heatmap
 
 ![Heatmap for Cell Components](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/static/images/screenies/heatmap.png)
 
