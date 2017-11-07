@@ -61,4 +61,4 @@ See how similar your citing publications are to famous works like "On the Origin
 
 ![TextCompare results against input document](https://github.com/hclent/Science-Citation-Knowledge-Extractor/blob/master/flask/static/images/screenies/textcompare.png)
 
-
+**Note:** The yellow bar in this visualization is one of the input papers (Lyons, 2008). Of course, Lyons, 2008 should have 100% similarity for itself. The next highest green bar for this paper also happens to be Lyons, 2008. The similarity score is a bit lower (but sitll very high) because stopwords (e.g. the, a, an, them) have been removed.  
