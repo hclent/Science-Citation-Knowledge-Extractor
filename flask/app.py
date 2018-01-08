@@ -7,7 +7,7 @@ from werkzeug.serving import run_simple
 from processors import *
 import urllib.request
 import urllib.parse
-sys.path.append('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/flask/')
+
 from configapp import app, engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
@@ -48,6 +48,7 @@ def cogecrawl():
 @app.route('/results/', methods=["GET"])
 def results():
 	logging.info("In app route RESULTS")
+	time_start = time.time()
 	form = pmidForm()
 	r_conn = connection() #results_connection to db
 
@@ -75,11 +76,9 @@ def results():
 			# Need 5 PMIDs or less
 			if len(pmid_list) > 5:
 				flash('You have entered more than 5 PMIDs. Please reduce your query to 5 PMIDs or less to continue.')
-				citations_with_links = db_unique_citations_retrieval('18952863+18269575', r_conn)  # unique
-				unique_publications = db_unique_citations_number('18952863+18269575', r_conn)
+				base_url = (app.config['BASE_URL'])
 				r_conn.close()
-				return render_template("dashboard.html", citations_with_links=citations_with_links,
-									   unique_publications=unique_publications)
+				return render_template("home.html", base_url=base_url)
 
 
 			q = '+'
@@ -132,7 +131,7 @@ def results():
 						logging.info("Just checking that everything (texts and jsons) is there.... ")
 						needed_to_rescrape = check_for_texts(user_input, r_conn)  # returns yes or no
 						logging.info("needed_to_rescrape/re_annotate: " + str(needed_to_rescrape))
-						
+
 
 						logging.info("writing the BIODOC LEMMAS")
 						#Populate cache (lemmas and nes)
@@ -237,6 +236,7 @@ def results():
 
 		citations_with_links = db_unique_citations_retrieval(query, r_conn) #unique
 		r_conn.close()
+		logging.info("BENCHMARK TIME: done in %0.3fs." % (time.time() - time_start))
 		return render_template('results.html', form=form, citations_with_links=citations_with_links,
 	   			query=query, update_check=update_check, base_url=base_url)
 
@@ -1125,8 +1125,8 @@ def page_not_found(e):
 
 #Configuration settings
 if __name__ == '__main__':
-	#run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
-	app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
+	run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
+	#app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
 
 
 
