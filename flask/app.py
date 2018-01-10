@@ -7,12 +7,11 @@ from werkzeug.serving import run_simple
 from processors import *
 import urllib.request
 import urllib.parse
-
 from configapp import app, engine, connection, inputPapers #mine
 from content_management import * #mine
 from citation_venn import make_venn #mine
 from cache_lemma_nes import print_lemma_nes_samples, concat_lemma_nes_samples, exists_lemma, exists_nes #mine
-from database_management import db_query_update_statistics
+from database_management import db_query_update_statistics #mine
 
 
 #Create Form for handling user-entered pmid
@@ -21,7 +20,7 @@ class pmidForm(Form):
 	pmid = TextField('PubmedID')
 
 #Home page
-@app.route("/home/")
+@app.route("/")
 def home():
 	base_url = (app.config['BASE_URL'])
 	return render_template("home.html", base_url=base_url)
@@ -30,7 +29,7 @@ def home():
 #Example pages for CoGe
 #Prints sample results from 2 coge publications
 #User inputs a pubmed id and is then redirected to /results
-@app.route("/cogecrawl/")
+@app.route("/coge/") #/cogecrawl/
 def cogecrawl():
 	query = '18952863+18269575'
 	coge_conn = connection()
@@ -104,7 +103,7 @@ def results():
 				#if the entry does NOT exist in the db already, will need to retrieve text, annotate it, and populate cache
 				if check1 is None:
 					update_check = "yes"
-					flash('new pubmedid!')
+					#flash('new pubmedid!')
 
 					#Information Retireval of citing pmcids and info about them
 					number_of_citations = run_IR_not_db(user_input, r_conn)
@@ -163,7 +162,7 @@ def results():
 					update_check = "no" #no by default
 
 
-					flash("alreay exists in database :) ")
+					#flash("alreay exists in database :) ")
 					#Using user_input for Information Retireval - checks if any new papers have been added that we need to scrape
 					need_to_annotate = run_IR_in_db(user_input, r_conn)
 
@@ -290,7 +289,7 @@ def cogeembeddings():
 		logging.info(filepath)
 		return render_template('coge_embeddings.html', filepath=filepath)
 	else:
-		filepath = 'coge_embed.json'
+		filepath = 'coge_embed_n.json' #
 		return render_template('coge_embeddings.html', filepath=filepath)
 
 
@@ -1125,8 +1124,8 @@ def page_not_found(e):
 
 #Configuration settings
 if __name__ == '__main__':
-	run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
-	#app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
+	#run_simple('0.0.0.0', 5000, app, use_reloader=True) #Use this line to run with Apache + Uwsgi
+	app.run(host='0.0.0.0') #Use this line if you are not running the app with uwsgi (if you want to run on localhost)!
 
 
 
