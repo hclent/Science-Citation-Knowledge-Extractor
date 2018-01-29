@@ -8,8 +8,8 @@ from sqlalchemy import exc, event, select
 In order to run this code you **MUST EDIT THIS FILE WITH ABSOLUTE PATHS** for both static_url_path and 
 the path to your config file. 
 '''
-app = Flask(__name__, static_url_path='/hclent/Webdev-for-bioNLP-lit-tool/flask/static') #pass abs path
-app.config.from_pyfile('/home/hclent/repos/Webdev-for-bioNLP-lit-tool/configscke.cfg', silent=False) #pass abs path
+app = Flask(__name__, static_url_path='/usr/src/Science-Citation-Knowledge-Extractor/flask/static') #pass abs path
+app.config.from_pyfile('/usr/src/Science-Citation-Knowledge-Extractor/configscke.cfg', silent=False) #pass abs path
 ###################################################################################################
 
 
