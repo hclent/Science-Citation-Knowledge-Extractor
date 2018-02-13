@@ -59,6 +59,10 @@ def results():
 
 			#entry = form.pmid.data #If method is POST #str
 			entry = (request.args.getlist('pmid'))[0] #str
+			if len(entry) == 0:
+				logging.info("someone pushed enter without entering anything....default entry go!")
+				default_entry = '18952863, 18269575'
+				entry = default_entry
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			logging.info(pmid_list)
 
