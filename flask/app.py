@@ -61,8 +61,15 @@ def results():
 			entry = (request.args.getlist('pmid'))[0] #str
 			if len(entry) == 0:
 				logging.info("someone pushed enter without entering anything....default entry go!")
-				default_entry = '18952863, 18269575'
-				entry = default_entry
+				query = '18952863+18269575'
+				citations_with_links = db_unique_citations_retrieval(query, r_conn)  # unique
+				unique_publications = db_unique_citations_number(query, r_conn)
+				r_conn.close()
+				base_url = (app.config['BASE_URL'])
+				return render_template("dashboard.html", citations_with_links=citations_with_links,
+									   unique_publications=unique_publications,
+									   base_url=base_url)
+
 			pmid_list = multiple_pmid_input(entry) #list for handling multiple pmids
 			logging.info(pmid_list)
 
