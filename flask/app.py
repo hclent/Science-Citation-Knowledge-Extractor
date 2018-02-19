@@ -556,7 +556,7 @@ def coge_scifi():
 		if corpus == 'startrek':
 			title = 'Star Trek: The Next Generation'
 		if corpus == 'mars':
-			title = 'Guilliver of Mars'
+			title = 'Gulliver of Mars'
 		if corpus == 'last_evolution':
 			title = 'The Last Evolution by John W Campbell'
 		if corpus == 'youth':
