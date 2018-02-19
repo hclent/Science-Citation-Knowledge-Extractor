@@ -32,7 +32,7 @@
 
             <!-- Button trigger modal -->
         <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#textCompare">
-          How are these scores calculated?
+          About this visualization
         </button>
 
         <!-- Modal -->
@@ -44,10 +44,14 @@
                 <h4 class="modal-title" id="textCompareLabel">About TextCompare</h4>
               </div>
               <div class="modal-body">
-                In order to compare documents with their percent similarity, we transform
+                  <b>How are these scores calculated?</b> In order to compare documents with their percent similarity, we transform
                 documents into vectors with a naive implementation of the doc2vec  algorithm. and then compute
                   After the documents are converted into vectors, we take the cosine similarity between each text and
                   the vector of the selected TextCompare document (e.g. Origin of The Species).
+                  <br>
+                  <b>What are all of these texts for comparison?</b> If you're curious about the collection of texts we've chosen
+                  for TextCompare, please see <a href="https://github.com/hclent/Science-Citation-Knowledge-Extractor/wiki/TextCompare-Corpora" target="_blank" rel="noopener noreferrer">our wiki about TextCompare corpora</a>. Here you will find
+                  hyperlinks to all of the corpora.
               </div>
             </div>
           </div>
