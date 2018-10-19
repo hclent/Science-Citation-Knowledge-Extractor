@@ -54,9 +54,9 @@ body {
 
 
 <script>
-var sets = [{sets : [0], label : 'PMID:18952863 (111)', size: 111},
-            {sets : [1], label : 'PMID:18269575 (92)', size : 92},
-            {sets : [0,1], label: '26', size:26}
+var sets = [{sets : [0], label : 'PMID:18952863 (122)', size: 111},
+            {sets : [1], label : 'PMID:18269575 (109)', size : 109},
+            {sets : [0,1], label: '30', size:30}
             ];
 
 var chart = venn.VennDiagram()
@@ -71,14 +71,14 @@ d3.select("#venn").datum(sets).call(chart);
  <div id="myDiv" style="width: 680px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
 var paper1 = {
-    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
-    y: [1, 1, 5, 11, 15, 11, 21, 12, 19, 3],
+    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
+    y: [1, 1, 5, 11, 15, 11, 21, 12, 19, 14, 11],
     name: '18952863',
     type: 'bar'};
 
     var paper2 = {
-    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
-    y: [3, 3, 6, 5, 8, 16, 13, 8, 19, 1],
+    x: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
+    y: [3, 3, 6, 5, 8, 16, 13, 8, 19, 11, 17],
     name: '18269575',
     type: 'bar'};
 

@@ -97,7 +97,7 @@ data = JSON.parse( myjson );
       .attr("y", j*20+25)
       .attr("x",width+20)
       .attr("class","label")
-      .text(truncate(data[j]['name'],300,"..."))
+      .text(truncate(data[j]['name'],50,"..."))
       .style("fill", function(d) { return c(j); })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
